@@ -33,14 +33,12 @@ public class SmartDashboardInputs {
 	private void ConfigAutonModeChoosers() {
 		// Auton Mode Chooser
 		_autonModeChooser = new SendableChooser<AUTON_MODE>();
-		
 		_autonModeChooser.addDefault("Do Nothing", GeneralEnums.AUTON_MODE.DO_NOTHING);
 		
 		SmartDashboard.putData("Auton Mode Chooser", _autonModeChooser);
 		
 		// Alliance Color Chooser
 		_allianceChooser = new SendableChooser<ALLIANCE_COLOR>();
-		
 		_allianceChooser.addDefault("FMS", GeneralEnums.ALLIANCE_COLOR.USE_FMS);
 		_allianceChooser.addObject("Red Alliance", GeneralEnums.ALLIANCE_COLOR.RED_ALLIANCE);
 		_allianceChooser.addObject("Blue Alliance", GeneralEnums.ALLIANCE_COLOR.BLUE_ALLIANCE);

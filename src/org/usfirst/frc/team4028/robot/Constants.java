@@ -45,8 +45,7 @@ public class Constants {
     public static double DriveHighGearVelocityKd = 3.0; //6.0;
     public static double DriveHighGearVelocityKf = 0.5;
     public static int DriveHighGearVelocityIZone = 0;
-    public static double DriveHighGearVelocityRampRate = 240.0;
-    public static double DriveHighGearNominalOutput = 0.5;
+    public static double DriveHighGearNominalOutput = 0.05;
     public static double DriveHighGearMaxSetpoint = 13.97 * 12.0; // 17 fps
     
     public static double DRIVE_LOW_GEAR_POSITION_P = 1.0; //4.0
@@ -54,12 +53,13 @@ public class Constants {
     public static double DRIVE_LOW_GEAR_POSITION_D = 100.0; // 0.95
     public static double DRIVE_LOW_GEAR_POSITION_F = 0.45; // 0.5
     public static int DRIVE_LOW_GEAR_POSITION_I_ZONE = 700;
-    public static double DRIVE_LOW_GEAR_POSITION_RAMP_RATE = 240.0;
     
-    public static double DRIVE_TURN_MAX_VEL = 360.0; //120.0;
-    public static double DRIVE_TURN_MAX_ACC = 720.0; //1200.0
+    public static int DRIVE_TURN_MAX_VEL = 360; //120.0;
+    public static int DRIVE_TURN_MAX_ACC = 720; //1200.0
     
     public static double DriveVoltageCompensationRampRate = 0.0;
+    
+    public static double DRIVE_CLOSED_LOOP_RAMP_RATE = 0.05;
     
 	/* Robot Physical Constants */
 	// Wheels

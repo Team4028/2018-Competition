@@ -108,7 +108,7 @@ public class Robot extends IterativeRobot {
 		stopAll();
 		
 		_chassis.ShiftGear(GearShiftPosition.HIGH_GEAR);
-		_chassis.enableBrakeMode(false);
+		_chassis.setBrakeMode(false);
 		
 		_dataLogger = GeneralUtilities.setupLogging("teleop");
 	}

@@ -13,13 +13,16 @@ import org.usfirst.frc.team4028.util.loops.Loop;
 import org.usfirst.frc.team4028.util.motion.RigidTransform;
 import org.usfirst.frc.team4028.util.motion.Twist;
 
-import com.ctre.CANTalon;
-import com.ctre.CANTalon.StatusFrameRate;
-import com.ctre.CANTalon.TalonControlMode;
-import com.ctre.CANTalon.VelocityMeasurementPeriod;
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
+import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.StatusFrame;
+import com.ctre.phoenix.motorcontrol.VelocityMeasPeriod;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 
@@ -33,7 +36,7 @@ public class Chassis extends Subsystem{
     private static final int kHighGearVelocityControlSlot = 1;
 	
 	// define class level variables for Robot objects
-	private CANTalon _leftMaster, _leftSlave, _rightMaster, _rightSlave;
+	private TalonSRX _leftMaster, _leftSlave, _rightMaster, _rightSlave;
 	private DoubleSolenoid _shifterSolenoid;
 	private NavXGyro _navX = NavXGyro.getInstance();
 	
@@ -65,8 +68,7 @@ public class Chassis extends Subsystem{
 	
 	private static final double _turnSpeedScalingFactor = 0.7;
 	
-	private static final double SHIFT_UP_VEL = 75;
-	private static final double SHIFT_DOWN_VEL= 70;
+	private static final double CODES_PER_REV = 1097;
 	
 	// shifter positions
 	public enum GearShiftPosition {
@@ -97,15 +99,15 @@ public class Chassis extends Subsystem{
 				switch(_chassisState) {
 					case AUTO_TURN:
 						ShiftGear(GearShiftPosition.LOW_GEAR);
-						_leftMaster.setProfile(kLowGearPositionControlSlot);
-						_rightMaster.setProfile(kLowGearPositionControlSlot);
+						_leftMaster.selectProfileSlot(kLowGearPositionControlSlot, 0);
+						_rightMaster.selectProfileSlot(kLowGearPositionControlSlot, 0);
 						moveToTarget();
 						return;
 						
 					case FOLLOW_PATH:
 						ShiftGear(GearShiftPosition.HIGH_GEAR);
-						_leftMaster.setProfile(kHighGearVelocityControlSlot);
-						_rightMaster.setProfile(kHighGearVelocityControlSlot);
+						_leftMaster.selectProfileSlot(kHighGearVelocityControlSlot, 0);
+						_rightMaster.selectProfileSlot(kHighGearVelocityControlSlot, 0);
 						if (_pathFollower != null) 
 							updatePathFollower(timestamp);
 						return;
@@ -134,45 +136,41 @@ public class Chassis extends Subsystem{
 	
 	private Chassis() {
 		/* Drive Motors */
-		_leftMaster = new CANTalon(Constants.LEFT_DRIVE_MASTER_CAN_BUS_ADDR);
-		_leftSlave = new CANTalon(Constants.LEFT_DRIVE_SLAVE_CAN_BUS_ADDR);
-		_rightMaster = new CANTalon(Constants.RIGHT_DRIVE_MASTER_CAN_BUS_ADDR);
-		_rightSlave = new CANTalon(Constants.RIGHT_DRIVE_SLAVE_CAN_BUS_ADDR);
 		
-		_leftMaster.setFeedbackDevice(CANTalon.FeedbackDevice.QuadEncoder);
-		_leftMaster.configEncoderCodesPerRev(1097);
-		_leftMaster.setStatusFrameRateMs(StatusFrameRate.Feedback, 5);
-		_rightMaster.setFeedbackDevice(CANTalon.FeedbackDevice.QuadEncoder);
-		_rightMaster.configEncoderCodesPerRev(1097);
-		_rightMaster.setStatusFrameRateMs(StatusFrameRate.Feedback, 5);
+		_leftMaster = new TalonSRX(Constants.LEFT_DRIVE_MASTER_CAN_BUS_ADDR);
+		_leftSlave = new TalonSRX(Constants.LEFT_DRIVE_SLAVE_CAN_BUS_ADDR);
+		_rightMaster = new TalonSRX(Constants.RIGHT_DRIVE_MASTER_CAN_BUS_ADDR);
+		_rightSlave = new TalonSRX(Constants.RIGHT_DRIVE_SLAVE_CAN_BUS_ADDR);
 		
-		_leftMaster.changeControlMode(TalonControlMode.PercentVbus);
-		_leftSlave.changeControlMode(TalonControlMode.Follower);
-		_leftSlave.set(Constants.LEFT_DRIVE_MASTER_CAN_BUS_ADDR);
-		_rightMaster.changeControlMode(TalonControlMode.PercentVbus);
-		_rightSlave.changeControlMode(TalonControlMode.Follower);
-		_rightSlave.set(Constants.RIGHT_DRIVE_MASTER_CAN_BUS_ADDR);
+		_leftMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0);
+		_leftMaster.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 5, 0);
+		_rightMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0);
+		_rightMaster.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 5, 0);
 		
-		_leftMaster.reverseSensor(false);
-		_leftMaster.reverseOutput(false);
-		_rightMaster.reverseSensor(true);	// reverse these to ensure encoder counts and closed loop output are in same direction
-		_rightMaster.reverseOutput(true);
+		_leftSlave.set(ControlMode.Follower, Constants.LEFT_DRIVE_MASTER_CAN_BUS_ADDR);
+		_rightSlave.set(ControlMode.Follower, Constants.RIGHT_DRIVE_MASTER_CAN_BUS_ADDR);
 		
-		_leftMaster.enableLimitSwitch(false,  false);
-		_leftSlave.enableLimitSwitch(false, false);
-		_rightMaster.enableLimitSwitch(false, false);
-		_rightSlave.enableLimitSwitch(false, false);
+		_leftMaster.setSensorPhase(false);
+		_leftMaster.setInverted(false);
+		_rightMaster.setSensorPhase(true);	// reverse these to ensure encoder counts and closed loop output are in same direction
+		_rightMaster.setInverted(true);
 		
-		_leftMaster.SetVelocityMeasurementPeriod(VelocityMeasurementPeriod.Period_10Ms);
-        _leftMaster.SetVelocityMeasurementWindow(32);
-        _rightMaster.SetVelocityMeasurementPeriod(VelocityMeasurementPeriod.Period_10Ms);
-        _rightMaster.SetVelocityMeasurementWindow(32);
+		_leftMaster.configForwardLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
+		_leftSlave.configForwardLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
+		_rightMaster.configForwardLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
+		_rightSlave.configForwardLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
+	
+        _leftMaster.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_10Ms, 0);
+        _leftMaster.configVelocityMeasurementWindow(32, 0);
+        _rightMaster.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_10Ms, 0);
+        _rightMaster.configVelocityMeasurementWindow(32, 0);
+        
 		
 		// Motion Magic Constants
-		_leftMaster.setMotionMagicAcceleration(Constants.DRIVE_TURN_MAX_ACC);
-		_rightMaster.setMotionMagicAcceleration(Constants.DRIVE_TURN_MAX_ACC);
-		_leftMaster.setMotionMagicCruiseVelocity(Constants.DRIVE_TURN_MAX_VEL);
-		_rightMaster.setMotionMagicCruiseVelocity(Constants.DRIVE_TURN_MAX_VEL);
+		_leftMaster.configMotionAcceleration(Constants.DRIVE_TURN_MAX_ACC, 0);
+		_rightMaster.configMotionAcceleration(Constants.DRIVE_TURN_MAX_ACC, 0);
+		_leftMaster.configMotionCruiseVelocity(Constants.DRIVE_TURN_MAX_VEL, 0);
+		_rightMaster.configMotionCruiseVelocity(Constants.DRIVE_TURN_MAX_VEL, 0);
 		
 		reloadGains();
 		
@@ -180,7 +178,7 @@ public class Chassis extends Subsystem{
 		_shifterSolenoid = new DoubleSolenoid(Constants.PCM_CAN_BUS_ADDR, Constants.SHIFTER_SOLENOID_EXTEND_PCM_PORT, 
 												Constants.SHIFTER_SOLENOID_RETRACT_PCM_PORT);
 		
-		enableBrakeMode(false);
+		setBrakeMode(false);
 		
 		_driveSpeedScalingFactorClamped = 1.0;
 	}
@@ -197,8 +195,7 @@ public class Chassis extends Subsystem{
 	
 	public synchronized void arcadeDrive(double throttle, double turn) {
 		_chassisState = ChassisState.PERVENT_VBUS;
-		
-		enablePercentVBusMode();
+	
 		// calc scaled throttle cmds
 		double newThrottleCmdScaled = throttle * _driveSpeedScalingFactorClamped;
 		double newTurnCmdScaled = turn * _turnSpeedScalingFactor;
@@ -227,32 +224,18 @@ public class Chassis extends Subsystem{
 		_arcadeDriveTurnCmdAdj = newTurnCmdScaled;
 		
 		// send cmd to mtr controllers
-		_leftMaster.set(_arcadeDriveThrottleCmdAdj - 0.7 * _arcadeDriveTurnCmdAdj);
-		_rightMaster.set(-_arcadeDriveThrottleCmdAdj - 0.7 * _arcadeDriveTurnCmdAdj);
+		_leftMaster.set(ControlMode.PercentOutput, _arcadeDriveThrottleCmdAdj - 0.7 * _arcadeDriveTurnCmdAdj);
+		_rightMaster.set(ControlMode.PercentOutput, -_arcadeDriveThrottleCmdAdj - 0.7 * _arcadeDriveTurnCmdAdj);
 	}
 	
 	public synchronized void tankDrive(DriveCommand command) {
-		enablePercentVBusMode();
-		_leftMaster.set(command.leftCmd);
-		_rightMaster.set(command.rightCmd);
+		_leftMaster.set(ControlMode.PercentOutput, command.leftCmd);
+		_rightMaster.set(ControlMode.PercentOutput, command.rightCmd);
 	}
 	
 	private void setMotionMagicTargetPosition(double leftPosition, double rightPosition) {
-		enableMotionMagicMode();
-		_leftMaster.set(leftPosition);
-		_rightMaster.set(rightPosition);
-	}
-	
-	public synchronized void enablePercentVBusMode() {
-		if (_leftMaster.getControlMode() != TalonControlMode.PercentVbus)
-			_leftMaster.changeControlMode(TalonControlMode.PercentVbus);
-			_rightMaster.changeControlMode(TalonControlMode.PercentVbus);
-	}
-	
-	public synchronized void enableMotionMagicMode() {
-		if (_leftMaster.getControlMode() != TalonControlMode.MotionMagic)
-			_leftMaster.changeControlMode(TalonControlMode.MotionMagic);
-			_rightMaster.changeControlMode(TalonControlMode.MotionMagic);
+		_leftMaster.set(ControlMode.MotionMagic, leftPosition);
+		_rightMaster.set(ControlMode.MotionMagic, rightPosition);
 	}
 	
 	/**
@@ -273,17 +256,15 @@ public class Chassis extends Subsystem{
     private void configureTalonsForSpeedControl() {
         if (!usesTalonVelocityControl(_chassisState)) {
             // We entered a velocity control state.
-            _leftMaster.changeControlMode(CANTalon.TalonControlMode.Speed);
-            _leftMaster.setNominalClosedLoopVoltage(12.0);
-            _leftMaster.setProfile(kHighGearVelocityControlSlot);
-            _leftMaster.configNominalOutputVoltage(Constants.DriveHighGearNominalOutput,
-                    -Constants.DriveHighGearNominalOutput);
-            _rightMaster.changeControlMode(CANTalon.TalonControlMode.Speed);
-            _rightMaster.setNominalClosedLoopVoltage(12.0);
-            _rightMaster.setProfile(kHighGearVelocityControlSlot);
-            _rightMaster.configNominalOutputVoltage(Constants.DriveHighGearNominalOutput,
-                    -Constants.DriveHighGearNominalOutput);
-            enableBrakeMode(true);
+            _leftMaster.selectProfileSlot(kHighGearVelocityControlSlot, 0);
+            _rightMaster.configNominalOutputForward(Constants.DriveHighGearNominalOutput, 0);
+            _rightMaster.configNominalOutputReverse(-Constants.DriveHighGearNominalOutput, 0);
+            
+            _rightMaster.selectProfileSlot(kHighGearVelocityControlSlot, 0);
+            _rightMaster.configNominalOutputForward(Constants.DriveHighGearNominalOutput, 0);
+            _rightMaster.configNominalOutputReverse(-Constants.DriveHighGearNominalOutput, 0);
+            
+            setBrakeMode(true);
         }
     }
     
@@ -292,20 +273,27 @@ public class Chassis extends Subsystem{
             final double max_desired = Math.max(Math.abs(left_inches_per_sec), Math.abs(right_inches_per_sec));
             final double scale = max_desired > Constants.DriveHighGearMaxSetpoint
                     ? Constants.DriveHighGearMaxSetpoint / max_desired : 1.0;
-            _leftMaster.set(inchesPerSecondToRpm(left_inches_per_sec * scale));
-            _rightMaster.set(inchesPerSecondToRpm(right_inches_per_sec * scale));
+            _leftMaster.set(ControlMode.Velocity, inchesPerSecondToRpm(left_inches_per_sec * scale));
+            _rightMaster.set(ControlMode.Velocity, inchesPerSecondToRpm(right_inches_per_sec * scale));
         } else {
             System.out.println("Hit a bad velocity control state");
-            _leftMaster.set(0);
-            _rightMaster.set(0);
+            _leftMaster.set(ControlMode.Velocity, 0);
+            _rightMaster.set(ControlMode.Velocity, 0);
         }
     }
 	
-	public synchronized void enableBrakeMode(boolean isEnabled) {
-		_leftMaster.enableBrakeMode(isEnabled);
-		_leftSlave.enableBrakeMode(isEnabled);
-		_rightMaster.enableBrakeMode(isEnabled);
-		_rightSlave.enableBrakeMode(isEnabled);
+	public synchronized void setBrakeMode(boolean isBrakeMode) {
+		NeutralMode mode;
+		if (isBrakeMode) {
+			mode = NeutralMode.Brake;
+		} else {
+			mode = NeutralMode.Coast;
+		}
+		
+		_leftMaster.setNeutralMode(mode);
+		_leftSlave.setNeutralMode(mode);
+		_rightMaster.setNeutralMode(mode);
+		_rightSlave.setNeutralMode(mode);
 	}
 	
 	public synchronized void setTargetAngle(double target) {
@@ -318,16 +306,14 @@ public class Chassis extends Subsystem{
 	}
 	
 	private synchronized void moveToTarget() {
-		enableMotionMagicMode();
-		
 		double angleError;
 		
 		angleError = _targetAngle - _navX.getYaw();
 		
 		double encoderError = GeneralUtilities.degreesToEncoderRotations(angleError);
 		
-		double leftDriveTargetPosition = getLeftEncPosition() - encoderError;
-		double rightDriveTargetPosition = getRightEncPosition() + encoderError;
+		double leftDriveTargetPosition = getLeftPosInRot() - encoderError;
+		double rightDriveTargetPosition = getRightPosInRot() + encoderError;
 		
 		setMotionMagicTargetPosition(leftDriveTargetPosition, rightDriveTargetPosition);
 	}
@@ -398,15 +384,6 @@ public class Chassis extends Subsystem{
 				break;
 		}
 	}
-	
-	private void autoShift() {
-		if (Math.max(getLeftVelocityInchesPerSec(), getRightVelocityInchesPerSec()) > SHIFT_UP_VEL){
-			ShiftGear(GearShiftPosition.HIGH_GEAR);
-		} else if (Math.max(getLeftVelocityInchesPerSec(), getRightVelocityInchesPerSec()) < SHIFT_DOWN_VEL) {
-			ShiftGear(GearShiftPosition.LOW_GEAR);
-		} else {
-		}
-	}
 
 	public synchronized void ToggleShiftGear() {
 		if (_shifterSolenoidPosition == Constants.SHIFTER_SOLENOID_HIGH_GEAR_POSITION) 
@@ -416,19 +393,8 @@ public class Chassis extends Subsystem{
 	}
 	
 	public void zeroEncoders() {
-		_leftMaster.setEncPosition(0);
-		_rightMaster.setEncPosition(0);
-		
-		_leftMaster.setPosition(0);
-		_rightMaster.setPosition(0);
-	}
-	
-	public double getLeftEncPosition() {
-		return _leftMaster.getPosition();
-	}
-	
-	public double getRightEncPosition() {
-		return _rightMaster.getPosition();
+		_leftMaster.setSelectedSensorPosition(0, 0, 0);
+		_rightMaster.setSelectedSensorPosition(0, 0, 0);
 	}
 
 	public void zeroGyro() {
@@ -444,20 +410,36 @@ public class Chassis extends Subsystem{
 		_navX.setAngleAdjustment(yaw);
 	}
 	
+	public double getLeftPosInRot() {
+		return _leftMaster.getSelectedSensorPosition(0) / CODES_PER_REV;
+	}
+	
+	public double getRightPosInRot() {
+		return _rightMaster.getSelectedSensorPosition(0) / CODES_PER_REV;
+	}
+	
+	public double getLeftSpeed() {
+		return _leftMaster.getSelectedSensorVelocity(0) * (600 / CODES_PER_REV);
+	}
+	
+	public double getRightSpeed() {
+		return _rightMaster.getSelectedSensorVelocity(0) * (600 / CODES_PER_REV);
+	}
+	
 	public double getLeftDistanceInches() {
-        return rotationsToInches(_leftMaster.getPosition());
+        return rotationsToInches(getLeftPosInRot());
     }
 
     public double getRightDistanceInches() {
-        return rotationsToInches(_rightMaster.getPosition());
+        return rotationsToInches(getRightPosInRot());
     }
     
     public double getLeftVelocityInchesPerSec() {
-        return rpmToInchesPerSecond(_leftMaster.getSpeed());
+        return rpmToInchesPerSecond(getLeftSpeed());
     }
 
     public double getRightVelocityInchesPerSec() {
-        return rpmToInchesPerSecond(_rightMaster.getSpeed());
+        return rpmToInchesPerSecond(getRightSpeed());
     }
     
     private static double rotationsToInches(double rotations) {
@@ -477,29 +459,39 @@ public class Chassis extends Subsystem{
     }
 	
 	public synchronized void reloadGains() {
-		_leftMaster.setPID(Constants.DRIVE_LOW_GEAR_POSITION_P, Constants.DRIVE_LOW_GEAR_POSITION_I,
-				Constants.DRIVE_LOW_GEAR_POSITION_D, Constants.DRIVE_LOW_GEAR_POSITION_F,
-				Constants.DRIVE_LOW_GEAR_POSITION_I_ZONE, Constants.DRIVE_LOW_GEAR_POSITION_RAMP_RATE, 
-				kLowGearPositionControlSlot);
-		_rightMaster.setPID(Constants.DRIVE_LOW_GEAR_POSITION_P, Constants.DRIVE_LOW_GEAR_POSITION_I,
-				Constants.DRIVE_LOW_GEAR_POSITION_D, Constants.DRIVE_LOW_GEAR_POSITION_F,
-				Constants.DRIVE_LOW_GEAR_POSITION_I_ZONE, Constants.DRIVE_LOW_GEAR_POSITION_RAMP_RATE,
-				kLowGearPositionControlSlot);
-        _leftMaster.setPID(Constants.DriveHighGearVelocityKp, Constants.DriveHighGearVelocityKi,
-                Constants.DriveHighGearVelocityKd, Constants.DriveHighGearVelocityKf,
-                Constants.DriveHighGearVelocityIZone, Constants.DriveHighGearVelocityRampRate,
-                kHighGearVelocityControlSlot);
-        _rightMaster.setPID(Constants.DriveHighGearVelocityKp, Constants.DriveHighGearVelocityKi,
-                Constants.DriveHighGearVelocityKd, Constants.DriveHighGearVelocityKf,
-                Constants.DriveHighGearVelocityIZone, Constants.DriveHighGearVelocityRampRate,
-                kHighGearVelocityControlSlot);
-        _leftMaster.setVoltageCompensationRampRate(Constants.DriveVoltageCompensationRampRate);
-        _rightMaster.setVoltageCompensationRampRate(Constants.DriveVoltageCompensationRampRate);
+        // Low Gear
+        _leftMaster.config_kP(0, Constants.DRIVE_LOW_GEAR_POSITION_P, 0);
+        _leftMaster.config_kI(0, Constants.DRIVE_LOW_GEAR_POSITION_I, 0);
+        _leftMaster.config_kD(0, Constants.DRIVE_LOW_GEAR_POSITION_D, 0);
+        _leftMaster.config_kF(0, Constants.DRIVE_LOW_GEAR_POSITION_F, 0);
+        _leftMaster.config_IntegralZone(0, Constants.DRIVE_LOW_GEAR_POSITION_I_ZONE, 0);
+        
+        _rightMaster.config_kP(0, Constants.DRIVE_LOW_GEAR_POSITION_P, 0);
+        _rightMaster.config_kI(0, Constants.DRIVE_LOW_GEAR_POSITION_I, 0);
+        _rightMaster.config_kD(0, Constants.DRIVE_LOW_GEAR_POSITION_D, 0);
+        _rightMaster.config_kF(0, Constants.DRIVE_LOW_GEAR_POSITION_F, 0);
+        _rightMaster.config_IntegralZone(0, Constants.DRIVE_LOW_GEAR_POSITION_I_ZONE, 0);
+        
+        // High Gear
+        _leftMaster.config_kP(1, Constants.DriveHighGearVelocityKp, 0);
+        _leftMaster.config_kI(1, Constants.DriveHighGearVelocityKi, 0);
+        _leftMaster.config_kD(1, Constants.DriveHighGearVelocityKd, 0);
+        _leftMaster.config_kF(1, Constants.DriveHighGearVelocityKf, 0);
+        _leftMaster.config_IntegralZone(1, Constants.DriveHighGearVelocityIZone, 0);
+        
+        _rightMaster.config_kP(1, Constants.DriveHighGearVelocityKp, 0);
+        _rightMaster.config_kI(1, Constants.DriveHighGearVelocityKi, 0);
+        _rightMaster.config_kD(1, Constants.DriveHighGearVelocityKd, 0);
+        _rightMaster.config_kF(1, Constants.DriveHighGearVelocityKf, 0);
+        _rightMaster.config_IntegralZone(1, Constants.DriveHighGearVelocityIZone, 0);
+        
+        _leftMaster.configClosedloopRamp(Constants.DRIVE_CLOSED_LOOP_RAMP_RATE, 0);
+        _rightMaster.configClosedloopRamp(Constants.DRIVE_CLOSED_LOOP_RAMP_RATE, 0);
 	}
 
 	@Override
 	public synchronized void stop() {
-		enableBrakeMode(true);
+		setBrakeMode(true);
 		arcadeDrive(0.0, 0.0);
 	}
 
