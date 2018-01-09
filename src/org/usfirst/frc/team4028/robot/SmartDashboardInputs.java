@@ -34,6 +34,7 @@ public class SmartDashboardInputs {
 		// Auton Mode Chooser
 		_autonModeChooser = new SendableChooser<AUTON_MODE>();
 		_autonModeChooser.addDefault("Do Nothing", GeneralEnums.AUTON_MODE.DO_NOTHING);
+		_autonModeChooser.addDefault("Auto Run", GeneralEnums.AUTON_MODE.AUTO_RUN);
 		
 		SmartDashboard.putData("Auton Mode Chooser", _autonModeChooser);
 		
@@ -64,6 +65,8 @@ public class SmartDashboardInputs {
 		switch(_autonModeChoice) {
 			case UNDEFINED:
 				return new DoNothing();
+			case AUTO_RUN:
+				return new AutoRun();
 			default:
 				return new DoNothing();
 		}

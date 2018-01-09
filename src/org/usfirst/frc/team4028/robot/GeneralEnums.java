@@ -4,6 +4,7 @@ public class GeneralEnums {
 	public enum AUTON_MODE {
 		UNDEFINED,
 		DO_NOTHING,
+		AUTO_RUN
 	}
 	
 	public enum ALLIANCE_COLOR {

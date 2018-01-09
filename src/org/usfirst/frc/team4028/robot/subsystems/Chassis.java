@@ -150,10 +150,12 @@ public class Chassis extends Subsystem{
 		_leftSlave.set(ControlMode.Follower, Constants.LEFT_DRIVE_MASTER_CAN_BUS_ADDR);
 		_rightSlave.set(ControlMode.Follower, Constants.RIGHT_DRIVE_MASTER_CAN_BUS_ADDR);
 		
-		_leftMaster.setSensorPhase(false);
+
 		_leftMaster.setInverted(false);
-		_rightMaster.setSensorPhase(true);	// reverse these to ensure encoder counts and closed loop output are in same direction
-		_rightMaster.setInverted(true);
+		_leftSlave.setInverted(false);
+		_rightMaster.setInverted(false);
+		_rightSlave.setInverted(false);
+		
 		
 		_leftMaster.configForwardLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
 		_leftSlave.configForwardLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
@@ -415,7 +417,7 @@ public class Chassis extends Subsystem{
 	}
 	
 	public double getRightPosInRot() {
-		return _rightMaster.getSelectedSensorPosition(0) / CODES_PER_REV;
+		return -_rightMaster.getSelectedSensorPosition(0) / CODES_PER_REV;
 	}
 	
 	public double getLeftSpeed() {
@@ -423,7 +425,7 @@ public class Chassis extends Subsystem{
 	}
 	
 	public double getRightSpeed() {
-		return _rightMaster.getSelectedSensorVelocity(0) * (600 / CODES_PER_REV);
+		return -_rightMaster.getSelectedSensorVelocity(0) * (600 / CODES_PER_REV);
 	}
 	
 	public double getLeftDistanceInches() {
@@ -503,7 +505,12 @@ public class Chassis extends Subsystem{
 
 	@Override
 	public void outputToSmartDashboard() {
-		SmartDashboard.putNumber("Chassis Vel: ", getLeftVelocityInchesPerSec());
+		//SmartDashboard.putNumber("Chassis Vel: ", getLeftVelocityInchesPerSec());
+		SmartDashboard.putNumber("Left Drive RPM", getLeftSpeed());
+		SmartDashboard.putNumber("Left Position", getLeftPosInRot());
+		SmartDashboard.putNumber("Right Drive RPM", getRightSpeed());
+		SmartDashboard.putNumber("Right Position", getRightPosInRot());
+		SmartDashboard.putNumber("Get Yaw", _navX.getYaw());
 	}
 
 	@Override
