@@ -9,7 +9,7 @@ import org.usfirst.frc.team4028.robot.subsystems.*;
 import org.usfirst.frc.team4028.robot.subsystems.Chassis.GearShiftPosition;
 import org.usfirst.frc.team4028.util.DataLogger;
 import org.usfirst.frc.team4028.util.GeneralUtilities;
-import org.usfirst.frc.team4028.util.LogData;
+import org.usfirst.frc.team4028.util.LogDataBE;
 import org.usfirst.frc.team4028.util.MovingAverage;
 import org.usfirst.frc.team4028.util.loops.Looper;
 
@@ -161,7 +161,7 @@ public class Robot extends IterativeRobot {
 		// always call this 1st to calc drive metrics
     	if(_dataLogger != null) {    	
 	    	// create a new, empty logging class
-        	LogData logData = new LogData();
+        	LogDataBE logData = new LogDataBE();
 	    	
 	    	// ask each subsystem that exists to add its data
 	    	_chassis.updateLogData(logData);

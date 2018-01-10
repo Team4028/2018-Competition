@@ -6,7 +6,7 @@ import org.usfirst.frc.team4028.robot.RobotState;
 import org.usfirst.frc.team4028.robot.sensors.NavXGyro;
 import org.usfirst.frc.team4028.util.DriveCommand;
 import org.usfirst.frc.team4028.util.GeneralUtilities;
-import org.usfirst.frc.team4028.util.LogData;
+import org.usfirst.frc.team4028.util.LogDataBE;
 import org.usfirst.frc.team4028.util.control.Path;
 import org.usfirst.frc.team4028.util.control.PathFollower;
 import org.usfirst.frc.team4028.util.loops.Loop;
@@ -50,6 +50,7 @@ public class Chassis extends Subsystem{
 	private Value _shifterSolenoidPosition;
 	private long _lastCmdChgTimeStamp;
 	private double _driveSpeedScalingFactorClamped;
+	private ChassisDrivePerfMetrics _lastScanPerfMetricsSnapShot;
 	
 	private ChassisState _chassisState;
 	
@@ -181,6 +182,8 @@ public class Chassis extends Subsystem{
 		setBrakeMode(false);
 		
 		_driveSpeedScalingFactorClamped = 1.0;
+		
+		_lastScanPerfMetricsSnapShot = new ChassisDrivePerfMetrics();
 	}
 	
 	/**
@@ -501,13 +504,28 @@ public class Chassis extends Subsystem{
 		zeroGyro();
 	}
 
+	public void UpdateDriveTrainPerfMetrics()
+	{
+		_lastScanPerfMetricsSnapShot = CalcCurrentDriveMetrics(_lastScanPerfMetricsSnapShot);
+	}
+	
 	@Override
 	public void outputToSmartDashboard() {
 		SmartDashboard.putNumber("Chassis Vel: ", getLeftVelocityInchesPerSec());
 	}
 
 	@Override
-	public void updateLogData(LogData logData) {}
+	public void updateLogData(LogDataBE logData) {
+		logData.AddData("Chassis:LeftDriveMtr%VBus", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.LeftDriveMtrPercentVBus, 2)));
+		logData.AddData("Chassis:LeftDriveMtrPos", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.LeftDriveMtrPos, 2)));
+		logData.AddData("Chassis:LeftDriveMtrRPM", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.LeftDriveMtrRPM, 2)));
+		logData.AddData("Chassis:LeftDriveMtrRPMPerSec", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.LeftDriveMtrRPMPerSec, 2)));
+
+		logData.AddData("Chassis:RightDriveMtr%VBus", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.RightDriveMtrPercentVBus, 2)));
+		logData.AddData("Chassis:RightDriveMtrPos", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.RightDriveMtrPos, 2)));
+		logData.AddData("Chassis:RightDriveMtrRPM", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.RightDriveMtrRPM, 2)));
+		logData.AddData("Chassis:RightDriveMtrRPMPerSec", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.RightDriveMtrRPMPerSec, 2)));
+	}
 	
 	//============================================================================================
 	// Utility Helper Methods
@@ -527,4 +545,70 @@ public class Chassis extends Subsystem{
         
         return accDecCmd;
 	}	
+	
+	private ChassisDrivePerfMetrics CalcCurrentDriveMetrics(ChassisDrivePerfMetrics previousScanMetrics)
+	{
+		ChassisDrivePerfMetrics currentScanMetrics = new ChassisDrivePerfMetrics();
+		
+		currentScanMetrics.LastSampleTimestampInMSec = new Date().getTime();
+		
+		currentScanMetrics.LeftDriveMtrPercentVBus = _leftDriveMaster.getOutputVoltage()/_leftDriveMaster.getBusVoltage(); 
+		currentScanMetrics.LeftDriveMtrPos = _leftDriveMaster.getPosition();
+		currentScanMetrics.LeftDriveMtrRPM = _leftDriveMaster.getEncVelocity();
+		
+		if(previousScanMetrics != null)
+		{
+			currentScanMetrics.LeftDriveMtrRPMPerSec = CalcAccDec(previousScanMetrics.LeftDriveMtrRPM,
+																	previousScanMetrics.LastSampleTimestampInMSec,
+																	currentScanMetrics.LeftDriveMtrRPM,
+																	currentScanMetrics.LastSampleTimestampInMSec);
+		} 
+		else {
+			currentScanMetrics.LeftDriveMtrRPMPerSec = 0.0;
+		}
+		currentScanMetrics.RightDriveMtrPercentVBus = _rightDriveMaster.getOutputVoltage()/_rightDriveMaster.getBusVoltage(); 
+		currentScanMetrics.RightDriveMtrPos = _rightDriveMaster.getPosition();
+		currentScanMetrics.RightDriveMtrRPM = _rightDriveMaster.getEncVelocity();
+		if(previousScanMetrics != null)
+		{
+			currentScanMetrics.RightDriveMtrRPMPerSec = CalcAccDec(previousScanMetrics.RightDriveMtrRPM,
+																	previousScanMetrics.LastSampleTimestampInMSec,
+																	currentScanMetrics.RightDriveMtrRPM,
+																	currentScanMetrics.LastSampleTimestampInMSec);
+		}
+		else {
+			currentScanMetrics.RightDriveMtrRPMPerSec = 0.0;
+		}
+		
+		return currentScanMetrics;
+	}
+	
+	private double CalcAccDec(double previousMtrRPM, long prevTimeStampInMSec, double currMtrRPM, long currTimeStampInMSec)
+	{
+		double deltaVInRPM = currMtrRPM - previousMtrRPM;
+		
+		double deltaTInMsec = currTimeStampInMSec - prevTimeStampInMSec;
+		
+		double deltaTInSec = deltaTInMsec / 1000.0;
+
+		double accDecInRPMPerSec = deltaVInRPM / deltaTInSec;
+		
+		return accDecInRPMPerSec;
+	}
+	
+	class ChassisDrivePerfMetrics
+	{
+		public double LeftDriveMtrPercentVBus;
+		public double LeftDriveMtrPos;
+		public double LeftDriveMtrRPM;			// velocity
+		public double LeftDriveMtrRPMPerSec;	// acc/dec
+		
+
+		public double RightDriveMtrPercentVBus;
+		public double RightDriveMtrPos;
+		public double RightDriveMtrRPM;
+		public double RightDriveMtrRPMPerSec;	// acc/dec
+		
+		public long LastSampleTimestampInMSec;
+	}
 }

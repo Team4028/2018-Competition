@@ -45,7 +45,7 @@ public class DataLogger {
     }
 
     // Write a structured data object to the log file
-    public void WriteDataLine(LogData dataToLog) {
+    public void WriteDataLine(LogDataBE dataToLog) {
     	if(!_isHeadersWrittenAlready) {
     		WriteHeaderLine(dataToLog.BuildTSVHeader());
     		_isHeadersWrittenAlready = true;
