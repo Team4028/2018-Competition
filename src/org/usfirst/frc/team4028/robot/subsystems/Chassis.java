@@ -43,6 +43,7 @@ public class Chassis extends Subsystem{
 	// Controllers
 	private RobotState _robotState = RobotState.getInstance();
 	private PathFollower _pathFollower;
+	private double _setpointright;
 	
 	private Path _currentPath = null;
 	
@@ -68,7 +69,7 @@ public class Chassis extends Subsystem{
 	
 	private static final double _turnSpeedScalingFactor = 0.7;
 	
-	private static final double CODES_PER_REV = 1097;
+	private static final double CODES_PER_REV = 4590;
 	
 	// shifter positions
 	public enum GearShiftPosition {
@@ -149,13 +150,11 @@ public class Chassis extends Subsystem{
 		
 		_leftSlave.set(ControlMode.Follower, Constants.LEFT_DRIVE_MASTER_CAN_BUS_ADDR);
 		_rightSlave.set(ControlMode.Follower, Constants.RIGHT_DRIVE_MASTER_CAN_BUS_ADDR);
-		
 
 		_leftMaster.setInverted(false);
 		_leftSlave.setInverted(false);
-		_rightMaster.setInverted(false);
-		_rightSlave.setInverted(false);
-		
+		_rightMaster.setInverted(true);
+		_rightSlave.setInverted(true);
 		
 		_leftMaster.configForwardLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
 		_leftSlave.configForwardLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
@@ -227,7 +226,7 @@ public class Chassis extends Subsystem{
 		
 		// send cmd to mtr controllers
 		_leftMaster.set(ControlMode.PercentOutput, _arcadeDriveThrottleCmdAdj - 0.7 * _arcadeDriveTurnCmdAdj);
-		_rightMaster.set(ControlMode.PercentOutput, -_arcadeDriveThrottleCmdAdj - 0.7 * _arcadeDriveTurnCmdAdj);
+		_rightMaster.set(ControlMode.PercentOutput, _arcadeDriveThrottleCmdAdj + 0.7 * _arcadeDriveTurnCmdAdj);
 	}
 	
 	public synchronized void tankDrive(DriveCommand command) {
@@ -275,8 +274,9 @@ public class Chassis extends Subsystem{
             final double max_desired = Math.max(Math.abs(left_inches_per_sec), Math.abs(right_inches_per_sec));
             final double scale = max_desired > Constants.DriveHighGearMaxSetpoint
                     ? Constants.DriveHighGearMaxSetpoint / max_desired : 1.0;
-            _leftMaster.set(ControlMode.Velocity, inchesPerSecondToRpm(left_inches_per_sec * scale));
-            _rightMaster.set(ControlMode.Velocity, inchesPerSecondToRpm(right_inches_per_sec * scale));
+            _setpointright = inchesPerSecondToNativeUnits(left_inches_per_sec * scale);
+            _leftMaster.set(ControlMode.Velocity, inchesPerSecondToNativeUnits(left_inches_per_sec * scale));
+            _rightMaster.set(ControlMode.Velocity, inchesPerSecondToNativeUnits(right_inches_per_sec * scale));
         } else {
             System.out.println("Hit a bad velocity control state");
             _leftMaster.set(ControlMode.Velocity, 0);
@@ -395,8 +395,8 @@ public class Chassis extends Subsystem{
 	}
 	
 	public void zeroEncoders() {
-		_leftMaster.setSelectedSensorPosition(0, 0, 0);
-		_rightMaster.setSelectedSensorPosition(0, 0, 0);
+		_leftMaster.getSensorCollection().setQuadraturePosition(0, 10);
+		_rightMaster.getSensorCollection().setQuadraturePosition(0, 10);
 	}
 
 	public void zeroGyro() {
@@ -417,7 +417,7 @@ public class Chassis extends Subsystem{
 	}
 	
 	public double getRightPosInRot() {
-		return -_rightMaster.getSelectedSensorPosition(0) / CODES_PER_REV;
+		return _rightMaster.getSelectedSensorPosition(0) / CODES_PER_REV;
 	}
 	
 	public double getLeftSpeed() {
@@ -456,8 +456,8 @@ public class Chassis extends Subsystem{
         return inches / (Constants.DriveWheelDiameterInches * Math.PI);
     }
 	
-	private static double inchesPerSecondToRpm(double inches_per_second) {
-        return inchesToRotations(inches_per_second) * 60;
+	private static double inchesPerSecondToNativeUnits(double inches_per_second) {
+        return inches_per_second * 34.7;
     }
 	
 	public synchronized void reloadGains() {
@@ -505,12 +505,16 @@ public class Chassis extends Subsystem{
 
 	@Override
 	public void outputToSmartDashboard() {
-		//SmartDashboard.putNumber("Chassis Vel: ", getLeftVelocityInchesPerSec());
-		SmartDashboard.putNumber("Left Drive RPM", getLeftSpeed());
-		SmartDashboard.putNumber("Left Position", getLeftPosInRot());
-		SmartDashboard.putNumber("Right Drive RPM", getRightSpeed());
-		SmartDashboard.putNumber("Right Position", getRightPosInRot());
-		SmartDashboard.putNumber("Get Yaw", _navX.getYaw());
+		//SmartDashboard.putNumber("Left Position", getLeftPosInRot());
+		//SmartDashboard.putNumber("Left Drive Inches/Sec", getLeftSpeed());
+		//SmartDashboard.putNumber("Right Position", getRightPosInRot());
+		//SmartDashboard.putNumber("Right Drive Inches/Sec", getLeftSpeed());
+		
+		//SmartDashboard.putNumber("Left Position in Inches", getLeftDistanceInches());
+		//SmartDashboard.putNumber("Right Position in Inches", getRightDistanceInches());
+		SmartDashboard.putNumber("Left Target Velocity", _setpointright);
+		//SmartDashboard.putNumber("Left Position", _leftMaster.getSelectedSensorPosition(0));
+		//SmartDashboard.putNumber("Left Position Quadruature", _leftMaster.getSensorCollection().getQuadraturePosition());
 	}
 
 	@Override

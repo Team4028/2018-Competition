@@ -46,7 +46,7 @@ public class Constants {
     public static double DriveHighGearVelocityKf = 0.5;
     public static int DriveHighGearVelocityIZone = 0;
     public static double DriveHighGearNominalOutput = 0.05;
-    public static double DriveHighGearMaxSetpoint = 13.97 * 12.0; // 17 fps
+    public static double DriveHighGearMaxSetpoint = 13.97 * 12.0; // 14 fps
     
     public static double DRIVE_LOW_GEAR_POSITION_P = 1.0; //4.0
     public static double DRIVE_LOW_GEAR_POSITION_I = 0.002; // 0.0
@@ -63,8 +63,8 @@ public class Constants {
     
 	/* Robot Physical Constants */
 	// Wheels
-	public static double DriveWheelDiameterInches = 4.0;
-	public static double TrackWidthInches = 29.04;
+	public static double DriveWheelDiameterInches = 4.05;
+	public static double TrackWidthInches = 25;
 	public static double TrackScrubFactor = 0.9;
 	
 	// Geometry
@@ -89,7 +89,7 @@ public class Constants {
     public static double PathFollowingMaxVel = 120.0; // inches per second
     public static double PathFollowingProfileKp = 6.0;	//5.00;
     public static double PathFollowingProfileKi = 0.0;	//0.03;
-    public static double PathFollowingProfileKv = 0.8; //0.02;
+    public static double PathFollowingProfileKv = 0.0; //0.02;
     public static double PathFollowingProfileKffv = 1.0;
     public static double PathFollowingProfileKffa = 0.05;
     public static double PathFollowingGoalPosTolerance = 0.75;

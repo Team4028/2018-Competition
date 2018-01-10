@@ -11,7 +11,7 @@ public class AutoRunPath implements PathContainer {
     public Path buildPath() {
         ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
 		sWaypoints.add(new Waypoint(18,50,0,0));
-        sWaypoints.add(new Waypoint(90,50,0,20));
+        sWaypoints.add(new Waypoint(90,50,0,60));
 
         return PathBuilder.buildPathFromWaypoints(sWaypoints);
     }
