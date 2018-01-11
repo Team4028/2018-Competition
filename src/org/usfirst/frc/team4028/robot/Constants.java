@@ -100,5 +100,5 @@ public class Constants {
     public static double WildTurtleSpeed = 40;
     public static double NormalSpeed = 60;
     public static double FloorItSpeed = 80;
-    public static double KeensSpeed = 100;
+    public static double KeeeeeeeeeeeeeensSpeed = 100;
 }
