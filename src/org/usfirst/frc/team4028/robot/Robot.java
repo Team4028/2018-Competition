@@ -26,7 +26,7 @@ public class Robot extends IterativeRobot {
 	private ControlBoard _controlBoard = ControlBoard.getInstance();
 	private AutonExecuter _autonExecuter = null;
 	private SmartDashboardInputs _smartDashboard = SmartDashboardInputs.getInstance();
-	private DataLogger _dataLogger = null;
+	private DataLogger _dataLogger;
 	
 	Looper _enabledLooper = new Looper();
 	
@@ -92,6 +92,9 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void autonomousPeriodic() {	
+		
+		_chassis.arcadeDrive(1, 0);
+		
 		logAllData();
 		outputAllToSmartDashboard();
 	}

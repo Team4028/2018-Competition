@@ -1,5 +1,7 @@
 package org.usfirst.frc.team4028.robot.subsystems;
 
+import java.util.Date;
+
 import org.usfirst.frc.team4028.robot.Constants;
 import org.usfirst.frc.team4028.robot.Kinematics;
 import org.usfirst.frc.team4028.robot.RobotState;
@@ -552,9 +554,9 @@ public class Chassis extends Subsystem{
 		
 		currentScanMetrics.LastSampleTimestampInMSec = new Date().getTime();
 		
-		currentScanMetrics.LeftDriveMtrPercentVBus = _leftDriveMaster.getOutputVoltage()/_leftDriveMaster.getBusVoltage(); 
-		currentScanMetrics.LeftDriveMtrPos = _leftDriveMaster.getPosition();
-		currentScanMetrics.LeftDriveMtrRPM = _leftDriveMaster.getEncVelocity();
+		currentScanMetrics.LeftDriveMtrPercentVBus = _leftMaster.getMotorOutputVoltage()/_leftMaster.getBusVoltage(); 
+		currentScanMetrics.LeftDriveMtrPos = _leftMaster.getSelectedSensorPosition(0);
+		currentScanMetrics.LeftDriveMtrRPM = _leftMaster.getSelectedSensorVelocity(0);
 		
 		if(previousScanMetrics != null)
 		{
@@ -566,9 +568,9 @@ public class Chassis extends Subsystem{
 		else {
 			currentScanMetrics.LeftDriveMtrRPMPerSec = 0.0;
 		}
-		currentScanMetrics.RightDriveMtrPercentVBus = _rightDriveMaster.getOutputVoltage()/_rightDriveMaster.getBusVoltage(); 
-		currentScanMetrics.RightDriveMtrPos = _rightDriveMaster.getPosition();
-		currentScanMetrics.RightDriveMtrRPM = _rightDriveMaster.getEncVelocity();
+		currentScanMetrics.RightDriveMtrPercentVBus = _rightMaster.getMotorOutputVoltage()/_rightMaster.getBusVoltage(); 
+		currentScanMetrics.RightDriveMtrPos = _rightMaster.getSelectedSensorPosition(0);
+		currentScanMetrics.RightDriveMtrRPM = _rightMaster.getSelectedSensorVelocity(0);
 		if(previousScanMetrics != null)
 		{
 			currentScanMetrics.RightDriveMtrRPMPerSec = CalcAccDec(previousScanMetrics.RightDriveMtrRPM,
