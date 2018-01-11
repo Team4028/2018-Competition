@@ -40,9 +40,9 @@ public class Constants {
 
     // PID gains for drive velocity loop (HIGH GEAR)
     // Units: setpoint, error, and output are in inches per second.
-    public static double DriveHighGearVelocityKp = 0.5; //1.2;
+    public static double DriveHighGearVelocityKp = 0.45; //1.2;
     public static double DriveHighGearVelocityKi = 0.0;
-    public static double DriveHighGearVelocityKd = 3.0; //6.0;
+    public static double DriveHighGearVelocityKd = 2.0; //6.0;
     public static double DriveHighGearVelocityKf = 0.5;
     public static int DriveHighGearVelocityIZone = 0;
     public static double DriveHighGearNominalOutput = 0.05;
@@ -86,13 +86,19 @@ public class Constants {
                                                      // in inches per sec
     public static double SegmentCompletionTolerance = 0.1; // inches
     public static double PathFollowingMaxAccel = 80.0; // inches per second^2
-    public static double PathFollowingMaxVel = 120.0; // inches per second
-    public static double PathFollowingProfileKp = 6.0;	//5.00;
+    public static double PathFollowingMaxVel = 80.0; // inches per second
+    public static double PathFollowingProfileKp = 7.0;	//5.00;
     public static double PathFollowingProfileKi = 0.0;	//0.03;
-    public static double PathFollowingProfileKv = 0.0; //0.02;
+    public static double PathFollowingProfileKv = 0.1; //0.02;
     public static double PathFollowingProfileKffv = 1.0;
     public static double PathFollowingProfileKffa = 0.05;
     public static double PathFollowingGoalPosTolerance = 0.75;
     public static double PathFollowingGoalVelTolerance = 12.0;
     public static double PathStopSteeringDistance = 9.0;
+    
+    public static double TurtleSpeed = 20;
+    public static double WildTurtleSpeed = 40;
+    public static double NormalSpeed = 60;
+    public static double FloorItSpeed = 80;
+    public static double KeensSpeed = 100;
 }
