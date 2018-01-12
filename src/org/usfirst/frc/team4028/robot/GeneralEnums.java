@@ -5,7 +5,8 @@ public class GeneralEnums {
 		UNDEFINED,
 		DO_NOTHING,
 		AUTO_RUN,
-		SWITCH
+		SWITCH,
+		DOUBLE_SWITCH
 	}
 	
 	public enum ALLIANCE_COLOR {

@@ -17,8 +17,8 @@ public class ResetPoseFromPathAction implements Action {
     @Override
     public synchronized void done() {
         RigidTransform startPose = _pathContainer.getStartPose();
-        Chassis.getInstance().zeroGyro();
-        Chassis.getInstance().setGyroAngle(0.0);
+        //Chassis.getInstance().zeroGyro();
+        //Chassis.getInstance().setGyroAngle(0.0);
         RobotState.getInstance().reset(Timer.getFPGATimestamp(), startPose);
         //Chassis.getInstance().setGyroAngle(startPose.getRotation().getDegrees());
     }
