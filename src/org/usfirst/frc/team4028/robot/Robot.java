@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Robot extends IterativeRobot {
-	private static final String ROBOT_NAME = "COMPETITION Chassis";
+	private static final String ROBOT_NAME = "2018 COMPETITION";
 	
 	// Subsystems
 	private Chassis _chassis = Chassis.getInstance();
@@ -109,6 +109,7 @@ public class Robot extends IterativeRobot {
 		
 		_chassis.ShiftGear(GearShiftPosition.HIGH_GEAR);
 		_chassis.setBrakeMode(false);
+		_chassis.zeroSensors();
 		
 		_dataLogger = GeneralUtilities.setupLogging("teleop");
 	}
