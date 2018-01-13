@@ -27,6 +27,7 @@ public class Robot extends IterativeRobot {
 	private AutonExecuter _autonExecuter = null;
 	private SmartDashboardInputs _smartDashboard = SmartDashboardInputs.getInstance();
 	private DataLogger _dataLogger;
+	private OI _oi = new OI(0,1,2);
 	
 	Looper _enabledLooper = new Looper();
 	
@@ -93,7 +94,7 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousPeriodic() {	
 		
-		_chassis.arcadeDrive(1, 0);
+		_chassis.arcadeDrive(.1, 0);
 		
 		logAllData();
 		outputAllToSmartDashboard();
@@ -119,10 +120,9 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopPeriodic() {
 		// Chassis Throttle & Turn
-		if ((Math.abs(_controlBoard.getThrottleCmd()) > 0.05) 
-				|| (Math.abs(_controlBoard.getTurnCmd()) > 0.05)) {
-			_chassis.arcadeDrive(-1.0 * _controlBoard.getThrottleCmd(), _controlBoard.getTurnCmd());
-		} else {
+		if ((Math.abs(_oi.getDriver_ThrottleCmd_JoystickCmd()) > 0.05) 
+				|| (Math.abs(_oi.getDriver_TurnCmd_JoystickCmd()) > 0.05)) {
+			_chassis.arcadeDrive(-1.0 * _oi.getDriver_ThrottleCmd_JoystickCmd(), _oi.getDriver_TurnCmd_JoystickCmd());
 			_chassis.stop();
 		}
 		
@@ -130,6 +130,7 @@ public class Robot extends IterativeRobot {
 		outputAllToSmartDashboard();
 		
 		// Optionally Log Data
+		_chassis.UpdateDriveTrainPerfMetrics();
 		logAllData();
 	}
 	

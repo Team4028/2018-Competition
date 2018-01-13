@@ -82,7 +82,7 @@ public class Chassis extends Subsystem{
 	
 	// Chassis various states
 	public enum ChassisState {
-		PERVENT_VBUS, 
+		PERCENT_VBUS, 
 		AUTO_TURN, 
 		FOLLOW_PATH,
 		VELOCITY_SETPOINT
@@ -92,7 +92,7 @@ public class Chassis extends Subsystem{
 		@Override
 		public void onStart(double timestamp) {
 			synchronized (Chassis.this) {
-				_chassisState = ChassisState.PERVENT_VBUS;
+				_chassisState = ChassisState.PERCENT_VBUS;
 			}
 		}
 		
@@ -115,7 +115,7 @@ public class Chassis extends Subsystem{
 							updatePathFollower(timestamp);
 						return;
 						
-					case PERVENT_VBUS:
+					case PERCENT_VBUS:
 						return;
 						
 					case VELOCITY_SETPOINT:
@@ -199,7 +199,7 @@ public class Chassis extends Subsystem{
     }
 	
 	public synchronized void arcadeDrive(double throttle, double turn) {
-		_chassisState = ChassisState.PERVENT_VBUS;
+		_chassisState = ChassisState.PERCENT_VBUS;
 	
 		// calc scaled throttle cmds
 		double newThrottleCmdScaled = throttle * _driveSpeedScalingFactorClamped;
@@ -387,6 +387,8 @@ public class Chassis extends Subsystem{
 				_shifterSolenoid.set(Constants.SHIFTER_SOLENOID_LOW_GEAR_POSITION);
 				_shifterSolenoidPosition = Constants.SHIFTER_SOLENOID_LOW_GEAR_POSITION;
 				break;
+			case UNKNOWN:
+				break;
 		}
 	}
 
@@ -520,7 +522,7 @@ public class Chassis extends Subsystem{
 	public void updateLogData(LogDataBE logData) {
 		logData.AddData("Chassis:LeftDriveMtr%VBus", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.LeftDriveMtrPercentVBus, 2)));
 		logData.AddData("Chassis:LeftDriveMtrPos", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.LeftDriveMtrPos, 2)));
-		logData.AddData("Chassis:LeftDriveMtrRPM", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.LeftDriveMtrRPM, 2)));
+		logData.AddData("Chassis:LeftDriveMtrRPM", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.LeftDriveMtrNUPOHMS, 2)));
 		logData.AddData("Chassis:LeftDriveMtrRPMPerSec", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.LeftDriveMtrRPMPerSec, 2)));
 
 		logData.AddData("Chassis:RightDriveMtr%VBus", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.RightDriveMtrPercentVBus, 2)));
@@ -554,15 +556,15 @@ public class Chassis extends Subsystem{
 		
 		currentScanMetrics.LastSampleTimestampInMSec = new Date().getTime();
 		
-		currentScanMetrics.LeftDriveMtrPercentVBus = _leftMaster.getMotorOutputVoltage()/_leftMaster.getBusVoltage(); 
-		currentScanMetrics.LeftDriveMtrPos = _leftMaster.getSelectedSensorPosition(0);
-		currentScanMetrics.LeftDriveMtrRPM = _leftMaster.getSelectedSensorVelocity(0);
+		currentScanMetrics.LeftDriveMtrPercentVBus = _leftMaster.getMotorOutputVoltage()/_leftMaster.getBusVoltage();
+		currentScanMetrics.LeftDriveMtrPos = _leftMaster.getSelectedSensorPosition(0); //Native Units
+		currentScanMetrics.LeftDriveMtrNUPOHMS = getLeftSpeed(); //Native units per 100ms
 		
 		if(previousScanMetrics != null)
 		{
-			currentScanMetrics.LeftDriveMtrRPMPerSec = CalcAccDec(previousScanMetrics.LeftDriveMtrRPM,
+			currentScanMetrics.LeftDriveMtrRPMPerSec = CalcAccDec(previousScanMetrics.LeftDriveMtrNUPOHMS,
 																	previousScanMetrics.LastSampleTimestampInMSec,
-																	currentScanMetrics.LeftDriveMtrRPM,
+																	currentScanMetrics.LeftDriveMtrNUPOHMS,
 																	currentScanMetrics.LastSampleTimestampInMSec);
 		} 
 		else {
@@ -571,6 +573,7 @@ public class Chassis extends Subsystem{
 		currentScanMetrics.RightDriveMtrPercentVBus = _rightMaster.getMotorOutputVoltage()/_rightMaster.getBusVoltage(); 
 		currentScanMetrics.RightDriveMtrPos = _rightMaster.getSelectedSensorPosition(0);
 		currentScanMetrics.RightDriveMtrRPM = _rightMaster.getSelectedSensorVelocity(0);
+		
 		if(previousScanMetrics != null)
 		{
 			currentScanMetrics.RightDriveMtrRPMPerSec = CalcAccDec(previousScanMetrics.RightDriveMtrRPM,
@@ -602,7 +605,7 @@ public class Chassis extends Subsystem{
 	{
 		public double LeftDriveMtrPercentVBus;
 		public double LeftDriveMtrPos;
-		public double LeftDriveMtrRPM;			// velocity
+		public double LeftDriveMtrNUPOHMS;			// velocity
 		public double LeftDriveMtrRPMPerSec;	// acc/dec
 		
 

@@ -45,11 +45,11 @@ public class OI {
 		/* Table 1.1:
 		==========================================================================
 		--- Driver Joysticks --------
-		DRIVER_LEFT_X_AXIS
+		DRIVER_LEFT_X_AXIS							Throttle Cmd
 		DRIVER_LEFT_Y_AXIS				
 		DRIVER_LEFT_TRIGGER			
 		DRIVER_RIGHT_TRIGGER		
-		DRIVER_RIGHT_X_AXIS			
+		DRIVER_RIGHT_X_AXIS							Turn Cmd
 		DRIVER_RIGHT_Y_AXIS
 		
 		--- Driver Buttons --------
@@ -249,7 +249,7 @@ public class OI {
 		// ======== Driver Joysticks =========
 		// ===================================
 	
-		public double getDriver_LeftY_JoystickCmd() {
+		public double getDriver_ThrottleCmd_JoystickCmd() {
 			return _driverGamepad.getY(Hand.kLeft);
 		}
 		
@@ -261,7 +261,7 @@ public class OI {
 			return _driverGamepad.getY(Hand.kRight);
 		}
 		
-		public double getDriver_RightX_JoystickCmd() {
+		public double getDriver_TurnCmd_JoystickCmd() {
 			return _driverGamepad.getX(Hand.kRight);
 		}
 
