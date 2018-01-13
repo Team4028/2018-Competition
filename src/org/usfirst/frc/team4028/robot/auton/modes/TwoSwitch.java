@@ -5,8 +5,6 @@ import org.usfirst.frc.team4028.robot.auton.actions.ResetPoseFromPathAction;
 import org.usfirst.frc.team4028.robot.auton.actions.RunMotionProfileAction;
 import org.usfirst.frc.team4028.robot.paths.AwayFromPyramidPath;
 import org.usfirst.frc.team4028.robot.paths.InFrontOfPyramidtoRightSwitch;
-import org.usfirst.frc.team4028.robot.paths.LeftSwitchPath;
-import java.util.concurrent.*;
 import org.usfirst.frc.team4028.robot.paths.PathContainer;
 import org.usfirst.frc.team4028.robot.paths.RightSwitchPath;
 import org.usfirst.frc.team4028.robot.paths.RightSwitchtoFrontofPyramidPath;

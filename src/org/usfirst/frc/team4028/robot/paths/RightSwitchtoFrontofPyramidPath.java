@@ -12,17 +12,17 @@ public class RightSwitchtoFrontofPyramidPath implements PathContainer {
     @Override
     public Path buildPath() {
         ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
-		        sWaypoints.add(new Waypoint(122,224,0,0));
+		        sWaypoints.add(new Waypoint(123,224,0,0));
         sWaypoints.add(new Waypoint(85,224,20,Constants.WildTurtleSpeed));
         sWaypoints.add(new Waypoint(65,162,20,Constants.WildTurtleSpeed));
-        sWaypoints.add(new Waypoint(20,162,0,Constants.WildTurtleSpeed));
+        sWaypoints.add(new Waypoint(30,162,0,Constants.WildTurtleSpeed));
 
         return PathBuilder.buildPathFromWaypoints(sWaypoints);
     }
     
     @Override
     public RigidTransform getStartPose() {
-        return new RigidTransform(new Translation(122, 224), Rotation.fromDegrees(180.0)); 
+        return new RigidTransform(new Translation(123, 224), Rotation.fromDegrees(180.0)); 
     }
 
     @Override
