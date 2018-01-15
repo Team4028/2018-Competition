@@ -16,43 +16,55 @@ import org.usfirst.frc.team4028.util.loops.Looper;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class Robot extends IterativeRobot {
-	private static final String ROBOT_NAME = "COMPETITION Chassis";
+// This is the main entry point for FRC Robots
+public class Robot extends IterativeRobot 
+{
+	private static final String ROBOT_NAME = "2018 Auton Paractice Chassis";
 	
-	// Subsystems
-	private Chassis _chassis = Chassis.getInstance();
+	// class level private variables for all Subsystems & Operator Interface Instances
+	private Chassis _chassis;
+	private DashboardInputs _dashboardInputs;
+	private DriverOperationStation _dos;
 	
-	// Other
-	private ControlBoard _controlBoard = ControlBoard.getInstance();
-	private AutonExecuter _autonExecuter = null;
-	private SmartDashboardInputs _smartDashboard = SmartDashboardInputs.getInstance();
+	// Other class level private instances
+	private AutonExecuter _autonExecuter;
 	private DataLogger _dataLogger;
-	private OI _oi = new OI(0,1,2);
+	private Looper _enabledLooper;
 	
-	Looper _enabledLooper = new Looper();
-	
+	// class level working variables
 	String _buildMsg = "?";
 	String _fmsDebugMsg = "?";
  	long _lastDashboardWriteTimeMSec;
  	long _lastScanEndTimeInMSec;
  	MovingAverage _scanTimeSamples;
 	
+	/**
+	 * This function is run when the robot is first started up and should be
+	 * used for any initialization code.
+	 */
 	@Override
 	public void robotInit() {
-		_buildMsg = GeneralUtilities.WriteBuildInfoToDashboard(ROBOT_NAME);
-		
+		// initialize Instance Variables
+		_chassis = Chassis.getInstance();
+		_dashboardInputs = DashboardInputs.getInstance();
+		_dos = DriverOperationStation.getInstance();
+			
+		// init looper
+		_enabledLooper = new Looper();
 		_enabledLooper.register(_chassis.getLoop());
 		_enabledLooper.register(RobotStateEstimator.getInstance().getLoop());
-		
-		_smartDashboard.printStartupMessage();
-		
+			
 		// create class to hold Scan Times moving Average samples
 		_scanTimeSamples = new MovingAverage(100);  // 2 sec * 1000mSec/Sec / 20mSec/Scan
-		SmartDashboard.putString("Scan Time (2 sec roll avg)", "0.0 mSec");
-		
-		outputAllToSmartDashboard();
+
+		_buildMsg = GeneralUtilities.WriteBuildInfoToDashboard(ROBOT_NAME);
+		_dashboardInputs.printStartupMessage();
+		outputAllToDashboard(true);
 	}
 
+  /* ================================================================================
+   * Initialization code which will be called each time the robot enters disabled mode.
+   * ================================================================================ */
 	@Override
 	public void disabledInit() {
 		if (_autonExecuter != null) {
@@ -61,18 +73,26 @@ public class Robot extends IterativeRobot {
 		_autonExecuter = null;
 		
 		_enabledLooper.stop();
+		
 		stopAll();
 	}
 
+	/* ================================================================================
+	 * Periodic code for while the robot is in disabled mode.
+   	 * ================================================================================*/
 	@Override
 	public void disabledPeriodic() {
 		if (_dataLogger != null) {
 			_dataLogger.close();
 			_dataLogger = null;
 		}
+		
 		stopAll();
 	}
 	
+	/* ================================================================================
+	 * Initialization code which will be called each time the robot enters Autonomous mode.
+   	 * ================================================================================*/
 	@Override
 	public void autonomousInit() {
 		if (_autonExecuter != null) {
@@ -83,7 +103,7 @@ public class Robot extends IterativeRobot {
 		_enabledLooper.start();
 		
 		_autonExecuter = new AutonExecuter();
-		_autonExecuter.setAutoMode(_smartDashboard.getSelectedAuton());
+		_autonExecuter.setAutoMode(_dashboardInputs.getSelectedAuton());
 		_autonExecuter.start();
 		
 		_dataLogger = GeneralUtilities.setupLogging("auton");
@@ -91,15 +111,22 @@ public class Robot extends IterativeRobot {
 		_lastDashboardWriteTimeMSec = new Date().getTime();
 	}
 
+	/* ================================================================================
+	 * Periodic code for while the robot is in Autonomous mode.
+	 *   This is called approx every 20 mSec
+   	 * ================================================================================*/
 	@Override
 	public void autonomousPeriodic() {	
-		
+
 		_chassis.arcadeDrive(.1, 0);
 		
 		logAllData();
-		outputAllToSmartDashboard();
+		outputAllToDashboard();
 	}
 
+	/* ================================================================================
+	 * Initialization code which will be called each time the robot enters Telop mode.
+   	 * ================================================================================*/
 	@Override
 	public void teleopInit() {
 		if (_autonExecuter != null) {
@@ -111,23 +138,25 @@ public class Robot extends IterativeRobot {
 		
 		stopAll();
 		
+		// set chassis telop defaults
 		_chassis.ShiftGear(GearShiftPosition.HIGH_GEAR);
 		_chassis.setBrakeMode(false);
 		
 		_dataLogger = GeneralUtilities.setupLogging("teleop");
+		_lastDashboardWriteTimeMSec = new Date().getTime();
 	}
 
+	/* ================================================================================
+	 * Periodic code for while the robot is in Periodic mode.
+	 *   This is called approx every 20 mSec
+   	 * ================================================================================*/
 	@Override
 	public void teleopPeriodic() {
-		// Chassis Throttle & Turn
-		if ((Math.abs(_oi.getDriver_ThrottleCmd_JoystickCmd()) > 0.05) 
-				|| (Math.abs(_oi.getDriver_TurnCmd_JoystickCmd()) > 0.05)) {
-			_chassis.arcadeDrive(-1.0 * _oi.getDriver_ThrottleCmd_JoystickCmd(), _oi.getDriver_TurnCmd_JoystickCmd());
-			_chassis.stop();
-		}
-		
+		// handle Chassis Throttle & Turn commands
+		_chassis.arcadeDrive(_dos.getThrottleCmd(), _dos.getTurnCmd());
+
 		// Refresh Dashboard
-		outputAllToSmartDashboard();
+		outputAllToDashboard();
 		
 		// Optionally Log Data
 		_chassis.UpdateDriveTrainPerfMetrics();
@@ -138,13 +167,27 @@ public class Robot extends IterativeRobot {
 		_chassis.stop();
 	}
 	
-	private void outputAllToSmartDashboard() {
-		// limit spamming
+	// simulate default parameter values with a method overload
+	private void outputAllToDashboard() {
+		this.outputAllToDashboard(false);
+	}
+	
+	private void outputAllToDashboard(Boolean isInRobotInit) {
+
+		if(isInRobotInit)
+		{
+			// push this value at startup so the field appears on the dashboard
+			// otherwise it would not be written until the 10th scan
+			SmartDashboard.putString("Scan Time (2 sec roll avg)", "0.0 mSec");
+		}
+		
+		// calc scan time
     	long scanCycleDeltaInMSecs = new Date().getTime() - _lastScanEndTimeInMSec;
     	_scanTimeSamples.add(new BigDecimal(scanCycleDeltaInMSecs));
     	
+		// limit spamming (only write every 100 mSec)
     	if((new Date().getTime() - _lastDashboardWriteTimeMSec) > 100) {
-    		_chassis.outputToSmartDashboard(); 
+    		_chassis.outputToDashboard(); 
 	    	
 	    	SmartDashboard.putString("Robot Build", _buildMsg);
 	    	SmartDashboard.putString("FMS Debug Msg", _fmsDebugMsg);
@@ -152,7 +195,7 @@ public class Robot extends IterativeRobot {
 	    	BigDecimal movingAvg = _scanTimeSamples.getAverage();
 	    	DecimalFormat df = new DecimalFormat("####");
 	    	SmartDashboard.putString("Scan Time (2 sec roll avg)", df.format(movingAvg) + " mSec");
-	    	
+	    				
     		// snapshot last time
     		_lastDashboardWriteTimeMSec = new Date().getTime();
     	}

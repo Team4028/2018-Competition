@@ -11,7 +11,7 @@ import org.usfirst.frc.team4028.util.GeneralUtilities;
 import org.usfirst.frc.team4028.util.LogDataBE;
 import org.usfirst.frc.team4028.util.control.Path;
 import org.usfirst.frc.team4028.util.control.PathFollower;
-import org.usfirst.frc.team4028.util.loops.Loop;
+import org.usfirst.frc.team4028.util.loops.ILoop;
 import org.usfirst.frc.team4028.util.motion.RigidTransform;
 import org.usfirst.frc.team4028.util.motion.Twist;
 
@@ -28,8 +28,11 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 
-public class Chassis extends Subsystem{
+public class Chassis implements  ISubsystem{
+	
+	// singleton pattern
 	private static Chassis _instance = new Chassis();
+	
 	public static Chassis getInstance() {
 		return _instance;
 	}
@@ -88,7 +91,59 @@ public class Chassis extends Subsystem{
 		VELOCITY_SETPOINT
 	}
 	
-	private final Loop _loop = new Loop() {
+	// private constructor for singleton pattern
+	private Chassis() {
+		/* Drive Motors */
+		_leftMaster = new TalonSRX(Constants.LEFT_DRIVE_MASTER_CAN_BUS_ADDR);
+		_leftSlave = new TalonSRX(Constants.LEFT_DRIVE_SLAVE_CAN_BUS_ADDR);
+		
+		_rightMaster = new TalonSRX(Constants.RIGHT_DRIVE_MASTER_CAN_BUS_ADDR);
+		_rightSlave = new TalonSRX(Constants.RIGHT_DRIVE_SLAVE_CAN_BUS_ADDR);
+		
+		_leftMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0);
+		_leftMaster.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 5, 0);
+		_rightMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0);
+		_rightMaster.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 5, 0);
+		
+		_leftSlave.set(ControlMode.Follower, Constants.LEFT_DRIVE_MASTER_CAN_BUS_ADDR);
+		_rightSlave.set(ControlMode.Follower, Constants.RIGHT_DRIVE_MASTER_CAN_BUS_ADDR);
+		
+		_leftMaster.setSensorPhase(false);
+		_leftMaster.setInverted(false);
+		_rightMaster.setSensorPhase(true);	// reverse these to ensure encoder counts and closed loop output are in same direction
+		_rightMaster.setInverted(true);
+		
+		_leftMaster.configForwardLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
+		_leftSlave.configForwardLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
+		_rightMaster.configForwardLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
+		_rightSlave.configForwardLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
+	
+        _leftMaster.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_10Ms, 0);
+        _leftMaster.configVelocityMeasurementWindow(32, 0);
+        _rightMaster.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_10Ms, 0);
+        _rightMaster.configVelocityMeasurementWindow(32, 0);
+        
+		// Motion Magic Constants
+		_leftMaster.configMotionAcceleration(Constants.DRIVE_TURN_MAX_ACC, 0);
+		_rightMaster.configMotionAcceleration(Constants.DRIVE_TURN_MAX_ACC, 0);
+		_leftMaster.configMotionCruiseVelocity(Constants.DRIVE_TURN_MAX_VEL, 0);
+		_rightMaster.configMotionCruiseVelocity(Constants.DRIVE_TURN_MAX_VEL, 0);
+		
+		reloadGains();
+		
+		/* Shifter */
+		_shifterSolenoid = new DoubleSolenoid(Constants.PCM_CAN_BUS_ADDR, Constants.SHIFTER_SOLENOID_EXTEND_PCM_PORT, 
+												Constants.SHIFTER_SOLENOID_RETRACT_PCM_PORT);
+		
+		setBrakeMode(false);
+		
+		_driveSpeedScalingFactorClamped = 1.0;
+		
+		_lastScanPerfMetricsSnapShot = new ChassisDrivePerfMetrics();
+	}
+	
+	private final ILoop _loop = new ILoop() 
+	{
 		@Override
 		public void onStart(double timestamp) {
 			synchronized (Chassis.this) {
@@ -133,59 +188,8 @@ public class Chassis extends Subsystem{
 		}
 	};
 	
-	public Loop getLoop() {
+	public ILoop getLoop() {
 		return _loop;
-	}
-	
-	private Chassis() {
-		/* Drive Motors */
-		
-		_leftMaster = new TalonSRX(Constants.LEFT_DRIVE_MASTER_CAN_BUS_ADDR);
-		_leftSlave = new TalonSRX(Constants.LEFT_DRIVE_SLAVE_CAN_BUS_ADDR);
-		_rightMaster = new TalonSRX(Constants.RIGHT_DRIVE_MASTER_CAN_BUS_ADDR);
-		_rightSlave = new TalonSRX(Constants.RIGHT_DRIVE_SLAVE_CAN_BUS_ADDR);
-		
-		_leftMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0);
-		_leftMaster.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 5, 0);
-		_rightMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0);
-		_rightMaster.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 5, 0);
-		
-		_leftSlave.set(ControlMode.Follower, Constants.LEFT_DRIVE_MASTER_CAN_BUS_ADDR);
-		_rightSlave.set(ControlMode.Follower, Constants.RIGHT_DRIVE_MASTER_CAN_BUS_ADDR);
-		
-		_leftMaster.setSensorPhase(false);
-		_leftMaster.setInverted(false);
-		_rightMaster.setSensorPhase(true);	// reverse these to ensure encoder counts and closed loop output are in same direction
-		_rightMaster.setInverted(true);
-		
-		_leftMaster.configForwardLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
-		_leftSlave.configForwardLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
-		_rightMaster.configForwardLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
-		_rightSlave.configForwardLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
-	
-        _leftMaster.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_10Ms, 0);
-        _leftMaster.configVelocityMeasurementWindow(32, 0);
-        _rightMaster.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_10Ms, 0);
-        _rightMaster.configVelocityMeasurementWindow(32, 0);
-        
-		
-		// Motion Magic Constants
-		_leftMaster.configMotionAcceleration(Constants.DRIVE_TURN_MAX_ACC, 0);
-		_rightMaster.configMotionAcceleration(Constants.DRIVE_TURN_MAX_ACC, 0);
-		_leftMaster.configMotionCruiseVelocity(Constants.DRIVE_TURN_MAX_VEL, 0);
-		_rightMaster.configMotionCruiseVelocity(Constants.DRIVE_TURN_MAX_VEL, 0);
-		
-		reloadGains();
-		
-		/* Shifter */
-		_shifterSolenoid = new DoubleSolenoid(Constants.PCM_CAN_BUS_ADDR, Constants.SHIFTER_SOLENOID_EXTEND_PCM_PORT, 
-												Constants.SHIFTER_SOLENOID_RETRACT_PCM_PORT);
-		
-		setBrakeMode(false);
-		
-		_driveSpeedScalingFactorClamped = 1.0;
-		
-		_lastScanPerfMetricsSnapShot = new ChassisDrivePerfMetrics();
 	}
 	
 	/**
@@ -513,8 +517,9 @@ public class Chassis extends Subsystem{
 		_lastScanPerfMetricsSnapShot = CalcCurrentDriveMetrics(_lastScanPerfMetricsSnapShot);
 	}
 	
+	// Publish Data to the Dashboard
 	@Override
-	public void outputToSmartDashboard() {
+	public void outputToDashboard() {
 		SmartDashboard.putNumber("Chassis Vel: ", getLeftVelocityInchesPerSec());
 	}
 
