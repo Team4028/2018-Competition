@@ -73,7 +73,7 @@ public class Robot extends IterativeRobot
 		_autonExecuter = null;
 		
 		_enabledLooper.stop();
-		
+				
 		stopAll();
 	}
 
@@ -141,6 +141,7 @@ public class Robot extends IterativeRobot
 		// set chassis telop defaults
 		_chassis.ShiftGear(GearShiftPosition.HIGH_GEAR);
 		_chassis.setBrakeMode(false);
+		_chassis.zeroSensors();
 		
 		_dataLogger = GeneralUtilities.setupLogging("teleop");
 		_lastDashboardWriteTimeMSec = new Date().getTime();

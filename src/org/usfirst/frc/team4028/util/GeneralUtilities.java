@@ -12,12 +12,13 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
+import org.omg.CORBA._IDLTypeStub;
 import org.usfirst.frc.team4028.robot.Constants;
 import org.usfirst.frc.team4028.robot.Robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
 
-public class GeneralUtilities {	
+public class GeneralUtilities {		
     // This method writes general info about the build to the Operator's Console
 	public static String WriteBuildInfoToDashboard(String robotName) {
 		String buildMsg = "?";
@@ -57,7 +58,7 @@ public class GeneralUtilities {
 	**/
 	public static DataLogger setupLogging(String mode) {
 		DataLogger dataLogger;
-		
+				
 		// see if the USB stick is plugged into to RoboRIO
 		Path path = Paths.get(Constants.PRIMARY_LOG_FILE_PATH);
 		Path alternatePath = Paths.get(Constants.ALTERNATE_LOG_FILE_PATH);
@@ -88,7 +89,8 @@ public class GeneralUtilities {
 	    		
 	    		System.out.println("..Error configuring Logging to: " + Constants.ALTERNATE_LOG_FILE_PATH);
     		}
-    	} else {
+    	} 
+    	else {
     		dataLogger = null;
     		
     		System.out.println("..Logging Disabled!");
@@ -96,7 +98,7 @@ public class GeneralUtilities {
     	
     	return dataLogger;
 	}
-    
+	
     // This method rounds a double to the specified # of decimal places
 	public static double RoundDouble(Double originalValue, int decimalPlaces) {
 		BigDecimal bd = new BigDecimal(originalValue).setScale(decimalPlaces, RoundingMode.HALF_EVEN);

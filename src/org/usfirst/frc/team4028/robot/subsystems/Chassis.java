@@ -74,7 +74,8 @@ public class Chassis implements  ISubsystem{
 	
 	private static final double _turnSpeedScalingFactor = 0.7;
 	
-	private static final double CODES_PER_REV = 1097;
+	private static final double CODES_PER_REV = 4380;
+	public static final double CODES_PER_METER = 1367.18;
 	
 	// shifter positions
 	public enum GearShiftPosition {
@@ -111,7 +112,7 @@ public class Chassis implements  ISubsystem{
 		_leftMaster.setSensorPhase(false);
 		_leftMaster.setInverted(false);
 		_rightMaster.setSensorPhase(true);	// reverse these to ensure encoder counts and closed loop output are in same direction
-		_rightMaster.setInverted(true);
+		_rightMaster.setInverted(false);
 		
 		_leftMaster.configForwardLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
 		_leftSlave.configForwardLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
@@ -429,12 +430,20 @@ public class Chassis implements  ISubsystem{
 		return _rightMaster.getSelectedSensorPosition(0) / CODES_PER_REV;
 	}
 	
-	public double getLeftSpeed() {
-		return _leftMaster.getSelectedSensorVelocity(0) * (600 / CODES_PER_REV);
+	public double getLeftSpeedInRPM() {
+		return _leftMaster.getSelectedSensorVelocity(0) / (600 * CODES_PER_REV);
 	}
 	
-	public double getRightSpeed() {
-		return _rightMaster.getSelectedSensorVelocity(0) * (600 / CODES_PER_REV);
+	public double getRightSpeedInRPM() {
+		return _rightMaster.getSelectedSensorVelocity(0) / (600 * CODES_PER_REV);
+	}
+	
+	public double getLeftSpeedInMPS() {
+		return _leftMaster.getSelectedSensorVelocity(0) / CODES_PER_METER;
+	}
+	
+	public double getRightSpeedInMPS() {
+		return _rightMaster.getSelectedSensorVelocity(0) / CODES_PER_METER;
 	}
 	
 	public double getLeftDistanceInches() {
@@ -446,11 +455,11 @@ public class Chassis implements  ISubsystem{
     }
     
     public double getLeftVelocityInchesPerSec() {
-        return rpmToInchesPerSecond(getLeftSpeed());
+        return rpmToInchesPerSecond(getLeftSpeedInRPM());
     }
 
     public double getRightVelocityInchesPerSec() {
-        return rpmToInchesPerSecond(getRightSpeed());
+        return rpmToInchesPerSecond(getRightSpeedInRPM());
     }
     
     private static double rotationsToInches(double rotations) {
@@ -526,14 +535,14 @@ public class Chassis implements  ISubsystem{
 	@Override
 	public void updateLogData(LogDataBE logData) {
 		logData.AddData("Chassis:LeftDriveMtr%VBus", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.LeftDriveMtrPercentVBus, 2)));
-		logData.AddData("Chassis:LeftDriveMtrPos", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.LeftDriveMtrPos, 2)));
-		logData.AddData("Chassis:LeftDriveMtrRPM", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.LeftDriveMtrNUPOHMS, 2)));
-		logData.AddData("Chassis:LeftDriveMtrRPMPerSec", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.LeftDriveMtrRPMPerSec, 2)));
+		logData.AddData("Chassis:LeftDriveMtrPos [m]", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.LeftDriveMtrPos, 2)));
+		logData.AddData("Chassis:LeftDriveMtrMPS", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.LeftDriveMtrMPS, 2)));
+		logData.AddData("Chassis:LeftDriveMtrMPSPerSec", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.LeftDriveMtrMPSPerSec, 2)));
 
 		logData.AddData("Chassis:RightDriveMtr%VBus", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.RightDriveMtrPercentVBus, 2)));
-		logData.AddData("Chassis:RightDriveMtrPos", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.RightDriveMtrPos, 2)));
-		logData.AddData("Chassis:RightDriveMtrRPM", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.RightDriveMtrRPM, 2)));
-		logData.AddData("Chassis:RightDriveMtrRPMPerSec", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.RightDriveMtrRPMPerSec, 2)));
+		logData.AddData("Chassis:RightDriveMtrPos [m]", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.RightDriveMtrPos, 2)));
+		logData.AddData("Chassis:RightDriveMtrMPS", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.RightDriveMtrMPS, 2)));
+		logData.AddData("Chassis:RightDriveMtrMPSPerSec", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.RightDriveMtrMPSPerSec, 2)));
 	}
 	
 	//============================================================================================
@@ -562,40 +571,40 @@ public class Chassis implements  ISubsystem{
 		currentScanMetrics.LastSampleTimestampInMSec = new Date().getTime();
 		
 		currentScanMetrics.LeftDriveMtrPercentVBus = _leftMaster.getMotorOutputVoltage()/_leftMaster.getBusVoltage();
-		currentScanMetrics.LeftDriveMtrPos = _leftMaster.getSelectedSensorPosition(0); //Native Units
-		currentScanMetrics.LeftDriveMtrNUPOHMS = getLeftSpeed(); //Native units per 100ms
+		currentScanMetrics.LeftDriveMtrPos = _leftMaster.getSelectedSensorPosition(0) / (10 * CODES_PER_METER); //Native Units
+		currentScanMetrics.LeftDriveMtrMPS = getLeftSpeedInMPS(); //Native units per 100ms
 		
 		if(previousScanMetrics != null)
 		{
-			currentScanMetrics.LeftDriveMtrRPMPerSec = CalcAccDec(previousScanMetrics.LeftDriveMtrNUPOHMS,
+			currentScanMetrics.LeftDriveMtrMPSPerSec = CalcAccDec(previousScanMetrics.LeftDriveMtrMPS,
 																	previousScanMetrics.LastSampleTimestampInMSec,
-																	currentScanMetrics.LeftDriveMtrNUPOHMS,
+																	currentScanMetrics.LeftDriveMtrMPS,
 																	currentScanMetrics.LastSampleTimestampInMSec);
 		} 
 		else {
-			currentScanMetrics.LeftDriveMtrRPMPerSec = 0.0;
+			currentScanMetrics.LeftDriveMtrMPSPerSec = 0.0;
 		}
-		currentScanMetrics.RightDriveMtrPercentVBus = _rightMaster.getMotorOutputVoltage()/_rightMaster.getBusVoltage(); 
-		currentScanMetrics.RightDriveMtrPos = _rightMaster.getSelectedSensorPosition(0);
-		currentScanMetrics.RightDriveMtrRPM = _rightMaster.getSelectedSensorVelocity(0);
+		currentScanMetrics.RightDriveMtrPercentVBus = -1 * (_rightMaster.getMotorOutputVoltage()/_rightMaster.getBusVoltage()); 
+		currentScanMetrics.RightDriveMtrPos = _rightMaster.getSelectedSensorPosition(0) / (10 * CODES_PER_METER);
+		currentScanMetrics.RightDriveMtrMPS = getRightSpeedInMPS();
 		
 		if(previousScanMetrics != null)
 		{
-			currentScanMetrics.RightDriveMtrRPMPerSec = CalcAccDec(previousScanMetrics.RightDriveMtrRPM,
+			currentScanMetrics.RightDriveMtrMPSPerSec = CalcAccDec(previousScanMetrics.RightDriveMtrMPS,
 																	previousScanMetrics.LastSampleTimestampInMSec,
-																	currentScanMetrics.RightDriveMtrRPM,
+																	currentScanMetrics.RightDriveMtrMPS,
 																	currentScanMetrics.LastSampleTimestampInMSec);
 		}
 		else {
-			currentScanMetrics.RightDriveMtrRPMPerSec = 0.0;
+			currentScanMetrics.RightDriveMtrMPSPerSec = 0.0;
 		}
 		
 		return currentScanMetrics;
 	}
 	
-	private double CalcAccDec(double previousMtrRPM, long prevTimeStampInMSec, double currMtrRPM, long currTimeStampInMSec)
+	private double CalcAccDec(double previousMtrMPS, long prevTimeStampInMSec, double currMtrMPS, long currTimeStampInMSec)
 	{
-		double deltaVInRPM = currMtrRPM - previousMtrRPM;
+		double deltaVInRPM = currMtrMPS - previousMtrMPS;
 		
 		double deltaTInMsec = currTimeStampInMSec - prevTimeStampInMSec;
 		
@@ -610,14 +619,14 @@ public class Chassis implements  ISubsystem{
 	{
 		public double LeftDriveMtrPercentVBus;
 		public double LeftDriveMtrPos;
-		public double LeftDriveMtrNUPOHMS;			// velocity
-		public double LeftDriveMtrRPMPerSec;	// acc/dec
+		public double LeftDriveMtrMPS;			// velocity
+		public double LeftDriveMtrMPSPerSec;	// acc/dec
 		
 
 		public double RightDriveMtrPercentVBus;
 		public double RightDriveMtrPos;
-		public double RightDriveMtrRPM;
-		public double RightDriveMtrRPMPerSec;	// acc/dec
+		public double RightDriveMtrMPS;
+		public double RightDriveMtrMPSPerSec;	// acc/dec
 		
 		public long LastSampleTimestampInMSec;
 	}
