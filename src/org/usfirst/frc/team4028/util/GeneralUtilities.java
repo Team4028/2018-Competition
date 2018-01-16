@@ -12,7 +12,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
-import org.omg.CORBA._IDLTypeStub;
 import org.usfirst.frc.team4028.robot.Constants;
 import org.usfirst.frc.team4028.robot.Robot;
 

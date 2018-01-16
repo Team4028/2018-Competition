@@ -536,13 +536,13 @@ public class Chassis implements  ISubsystem{
 	public void updateLogData(LogDataBE logData) {
 		logData.AddData("Chassis:LeftDriveMtr%VBus", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.LeftDriveMtrPercentVBus, 2)));
 		logData.AddData("Chassis:LeftDriveMtrPos [m]", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.LeftDriveMtrPos, 2)));
-		logData.AddData("Chassis:LeftDriveMtrMPS", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.LeftDriveMtrMPS, 2)));
-		logData.AddData("Chassis:LeftDriveMtrMPSPerSec", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.LeftDriveMtrMPSPerSec, 2)));
+		logData.AddData("Chassis:LeftDriveMtrVel [m/s]", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.LeftDriveMtrMPS, 2)));
+		logData.AddData("Chassis:LeftDriveMtrAccel [m/s/s]", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.LeftDriveMtrMPSPerSec, 2)));
 
 		logData.AddData("Chassis:RightDriveMtr%VBus", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.RightDriveMtrPercentVBus, 2)));
 		logData.AddData("Chassis:RightDriveMtrPos [m]", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.RightDriveMtrPos, 2)));
-		logData.AddData("Chassis:RightDriveMtrMPS", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.RightDriveMtrMPS, 2)));
-		logData.AddData("Chassis:RightDriveMtrMPSPerSec", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.RightDriveMtrMPSPerSec, 2)));
+		logData.AddData("Chassis:RightDriveMtrVel [m/s]", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.RightDriveMtrMPS, 2)));
+		logData.AddData("Chassis:RightDriveMtrAccel [m/s/s]", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.RightDriveMtrMPSPerSec, 2)));
 	}
 	
 	//============================================================================================

@@ -73,6 +73,11 @@ public class Robot extends IterativeRobot
 		_autonExecuter = null;
 		
 		_enabledLooper.stop();
+		
+		if (_dataLogger != null) {
+			_dataLogger.close();
+			_dataLogger = null;
+		}
 				
 		stopAll();
 	}
@@ -82,11 +87,7 @@ public class Robot extends IterativeRobot
    	 * ================================================================================*/
 	@Override
 	public void disabledPeriodic() {
-		if (_dataLogger != null) {
-			_dataLogger.close();
-			_dataLogger = null;
-		}
-		
+				
 		stopAll();
 	}
 	
