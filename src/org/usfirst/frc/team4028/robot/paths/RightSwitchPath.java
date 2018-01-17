@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.usfirst.frc.team4028.robot.Constants;
 import org.usfirst.frc.team4028.robot.paths.PathBuilder.Waypoint;
 import org.usfirst.frc.team4028.util.control.Path;
+import org.usfirst.frc.team4028.robot.paths.PathBuilder;
 import org.usfirst.frc.team4028.util.motion.*;
 
 public class RightSwitchPath implements PathContainer {
@@ -13,12 +14,12 @@ public class RightSwitchPath implements PathContainer {
     public Path buildPath() {
         ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
 		        sWaypoints.add(new Waypoint(18,162,0,0));
-        sWaypoints.add(new Waypoint(50,162,30,Constants.WildTurtleSpeed));
-        sWaypoints.add(new Waypoint(90,224,30,Constants.WildTurtleSpeed));
-        sWaypoints.add(new Waypoint(123,224,0,Constants.WildTurtleSpeed));
+        sWaypoints.add(new Waypoint(50,162,30,Constants.NormalSpeed));
+        sWaypoints.add(new Waypoint(90,224,30,Constants.NormalSpeed));
+        sWaypoints.add(new Waypoint(123,224,0,Constants.NormalSpeed));
        
 
-        return PathBuilder.buildPathFromWaypoints(sWaypoints);
+        return PathBuilder.buildPathFromWaypoints(PathBuilder.flipPath(sWaypoints));
     }
     
     @Override

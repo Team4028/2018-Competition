@@ -1,7 +1,9 @@
 package org.usfirst.frc.team4028.robot.paths;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.usfirst.frc.team4028.robot.paths.PathBuilder.Waypoint;
 import org.usfirst.frc.team4028.util.control.Path;
 import org.usfirst.frc.team4028.util.control.PathSegment;
 import org.usfirst.frc.team4028.util.motion.RigidTransform;
@@ -35,6 +37,18 @@ public class PathBuilder {
             return w.get(w.size() - 1);
         return w.get(i);
     }
+    
+  //  /*
+    public static ArrayList<Waypoint> flipPath(ArrayList<Waypoint> sWaypoints) {
+    	ArrayList<Waypoint> ReversedWaypoints = new ArrayList<Waypoint>();
+    	for(int point = 0; point<sWaypoints.size(); point++) {
+    		System.out.println(point);
+    		sWaypoints.get(point).flipWaypoint();
+    		ReversedWaypoints.add(sWaypoints.get(point));   
+    	}
+    	return ReversedWaypoints;
+    }
+  //  */
 
     /**
      * A waypoint along a path. Contains a position, radius (for creating curved paths), and speed. The information from
@@ -72,6 +86,12 @@ public class PathBuilder {
             speed = s;
             marker = m;
         }
+        
+       
+        public void flipWaypoint() {
+        	position = new Translation(position.x(), 324 - position.y());
+        }
+        
     }
 
     /**

@@ -13,9 +13,9 @@ public class ToThePyramidPath implements PathContainer {
     public Path buildPath() {
         ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
 		        sWaypoints.add(new Waypoint(30,162,0,0));
-        sWaypoints.add(new Waypoint(95,162,0,Constants.WildTurtleSpeed));
+        sWaypoints.add(new Waypoint(95,162,0,Constants.NormalSpeed));
 
-        return PathBuilder.buildPathFromWaypoints(sWaypoints);
+        return PathBuilder.buildPathFromWaypoints(PathBuilder.flipPath(sWaypoints));
     }
     
     @Override

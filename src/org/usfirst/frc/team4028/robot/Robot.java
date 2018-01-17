@@ -35,6 +35,7 @@ public class Robot extends IterativeRobot {
  	long _lastDashboardWriteTimeMSec;
  	long _lastScanEndTimeInMSec;
  	MovingAverage _scanTimeSamples;
+ 	long _autonStartTime;
 	
 	@Override
 	public void robotInit() {
@@ -85,15 +86,19 @@ public class Robot extends IterativeRobot {
 		_autonExecuter.setAutoMode(_smartDashboard.getSelectedAuton());
 		_autonExecuter.start();
 		
+		_chassis.zeroSensors();
+		
 		_dataLogger = GeneralUtilities.setupLogging("auton");
 		
 		_lastDashboardWriteTimeMSec = new Date().getTime();
+		_autonStartTime=System.currentTimeMillis();
 	}
 
 	@Override
 	public void autonomousPeriodic() {	
 		logAllData();
 		outputAllToSmartDashboard();
+		
 	}
 
 	@Override

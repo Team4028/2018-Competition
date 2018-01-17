@@ -29,13 +29,21 @@ public class RunMotionProfileAction implements Action {
 	}
 
 	@Override
-	public void update() {}	// Nothing here since trajController updates in its own thread
+	public void update() {
+		if(Timer.getFPGATimestamp()-_startTime>.25) {
+			if(_chassis.getLeftPosInRot()==0 || _chassis.getRightPosInRot()==0){
+				_chassis.forceDoneWithPath();
+				System.out.println("Attention Idiots: You Morons Forgot to Plug in The Encoder");
+			}
+		}
+	}	// Nothing here since trajController updates in its own thread
 
 	@Override
 	public void done() {	
 		_chassis.stop();
 	}
-
+	
+	
 	@Override
 	public boolean isFinished() {
 		if ((Timer.getFPGATimestamp() - _startTime) > 1000) {

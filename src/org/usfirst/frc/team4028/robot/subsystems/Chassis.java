@@ -395,8 +395,8 @@ public class Chassis extends Subsystem{
 	}
 	
 	public void zeroEncoders() {
-		_leftMaster.getSensorCollection().setQuadraturePosition(0, 10);
-		_rightMaster.getSensorCollection().setQuadraturePosition(0, 10);
+		_leftMaster.getSensorCollection().setQuadraturePosition(0, 20);
+		_rightMaster.getSensorCollection().setQuadraturePosition(0, 20);
 	}
 
 	public void zeroGyro() {

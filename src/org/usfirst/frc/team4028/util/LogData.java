@@ -59,7 +59,7 @@ public class LogData {
 		String lineToWrite = sb.toString();
 		
 		// remove the trailing tab
-		lineToWrite = lineToWrite.substring(0, lineToWrite.length() - 1);
+		//lineToWrite = lineToWrite.substring(0, lineToWrite.length() - 1);
 		
 		// add trailing crlf
 		lineToWrite = lineToWrite + "\r\n";

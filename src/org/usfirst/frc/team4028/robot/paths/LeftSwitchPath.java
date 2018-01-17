@@ -17,7 +17,7 @@ public class LeftSwitchPath implements PathContainer {
         sWaypoints.add(new Waypoint(75,100,30,Constants.NormalSpeed));
         sWaypoints.add(new Waypoint(122,100,0,Constants.NormalSpeed));
 
-        return PathBuilder.buildPathFromWaypoints(sWaypoints);
+        return PathBuilder.buildPathFromWaypoints(PathBuilder.flipPath(sWaypoints));
     }
     
     @Override

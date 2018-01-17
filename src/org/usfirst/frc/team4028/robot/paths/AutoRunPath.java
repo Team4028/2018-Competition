@@ -3,6 +3,7 @@ package org.usfirst.frc.team4028.robot.paths;
 import java.util.ArrayList;
 
 import org.usfirst.frc.team4028.robot.paths.PathBuilder.Waypoint;
+import org.usfirst.frc.team4028.robot.paths.PathBuilder;
 import org.usfirst.frc.team4028.util.control.Path;
 import org.usfirst.frc.team4028.util.motion.*;
 
