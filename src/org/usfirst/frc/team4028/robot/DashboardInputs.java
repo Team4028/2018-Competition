@@ -35,10 +35,10 @@ public class DashboardInputs
 		// configure all the sendable choosers
 		
 		// Auton Mode Chooser
-		_autonModeChooser.addDefault("Auto Run", GeneralEnums.AUTON_MODE.AUTO_RUN);
-		_autonModeChooser.addDefault("Switch", GeneralEnums.AUTON_MODE.SWITCH);
-		_autonModeChooser.addDefault("Double Switch", GeneralEnums.AUTON_MODE.DOUBLE_SWITCH);
-	
+		_autonModeChooser.addDefault("Auto Run", GeneralEnums.AUTON_MODE.DO_NOTHING);
+		_autonModeChooser.addObject("Auto Run", GeneralEnums.AUTON_MODE.AUTO_RUN);
+		_autonModeChooser.addObject("Auto Run", GeneralEnums.AUTON_MODE.SWITCH);
+		_autonModeChooser.addObject("Auto Run", GeneralEnums.AUTON_MODE.DOUBLE_SWITCH);
 		SmartDashboard.putData("Auton Mode Chooser", _autonModeChooser);
 		
 		// Alliance Color Chooser
@@ -69,6 +69,8 @@ public class DashboardInputs
 		// Returns the autonBase object associated with the auton selected on the dashboard 
 		switch(_autonModeChooser.getSelected()) {
 			case UNDEFINED:
+				return new DoNothing();
+			case DO_NOTHING:
 				return new DoNothing();
 			case AUTO_RUN:
 				return new AutoRun();
