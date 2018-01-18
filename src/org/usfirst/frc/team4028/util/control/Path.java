@@ -48,10 +48,7 @@ public class Path {
     }
     
     public RigidTransform getStartPose() {
-    	if (!isReversed)
-    		return new RigidTransform(segments.get(0).getStart(), new Rotation(Rotation.fromDegrees(0.0)));
-    	else 
-    		return new RigidTransform(segments.get(segments.size() - 1).getEnd(), new Rotation(Rotation.fromDegrees(0.0)));
+		return new RigidTransform(segments.get(0).getStart(), new Rotation(Rotation.fromDegrees(0.0)));
     }
 
     /**

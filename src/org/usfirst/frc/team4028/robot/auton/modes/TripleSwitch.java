@@ -49,7 +49,7 @@ public class TripleSwitch extends AutonBase {
 		System.out.println(InFrontOfPyramidToRightSwitch.getStartPose().toString());
 		System.out.println(AwayFromRightSwitch.getStartPose().toString());
 		System.out.println(ToRightSideofPyramid.getStartPose().toString());
-		System.out.println(AwayFromPyramid.getStartPose().toString());
+		System.out.println(AwayFromRightPyramid.getStartPose().toString());
 		System.out.println(FromFrontofRightSwitchtoSwitch.getStartPose().toString());
 	}
 }

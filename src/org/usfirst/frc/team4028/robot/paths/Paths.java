@@ -10,25 +10,30 @@ public class Paths {
 	public enum PATHS {
 		AUTO_RUN,
 		
+		// First Switch Cube
 		L_SWITCH,
+		R_SWITCH,
+		
+		// Second Switch Cube
 		L_SWITCH_TO_FRONT_OF_PYRAMID,
 		IN_FRONT_OF_PYRAMID_TO_LEFT_SWITCH,
-		AWAY_FROM_LEFT_SWITCH,
-		FROM_LEFT_OF_PYRAMID_TO_FRONT_OF_SWITCH,
-		FRONT_OF_L_SWITCH_TO_SWITCH,
 		
-		R_SWITCH,
 		R_SWITCH_TO_FRONT_OF_PYRAMID,
 		IN_FRONT_OF_PYRAMID_TO_RIGHT_SWITCH,
-		AWAY_FROM_RIGHT_SWITCH,
-		FROM_RIGHT_OF_PYRAMID_TO_FRONT_OF_SWITCH,
-		FRONT_OF_R_SWITCH_TO_SWITCH,
 		
 		TO_PYRAMID,
 		AWAY_FROM_PYRAMID,
-		PYRAMID_FOR_SECOND_CUBE_FROM_LEFT,
-		PYRAMID_FOR_SECOND_CUBE_FROM_RIGHT
 		
+		// Third Switch Cube
+		AWAY_FROM_LEFT_SWITCH,
+		PYRAMID_FOR_SECOND_CUBE_FROM_LEFT,
+		FROM_LEFT_OF_PYRAMID_TO_FRONT_OF_SWITCH,
+		FRONT_OF_L_SWITCH_TO_SWITCH,
+
+		AWAY_FROM_RIGHT_SWITCH,
+		PYRAMID_FOR_SECOND_CUBE_FROM_RIGHT,
+		FROM_RIGHT_OF_PYRAMID_TO_FRONT_OF_SWITCH,
+		FRONT_OF_R_SWITCH_TO_SWITCH,		
 	}
 	
 	public static Path getPath(PATHS pathName) {
@@ -38,70 +43,74 @@ public class Paths {
 				path = PathBuilder.buildPathFromWaypoints(getAutoRunWaypoints());
 				path.setIsReversed(false);
 				return path;
-			case AWAY_FROM_PYRAMID:
-				path = PathBuilder.buildPathFromWaypoints(getAwayFromPyramidWaypoints());
-				path.setIsReversed(true);
-				return path;
-			case IN_FRONT_OF_PYRAMID_TO_LEFT_SWITCH:
-				path=PathBuilder.buildPathFromWaypoints(PathBuilder.flipPath(getFrontofPyramidtoRightSwitchWaypoints()));
-				path.setIsReversed(false);
-				return path;
-			case IN_FRONT_OF_PYRAMID_TO_RIGHT_SWITCH:
-				path = PathBuilder.buildPathFromWaypoints(getFrontofPyramidtoRightSwitchWaypoints());
-				path.setIsReversed(false);
-				return path;
+				
 			case L_SWITCH:
 		        path = PathBuilder.buildPathFromWaypoints(getLeftSwitchWaypoints());
 		        path.setIsReversed(false);
 		        return path;
+			case R_SWITCH:
+				path = PathBuilder.buildPathFromWaypoints(PathBuilder.flipPath(getLeftSwitchWaypoints()));
+				path.setIsReversed(false);
+				return path;
+				
 			case L_SWITCH_TO_FRONT_OF_PYRAMID:
 				path = PathBuilder.buildPathFromWaypoints(PathBuilder.flipPath(getRightSwitchtoFrontofPyramidWaypoints()));
 				path.setIsReversed(true);
 				return path;
-			case R_SWITCH:
-				path = PathBuilder.buildPathFromWaypoints(PathBuilder.flipPath(getLeftSwitchWaypoints()));
+			case IN_FRONT_OF_PYRAMID_TO_LEFT_SWITCH:
+				path = PathBuilder.buildPathFromWaypoints(PathBuilder.flipPath(getFrontofPyramidtoRightSwitchWaypoints()));
 				path.setIsReversed(false);
 				return path;
 			case R_SWITCH_TO_FRONT_OF_PYRAMID:
 				path = PathBuilder.buildPathFromWaypoints(getRightSwitchtoFrontofPyramidWaypoints());
 				path.setIsReversed(true);
 				return path;
+			case IN_FRONT_OF_PYRAMID_TO_RIGHT_SWITCH:
+				path = PathBuilder.buildPathFromWaypoints(getFrontofPyramidtoRightSwitchWaypoints());
+				path.setIsReversed(false);
+				return path;
 			case TO_PYRAMID:
 				path = PathBuilder.buildPathFromWaypoints(getToPyramidWaypoints());
+				path.setIsReversed(false);
+				return path;
+			case AWAY_FROM_PYRAMID:
+				path = PathBuilder.buildPathFromWaypoints(getAwayFromPyramidWaypoints());
+				path.setIsReversed(true);
+				return path;
+			
+			case AWAY_FROM_LEFT_SWITCH:
+				path = PathBuilder.buildPathFromWaypoints(PathBuilder.flipPath(getAwayFromRightSwitchWaypoints()));
+				path.setIsReversed(true);
+				return path;
+			case PYRAMID_FOR_SECOND_CUBE_FROM_LEFT:
+				path = PathBuilder.buildPathFromWaypoints(PathBuilder.flipPath(getToPyramidForSecondCubeFromRightWaypoints()));
+				path.setIsReversed(false);
+				return path;
+			case FROM_LEFT_OF_PYRAMID_TO_FRONT_OF_SWITCH:
+				path = PathBuilder.buildPathFromWaypoints(PathBuilder.flipPath(getToPyramidForSecondCubeFromRightWaypoints()));
+				path.setIsReversed(true);
+				return path;
+			case FRONT_OF_L_SWITCH_TO_SWITCH:
+				path = PathBuilder.buildPathFromWaypoints(PathBuilder.flipPath(getAwayFromRightSwitchWaypoints()));
 				path.setIsReversed(false);
 				return path;
 			case AWAY_FROM_RIGHT_SWITCH:
 				path = PathBuilder.buildPathFromWaypoints(getAwayFromRightSwitchWaypoints());
 				path.setIsReversed(true);
 				return path;
-			case AWAY_FROM_LEFT_SWITCH:
-				path = PathBuilder.buildPathFromWaypoints(PathBuilder.flipPath(getAwayFromRightSwitchWaypoints()));
-				path.setIsReversed(true);
-				return path;
 			case PYRAMID_FOR_SECOND_CUBE_FROM_RIGHT:
-				path=PathBuilder.buildPathFromWaypoints(getToPyramidForSecondCubeFromRightWaypoints());
+				path = PathBuilder.buildPathFromWaypoints(getToPyramidForSecondCubeFromRightWaypoints());
 				path.setIsReversed(false);
-				return path;
-			case PYRAMID_FOR_SECOND_CUBE_FROM_LEFT:
-				path=PathBuilder.buildPathFromWaypoints(PathBuilder.flipPath(getToPyramidForSecondCubeFromRightWaypoints()));
-				path.setIsReversed(false);
-				return path;
-			case FROM_LEFT_OF_PYRAMID_TO_FRONT_OF_SWITCH:
-				path=PathBuilder.buildPathFromWaypoints(PathBuilder.flipPath(getToPyramidForSecondCubeFromRightWaypoints()));
-				path.setIsReversed(true);
 				return path;
 			case FROM_RIGHT_OF_PYRAMID_TO_FRONT_OF_SWITCH:
-				path=PathBuilder.buildPathFromWaypoints(getToPyramidForSecondCubeFromRightWaypoints());
+				path = PathBuilder.buildPathFromWaypoints(getToPyramidForSecondCubeFromRightWaypoints());
 				path.setIsReversed(true);
 				return path;
 			case FRONT_OF_R_SWITCH_TO_SWITCH:
 				path = PathBuilder.buildPathFromWaypoints(getAwayFromRightSwitchWaypoints());
 				path.setIsReversed(false);
 				return path;
-			case FRONT_OF_L_SWITCH_TO_SWITCH:
-				path = PathBuilder.buildPathFromWaypoints(PathBuilder.flipPath(getAwayFromRightSwitchWaypoints()));
-				path.setIsReversed(false);
-				return path;
+				
 			default:
 				path = PathBuilder.buildPathFromWaypoints(getDoNothingWaypoints());
 				path.setIsReversed(true);
