@@ -37,6 +37,7 @@ public class SmartDashboardInputs {
 		_autonModeChooser.addDefault("Auto Run", GeneralEnums.AUTON_MODE.AUTO_RUN);
 		_autonModeChooser.addDefault("Switch", GeneralEnums.AUTON_MODE.SWITCH);
 		_autonModeChooser.addDefault("Double Switch", GeneralEnums.AUTON_MODE.DOUBLE_SWITCH);
+		_autonModeChooser.addDefault("Triple Switch", GeneralEnums.AUTON_MODE.TRIPLE_SWITCH);
 		
 		SmartDashboard.putData("Auton Mode Chooser", _autonModeChooser);
 		
@@ -73,6 +74,8 @@ public class SmartDashboardInputs {
 				return new Switch();
 			case DOUBLE_SWITCH:
 				return new TwoSwitch();
+			case TRIPLE_SWITCH:
+				return new TripleSwitch();
 			default:
 				return new DoNothing();
 		}

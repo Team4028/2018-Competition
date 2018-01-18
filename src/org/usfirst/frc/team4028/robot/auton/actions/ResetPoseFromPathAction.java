@@ -1,26 +1,20 @@
 package org.usfirst.frc.team4028.robot.auton.actions;
 
 import org.usfirst.frc.team4028.robot.RobotState;
-import org.usfirst.frc.team4028.robot.paths.PathContainer;
-import org.usfirst.frc.team4028.robot.subsystems.Chassis;
-import org.usfirst.frc.team4028.util.motion.RigidTransform;
+import org.usfirst.frc.team4028.util.control.Path;
 
 import edu.wpi.first.wpilibj.Timer;
 
 public class ResetPoseFromPathAction implements Action {
-	protected PathContainer _pathContainer;
+	protected Path _path;
 
-    public ResetPoseFromPathAction(PathContainer pathContainer) {
-        _pathContainer = pathContainer;
+    public ResetPoseFromPathAction(Path path) {
+        _path = path;
     }
 
     @Override
     public synchronized void done() {
-        RigidTransform startPose = _pathContainer.getStartPose();
-        //Chassis.getInstance().zeroGyro();
-        //Chassis.getInstance().setGyroAngle(0.0);
-        RobotState.getInstance().reset(Timer.getFPGATimestamp(), startPose);
-        //Chassis.getInstance().setGyroAngle(startPose.getRotation().getDegrees());
+        RobotState.getInstance().reset(Timer.getFPGATimestamp(), _path.getStartPose());
     }
 
 	@Override

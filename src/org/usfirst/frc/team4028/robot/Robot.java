@@ -129,6 +129,10 @@ public class Robot extends IterativeRobot {
 			_chassis.stop();
 		}
 		
+		if (_controlBoard.getIsShiftGearJustPressed()) 
+		{
+			_chassis.ToggleShiftGear();
+		}
 		// Refresh Dashboard
 		outputAllToSmartDashboard();
 		

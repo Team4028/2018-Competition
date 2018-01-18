@@ -6,7 +6,8 @@ public class GeneralEnums {
 		DO_NOTHING,
 		AUTO_RUN,
 		SWITCH,
-		DOUBLE_SWITCH
+		DOUBLE_SWITCH,
+		TRIPLE_SWITCH
 	}
 	
 	public enum ALLIANCE_COLOR {

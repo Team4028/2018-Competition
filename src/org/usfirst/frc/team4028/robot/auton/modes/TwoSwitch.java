@@ -1,21 +1,19 @@
 package org.usfirst.frc.team4028.robot.auton.modes;
 
 import org.usfirst.frc.team4028.robot.auton.AutonBase;
+import org.usfirst.frc.team4028.robot.auton.actions.PrintTimeFromStart;
 import org.usfirst.frc.team4028.robot.auton.actions.ResetPoseFromPathAction;
 import org.usfirst.frc.team4028.robot.auton.actions.RunMotionProfileAction;
-import org.usfirst.frc.team4028.robot.paths.AwayFromPyramidPath;
-import org.usfirst.frc.team4028.robot.paths.InFrontOfPyramidtoRightSwitch;
-import org.usfirst.frc.team4028.robot.paths.PathContainer;
-import org.usfirst.frc.team4028.robot.paths.RightSwitchPath;
-import org.usfirst.frc.team4028.robot.paths.RightSwitchtoFrontofPyramidPath;
-import org.usfirst.frc.team4028.robot.paths.ToThePyramidPath;
+import org.usfirst.frc.team4028.robot.paths.Paths;
+import org.usfirst.frc.team4028.util.control.Path;
+import org.usfirst.frc.team4028.robot.paths.Paths.PATHS;
 
 public class TwoSwitch extends AutonBase {
-	PathContainer toRightSwitch = new RightSwitchPath();
-	PathContainer fromRightSwitchToFrontOfPyramidPath = new RightSwitchtoFrontofPyramidPath();
-	PathContainer toThePyramid = new ToThePyramidPath();
-	PathContainer AwayFromPyramid = new AwayFromPyramidPath();
-	PathContainer InFrontOfPyramidToRightSwitch = new InFrontOfPyramidtoRightSwitch();
+	Path toRightSwitch = Paths.getPath(PATHS.R_SWITCH);
+	Path fromRightSwitchToFrontOfPyramidPath = Paths.getPath(PATHS.R_SWITCH_TO_FRONT_OF_PYRAMID);
+	Path toThePyramid = Paths.getPath(PATHS.TO_PYRAMID);
+	Path AwayFromPyramid = Paths.getPath(PATHS.AWAY_FROM_PYRAMID);
+	Path InFrontOfPyramidToRightSwitch = Paths.getPath(PATHS.IN_FRONT_OF_PYRAMID_TO_RIGHT_SWITCH);
 	
 	@Override
 	public void routine() {
@@ -29,5 +27,6 @@ public class TwoSwitch extends AutonBase {
 		runAction(new RunMotionProfileAction(AwayFromPyramid));
 		runAction(new ResetPoseFromPathAction(InFrontOfPyramidToRightSwitch));
 		runAction(new RunMotionProfileAction(InFrontOfPyramidToRightSwitch));
+		runAction(new PrintTimeFromStart(_startTime));
 	}
 }

@@ -1,6 +1,5 @@
 package org.usfirst.frc.team4028.robot.auton.actions;
 
-import org.usfirst.frc.team4028.robot.paths.PathContainer;
 import org.usfirst.frc.team4028.robot.subsystems.Chassis;
 import org.usfirst.frc.team4028.robot.subsystems.Chassis.GearShiftPosition;
 import org.usfirst.frc.team4028.util.control.Path;
@@ -11,19 +10,17 @@ import edu.wpi.first.wpilibj.Timer;
 /* Runs a motion profile */
 public class RunMotionProfileAction implements Action {
 	private Chassis _chassis = Chassis.getInstance();
-	private PathContainer _pathContainer;
 	private Path _path;
 	private double _startTime;
 	
-	public RunMotionProfileAction(PathContainer p) {
-		_pathContainer = p;
-		_path = _pathContainer.buildPath();
+	public RunMotionProfileAction(Path p) {
+		_path = p;
 	}
 	
 	@Override
 	public void start() {
-		_chassis.ShiftGear(GearShiftPosition.HIGH_GEAR);
-		_chassis.setWantDrivePath(_path, _pathContainer.isReversed());
+		_chassis.ShiftGear(GearShiftPosition.LOW_GEAR);
+		_chassis.setWantDrivePath(_path, _path.isReversed());
 		DriverStation.reportError("Running Motion Profile", false);
 		_startTime = Timer.getFPGATimestamp();
 	}

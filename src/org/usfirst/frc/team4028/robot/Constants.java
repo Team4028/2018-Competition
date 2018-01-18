@@ -24,7 +24,7 @@ public class Constants {
 	public static final SPI.Port NAVX_PORT = Port.kMXP;
 	
 	public static final int SHIFTER_SOLENOID_RETRACT_PCM_PORT = 7;
-	public static final int SHIFTER_SOLENOID_EXTEND_PCM_PORT = 6;
+	public static final int SHIFTER_SOLENOID_EXTEND_PCM_PORT = 3;
 	
 	// Solenoid Positions
 	public static final Value SHIFTER_SOLENOID_LOW_GEAR_POSITION = DoubleSolenoid.Value.kForward;
@@ -96,6 +96,7 @@ public class Constants {
     public static double PathFollowingGoalVelTolerance = 12.0;
     public static double PathStopSteeringDistance = 9.0;
     
+    public static double CelerySpeed=0;
     public static double TurtleSpeed = 20;
     public static double WildTurtleSpeed = 40;
     public static double NormalSpeed = 60;

@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.usfirst.frc.team4028.robot.Constants;
+import org.usfirst.frc.team4028.util.motion.RigidTransform;
+import org.usfirst.frc.team4028.util.motion.Rotation;
 import org.usfirst.frc.team4028.util.motion.Translation;
 import org.usfirst.frc.team4028.util.motionProfile.MotionState;
 
@@ -12,6 +14,7 @@ public class Path {
 	List<PathSegment> segments;
 	PathSegment prevSegment;
 	HashSet<String> mMarkersCrossed = new HashSet<String>();
+	boolean isReversed;
 	
 	public void extrapolateLast() {
 		PathSegment last = segments.get(segments.size() - 1);
@@ -42,6 +45,13 @@ public class Path {
         } else {
             return new MotionState(0, 0, 0, 0);
         }
+    }
+    
+    public RigidTransform getStartPose() {
+    	if (!isReversed)
+    		return new RigidTransform(segments.get(0).getStart(), new Rotation(Rotation.fromDegrees(0.0)));
+    	else 
+    		return new RigidTransform(segments.get(segments.size() - 1).getEnd(), new Rotation(Rotation.fromDegrees(0.0)));
     }
 
     /**
@@ -129,7 +139,15 @@ public class Path {
         PathSegment currentSegment = segments.get(0);
         return currentSegment.getSpeedByClosestPoint(robotPos);
     }
-
+    
+    public void setIsReversed(boolean isReversed) {
+    	this.isReversed = isReversed;
+    }
+    
+    public boolean isReversed() {
+    	return isReversed;
+    }
+    
     /**
      * Checks if the robot has finished traveling along the current segment then removes it from the path if it has
      * 
