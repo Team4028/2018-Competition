@@ -2,12 +2,12 @@ package org.usfirst.frc.team4028.robot.subsystems;
 
 import org.usfirst.frc.team4028.util.LogDataBE;
 
-public interface ISubsystem {
-	public void stop();
+public abstract class Subsystem {
+	public abstract void stop();
 	
-	public void zeroSensors();
+	public abstract void zeroSensors();
 	
-	public void outputToDashboard();
+	public abstract void outputToSmartDashboard();
 	
-	public void updateLogData(LogDataBE logData);
+	public abstract void updateLogData(LogDataBE logData);
 }
