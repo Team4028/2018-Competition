@@ -9,7 +9,7 @@ import org.usfirst.frc.team4028.robot.paths.Paths.PATHS;
 import org.usfirst.frc.team4028.util.control.Path;
 
 public class Switch extends AutonBase {
-	Path path = Paths.getPath(PATHS.R_SWITCH);
+	Path path = Paths.getPath(PATHS.L_SWITCH);
 	
 	@Override
 	public void routine() {

@@ -21,7 +21,7 @@ public class TripleSwitch extends AutonBase {
 	
 	@Override
 	public void routine() {	
-		/*
+		
 		runAction(new ResetPoseFromPathAction(toRightSwitch));
 		runAction(new RunMotionProfileAction(toRightSwitch));
 		runAction(new ResetPoseFromPathAction(fromRightSwitchToFrontOfPyramidPath));
@@ -41,7 +41,8 @@ public class TripleSwitch extends AutonBase {
 		runAction(new ResetPoseFromPathAction(FromFrontofRightSwitchtoSwitch));
 		runAction(new RunMotionProfileAction(FromFrontofRightSwitchtoSwitch));
 		runAction(new PrintTimeFromStart(_startTime));
-		*/
+		
+		/*
 		System.out.println(toRightSwitch.getStartPose().toString());
 		System.out.println(fromRightSwitchToFrontOfPyramidPath.getStartPose().toString());
 		System.out.println(toThePyramid.getStartPose().toString());
@@ -51,5 +52,6 @@ public class TripleSwitch extends AutonBase {
 		System.out.println(ToRightSideofPyramid.getStartPose().toString());
 		System.out.println(AwayFromRightPyramid.getStartPose().toString());
 		System.out.println(FromFrontofRightSwitchtoSwitch.getStartPose().toString());
+		*/
 	}
 }
