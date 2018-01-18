@@ -586,7 +586,7 @@ public class Chassis implements  ISubsystem{
 		}
 		currentScanMetrics.RightDriveMtrPercentVBus = -1 * (_rightMaster.getMotorOutputVoltage()/_rightMaster.getBusVoltage()); 
 		currentScanMetrics.RightDriveMtrPos = _rightMaster.getSelectedSensorPosition(0) / (10 * CODES_PER_METER);
-		currentScanMetrics.RightDriveMtrMPS = getRightSpeedInMPS();
+		currentScanMetrics.RightDriveMtrMPS = getRightSpeedInMPS(); 
 		
 		if(previousScanMetrics != null)
 		{
