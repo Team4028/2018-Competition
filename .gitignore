@@ -53,3 +53,6 @@ Temporary Items
 .apdisk
 *.class
 bin/org/usfirst/frc/team4028/robot/auton/actions/RunMotionProfileAction.class
+*.jar
+*.class
+*.class

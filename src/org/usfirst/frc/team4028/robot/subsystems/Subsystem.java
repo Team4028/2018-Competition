@@ -1,6 +1,6 @@
 package org.usfirst.frc.team4028.robot.subsystems;
 
-import org.usfirst.frc.team4028.util.LogData;
+import org.usfirst.frc.team4028.util.LogDataBE;
 
 public abstract class Subsystem {
 	public abstract void stop();
@@ -9,5 +9,5 @@ public abstract class Subsystem {
 	
 	public abstract void outputToSmartDashboard();
 	
-	public abstract void updateLogData(LogData logData);
+	public abstract void updateLogData(LogDataBE logData);
 }
