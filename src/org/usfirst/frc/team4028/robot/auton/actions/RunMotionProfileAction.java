@@ -38,7 +38,7 @@ public class RunMotionProfileAction implements Action {
 
 	@Override
 	public boolean isFinished() {
-		if ((Timer.getFPGATimestamp() - _startTime) > 2.8) {
+		if ((Timer.getFPGATimestamp() - _startTime) > 1000) {
 			_chassis.forceDoneWithPath();
 			return true;
 		} else {

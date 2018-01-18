@@ -18,16 +18,15 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
-import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-// This is the main entry point for FRC Robots
-public class Robot extends IterativeRobot 
-{
-	private static final String ROBOT_NAME = "2018 Auton Paractice Chassis";
+public class Robot extends IterativeRobot {
+	private static final String ROBOT_NAME = "2018 COMPETITION";
+	
+	// Subsystems
+	private Chassis _chassis = Chassis.getInstance();
 	
 	// class level private variables for all Subsystems & Operator Interface Instances
-	private Chassis _chassis;
 	private DashboardInputs _dashboardInputs;
 	private DriverOperationStation _dos;
 	
@@ -203,7 +202,7 @@ public class Robot extends IterativeRobot
     	
 		// limit spamming (only write every 100 mSec)
     	if((new Date().getTime() - _lastDashboardWriteTimeMSec) > 100) {
-    		_chassis.outputToDashboard();
+    		_chassis.outputToSmartDashboard();
     		_ultrasonic.outputToDashboard();
 	    	
 	    	SmartDashboard.putString("Robot Build", _buildMsg);
