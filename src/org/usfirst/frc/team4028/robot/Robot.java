@@ -5,6 +5,7 @@ import java.text.DecimalFormat;
 import java.util.Date;
 
 import org.usfirst.frc.team4028.robot.auton.AutonExecuter;
+import org.usfirst.frc.team4028.robot.sensors.Ultrasonic;
 import org.usfirst.frc.team4028.robot.subsystems.*;
 import org.usfirst.frc.team4028.robot.subsystems.Chassis.GearShiftPosition;
 import org.usfirst.frc.team4028.util.DataLogger;
@@ -30,6 +31,7 @@ public class Robot extends IterativeRobot
 	private AutonExecuter _autonExecuter;
 	private DataLogger _dataLogger;
 	private Looper _enabledLooper;
+	private Ultrasonic _ultrasonic;
 	
 	// class level working variables
 	String _buildMsg = "?";
@@ -48,6 +50,7 @@ public class Robot extends IterativeRobot
 		_chassis = Chassis.getInstance();
 		_dashboardInputs = DashboardInputs.getInstance();
 		_dos = DriverOperationStation.getInstance();
+		_ultrasonic = Ultrasonic.getInstance();
 			
 		// init looper
 		_enabledLooper = new Looper();
@@ -157,6 +160,9 @@ public class Robot extends IterativeRobot
 		// handle Chassis Throttle & Turn commands
 		_chassis.arcadeDrive(_dos.getThrottleCmd(), _dos.getTurnCmd());
 
+		//Handle Ultrasonic Sensor
+		_ultrasonic.calculateDistanceReadings();
+		
 		// Refresh Dashboard
 		outputAllToDashboard();
 		
@@ -189,7 +195,8 @@ public class Robot extends IterativeRobot
     	
 		// limit spamming (only write every 100 mSec)
     	if((new Date().getTime() - _lastDashboardWriteTimeMSec) > 100) {
-    		_chassis.outputToDashboard(); 
+    		_chassis.outputToDashboard();
+    		_ultrasonic.outputToDashboard();
 	    	
 	    	SmartDashboard.putString("Robot Build", _buildMsg);
 	    	SmartDashboard.putString("FMS Debug Msg", _fmsDebugMsg);
