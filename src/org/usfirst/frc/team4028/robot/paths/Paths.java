@@ -122,9 +122,9 @@ public class Paths {
 	private static ArrayList<Waypoint> getLeftSwitchWaypoints() {
 		ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
 		sWaypoints.add(new Waypoint(18,162,0,0));
-        sWaypoints.add(new Waypoint(50,162,30,Constants.WildTurtleSpeed));
-        sWaypoints.add(new Waypoint(75,100,30,Constants.WildTurtleSpeed));
-        sWaypoints.add(new Waypoint(122,100,0,Constants.WildTurtleSpeed));
+        sWaypoints.add(new Waypoint(50,162,30,Constants.FloorItSpeed));
+        sWaypoints.add(new Waypoint(75,100,30,Constants.FloorItSpeed));
+        sWaypoints.add(new Waypoint(122,100,0,Constants.FloorItSpeed));
         return sWaypoints;
 	}
 	
