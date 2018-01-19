@@ -14,9 +14,6 @@ import org.usfirst.frc.team4028.util.LogDataBE;
 import org.usfirst.frc.team4028.util.MovingAverage;
 import org.usfirst.frc.team4028.util.loops.Looper;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -42,9 +39,7 @@ public class Robot extends IterativeRobot {
  	long _lastDashboardWriteTimeMSec;
  	long _lastScanEndTimeInMSec;
  	MovingAverage _scanTimeSamples;
- 	
- 	TalonSRX talon = new TalonSRX(11);
-	
+ 		
 	/**
 	 * This function is run when the robot is first started up and should be
 	 * used for any initialization code.
@@ -128,9 +123,7 @@ public class Robot extends IterativeRobot {
 	public void autonomousPeriodic() {	
 
 		_chassis.arcadeDrive(.1, 0);
-		
-		talon.set(ControlMode.PercentOutput, .1);
-		
+				
 		logAllData();
 		outputAllToDashboard();
 	}
