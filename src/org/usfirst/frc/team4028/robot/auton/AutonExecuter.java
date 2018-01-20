@@ -1,7 +1,5 @@
 package org.usfirst.frc.team4028.robot.auton;
 
-import edu.wpi.first.wpilibj.DriverStation;
-
 /* Selects, runs and stops auton */
 public class AutonExecuter {
 	private AutonBase _autoMode;
@@ -23,8 +21,8 @@ public class AutonExecuter {
 				}
 			});
 			_autoThread.start();
+			_autoMode.start();
 		}
-		DriverStation.reportError("Starting Auto", false);
 	}
 	
 	public void stop() {

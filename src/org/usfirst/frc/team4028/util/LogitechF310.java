@@ -1,6 +1,8 @@
 package org.usfirst.frc.team4028.util;
 
-public class LogitechF310 {
+// we should NOT need to use this class since these constants are all built-in
+// to the OOB class XboxController
+abstract class LogitechF310 {
 	// Buttons
 	public static final int GREEN_BUTTON_A =1;
 	public static final int RED_BUTTON_B = 2;

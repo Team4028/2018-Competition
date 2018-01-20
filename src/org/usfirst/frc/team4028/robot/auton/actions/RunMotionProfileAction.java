@@ -1,8 +1,7 @@
 package org.usfirst.frc.team4028.robot.auton.actions;
 
-import org.usfirst.frc.team4028.robot.paths.PathContainer;
+import org.usfirst.frc.team4028.robot.RobotState;
 import org.usfirst.frc.team4028.robot.subsystems.Chassis;
-import org.usfirst.frc.team4028.robot.subsystems.Chassis.GearShiftPosition;
 import org.usfirst.frc.team4028.util.control.Path;
 
 import edu.wpi.first.wpilibj.DriverStation;
@@ -11,31 +10,36 @@ import edu.wpi.first.wpilibj.Timer;
 /* Runs a motion profile */
 public class RunMotionProfileAction implements Action {
 	private Chassis _chassis = Chassis.getInstance();
-	private PathContainer _pathContainer;
 	private Path _path;
 	private double _startTime;
 	
-	public RunMotionProfileAction(PathContainer p) {
-		_pathContainer = p;
-		_path = _pathContainer.buildPath();
+	public RunMotionProfileAction(Path p) {
+		_path = p;
 	}
 	
 	@Override
 	public void start() {
-		_chassis.ShiftGear(GearShiftPosition.HIGH_GEAR);
-		_chassis.setWantDrivePath(_path, _pathContainer.isReversed());
-		DriverStation.reportError("Running Motion Profile", false);
+		//RobotState.getInstance().reset(Timer.getFPGATimestamp(), _path.getStartPose());
+		_chassis.setWantDrivePath(_path, _path.isReversed());
 		_startTime = Timer.getFPGATimestamp();
 	}
 
 	@Override
-	public void update() {}	// Nothing here since trajController updates in its own thread
+	public void update() {
+		if(Timer.getFPGATimestamp() - _startTime > 0.25) {
+			if(_chassis.getLeftPosInRot() == 0 || _chassis.getRightPosInRot() == 0){
+				_chassis.forceDoneWithPath();
+				System.out.println("Attention Idiots: You Morons Forgot to Plug in The Encoder");
+			}
+		}
+	}	// Nothing here since trajController updates in its own thread
 
 	@Override
 	public void done() {	
 		_chassis.stop();
 	}
-
+	
+	
 	@Override
 	public boolean isFinished() {
 		if ((Timer.getFPGATimestamp() - _startTime) > 1000) {

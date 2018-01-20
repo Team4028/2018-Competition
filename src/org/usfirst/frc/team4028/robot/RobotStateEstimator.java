@@ -1,7 +1,7 @@
 package org.usfirst.frc.team4028.robot;
 
 import org.usfirst.frc.team4028.robot.subsystems.Chassis;
-import org.usfirst.frc.team4028.util.loops.ILoop;
+import org.usfirst.frc.team4028.util.loops.Loop;
 import org.usfirst.frc.team4028.util.motion.Rotation;
 import org.usfirst.frc.team4028.util.motion.Twist;
 
@@ -23,7 +23,7 @@ public class RobotStateEstimator {
     double leftEncoderPrevDistance = 0;
     double rightEncoderPrevDistance = 0;
     
-    private final ILoop _loop = new ILoop() {
+    private final Loop _loop = new Loop() {
 	    @Override
 	    public synchronized void onStart(double timestamp) {
 	        leftEncoderPrevDistance = chassis.getLeftDistanceInches();
@@ -48,7 +48,7 @@ public class RobotStateEstimator {
 	    public void onStop(double timestamp) {}
     };
     
-    public ILoop getLoop() {
+    public Loop getLoop() {
     	return _loop;
     }
 }

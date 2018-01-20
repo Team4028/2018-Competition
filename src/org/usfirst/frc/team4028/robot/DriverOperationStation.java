@@ -171,9 +171,9 @@ public class DriverOperationStation
 //			return _driverGamepad.getBackButtonReleased();
 //		}
 	
-//		public boolean getIsDriver_Start_BtnJustReleased() {
-//			return _driverGamepad.getStartButtonReleased();
-//		}
+		public boolean getIsShiftGearJustPressed() {
+			return _driverGamepad.getStartButtonReleased();
+		}
 		
 //		public boolean getIsDriver_YellowY_BtnJustReleased() {
 //			return _driverGamepad.getYButtonReleased();

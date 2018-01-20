@@ -4,11 +4,11 @@ import org.usfirst.frc.team4028.robot.Constants;
 import org.usfirst.frc.team4028.util.motionProfile.MotionProfileGoal.CompletionBehavior;
 
 public class ProfileFollower {
-	protected double mKp = Constants.PathFollowingProfileKp;
-    protected double mKi = Constants.PathFollowingProfileKi;
-    protected double mKv = Constants.PathFollowingProfileKv;
-    protected double mKffv = Constants.PathFollowingProfileKffv;
-    protected double mKffa = Constants.PathFollowingProfileKffa;
+	protected double mKp = Constants.PATH_FOLLOWING_PROFILE_KP;
+    protected double mKi = Constants.PATH_FOLLOWING_PROFILE_KI;
+    protected double mKv = Constants.PATH_FOLLOWING_PROFILE_KV;
+    protected double mKffv = Constants.PATH_FOLLOWING_PROFILE_KFFV;
+    protected double mKffa = Constants.PATH_FOLLOWING_PROFILE_KFFA;
 
     protected double mMinOutput = Double.NEGATIVE_INFINITY;
     protected double mMaxOutput = Double.POSITIVE_INFINITY;

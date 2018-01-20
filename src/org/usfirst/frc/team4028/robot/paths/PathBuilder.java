@@ -1,5 +1,6 @@
 package org.usfirst.frc.team4028.robot.paths;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.usfirst.frc.team4028.util.control.Path;
@@ -26,7 +27,6 @@ public class PathBuilder {
         new Line(w.get(w.size() - 2), w.get(w.size() - 1)).addToPath(p, 0);
         p.extrapolateLast();
         p.verifySpeeds();
-        // System.out.println(p);
         return p;
     }
 
@@ -35,6 +35,29 @@ public class PathBuilder {
             return w.get(w.size() - 1);
         return w.get(i);
     }
+    
+    public static ArrayList<Waypoint> flipPath(ArrayList<Waypoint> sWaypoints) {
+    	ArrayList<Waypoint> flippedWaypoints = new ArrayList<Waypoint>();
+    	for (int point = 0; point < sWaypoints.size(); point++) {
+    		sWaypoints.get(point).flipWaypoint();
+    		flippedWaypoints.add(sWaypoints.get(point));   
+    	}
+    	return flippedWaypoints;
+    }
+    
+    public static ArrayList<Waypoint> reversePath(ArrayList<Waypoint> sWaypoints) {
+    	ArrayList<Waypoint> reversedWaypoints = new ArrayList<Waypoint>();
+    	Waypoint firstWaypoint = sWaypoints.get(0);
+    	Waypoint lastWaypoint = sWaypoints.get(sWaypoints.size() - 1);
+    	
+    	reversedWaypoints.add(new Waypoint(lastWaypoint.pos, lastWaypoint.radius, 0.0));
+    	for (int point = sWaypoints.size() - 2; point > 0; point--) {
+    		reversedWaypoints.add(sWaypoints.get(point));
+    	}
+    	reversedWaypoints.add(new Waypoint(firstWaypoint.pos, firstWaypoint.radius, lastWaypoint.speed));
+    	return reversedWaypoints;
+    }
+
 
     /**
      * A waypoint along a path. Contains a position, radius (for creating curved paths), and speed. The information from
@@ -45,32 +68,35 @@ public class PathBuilder {
      * @see WaitForPathMarkerAction
      */
     public static class Waypoint {
-        Translation position;
-        double radius;
-        double speed;
+        Translation pos;
+        double radius, speed;
         String marker;
 
         public Waypoint(Waypoint other) {
-            this(other.position.x(), other.position.y(), other.radius, other.speed, other.marker);
+            this(other.pos.x(), other.pos.y(), other.radius, other.speed, other.marker);
         }
 
         public Waypoint(double x, double y, double r, double s) {
-            position = new Translation(x, y);
+            pos = new Translation(x, y);
             radius = r;
             speed = s;
         }
 
         public Waypoint(Translation pos, double r, double s) {
-            position = pos;
+            this.pos = pos;
             radius = r;
             speed = s;
         }
 
         public Waypoint(double x, double y, double r, double s, String m) {
-            position = new Translation(x, y);
+            pos = new Translation(x, y);
             radius = r;
             speed = s;
             marker = m;
+        }
+          
+        public void flipWaypoint() {
+        	pos = new Translation(pos.x(), 324 - pos.y());
         }
     }
 
@@ -88,10 +114,10 @@ public class PathBuilder {
         public Line(Waypoint a, Waypoint b) {
             this.a = a;
             this.b = b;
-            slope = new Translation(a.position, b.position);
+            slope = new Translation(a.pos, b.pos);
             speed = b.speed;
-            start = a.position.translateBy(slope.scale(a.radius / slope.norm()));
-            end = b.position.translateBy(slope.scale(-b.radius / slope.norm()));
+            start = a.pos.translateBy(slope.scale(a.radius / slope.norm()));
+            end = b.pos.translateBy(slope.scale(-b.radius / slope.norm()));
         }
 
         private void addToPath(Path p, double endSpeed) {
