@@ -45,7 +45,6 @@ public class Chassis implements Subsystem{
 	
 	private RobotState _robotState = RobotState.getInstance();
 	private PathFollower _pathFollower;
-	private double _setpointright;
 	
 	private Path _currentPath = null;
 	
@@ -56,6 +55,7 @@ public class Chassis implements Subsystem{
 	private ChassisState _chassisState;
 	
 	private double _targetAngle;
+	private double _setpointright;
 	
 	// acc/dec variables
 	private boolean _isAccelDecelEnabled = true;
@@ -143,6 +143,13 @@ public class Chassis implements Subsystem{
 					case FOLLOW_PATH:
 						_leftMaster.selectProfileSlot(kVelocityControlSlot, 0);
 						_rightMaster.selectProfileSlot(kVelocityControlSlot, 0);
+						
+						if (isHighGear()) {
+							setHighGearVelocityGains();
+						} else {
+							setLowGearVelocityGains();
+						}
+						
 						if (_pathFollower != null) 
 							updatePathFollower(timestamp);
 						return;

@@ -57,7 +57,7 @@ public class Dashboard {
 			case SWITCH:
 				return new Switch();
 			case DOUBLE_SWITCH:
-				return new TwoSwitch();
+				return new DoubleSwitch();
 			case TRIPLE_SWITCH:
 				return new TripleSwitch();
 			default:

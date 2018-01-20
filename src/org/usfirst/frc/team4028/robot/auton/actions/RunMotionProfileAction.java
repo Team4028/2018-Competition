@@ -1,7 +1,7 @@
 package org.usfirst.frc.team4028.robot.auton.actions;
 
+import org.usfirst.frc.team4028.robot.RobotState;
 import org.usfirst.frc.team4028.robot.subsystems.Chassis;
-import org.usfirst.frc.team4028.robot.subsystems.Chassis.GearShiftPosition;
 import org.usfirst.frc.team4028.util.control.Path;
 
 import edu.wpi.first.wpilibj.DriverStation;
@@ -19,16 +19,15 @@ public class RunMotionProfileAction implements Action {
 	
 	@Override
 	public void start() {
-		_chassis.setHighGear(false);
+		//RobotState.getInstance().reset(Timer.getFPGATimestamp(), _path.getStartPose());
 		_chassis.setWantDrivePath(_path, _path.isReversed());
-		DriverStation.reportError("Running Motion Profile", false);
 		_startTime = Timer.getFPGATimestamp();
 	}
 
 	@Override
 	public void update() {
-		if(Timer.getFPGATimestamp()-_startTime>.25) {
-			if(_chassis.getLeftPosInRot()==0 || _chassis.getRightPosInRot()==0){
+		if(Timer.getFPGATimestamp() - _startTime > 0.25) {
+			if(_chassis.getLeftPosInRot() == 0 || _chassis.getRightPosInRot() == 0){
 				_chassis.forceDoneWithPath();
 				System.out.println("Attention Idiots: You Morons Forgot to Plug in The Encoder");
 			}

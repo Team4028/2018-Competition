@@ -53,10 +53,10 @@ public class Constants {
 
     // Units: setpoint, error, and output are in inches per second.
     // PID gains for drive velocity loop (LOW_GEAR)
-    public static final double DRIVE_LOW_GEAR_VELOCITY_KP = 0.0;
+    public static final double DRIVE_LOW_GEAR_VELOCITY_KP = 0.45;
     public static final double DRIVE_LOW_GEAR_VELOCITY_KI = 0.0;
-    public static final double DRIVE_LOW_GEAR_VELOCITY_KD = 0.0;
-    public static final double DRIVE_LOW_GEAR_VELOCITY_KF = 0.0;
+    public static final double DRIVE_LOW_GEAR_VELOCITY_KD = 2.0;
+    public static final double DRIVE_LOW_GEAR_VELOCITY_KF = 0.5;
     public static final int DRIVE_LOW_GEAR_VELOCITY_I_ZONE = 0;
     
     // PID gains for drive velocity loop (HIGH GEAR)

@@ -8,7 +8,7 @@ import org.usfirst.frc.team4028.robot.paths.Paths;
 import org.usfirst.frc.team4028.util.control.Path;
 import org.usfirst.frc.team4028.robot.paths.Paths.PATHS;
 
-public class TwoSwitch extends AutonBase {
+public class DoubleSwitch extends AutonBase {
 	Path toRightSwitch = Paths.getPath(PATHS.R_SWITCH);
 	Path fromRightSwitchToFrontOfPyramidPath = Paths.getPath(PATHS.R_SWITCH_TO_FRONT_OF_PYRAMID);
 	Path toThePyramid = Paths.getPath(PATHS.TO_PYRAMID);
