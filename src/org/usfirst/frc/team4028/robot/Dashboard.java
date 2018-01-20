@@ -1,11 +1,9 @@
 package org.usfirst.frc.team4028.robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import org.usfirst.frc.team4028.robot.GeneralEnums.ALLIANCE_COLOR;
 import org.usfirst.frc.team4028.robot.GeneralEnums.AUTON_MODE;
 import org.usfirst.frc.team4028.robot.auton.AutonBase;
 import org.usfirst.frc.team4028.robot.auton.modes.*;
@@ -17,7 +15,6 @@ import org.usfirst.frc.team4028.robot.auton.modes.*;
 //  We write values to
 //		- provide real-time info to the drive team
 public class Dashboard {
-	
 	// singleton pattern
 	private static Dashboard _instance = new Dashboard();
 	
@@ -26,7 +23,7 @@ public class Dashboard {
 	}
 	
 	// Define all Dashboard Sendable Choosers (use generic types based on enums)
-	private SendableChooser<AUTON_MODE> _autonModeChooser;
+	private SendableChooser<AUTON_MODE> _autonModeChooser = new SendableChooser<>();
 	
 	// private constructor for singleton pattern
 	private Dashboard() {

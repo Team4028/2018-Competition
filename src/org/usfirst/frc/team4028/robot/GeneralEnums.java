@@ -10,10 +10,4 @@ public class GeneralEnums {
 		DOUBLE_SWITCH,
 		TRIPLE_SWITCH
 	}
-	
-	public enum ALLIANCE_COLOR {
-		USE_FMS,
-		BLUE_ALLIANCE,
-		RED_ALLIANCE
-	}
 }
