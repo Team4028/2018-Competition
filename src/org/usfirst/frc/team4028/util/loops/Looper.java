@@ -13,7 +13,7 @@ public class Looper {
 	private boolean _running;
 	
 	private final Notifier _notifier;
-	private final List<Loop> _loops;
+	private final List<ILoop> _loops;
 	private final Object _taskRunningLock = new Object();
 	private double _timestamp = 0.0;
 	private double _dt = 0.0;
@@ -24,7 +24,7 @@ public class Looper {
             synchronized (_taskRunningLock) {
                 if (_running) {
                     double now = Timer.getFPGATimestamp();
-                    for (Loop loop : _loops) {
+                    for (ILoop loop : _loops) {
                         loop.onLoop(now);
                     }
                     
@@ -42,7 +42,7 @@ public class Looper {
 	}
 	
 	// Adds subsystem to the looper
-	public synchronized void register(Loop loop) {
+	public synchronized void register(ILoop loop) {
 		synchronized (_taskRunningLock) {
 			_loops.add(loop);
 		}
@@ -54,7 +54,7 @@ public class Looper {
             System.out.println("Starting loops");
             synchronized (_taskRunningLock) {
                 _timestamp = Timer.getFPGATimestamp();
-                for (Loop loop : _loops) {
+                for (ILoop loop : _loops) {
                     loop.onStart(_timestamp);
                 }
                 _running = true;
@@ -71,7 +71,7 @@ public class Looper {
 			synchronized (_taskRunningLock) {
 				_running = false;
 				_timestamp = Timer.getFPGATimestamp();
-				for (Loop loop : _loops) {
+				for (ILoop loop : _loops) {
 					System.out.println("Stopping" + loop);
 					loop.onStop(_timestamp);
 				}

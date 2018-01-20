@@ -1,15 +1,17 @@
 package org.usfirst.frc.team4028.robot.subsystems;
 
+import java.util.Date;
+
 import org.usfirst.frc.team4028.robot.Constants;
 import org.usfirst.frc.team4028.robot.Kinematics;
 import org.usfirst.frc.team4028.robot.RobotState;
 import org.usfirst.frc.team4028.robot.sensors.NavXGyro;
 import org.usfirst.frc.team4028.util.DriveCommand;
 import org.usfirst.frc.team4028.util.GeneralUtilities;
-import org.usfirst.frc.team4028.util.LogData;
+import org.usfirst.frc.team4028.util.LogDataBE;
 import org.usfirst.frc.team4028.util.control.Path;
 import org.usfirst.frc.team4028.util.control.PathFollower;
-import org.usfirst.frc.team4028.util.loops.Loop;
+import org.usfirst.frc.team4028.util.loops.ILoop;
 import org.usfirst.frc.team4028.util.motion.RigidTransform;
 import org.usfirst.frc.team4028.util.motion.Twist;
 
@@ -27,7 +29,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 
 public class Chassis extends Subsystem{
+	
+	// singleton pattern
 	private static Chassis _instance = new Chassis();
+	
 	public static Chassis getInstance() {
 		return _instance;
 	}
@@ -51,6 +56,7 @@ public class Chassis extends Subsystem{
 	private Value _shifterSolenoidPosition;
 	private long _lastCmdChgTimeStamp;
 	private double _driveSpeedScalingFactorClamped;
+	private ChassisDrivePerfMetrics _lastScanPerfMetricsSnapShot;
 	
 	private ChassisState _chassisState;
 	
@@ -69,7 +75,9 @@ public class Chassis extends Subsystem{
 	
 	private static final double _turnSpeedScalingFactor = 0.7;
 	
+
 	private static final double CODES_PER_REV = 4590;
+	public static final double CODES_PER_METER = 1367.18;
 	
 	// shifter positions
 	public enum GearShiftPosition {
@@ -80,17 +88,70 @@ public class Chassis extends Subsystem{
 	
 	// Chassis various states
 	public enum ChassisState {
-		PERVENT_VBUS, 
+		PERCENT_VBUS, 
 		AUTO_TURN, 
 		FOLLOW_PATH,
 		VELOCITY_SETPOINT
 	}
 	
-	private final Loop _loop = new Loop() {
+	// private constructor for singleton pattern
+	private Chassis() {
+		/* Drive Motors */
+		_leftMaster = new TalonSRX(Constants.LEFT_DRIVE_MASTER_CAN_BUS_ADDR);
+		_leftSlave = new TalonSRX(Constants.LEFT_DRIVE_SLAVE_CAN_BUS_ADDR);
+		
+		_rightMaster = new TalonSRX(Constants.RIGHT_DRIVE_MASTER_CAN_BUS_ADDR);
+		_rightSlave = new TalonSRX(Constants.RIGHT_DRIVE_SLAVE_CAN_BUS_ADDR);
+		
+		_leftMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0);
+		_leftMaster.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 5, 0);
+		_rightMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0);
+		_rightMaster.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 5, 0);
+		
+		_leftSlave.set(ControlMode.Follower, Constants.LEFT_DRIVE_MASTER_CAN_BUS_ADDR);
+		_rightSlave.set(ControlMode.Follower, Constants.RIGHT_DRIVE_MASTER_CAN_BUS_ADDR);
+
+		_leftMaster.setInverted(false);
+		_leftSlave.setInverted(false);
+		_rightMaster.setInverted(true);
+		_rightSlave.setInverted(true);
+
+		
+		_leftMaster.configForwardLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
+		_leftSlave.configForwardLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
+		_rightMaster.configForwardLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
+		_rightSlave.configForwardLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
+	
+        _leftMaster.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_10Ms, 0);
+        _leftMaster.configVelocityMeasurementWindow(32, 0);
+        _rightMaster.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_10Ms, 0);
+        _rightMaster.configVelocityMeasurementWindow(32, 0);
+        
+		// Motion Magic Constants
+		_leftMaster.configMotionAcceleration(Constants.DRIVE_TURN_MAX_ACC, 0);
+		_rightMaster.configMotionAcceleration(Constants.DRIVE_TURN_MAX_ACC, 0);
+		_leftMaster.configMotionCruiseVelocity(Constants.DRIVE_TURN_MAX_VEL, 0);
+		_rightMaster.configMotionCruiseVelocity(Constants.DRIVE_TURN_MAX_VEL, 0);
+		
+		reloadGains();
+		
+		/* Shifter */
+		_shifterSolenoid = new DoubleSolenoid(Constants.PCM_CAN_BUS_ADDR, Constants.SHIFTER_SOLENOID_EXTEND_PCM_PORT, 
+												Constants.SHIFTER_SOLENOID_RETRACT_PCM_PORT);
+		
+		setBrakeMode(false);
+		
+		_driveSpeedScalingFactorClamped = 1.0;
+		
+		_lastScanPerfMetricsSnapShot = new ChassisDrivePerfMetrics();
+	}
+	
+	private final ILoop _loop = new ILoop() 
+	{
 		@Override
 		public void onStart(double timestamp) {
 			synchronized (Chassis.this) {
-				_chassisState = ChassisState.PERVENT_VBUS;
+				_chassisState = ChassisState.PERCENT_VBUS;
 			}
 		}
 		
@@ -113,7 +174,7 @@ public class Chassis extends Subsystem{
 							updatePathFollower(timestamp);
 						return;
 						
-					case PERVENT_VBUS:
+					case PERCENT_VBUS:
 						return;
 						
 					case VELOCITY_SETPOINT:
@@ -131,57 +192,8 @@ public class Chassis extends Subsystem{
 		}
 	};
 	
-	public Loop getLoop() {
+	public ILoop getLoop() {
 		return _loop;
-	}
-	
-	private Chassis() {
-		/* Drive Motors */
-		
-		_leftMaster = new TalonSRX(Constants.LEFT_DRIVE_MASTER_CAN_BUS_ADDR);
-		_leftSlave = new TalonSRX(Constants.LEFT_DRIVE_SLAVE_CAN_BUS_ADDR);
-		_rightMaster = new TalonSRX(Constants.RIGHT_DRIVE_MASTER_CAN_BUS_ADDR);
-		_rightSlave = new TalonSRX(Constants.RIGHT_DRIVE_SLAVE_CAN_BUS_ADDR);
-		
-		_leftMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0);
-		_leftMaster.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 5, 0);
-		_rightMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0);
-		_rightMaster.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 5, 0);
-		
-		_leftSlave.set(ControlMode.Follower, Constants.LEFT_DRIVE_MASTER_CAN_BUS_ADDR);
-		_rightSlave.set(ControlMode.Follower, Constants.RIGHT_DRIVE_MASTER_CAN_BUS_ADDR);
-
-		_leftMaster.setInverted(false);
-		_leftSlave.setInverted(false);
-		_rightMaster.setInverted(true);
-		_rightSlave.setInverted(true);
-		
-		_leftMaster.configForwardLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
-		_leftSlave.configForwardLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
-		_rightMaster.configForwardLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
-		_rightSlave.configForwardLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
-	
-        _leftMaster.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_10Ms, 0);
-        _leftMaster.configVelocityMeasurementWindow(32, 0);
-        _rightMaster.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_10Ms, 0);
-        _rightMaster.configVelocityMeasurementWindow(32, 0);
-        
-		
-		// Motion Magic Constants
-		_leftMaster.configMotionAcceleration(Constants.DRIVE_TURN_MAX_ACC, 0);
-		_rightMaster.configMotionAcceleration(Constants.DRIVE_TURN_MAX_ACC, 0);
-		_leftMaster.configMotionCruiseVelocity(Constants.DRIVE_TURN_MAX_VEL, 0);
-		_rightMaster.configMotionCruiseVelocity(Constants.DRIVE_TURN_MAX_VEL, 0);
-		
-		reloadGains();
-		
-		/* Shifter */
-		_shifterSolenoid = new DoubleSolenoid(Constants.PCM_CAN_BUS_ADDR, Constants.SHIFTER_SOLENOID_EXTEND_PCM_PORT, 
-												Constants.SHIFTER_SOLENOID_RETRACT_PCM_PORT);
-		
-		setBrakeMode(false);
-		
-		_driveSpeedScalingFactorClamped = 1.0;
 	}
 	
 	/**
@@ -195,7 +207,7 @@ public class Chassis extends Subsystem{
     }
 	
 	public synchronized void arcadeDrive(double throttle, double turn) {
-		_chassisState = ChassisState.PERVENT_VBUS;
+		_chassisState = ChassisState.PERCENT_VBUS;
 	
 		// calc scaled throttle cmds
 		double newThrottleCmdScaled = throttle * _driveSpeedScalingFactorClamped;
@@ -384,6 +396,8 @@ public class Chassis extends Subsystem{
 				_shifterSolenoid.set(Constants.SHIFTER_SOLENOID_LOW_GEAR_POSITION);
 				_shifterSolenoidPosition = Constants.SHIFTER_SOLENOID_LOW_GEAR_POSITION;
 				break;
+			case UNKNOWN:
+				break;
 		}
 	}
 
@@ -421,11 +435,19 @@ public class Chassis extends Subsystem{
 	}
 	
 	public double getLeftSpeed() {
-		return _leftMaster.getSelectedSensorVelocity(0) * (600 / CODES_PER_REV);
+		return _leftMaster.getSelectedSensorVelocity(0) / (600 * CODES_PER_REV);
 	}
 	
 	public double getRightSpeed() {
-		return -_rightMaster.getSelectedSensorVelocity(0) * (600 / CODES_PER_REV);
+		return -_rightMaster.getSelectedSensorVelocity(0) / (600 * CODES_PER_REV);
+	}
+	
+	public double getLeftSpeedInMPS() {
+		return _leftMaster.getSelectedSensorVelocity(0) / CODES_PER_METER;
+	}
+	
+	public double getRightSpeedInMPS() {
+		return _rightMaster.getSelectedSensorVelocity(0) / CODES_PER_METER;
 	}
 	
 	public double getLeftDistanceInches() {
@@ -503,6 +525,12 @@ public class Chassis extends Subsystem{
 		zeroGyro();
 	}
 
+	public void UpdateDriveTrainPerfMetrics()
+	{
+		_lastScanPerfMetricsSnapShot = CalcCurrentDriveMetrics(_lastScanPerfMetricsSnapShot);
+	}
+	
+	// Publish Data to the Dashboard
 	@Override
 	public void outputToSmartDashboard() {
 		//SmartDashboard.putNumber("Left Position", getLeftPosInRot());
@@ -518,7 +546,17 @@ public class Chassis extends Subsystem{
 	}
 
 	@Override
-	public void updateLogData(LogData logData) {}
+	public void updateLogData(LogDataBE logData) {
+		logData.AddData("Chassis:LeftDriveMtr%VBus", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.LeftDriveMtrPercentVBus, 2)));
+		logData.AddData("Chassis:LeftDriveMtrPos [m]", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.LeftDriveMtrPos, 2)));
+		logData.AddData("Chassis:LeftDriveMtrVel [m/s]", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.LeftDriveMtrMPS, 2)));
+		logData.AddData("Chassis:LeftDriveMtrAccel [m/s/s]", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.LeftDriveMtrMPSPerSec, 2)));
+
+		logData.AddData("Chassis:RightDriveMtr%VBus", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.RightDriveMtrPercentVBus, 2)));
+		logData.AddData("Chassis:RightDriveMtrPos [m]", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.RightDriveMtrPos, 2)));
+		logData.AddData("Chassis:RightDriveMtrVel [m/s]", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.RightDriveMtrMPS, 2)));
+		logData.AddData("Chassis:RightDriveMtrAccel [m/s/s]", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.RightDriveMtrMPSPerSec, 2)));
+	}
 	
 	//============================================================================================
 	// Utility Helper Methods
@@ -538,4 +576,71 @@ public class Chassis extends Subsystem{
         
         return accDecCmd;
 	}	
+	
+	private ChassisDrivePerfMetrics CalcCurrentDriveMetrics(ChassisDrivePerfMetrics previousScanMetrics)
+	{
+		ChassisDrivePerfMetrics currentScanMetrics = new ChassisDrivePerfMetrics();
+		
+		currentScanMetrics.LastSampleTimestampInMSec = new Date().getTime();
+		
+		currentScanMetrics.LeftDriveMtrPercentVBus = _leftMaster.getMotorOutputVoltage()/_leftMaster.getBusVoltage();
+		currentScanMetrics.LeftDriveMtrPos = _leftMaster.getSelectedSensorPosition(0) / (10 * CODES_PER_METER); //Native Units
+		currentScanMetrics.LeftDriveMtrMPS = getLeftSpeedInMPS(); //Native units per 100ms
+		
+		if(previousScanMetrics != null)
+		{
+			currentScanMetrics.LeftDriveMtrMPSPerSec = CalcAccDec(previousScanMetrics.LeftDriveMtrMPS,
+																	previousScanMetrics.LastSampleTimestampInMSec,
+																	currentScanMetrics.LeftDriveMtrMPS,
+																	currentScanMetrics.LastSampleTimestampInMSec);
+		} 
+		else {
+			currentScanMetrics.LeftDriveMtrMPSPerSec = 0.0;
+		}
+		currentScanMetrics.RightDriveMtrPercentVBus = -1 * (_rightMaster.getMotorOutputVoltage()/_rightMaster.getBusVoltage()); 
+		currentScanMetrics.RightDriveMtrPos = _rightMaster.getSelectedSensorPosition(0) / (10 * CODES_PER_METER);
+		currentScanMetrics.RightDriveMtrMPS = getRightSpeedInMPS(); 
+		
+		if(previousScanMetrics != null)
+		{
+			currentScanMetrics.RightDriveMtrMPSPerSec = CalcAccDec(previousScanMetrics.RightDriveMtrMPS,
+																	previousScanMetrics.LastSampleTimestampInMSec,
+																	currentScanMetrics.RightDriveMtrMPS,
+																	currentScanMetrics.LastSampleTimestampInMSec);
+		}
+		else {
+			currentScanMetrics.RightDriveMtrMPSPerSec = 0.0;
+		}
+		
+		return currentScanMetrics;
+	}
+	
+	private double CalcAccDec(double previousMtrMPS, long prevTimeStampInMSec, double currMtrMPS, long currTimeStampInMSec)
+	{
+		double deltaVInRPM = currMtrMPS - previousMtrMPS;
+		
+		double deltaTInMsec = currTimeStampInMSec - prevTimeStampInMSec;
+		
+		double deltaTInSec = deltaTInMsec / 1000.0;
+
+		double accDecInRPMPerSec = deltaVInRPM / deltaTInSec;
+		
+		return accDecInRPMPerSec;
+	}
+	
+	class ChassisDrivePerfMetrics
+	{
+		public double LeftDriveMtrPercentVBus;
+		public double LeftDriveMtrPos;
+		public double LeftDriveMtrMPS;			// velocity
+		public double LeftDriveMtrMPSPerSec;	// acc/dec
+		
+
+		public double RightDriveMtrPercentVBus;
+		public double RightDriveMtrPos;
+		public double RightDriveMtrMPS;
+		public double RightDriveMtrMPSPerSec;	// acc/dec
+		
+		public long LastSampleTimestampInMSec;
+	}
 }

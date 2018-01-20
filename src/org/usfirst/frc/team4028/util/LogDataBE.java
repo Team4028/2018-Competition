@@ -7,7 +7,7 @@ import java.util.List;
 // Subsystem classes use the Add method to add data in their UpdateLogData method as Name/Value pairs
 // Internally, this class holds the Names & Values in 2 arrays
 // Therefore this class does not need to be changed to support addl data to be logged, it grows dynamically
-public class LogData {
+public class LogDataBE {
 	// define class level working variables
 	private List<String> _names;
 	private List<String> _values;
@@ -15,7 +15,7 @@ public class LogData {
 	//============================================================================================
 	// constructors follow
 	//============================================================================================
-	public LogData() {
+	public LogDataBE() {
 		_names = new ArrayList<String>();
 		_values = new ArrayList<String>();
 	}

@@ -10,6 +10,7 @@ public class Constants {
 	// Gamepad USB Port
 	public static final int DRIVER_GAMEPAD_USB_PORT = 0;
 	public static final int OPERATOR_GAMEPAD_USB_PORT = 1;
+	public static final int ENGINEERING_GAMEPAD_USB_PORT = 2;
 	
 	// PCM Can Bus
 	public static final int PCM_CAN_BUS_ADDR = 0;	
@@ -23,6 +24,10 @@ public class Constants {
 	// NavX (on Roborio)
 	public static final SPI.Port NAVX_PORT = Port.kMXP;
 	
+	//Ultrasonic (on Roborio)
+	public static final int ULTRASONIC_PORT = 0;
+	
+	// PCM Ports
 	public static final int SHIFTER_SOLENOID_RETRACT_PCM_PORT = 7;
 	public static final int SHIFTER_SOLENOID_EXTEND_PCM_PORT = 3;
 	
