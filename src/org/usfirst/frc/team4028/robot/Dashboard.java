@@ -10,7 +10,15 @@ import org.usfirst.frc.team4028.robot.GeneralEnums.AUTON_MODE;
 import org.usfirst.frc.team4028.robot.auton.AutonBase;
 import org.usfirst.frc.team4028.robot.auton.modes.*;
 
+// This class contains code to interface with the Dashboard on the Driver's Station
+//	We read values from 
+//		- Sendable Choosers to control Auton
+//		- FMS Data for real time game data
+//  We write values to
+//		- provide real-time info to the drive team
 public class Dashboard {
+	
+	// singleton pattern
 	private static Dashboard _instance = new Dashboard();
 	
 	public static Dashboard getInstance() {
@@ -22,7 +30,7 @@ public class Dashboard {
 	
 	// private constructor for singleton pattern
 	private Dashboard() {
-		// Auton Mode Chooser
+		// setup Auton Mode Chooser
 		_autonModeChooser.addDefault("Do Nothing", GeneralEnums.AUTON_MODE.DO_NOTHING);
 		_autonModeChooser.addObject("Auto Run", GeneralEnums.AUTON_MODE.AUTO_RUN);
 		_autonModeChooser.addObject("Switch", GeneralEnums.AUTON_MODE.SWITCH);

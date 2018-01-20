@@ -1,5 +1,6 @@
 package org.usfirst.frc.team4028.robot;
 
+// This class contains Enumerations used thruout the code
 public class GeneralEnums {	
 	public enum AUTON_MODE {
 		UNDEFINED,
