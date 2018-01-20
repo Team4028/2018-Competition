@@ -26,10 +26,8 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 
 public class Chassis implements Subsystem{
-	
 	// singleton pattern
 	private static Chassis _instance = new Chassis();
 	
@@ -37,15 +35,14 @@ public class Chassis implements Subsystem{
 		return _instance;
 	}
 	
-	private static final int kLowGearPositionControlSlot = 0;
-    private static final int kHighGearVelocityControlSlot = 1;
+	private static final int kPositionControlSlot = 0;
+    private static final int kVelocityControlSlot = 1;
 	
 	// define class level variables for Robot objects
 	private TalonSRX _leftMaster, _leftSlave, _rightMaster, _rightSlave;
 	private DoubleSolenoid _shifterSolenoid;
 	private NavXGyro _navX = NavXGyro.getInstance();
 	
-	// Controllers
 	private RobotState _robotState = RobotState.getInstance();
 	private PathFollower _pathFollower;
 	private double _setpointright;
@@ -53,9 +50,7 @@ public class Chassis implements Subsystem{
 	private Path _currentPath = null;
 	
 	// define class level variables to hold state
-	private Value _shifterSolenoidPosition;
 	private long _lastCmdChgTimeStamp;
-	private double _driveSpeedScalingFactorClamped;
 	private ChassisDrivePerfMetrics _lastScanPerfMetricsSnapShot;
 	
 	private ChassisState _chassisState;
@@ -74,17 +69,9 @@ public class Chassis implements Subsystem{
 	private static final double ACC_DEC_TOTAL_TIME_SECS = 0.8;
 	
 	private static final double _turnSpeedScalingFactor = 0.7;
-	
 
 	private static final double CODES_PER_REV = 4590;
 	public static final double CODES_PER_METER = 1367.18;
-	
-	// shifter positions
-	public enum GearShiftPosition {
-		UNKNOWN,
-		HIGH_GEAR,
-		LOW_GEAR
-	}
 	
 	// Chassis various states
 	public enum ChassisState {
@@ -96,10 +83,8 @@ public class Chassis implements Subsystem{
 	
 	// private constructor for singleton pattern
 	private Chassis() {
-		/* Drive Motors */
 		_leftMaster = new TalonSRX(Constants.LEFT_DRIVE_MASTER_CAN_BUS_ADDR);
 		_leftSlave = new TalonSRX(Constants.LEFT_DRIVE_SLAVE_CAN_BUS_ADDR);
-		
 		_rightMaster = new TalonSRX(Constants.RIGHT_DRIVE_MASTER_CAN_BUS_ADDR);
 		_rightSlave = new TalonSRX(Constants.RIGHT_DRIVE_SLAVE_CAN_BUS_ADDR);
 		
@@ -115,23 +100,14 @@ public class Chassis implements Subsystem{
 		_leftSlave.setInverted(false);
 		_rightMaster.setInverted(true);
 		_rightSlave.setInverted(true);
-
 		
 		_leftMaster.configForwardLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
-		_leftSlave.configForwardLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
 		_rightMaster.configForwardLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
-		_rightSlave.configForwardLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
 	
         _leftMaster.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_10Ms, 0);
         _leftMaster.configVelocityMeasurementWindow(32, 0);
         _rightMaster.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_10Ms, 0);
         _rightMaster.configVelocityMeasurementWindow(32, 0);
-        
-		// Motion Magic Constants
-		_leftMaster.configMotionAcceleration(Constants.DRIVE_TURN_MAX_ACC, 0);
-		_rightMaster.configMotionAcceleration(Constants.DRIVE_TURN_MAX_ACC, 0);
-		_leftMaster.configMotionCruiseVelocity(Constants.DRIVE_TURN_MAX_VEL, 0);
-		_rightMaster.configMotionCruiseVelocity(Constants.DRIVE_TURN_MAX_VEL, 0);
 		
 		reloadGains();
 		
@@ -141,17 +117,15 @@ public class Chassis implements Subsystem{
 		
 		setBrakeMode(false);
 		
-		_driveSpeedScalingFactorClamped = 1.0;
-		
 		_lastScanPerfMetricsSnapShot = new ChassisDrivePerfMetrics();
 	}
 	
-	private final Loop _loop = new Loop() 
-	{
+	private final Loop _loop = new Loop() {
 		@Override
 		public void onStart(double timestamp) {
 			synchronized (Chassis.this) {
 				_chassisState = ChassisState.PERCENT_VBUS;
+				setHighGear(false);
 			}
 		}
 		
@@ -160,16 +134,15 @@ public class Chassis implements Subsystem{
 			synchronized (Chassis.this) {
 				switch(_chassisState) {
 					case AUTO_TURN:
-						ShiftGear(GearShiftPosition.LOW_GEAR);
-						_leftMaster.selectProfileSlot(kLowGearPositionControlSlot, 0);
-						_rightMaster.selectProfileSlot(kLowGearPositionControlSlot, 0);
+						setHighGear(false);
+						_leftMaster.selectProfileSlot(kPositionControlSlot, 0);
+						_rightMaster.selectProfileSlot(kPositionControlSlot, 0);
 						moveToTarget();
 						return;
 						
 					case FOLLOW_PATH:
-						ShiftGear(GearShiftPosition.HIGH_GEAR);
-						_leftMaster.selectProfileSlot(kHighGearVelocityControlSlot, 0);
-						_rightMaster.selectProfileSlot(kHighGearVelocityControlSlot, 0);
+						_leftMaster.selectProfileSlot(kVelocityControlSlot, 0);
+						_rightMaster.selectProfileSlot(kVelocityControlSlot, 0);
 						if (_pathFollower != null) 
 							updatePathFollower(timestamp);
 						return;
@@ -186,7 +159,7 @@ public class Chassis implements Subsystem{
 		@Override
 		public void onStop(double timestamp) {
 			synchronized (Chassis.this) {
-				ShiftGear(GearShiftPosition.HIGH_GEAR);
+				setHighGear(true);
 				stop();
 			}
 		}
@@ -210,7 +183,7 @@ public class Chassis implements Subsystem{
 		_chassisState = ChassisState.PERCENT_VBUS;
 	
 		// calc scaled throttle cmds
-		double newThrottleCmdScaled = throttle * _driveSpeedScalingFactorClamped;
+		double newThrottleCmdScaled = throttle;
 		double newTurnCmdScaled = turn * _turnSpeedScalingFactor;
 		
 		// if the cmd just chg'd reset 
@@ -269,13 +242,13 @@ public class Chassis implements Subsystem{
     private void configureTalonsForSpeedControl() {
         if (!usesTalonVelocityControl(_chassisState)) {
             // We entered a velocity control state.
-            _leftMaster.selectProfileSlot(kHighGearVelocityControlSlot, 0);
-            _rightMaster.configNominalOutputForward(Constants.DriveHighGearNominalOutput, 0);
-            _rightMaster.configNominalOutputReverse(-Constants.DriveHighGearNominalOutput, 0);
+            _leftMaster.selectProfileSlot(kVelocityControlSlot, 0);
+            _rightMaster.configNominalOutputForward(Constants.DRIVE_VELOCITY_NOMINAL_OUTPUT, 0);
+            _rightMaster.configNominalOutputReverse(-Constants.DRIVE_VELOCITY_NOMINAL_OUTPUT, 0);
             
-            _rightMaster.selectProfileSlot(kHighGearVelocityControlSlot, 0);
-            _rightMaster.configNominalOutputForward(Constants.DriveHighGearNominalOutput, 0);
-            _rightMaster.configNominalOutputReverse(-Constants.DriveHighGearNominalOutput, 0);
+            _rightMaster.selectProfileSlot(kVelocityControlSlot, 0);
+            _rightMaster.configNominalOutputForward(Constants.DRIVE_VELOCITY_NOMINAL_OUTPUT, 0);
+            _rightMaster.configNominalOutputReverse(-Constants.DRIVE_VELOCITY_NOMINAL_OUTPUT, 0);
             
             setBrakeMode(true);
         }
@@ -284,8 +257,8 @@ public class Chassis implements Subsystem{
     private synchronized void updateVelocitySetpoint(double left_inches_per_sec, double right_inches_per_sec) {
         if (usesTalonVelocityControl(_chassisState)) {
             final double max_desired = Math.max(Math.abs(left_inches_per_sec), Math.abs(right_inches_per_sec));
-            final double scale = max_desired > Constants.DriveHighGearMaxSetpoint
-                    ? Constants.DriveHighGearMaxSetpoint / max_desired : 1.0;
+            final double scale = max_desired > Constants.DRIVE_VELOCITY_MAX_SETPOINT
+                    ? Constants.DRIVE_VELOCITY_MAX_SETPOINT / max_desired : 1.0;
             _setpointright = inchesPerSecondToNativeUnits(left_inches_per_sec * scale);
             _leftMaster.set(ControlMode.Velocity, inchesPerSecondToNativeUnits(left_inches_per_sec * scale));
             _rightMaster.set(ControlMode.Velocity, inchesPerSecondToNativeUnits(right_inches_per_sec * scale));
@@ -311,13 +284,9 @@ public class Chassis implements Subsystem{
 	}
 	
 	public synchronized void setTargetAngle(double target) {
-		setAutoAimTarget(target);
-	}
-	
-	private synchronized void setAutoAimTarget(double target) {
-		_targetAngle = target;
-		_chassisState = ChassisState.AUTO_TURN;
-	}
+		 _targetAngle = target;
+		 _chassisState = ChassisState.AUTO_TURN;
+	} 
 	
 	private synchronized void moveToTarget() {
 		double angleError;
@@ -333,10 +302,6 @@ public class Chassis implements Subsystem{
 	}
 	
 	public synchronized double autoAimError() {
-		return _targetAngle - _navX.getYaw();
-	}
-	
-	public synchronized double errorToTarget() {
 		return _targetAngle - _navX.getYaw();
 	}
 	
@@ -382,35 +347,30 @@ public class Chassis implements Subsystem{
         else
             System.out.println("Robot is not in path following mode");
     }
+    
+    public synchronized void toggleShifter() {
+    	if (_shifterSolenoid.get() == Constants.SHIFTER_HIGH_GEAR_POS) {
+    		setHighGear(false);
+    	} else {
+    		setHighGear(true);
+    	}
+    }
 	
-	// shifts between high & low gear
-	public synchronized void ShiftGear(GearShiftPosition gear) {
-		// send cmd to to solenoids
-		switch(gear) {
-			case HIGH_GEAR:
-				_shifterSolenoid.set(Constants.SHIFTER_SOLENOID_HIGH_GEAR_POSITION);
-				_shifterSolenoidPosition = Constants.SHIFTER_SOLENOID_HIGH_GEAR_POSITION;
-				break;
-			
-			case LOW_GEAR:
-				_shifterSolenoid.set(Constants.SHIFTER_SOLENOID_LOW_GEAR_POSITION);
-				_shifterSolenoidPosition = Constants.SHIFTER_SOLENOID_LOW_GEAR_POSITION;
-				break;
-			case UNKNOWN:
-				break;
+	public synchronized void setHighGear(boolean isHighGear) {
+		if (isHighGear) {
+			_shifterSolenoid.set(Constants.SHIFTER_HIGH_GEAR_POS);
+		} else {
+			_shifterSolenoid.set(Constants.SHIFTER_LOW_GEAR_POS);
 		}
 	}
-
-	public synchronized void ToggleShiftGear() {
-		if (_shifterSolenoidPosition == Constants.SHIFTER_SOLENOID_HIGH_GEAR_POSITION) 
-			ShiftGear(GearShiftPosition.LOW_GEAR);
-		else 
-			ShiftGear(GearShiftPosition.HIGH_GEAR);
+	
+	public synchronized boolean isHighGear() {
+		return _shifterSolenoid.get() == Constants.SHIFTER_HIGH_GEAR_POS;
 	}
 	
 	public void zeroEncoders() {
-		_leftMaster.getSensorCollection().setQuadraturePosition(0, 20);
-		_rightMaster.getSensorCollection().setQuadraturePosition(0, 20);
+		_leftMaster.getSensorCollection().setQuadraturePosition(0, 10);
+		_rightMaster.getSensorCollection().setQuadraturePosition(0, 10);
 	}
 
 	public void zeroGyro() {
@@ -467,15 +427,11 @@ public class Chassis implements Subsystem{
     }
     
     private static double rotationsToInches(double rotations) {
-        return rotations * (Constants.DriveWheelDiameterInches * Math.PI);
+        return rotations * (Constants.DRIVE_WHEEL_DIAMETER_INCHES * Math.PI);
     }
     
     private static double rpmToInchesPerSecond(double rpm) {
         return rotationsToInches(rpm) / 60;
-    }
-	
-	private static double inchesToRotations(double inches) {
-        return inches / (Constants.DriveWheelDiameterInches * Math.PI);
     }
 	
 	private static double inchesPerSecondToNativeUnits(double inches_per_second) {
@@ -484,33 +440,55 @@ public class Chassis implements Subsystem{
 	
 	public synchronized void reloadGains() {
         // Low Gear
-        _leftMaster.config_kP(0, Constants.DRIVE_LOW_GEAR_POSITION_P, 0);
-        _leftMaster.config_kI(0, Constants.DRIVE_LOW_GEAR_POSITION_I, 0);
-        _leftMaster.config_kD(0, Constants.DRIVE_LOW_GEAR_POSITION_D, 0);
-        _leftMaster.config_kF(0, Constants.DRIVE_LOW_GEAR_POSITION_F, 0);
-        _leftMaster.config_IntegralZone(0, Constants.DRIVE_LOW_GEAR_POSITION_I_ZONE, 0);
+        _leftMaster.config_kP(0, Constants.DRIVE_MOTION_MAGIC_P, 0);
+        _leftMaster.config_kI(0, Constants.DRIVE_MOTION_MAGIC_I, 0);
+        _leftMaster.config_kD(0, Constants.DRIVE_MOTION_MAGIC_D, 0);
+        _leftMaster.config_kF(0, Constants.DRIVE_MOTION_MAGIC_F, 0);
+        _leftMaster.config_IntegralZone(0, Constants.DRIVE_MOTION_MAGIC_I_ZONE, 0);
         
-        _rightMaster.config_kP(0, Constants.DRIVE_LOW_GEAR_POSITION_P, 0);
-        _rightMaster.config_kI(0, Constants.DRIVE_LOW_GEAR_POSITION_I, 0);
-        _rightMaster.config_kD(0, Constants.DRIVE_LOW_GEAR_POSITION_D, 0);
-        _rightMaster.config_kF(0, Constants.DRIVE_LOW_GEAR_POSITION_F, 0);
-        _rightMaster.config_IntegralZone(0, Constants.DRIVE_LOW_GEAR_POSITION_I_ZONE, 0);
-        
-        // High Gear
-        _leftMaster.config_kP(1, Constants.DriveHighGearVelocityKp, 0);
-        _leftMaster.config_kI(1, Constants.DriveHighGearVelocityKi, 0);
-        _leftMaster.config_kD(1, Constants.DriveHighGearVelocityKd, 0);
-        _leftMaster.config_kF(1, Constants.DriveHighGearVelocityKf, 0);
-        _leftMaster.config_IntegralZone(1, Constants.DriveHighGearVelocityIZone, 0);
-        
-        _rightMaster.config_kP(1, Constants.DriveHighGearVelocityKp, 0);
-        _rightMaster.config_kI(1, Constants.DriveHighGearVelocityKi, 0);
-        _rightMaster.config_kD(1, Constants.DriveHighGearVelocityKd, 0);
-        _rightMaster.config_kF(1, Constants.DriveHighGearVelocityKf, 0);
-        _rightMaster.config_IntegralZone(1, Constants.DriveHighGearVelocityIZone, 0);
+        _rightMaster.config_kP(0, Constants.DRIVE_MOTION_MAGIC_P, 0);
+        _rightMaster.config_kI(0, Constants.DRIVE_MOTION_MAGIC_I, 0);
+        _rightMaster.config_kD(0, Constants.DRIVE_MOTION_MAGIC_D, 0);
+        _rightMaster.config_kF(0, Constants.DRIVE_MOTION_MAGIC_F, 0);
+        _rightMaster.config_IntegralZone(0, Constants.DRIVE_MOTION_MAGIC_I_ZONE, 0);
         
         _leftMaster.configClosedloopRamp(Constants.DRIVE_CLOSED_LOOP_RAMP_RATE, 0);
         _rightMaster.configClosedloopRamp(Constants.DRIVE_CLOSED_LOOP_RAMP_RATE, 0);
+        
+        _leftMaster.configMotionAcceleration(Constants.DRIVE_MOTION_MAGIC_MAX_ACC, 0);
+		_rightMaster.configMotionAcceleration(Constants.DRIVE_MOTION_MAGIC_MAX_ACC, 0);
+		_leftMaster.configMotionCruiseVelocity(Constants.DRIVE_MOTION_MAGIC_MAX_VEL, 0);
+		_rightMaster.configMotionCruiseVelocity(Constants.DRIVE_MOTION_MAGIC_MAX_VEL, 0);
+		
+		setLowGearVelocityGains();
+	}
+	
+	private synchronized void setLowGearVelocityGains() {
+		_leftMaster.config_kP(1, Constants.DRIVE_LOW_GEAR_VELOCITY_KP, 0);
+        _leftMaster.config_kI(1, Constants.DRIVE_LOW_GEAR_VELOCITY_KI, 0);
+        _leftMaster.config_kD(1, Constants.DRIVE_LOW_GEAR_VELOCITY_KD, 0);
+        _leftMaster.config_kF(1, Constants.DRIVE_LOW_GEAR_VELOCITY_KF, 0);
+        _leftMaster.config_IntegralZone(1, Constants.DRIVE_LOW_GEAR_VELOCITY_I_ZONE, 0);
+        
+        _rightMaster.config_kP(1, Constants.DRIVE_LOW_GEAR_VELOCITY_KP, 0);
+        _rightMaster.config_kI(1, Constants.DRIVE_LOW_GEAR_VELOCITY_KI, 0);
+        _rightMaster.config_kD(1, Constants.DRIVE_LOW_GEAR_VELOCITY_KD, 0);
+        _rightMaster.config_kF(1, Constants.DRIVE_LOW_GEAR_VELOCITY_KF, 0);
+        _rightMaster.config_IntegralZone(1, Constants.DRIVE_LOW_GEAR_VELOCITY_I_ZONE, 0);
+	}
+	
+	private synchronized void setHighGearVelocityGains() {
+		_leftMaster.config_kP(1, Constants.DRIVE_HIGH_GEAR_VELOCITY_KP, 0);
+        _leftMaster.config_kI(1, Constants.DRIVE_HIGH_GEAR_VELOCITY_KI, 0);
+        _leftMaster.config_kD(1, Constants.DRIVE_HIGH_GEAR_VELOCITY_KD, 0);
+        _leftMaster.config_kF(1, Constants.DRIVE_HIGH_GEAR_VELOCITY_KF, 0);
+        _leftMaster.config_IntegralZone(1, Constants.DRIVE_HIGH_GEAR_VELOCITY_I_ZONE, 0);
+        
+        _rightMaster.config_kP(1, Constants.DRIVE_HIGH_GEAR_VELOCITY_KP, 0);
+        _rightMaster.config_kI(1, Constants.DRIVE_HIGH_GEAR_VELOCITY_KI, 0);
+        _rightMaster.config_kD(1, Constants.DRIVE_HIGH_GEAR_VELOCITY_KD, 0);
+        _rightMaster.config_kF(1, Constants.DRIVE_HIGH_GEAR_VELOCITY_KF, 0);
+        _rightMaster.config_IntegralZone(1, Constants.DRIVE_HIGH_GEAR_VELOCITY_I_ZONE, 0);
 	}
 
 	@Override
@@ -553,6 +531,10 @@ public class Chassis implements Subsystem{
 		logData.AddData("Chassis:RightDriveMtrAccel [m/s/s]", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.RightDriveMtrMPSPerSec, 2)));
 	}
 	
+	public void UpdateDriveTrainPerfMetrics() {
+		_lastScanPerfMetricsSnapShot = CalcCurrentDriveMetrics(_lastScanPerfMetricsSnapShot);
+	}
+	
 	//============================================================================================
 	// Utility Helper Methods
 	//============================================================================================
@@ -586,8 +568,7 @@ public class Chassis implements Subsystem{
 																	previousScanMetrics.LastSampleTimestampInMSec,
 																	currentScanMetrics.LeftDriveMtrMPS,
 																	currentScanMetrics.LastSampleTimestampInMSec);
-		} 
-		else {
+		} else {
 			currentScanMetrics.LeftDriveMtrMPSPerSec = 0.0;
 		}
 		currentScanMetrics.RightDriveMtrPercentVBus = -1 * (_rightMaster.getMotorOutputVoltage()/_rightMaster.getBusVoltage()); 
@@ -623,7 +604,6 @@ public class Chassis implements Subsystem{
 		public double LeftDriveMtrPos;
 		public double LeftDriveMtrMPS;			// velocity
 		public double LeftDriveMtrMPSPerSec;	// acc/dec
-		
 
 		public double RightDriveMtrPercentVBus;
 		public double RightDriveMtrPos;

@@ -34,8 +34,8 @@ public class AdaptivePurePursuitController {
     Path mPath;
     boolean mAtEndOfPath = false;
     final boolean mReversed;
-    final Lookahead mLookahead = new Lookahead(Constants.MinLookAhead, Constants.MaxLookAhead,
-            Constants.MinLookAheadSpeed, Constants.MaxLookAheadSpeed);
+    final Lookahead mLookahead = new Lookahead(Constants.MIN_LOOKAHEAD, Constants.MAX_LOOKAHEAD,
+            Constants.MIN_LOOKAHEAD_SPEED, Constants.MAX_LOOKAHEAD_SPEED);
 
     public AdaptivePurePursuitController(Path path, boolean reversed) {
         mPath = path;

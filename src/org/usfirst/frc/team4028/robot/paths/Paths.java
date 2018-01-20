@@ -122,80 +122,80 @@ public class Paths {
 	private static ArrayList<Waypoint> getLeftSwitchWaypoints() {
 		ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
 		sWaypoints.add(new Waypoint(18,162,0,0));
-        sWaypoints.add(new Waypoint(50,162,30,Constants.FloorItSpeed));
-        sWaypoints.add(new Waypoint(75,100,30,Constants.FloorItSpeed));
-        sWaypoints.add(new Waypoint(122,100,0,Constants.FloorItSpeed));
+        sWaypoints.add(new Waypoint(50,162,30,Constants.FLOOR_IT_SPEED));
+        sWaypoints.add(new Waypoint(75,100,30,Constants.FLOOR_IT_SPEED));
+        sWaypoints.add(new Waypoint(122,100,0,Constants.FLOOR_IT_SPEED));
         return sWaypoints;
 	}
 	
 	private static ArrayList<Waypoint> getAutoRunWaypoints() {
         ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
 		sWaypoints.add(new Waypoint(18,50,0,0));
-        sWaypoints.add(new Waypoint(150,50,0,Constants.WildTurtleSpeed));
+        sWaypoints.add(new Waypoint(150,50,0,Constants.WILD_TURTLE_SPEED));
         return sWaypoints;
 	}
 	
 	private static ArrayList<Waypoint> getAwayFromPyramidWaypoints() {
         ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
         sWaypoints.add(new Waypoint(95,162,0,0));
-        sWaypoints.add(new Waypoint(45,162,0,Constants.FloorItSpeed));
+        sWaypoints.add(new Waypoint(45,162,0,Constants.FLOOR_IT_SPEED));
         return sWaypoints;
 	}
 	
 	private static ArrayList<Waypoint> getRightSwitchtoFrontofPyramidWaypoints() {
 		ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
         sWaypoints.add(new Waypoint(123,224,0,0));
-        sWaypoints.add(new Waypoint(85,224,20,Constants.FloorItSpeed));
-        sWaypoints.add(new Waypoint(65,162,20,Constants.FloorItSpeed));
-        sWaypoints.add(new Waypoint(30,162,0,Constants.FloorItSpeed));
+        sWaypoints.add(new Waypoint(85,224,20,Constants.FLOOR_IT_SPEED));
+        sWaypoints.add(new Waypoint(65,162,20,Constants.FLOOR_IT_SPEED));
+        sWaypoints.add(new Waypoint(30,162,0,Constants.FLOOR_IT_SPEED));
         return sWaypoints;
 	}
 	
 	private static ArrayList<Waypoint> getToPyramidWaypoints() {
         ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
         sWaypoints.add(new Waypoint(30,162,0,0));
-        sWaypoints.add(new Waypoint(95,162,0,Constants.FloorItSpeed));
+        sWaypoints.add(new Waypoint(95,162,0,Constants.FLOOR_IT_SPEED));
         return sWaypoints;
 	}
 	
 	private static ArrayList<Waypoint> getFrontofPyramidtoRightSwitchWaypoints() {
         ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
         sWaypoints.add(new Waypoint(45,162,0,0));
-        sWaypoints.add(new Waypoint(65,162,18,Constants.FloorItSpeed));
-        sWaypoints.add(new Waypoint(95,224,20,Constants.FloorItSpeed));
-        sWaypoints.add(new Waypoint(122,224,0,Constants.FloorItSpeed));
+        sWaypoints.add(new Waypoint(65,162,18,Constants.FLOOR_IT_SPEED));
+        sWaypoints.add(new Waypoint(95,224,20,Constants.FLOOR_IT_SPEED));
+        sWaypoints.add(new Waypoint(122,224,0,Constants.FLOOR_IT_SPEED));
         return sWaypoints;
 	}
 	
 	private static ArrayList<Waypoint> getDoNothingWaypoints() {
         ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
         sWaypoints.add(new Waypoint(30,162,0,0));
-        sWaypoints.add(new Waypoint(30,162,0,Constants.CelerySpeed));
+        sWaypoints.add(new Waypoint(30,162,0,Constants.CELERY_SPEED));
         return sWaypoints;
 	}
 	
 	private static ArrayList<Waypoint> getAwayFromRightSwitchWaypoints() {
         ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
         sWaypoints.add(new Waypoint(122,224,0,0));
-        sWaypoints.add(new Waypoint(65,224,0,Constants.FloorItSpeed));
+        sWaypoints.add(new Waypoint(65,224,0,Constants.FLOOR_IT_SPEED));
         return sWaypoints;
 	}
 	
 	private static ArrayList<Waypoint> getToPyramidForSecondCubeFromRightWaypoints() {
         ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
         sWaypoints.add(new Waypoint(65,224,0,0));
-        sWaypoints.add(new Waypoint(75,224,10,Constants.FloorItSpeed));
-        sWaypoints.add(new Waypoint(87,198,10,Constants.FloorItSpeed));
-        sWaypoints.add(new Waypoint(105,184,0,Constants.FloorItSpeed));
+        sWaypoints.add(new Waypoint(75,224,10,Constants.FLOOR_IT_SPEED));
+        sWaypoints.add(new Waypoint(87,198,10,Constants.FLOOR_IT_SPEED));
+        sWaypoints.add(new Waypoint(105,184,0,Constants.FLOOR_IT_SPEED));
         return sWaypoints;
 	}
 	private static ArrayList<Waypoint> getFromRightofPyramidtoFrontofRightSwitchWaypoints()
 	{
         ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
         sWaypoints.add(new Waypoint(105,184,0,0));
-        sWaypoints.add(new Waypoint(87,198,5,Constants.FloorItSpeed));
-        sWaypoints.add(new Waypoint(79,224,5,Constants.FloorItSpeed));
-        sWaypoints.add(new Waypoint(69,224,0,Constants.FloorItSpeed));
+        sWaypoints.add(new Waypoint(87,198,5,Constants.FLOOR_IT_SPEED));
+        sWaypoints.add(new Waypoint(79,224,5,Constants.FLOOR_IT_SPEED));
+        sWaypoints.add(new Waypoint(69,224,0,Constants.FLOOR_IT_SPEED));
 
         return sWaypoints;
 	}
@@ -203,7 +203,7 @@ public class Paths {
 	{
         ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
         sWaypoints.add(new Waypoint(69,224,0,0));
-        sWaypoints.add(new Waypoint(122,224,0,Constants.FloorItSpeed));
+        sWaypoints.add(new Waypoint(122,224,0,Constants.FLOOR_IT_SPEED));
 
     	return sWaypoints;
 	}

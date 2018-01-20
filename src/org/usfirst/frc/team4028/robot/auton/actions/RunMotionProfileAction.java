@@ -19,7 +19,7 @@ public class RunMotionProfileAction implements Action {
 	
 	@Override
 	public void start() {
-		_chassis.ShiftGear(GearShiftPosition.LOW_GEAR);
+		_chassis.setHighGear(false);
 		_chassis.setWantDrivePath(_path, _path.isReversed());
 		DriverStation.reportError("Running Motion Profile", false);
 		_startTime = Timer.getFPGATimestamp();

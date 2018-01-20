@@ -26,7 +26,7 @@ public class PathFollower {
         mLastSteeringDelta = Twist.identity();
         mVelocityController = new ProfileFollower();
         mVelocityController.setConstraints(
-                new MotionProfileConstraints(Constants.PathFollowingMaxVel, Constants.PathFollowingMaxAccel));
+                new MotionProfileConstraints(Constants.PATH_FOLLOWING_MAX_VEL, Constants.PATH_FOLLOWING_MAX_ACCEL));
     }
 
     /**
@@ -49,11 +49,11 @@ public class PathFollower {
             mVelocityController.setGoalAndConstraints(
                     new MotionProfileGoal(displacement + steering_command.delta.dx,
                             Math.abs(steering_command.end_velocity), CompletionBehavior.VIOLATE_MAX_ACCEL,
-                            Constants.PathFollowingGoalPosTolerance, Constants.PathFollowingGoalVelTolerance),
-                    new MotionProfileConstraints(Math.min(Constants.PathFollowingMaxVel, steering_command.max_velocity),
-                            Constants.PathFollowingMaxAccel));
+                            Constants.PATH_FOLLOWING_GOAL_POS_TOLERANCE, Constants.PATH_FOLLOWING_GOAL_VEL_TOLERANCE),
+                    new MotionProfileConstraints(Math.min(Constants.PATH_FOLLOWING_MAX_VEL, steering_command.max_velocity),
+                            Constants.PATH_FOLLOWING_MAX_ACCEL));
 
-            if (steering_command.remaining_path_length < Constants.PathStopSteeringDistance) {
+            if (steering_command.remaining_path_length < Constants.PATH_STOP_STEERING_DISTANCE) {
                 doneSteering = true;
             }
         }
@@ -64,7 +64,7 @@ public class PathFollower {
         if (!Double.isNaN(curvature) && Math.abs(curvature) < kReallyBigNumber) {
             // Regenerate angular velocity command from adjusted curvature.
             final double abs_velocity_setpoint = Math.abs(mVelocityController.getSetpoint().vel());
-            dtheta = mLastSteeringDelta.dx * curvature * (1.0 + Constants.InertiaSteeringGain * abs_velocity_setpoint);
+            dtheta = mLastSteeringDelta.dx * curvature * (1.0 + Constants.INERTIA_STEERING_GAIN * abs_velocity_setpoint);
         }
         final double scale = velocity_command / mLastSteeringDelta.dx;
         final Twist rv = new Twist(mLastSteeringDelta.dx * scale, 0.0, dtheta * scale);

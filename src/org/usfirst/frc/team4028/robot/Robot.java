@@ -7,7 +7,6 @@ import java.util.Date;
 import org.usfirst.frc.team4028.robot.auton.AutonExecuter;
 import org.usfirst.frc.team4028.robot.sensors.Ultrasonic;
 import org.usfirst.frc.team4028.robot.subsystems.*;
-import org.usfirst.frc.team4028.robot.subsystems.Chassis.GearShiftPosition;
 import org.usfirst.frc.team4028.util.DataLogger;
 import org.usfirst.frc.team4028.util.GeneralUtilities;
 import org.usfirst.frc.team4028.util.LogDataBE;
@@ -118,7 +117,7 @@ public class Robot extends IterativeRobot {
 		
 		stopAll();
 		
-		_chassis.ShiftGear(GearShiftPosition.HIGH_GEAR);
+		_chassis.setHighGear(false);
 		_chassis.setBrakeMode(false);
 		_chassis.zeroSensors();
 		
@@ -135,7 +134,7 @@ public class Robot extends IterativeRobot {
 		}
 		
 		if (_dos.getIsShiftGearJustPressed()) {
-			_chassis.ToggleShiftGear();
+			_chassis.toggleShifter();
 		}
 		
 		// Refresh Dashboard

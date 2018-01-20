@@ -40,13 +40,13 @@ public class MotionProfileGenerator {
         // Clamp the start state to be valid.
         MotionState start_state = new MotionState(prev_state.t(), prev_state.pos(),
                 Math.signum(prev_state.vel()) * Math.min(Math.abs(prev_state.vel()), constraints.max_abs_vel()),
-                Math.signum(prev_state.acc()) * Math.min(Math.abs(prev_state.acc()), Constants.PathFollowingMaxAccel));
+                Math.signum(prev_state.acc()) * Math.min(Math.abs(prev_state.acc()), Constants.PATH_FOLLOWING_MAX_ACCEL));
         MotionProfile profile = new MotionProfile();
         profile.reset(start_state);
         // If our velocity is headed away from the goal, the first thing we need to do is to stop.
         if (start_state.vel() < 0.0 && delta_pos > 0.0) {
-            final double stopping_time = Math.abs(start_state.vel() / Constants.PathFollowingMaxAccel);
-            profile.appendControl(Constants.PathFollowingMaxAccel, stopping_time);
+            final double stopping_time = Math.abs(start_state.vel() / Constants.PATH_FOLLOWING_MAX_ACCEL);
+            profile.appendControl(Constants.PATH_FOLLOWING_MAX_ACCEL, stopping_time);
             start_state = profile.endState();
             delta_pos = goal_state.pos() - start_state.pos();
         }
@@ -55,7 +55,7 @@ public class MotionProfileGenerator {
         final double min_abs_vel_at_goal = Math.sqrt(Math.abs(min_abs_vel_at_goal_sqr));
         final double max_abs_vel_at_goal = Math.sqrt(start_state.vel2() + 2.0 * constraints.max_abs_acc() * delta_pos);
         double goal_vel = goal_state.max_abs_vel();
-        double max_acc = Constants.PathFollowingMaxAccel;
+        double max_acc = Constants.PATH_FOLLOWING_MAX_ACCEL;
         if (min_abs_vel_at_goal_sqr > 0.0
                 && min_abs_vel_at_goal > (goal_state.max_abs_vel() + goal_state.vel_tolerance())) {
             // Overshoot is unavoidable with the current constraints. Look at completion_behavior to see what we should
@@ -78,8 +78,8 @@ public class MotionProfileGenerator {
                 max_acc = Math.abs(goal_vel * goal_vel - start_state.vel2()) / (2.0 * delta_pos);
             } else {
                 // We are going to overshoot the goal, so the first thing we need to do is come to a stop.
-                final double stopping_time = Math.abs(start_state.vel() / Constants.PathFollowingMaxAccel);
-                profile.appendControl(-Constants.PathFollowingMaxAccel, stopping_time);
+                final double stopping_time = Math.abs(start_state.vel() / Constants.PATH_FOLLOWING_MAX_ACCEL);
+                profile.appendControl(-Constants.PATH_FOLLOWING_MAX_ACCEL, stopping_time);
                 // Now we need to travel backwards, so generate a flipped profile.
                 profile.appendProfile(generateFlippedProfile(constraints, goal_state, profile.endState()));
                 profile.consolidate();
@@ -108,7 +108,7 @@ public class MotionProfileGenerator {
         }
         // Figure out how much distance will be covered during deceleration.
         final double distance_decel = Math.max(0.0,
-                (start_state.vel2() - goal_vel * goal_vel) / (2.0 * Constants.PathFollowingMaxAccel));
+                (start_state.vel2() - goal_vel * goal_vel) / (2.0 * Constants.PATH_FOLLOWING_MAX_ACCEL));
         final double distance_cruise = Math.max(0.0, goal_state.pos() - start_state.pos() - distance_decel);
         // Cruise at constant velocity.
         if (distance_cruise > 0.0) {

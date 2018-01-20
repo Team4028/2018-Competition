@@ -32,79 +32,85 @@ public class Constants {
 	public static final int SHIFTER_SOLENOID_EXTEND_PCM_PORT = 3;
 	
 	// Solenoid Positions
-	public static final Value SHIFTER_SOLENOID_LOW_GEAR_POSITION = DoubleSolenoid.Value.kForward;
-	public static final Value SHIFTER_SOLENOID_HIGH_GEAR_POSITION = DoubleSolenoid.Value.kReverse;
+	public static final Value SHIFTER_LOW_GEAR_POS = DoubleSolenoid.Value.kForward;
+	public static final Value SHIFTER_HIGH_GEAR_POS = DoubleSolenoid.Value.kReverse;
 	
 	// Logging
 	// this is where the USB stick is mounted on the RoboRIO filesystem.  You can confirm by logging into the RoboRIO using WinSCP
 	public static final String PRIMARY_LOG_FILE_PATH = "/media/sda1/logging";
 	public static final String ALTERNATE_LOG_FILE_PATH = "/media/sdb1/logging";
 	
-	
 	/* CONTROL LOOP GAINS */
+	// PID gains for motion magic loop (LOW GEAR)
+	public static final double DRIVE_MOTION_MAGIC_P = 1.0; //4.0
+    public static final double DRIVE_MOTION_MAGIC_I = 0.002; // 0.0
+    public static final double DRIVE_MOTION_MAGIC_D = 100.0; // 95.0
+    public static final double DRIVE_MOTION_MAGIC_F = 0.45; // 0.5
+    public static final int DRIVE_MOTION_MAGIC_I_ZONE = 700;
+    
+    public static final int DRIVE_MOTION_MAGIC_MAX_VEL = 360; //120.0;
+    public static final int DRIVE_MOTION_MAGIC_MAX_ACC = 720; //1200.0;
 
-    // PID gains for drive velocity loop (HIGH GEAR)
     // Units: setpoint, error, and output are in inches per second.
-    public static double DriveHighGearVelocityKp = 0.45; //1.2;
-    public static double DriveHighGearVelocityKi = 0.0;
-    public static double DriveHighGearVelocityKd = 2.0; //6.0;
-    public static double DriveHighGearVelocityKf = 0.5;
-    public static int DriveHighGearVelocityIZone = 0;
-    public static double DriveHighGearNominalOutput = 0.05;
-    public static double DriveHighGearMaxSetpoint = 13.97 * 12.0; // 14 fps
+    // PID gains for drive velocity loop (LOW_GEAR)
+    public static final double DRIVE_LOW_GEAR_VELOCITY_KP = 0.0;
+    public static final double DRIVE_LOW_GEAR_VELOCITY_KI = 0.0;
+    public static final double DRIVE_LOW_GEAR_VELOCITY_KD = 0.0;
+    public static final double DRIVE_LOW_GEAR_VELOCITY_KF = 0.0;
+    public static final int DRIVE_LOW_GEAR_VELOCITY_I_ZONE = 0;
     
-    public static double DRIVE_LOW_GEAR_POSITION_P = 1.0; //4.0
-    public static double DRIVE_LOW_GEAR_POSITION_I = 0.002; // 0.0
-    public static double DRIVE_LOW_GEAR_POSITION_D = 100.0; // 0.95
-    public static double DRIVE_LOW_GEAR_POSITION_F = 0.45; // 0.5
-    public static int DRIVE_LOW_GEAR_POSITION_I_ZONE = 700;
+    // PID gains for drive velocity loop (HIGH GEAR)
+    public static final double DRIVE_HIGH_GEAR_VELOCITY_KP = 0.45; //1.2;
+    public static final double DRIVE_HIGH_GEAR_VELOCITY_KI = 0.0;
+    public static final double DRIVE_HIGH_GEAR_VELOCITY_KD = 2.0; //6.0;
+    public static final double DRIVE_HIGH_GEAR_VELOCITY_KF = 0.5;
+    public static final int DRIVE_HIGH_GEAR_VELOCITY_I_ZONE = 0;
     
-    public static int DRIVE_TURN_MAX_VEL = 360; //120.0;
-    public static int DRIVE_TURN_MAX_ACC = 720; //1200.0
+    public static final double DRIVE_VELOCITY_NOMINAL_OUTPUT = 0.05;
+    public static final double DRIVE_VELOCITY_MAX_SETPOINT = 13.97 * 12.0; // 14 fps
     
-    public static double DriveVoltageCompensationRampRate = 0.0;
+    public static final double DRIVE_VOLTAGE_COMPENSATION_RAMPRATE = 0.0;
     
-    public static double DRIVE_CLOSED_LOOP_RAMP_RATE = 0.05;
+    public static final double DRIVE_CLOSED_LOOP_RAMP_RATE = 0.05;
     
 	/* Robot Physical Constants */
 	// Wheels
-	public static double DriveWheelDiameterInches = 4.05;
-	public static double TrackWidthInches = 25;
-	public static double TrackScrubFactor = 0.9;
+	public static final double DRIVE_WHEEL_DIAMETER_INCHES = 4.05;
+	public static final double TRACK_WIDTH_INCHES = 25;
+	public static final double TRACK_SCRUBBING_FACTOR = 0.9;
 	
 	// Geometry
-	public static double CenterToFrontBumperDistance = 16.33;
-    public static double CenterToIntakeDistance = 26.33;
-    public static double CenterToRearBumperDistance = 16.33;
-    public static double CenterToSideBumperDistance = 20.0;
+	public static final double CENTER_TO_FRONT_BUMPER_DISTANCE = 16.33;
+    public static final double CENTER_TO_INTAKE_DISTANCE = 26.33;
+    public static final double CENTER_TO_REAR_BUMPER_DISTANCE = 16.33;
+    public static final double CENTER_TO_SIDE_BUMPER_DISTANCE = 20.0;
     
     // Path Following Constants
-    public static double MinLookAhead = 12.0; // inches
-    public static double MinLookAheadSpeed = 9.0; // inches per second
-    public static double MaxLookAhead = 24.0; // inches
-    public static double MaxLookAheadSpeed = 120.0; // inches per second
-    public static double DeltaLookAhead = MaxLookAhead - MinLookAhead;
-    public static double DeltaLookAheadSpeed = MaxLookAheadSpeed - MinLookAheadSpeed;
+    public static final double MIN_LOOKAHEAD = 12.0; // inches
+    public static final double MIN_LOOKAHEAD_SPEED = 9.0; // inches per second
+    public static final double MAX_LOOKAHEAD = 24.0; // inches
+    public static final double MAX_LOOKAHEAD_SPEED = 120.0; // inches per second
+    public static final double DELTA_LOOKAHEAD = MAX_LOOKAHEAD - MIN_LOOKAHEAD;
+    public static final double DELTA_LOOKAHEAD_SPEED = MAX_LOOKAHEAD_SPEED - MIN_LOOKAHEAD_SPEED;
 
-    public static double InertiaSteeringGain = 0.0; // angular velocity command is multiplied by this gain *
-                                                     // our speed
-                                                     // in inches per sec
-    public static double SegmentCompletionTolerance = 0.1; // inches
-    public static double PathFollowingMaxAccel = 80.0; // inches per second^2
-    public static double PathFollowingMaxVel = 80.0; // inches per second
-    public static double PathFollowingProfileKp = 7.0;	//5.00;
-    public static double PathFollowingProfileKi = 0.0;	//0.03;
-    public static double PathFollowingProfileKv = 0.1; //0.02;
-    public static double PathFollowingProfileKffv = 1.0;
-    public static double PathFollowingProfileKffa = 0.05;
-    public static double PathFollowingGoalPosTolerance = 0.75;
-    public static double PathFollowingGoalVelTolerance = 12.0;
-    public static double PathStopSteeringDistance = 9.0;
+    public static final double INERTIA_STEERING_GAIN = 0.0; // angular velocity command is multiplied by this gain *
+                            
+    public static final double SEGMENT_COMPLETION_TOLERANCE = 0.1; // inches
+    public static final double PATH_FOLLOWING_MAX_ACCEL = 80.0; // inches per second^2
+    public static final double PATH_FOLLOWING_MAX_VEL = 80.0; // inches per second
+    public static final double PATH_FOLLOWING_PROFILE_KP = 7.0;	//5.00;
+    public static final double PATH_FOLLOWING_PROFILE_KI = 0.0;	//0.03;
+    public static final double PATH_FOLLOWING_PROFILE_KV = 0.1; //0.02;
+    public static final double PATH_FOLLOWING_PROFILE_KFFV = 1.0;
+    public static final double PATH_FOLLOWING_PROFILE_KFFA = 0.05;
+    public static final double PATH_FOLLOWING_GOAL_POS_TOLERANCE = 0.75;
+    public static final double PATH_FOLLOWING_GOAL_VEL_TOLERANCE = 12.0;
+    public static final double PATH_STOP_STEERING_DISTANCE = 9.0;
     
-    public static double CelerySpeed=0;
-    public static double TurtleSpeed = 20;
-    public static double WildTurtleSpeed = 40;
-    public static double NormalSpeed = 60;
-    public static double FloorItSpeed = 80;
-    public static double KeeeeeeeeeeeeeensSpeed = 100;
+    public static final double CELERY_SPEED = 0.0000001;
+    public static final double TURTLE_SPEED = 20;
+    public static final double WILD_TURTLE_SPEED = 40;
+    public static final double NORMAL_SPEED = 60;
+    public static final double FLOOR_IT_SPEED = 80;
+    public static final double KEEEEEEEEEEEEEEEEEEENS_SPEED = 100;
 }
