@@ -28,8 +28,7 @@ public class Ultrasonic {
 	
 	static final double MINIMUM_DISTANCE_FOR_CUBE = 10;
 	
-	private Ultrasonic() 
-	{
+	private Ultrasonic() {
 		ultrasonicSensor = new AnalogInput(Constants.ULTRASONIC_PORT);
 	}
 		
@@ -41,12 +40,9 @@ public class Ultrasonic {
 		_distanceReadInInches = _ultrasonicSensorOutputVoltage/VOLTS_PER_INCH;
 		_distanceReadInMeters = _distanceReadInInches/INCHES_PER_METER;
 		
-		if (_distanceReadInInches <= MINIMUM_DISTANCE_FOR_CUBE)
-		{
+		if (_distanceReadInInches <= MINIMUM_DISTANCE_FOR_CUBE) {
 			_isCubeInRobot = true; 
-		}
-		else
-		{
+		} else {
 			_isCubeInRobot = false;
 		}
 		

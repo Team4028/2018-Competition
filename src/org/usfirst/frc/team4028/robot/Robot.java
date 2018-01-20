@@ -5,11 +5,12 @@ import java.text.DecimalFormat;
 import java.util.Date;
 
 import org.usfirst.frc.team4028.robot.auton.AutonExecuter;
+import org.usfirst.frc.team4028.robot.sensors.Ultrasonic;
 import org.usfirst.frc.team4028.robot.subsystems.*;
 import org.usfirst.frc.team4028.robot.subsystems.Chassis.GearShiftPosition;
 import org.usfirst.frc.team4028.util.DataLogger;
 import org.usfirst.frc.team4028.util.GeneralUtilities;
-import org.usfirst.frc.team4028.util.LogData;
+import org.usfirst.frc.team4028.util.LogDataBE;
 import org.usfirst.frc.team4028.util.MovingAverage;
 import org.usfirst.frc.team4028.util.loops.Looper;
 
@@ -22,14 +23,18 @@ public class Robot extends IterativeRobot {
 	// Subsystems
 	private Chassis _chassis = Chassis.getInstance();
 	
+	// Sensors
+	private Ultrasonic _ultrasonic = Ultrasonic.getInstance();
+	
 	// Other
-	private ControlBoard _controlBoard = ControlBoard.getInstance();
+	private DriverOperationStation _dos = DriverOperationStation.getInstance();
 	private AutonExecuter _autonExecuter = null;
-	private SmartDashboardInputs _smartDashboard = SmartDashboardInputs.getInstance();
+	private Dashboard _dashboard = Dashboard.getInstance();
 	private DataLogger _dataLogger = null;
 	
-	Looper _enabledLooper = new Looper();
+	private Looper _enabledLooper = new Looper();
 	
+	// Class level variables
 	String _buildMsg = "?";
 	String _fmsDebugMsg = "?";
  	long _lastDashboardWriteTimeMSec;
@@ -44,13 +49,13 @@ public class Robot extends IterativeRobot {
 		_enabledLooper.register(_chassis.getLoop());
 		_enabledLooper.register(RobotStateEstimator.getInstance().getLoop());
 		
-		_smartDashboard.printStartupMessage();
+		_dashboard.printStartupMessage();
 		
-		// create class to hold Scan Times moving Average samples
+		// Hold scan times moving average samples
 		_scanTimeSamples = new MovingAverage(100);  // 2 sec * 1000mSec/Sec / 20mSec/Scan
 		SmartDashboard.putString("Scan Time (2 sec roll avg)", "0.0 mSec");
 		
-		outputAllToSmartDashboard();
+		outputAllToDashboard();
 	}
 
 	@Override
@@ -61,15 +66,17 @@ public class Robot extends IterativeRobot {
 		_autonExecuter = null;
 		
 		_enabledLooper.stop();
+		
+		if (_dataLogger != null) {
+			_dataLogger.close();
+			_dataLogger = null;
+		}
+		
 		stopAll();
 	}
 
 	@Override
 	public void disabledPeriodic() {
-		if (_dataLogger != null) {
-			_dataLogger.close();
-			_dataLogger = null;
-		}
 		stopAll();
 	}
 	
@@ -83,7 +90,7 @@ public class Robot extends IterativeRobot {
 		_enabledLooper.start();
 		
 		_autonExecuter = new AutonExecuter();
-		_autonExecuter.setAutoMode(_smartDashboard.getSelectedAuton());
+		_autonExecuter.setAutoMode(_dashboard.getSelectedAuton());
 		_autonExecuter.start();
 		
 		_chassis.zeroSensors();
@@ -97,8 +104,7 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousPeriodic() {	
 		logAllData();
-		outputAllToSmartDashboard();
-		
+		outputAllToDashboard();
 	}
 
 	@Override
@@ -122,19 +128,18 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopPeriodic() {
 		// Chassis Throttle & Turn
-		if ((Math.abs(_controlBoard.getThrottleCmd()) > 0.05) 
-				|| (Math.abs(_controlBoard.getTurnCmd()) > 0.05)) {
-			_chassis.arcadeDrive(-1.0 * _controlBoard.getThrottleCmd(), _controlBoard.getTurnCmd());
+		if ((Math.abs(_dos.getThrottleCmd()) > 0.05) || (Math.abs(_dos.getTurnCmd()) > 0.05)) {
+			_chassis.arcadeDrive(-1.0 * _dos.getThrottleCmd(), _dos.getTurnCmd());
 		} else {
 			_chassis.stop();
 		}
 		
-		if (_controlBoard.getIsShiftGearJustPressed()) 
-		{
+		if (_dos.getIsShiftGearJustPressed()) {
 			_chassis.ToggleShiftGear();
 		}
+		
 		// Refresh Dashboard
-		outputAllToSmartDashboard();
+		outputAllToDashboard();
 		
 		// Optionally Log Data
 		logAllData();
@@ -144,13 +149,14 @@ public class Robot extends IterativeRobot {
 		_chassis.stop();
 	}
 	
-	private void outputAllToSmartDashboard() {
+	private void outputAllToDashboard() {
 		// limit spamming
     	long scanCycleDeltaInMSecs = new Date().getTime() - _lastScanEndTimeInMSec;
     	_scanTimeSamples.add(new BigDecimal(scanCycleDeltaInMSecs));
     	
     	if((new Date().getTime() - _lastDashboardWriteTimeMSec) > 100) {
     		_chassis.outputToSmartDashboard(); 
+    		_ultrasonic.outputToDashboard();
 	    	
 	    	SmartDashboard.putString("Robot Build", _buildMsg);
 	    	SmartDashboard.putString("FMS Debug Msg", _fmsDebugMsg);
@@ -167,17 +173,14 @@ public class Robot extends IterativeRobot {
     	_lastScanEndTimeInMSec = new Date().getTime();
 	}
 	
-	private void logAllData() {
+	private void logAllData() { 
 		// always call this 1st to calc drive metrics
     	if(_dataLogger != null) {    	
 	    	// create a new, empty logging class
-        	LogData logData = new LogData();
+        	LogDataBE logData = new LogDataBE();
 	    	
 	    	// ask each subsystem that exists to add its data
 	    	_chassis.updateLogData(logData);
-	    	
-	    	// now write to the log file
-	    	_dataLogger.WriteDataLine(logData);
     	}
 	}
 }

@@ -24,7 +24,7 @@ public class Constants {
 	// NavX (on Roborio)
 	public static final SPI.Port NAVX_PORT = Port.kMXP;
 	
-	//Ultrasonic (on Roborio)
+	// Ultrasonic (on Roborio)
 	public static final int ULTRASONIC_PORT = 0;
 	
 	// PCM Ports
