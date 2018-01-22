@@ -81,6 +81,7 @@ public class Robot extends IterativeRobot {
 			_dataLogger = null;
 		}
 		
+		_chassis.setBrakeMode(false);
 		stopAll();
 	}
 
@@ -110,14 +111,15 @@ public class Robot extends IterativeRobot {
 		_autonExecuter.setAutoMode(_dashboard.getSelectedAuton());
 		_autonExecuter.start();
 		
-		_chassis.zeroSensors();
+		_chassis.zeroGyro();
+		_chassis.setBrakeMode(true);
 		
 		// init data logging
 		_dataLogger = GeneralUtilities.setupLogging("auton");
 		// snapshot time to control spamming
 		_lastDashboardWriteTimeMSec = new Date().getTime();
 		
-		_autonStartTime=System.currentTimeMillis();
+		_autonStartTime = System.currentTimeMillis();
 	}
 
 	// ================================================================
@@ -148,7 +150,6 @@ public class Robot extends IterativeRobot {
 		
 		_chassis.setHighGear(false);
 		_chassis.setBrakeMode(false);
-		_chassis.zeroSensors();
 		
 		// init data logging
 		_dataLogger = GeneralUtilities.setupLogging("auton");
@@ -223,6 +224,8 @@ public class Robot extends IterativeRobot {
 	    	
 	    	// ask each subsystem that exists to add its data
 	    	_chassis.updateLogData(logData);
+	    	
+	    	_dataLogger.WriteDataLine(logData);
     	}
 	}
 }

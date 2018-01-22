@@ -33,8 +33,8 @@ public class Constants {
 	public static final int SHIFTER_SOLENOID_EXTEND_PCM_PORT = 3;
 	
 	// Solenoid Positions
-	public static final Value SHIFTER_LOW_GEAR_POS = DoubleSolenoid.Value.kForward;
-	public static final Value SHIFTER_HIGH_GEAR_POS = DoubleSolenoid.Value.kReverse;
+	public static final Value SHIFTER_LOW_GEAR_POS = DoubleSolenoid.Value.kReverse;
+	public static final Value SHIFTER_HIGH_GEAR_POS = DoubleSolenoid.Value.kForward;
 	
 	// Logging
 	// this is where the USB stick is mounted on the RoboRIO filesystem.  
@@ -55,10 +55,10 @@ public class Constants {
 
     // Units: setpoint, error, and output are in inches per second.
     // PID gains for drive velocity loop (LOW_GEAR)
-    public static final double DRIVE_LOW_GEAR_VELOCITY_KP = 0.45;
+    public static final double DRIVE_LOW_GEAR_VELOCITY_KP = 0.6; //0.45;
     public static final double DRIVE_LOW_GEAR_VELOCITY_KI = 0.0;
-    public static final double DRIVE_LOW_GEAR_VELOCITY_KD = 2.0;
-    public static final double DRIVE_LOW_GEAR_VELOCITY_KF = 0.5;
+    public static final double DRIVE_LOW_GEAR_VELOCITY_KD = 5.0; //2.0;
+    public static final double DRIVE_LOW_GEAR_VELOCITY_KF = 0.38; //0.5;
     public static final int DRIVE_LOW_GEAR_VELOCITY_I_ZONE = 0;
     
     // PID gains for drive velocity loop (HIGH GEAR)
@@ -98,13 +98,13 @@ public class Constants {
     public static final double INERTIA_STEERING_GAIN = 0.0; // angular velocity command is multiplied by this gain *
                             
     public static final double SEGMENT_COMPLETION_TOLERANCE = 0.1; // inches
-    public static final double PATH_FOLLOWING_MAX_ACCEL = 80.0; // inches per second^2
+    public static final double PATH_FOLLOWING_MAX_ACCEL = 100.0; // inches per second^2
     public static final double PATH_FOLLOWING_MAX_VEL = 80.0; // inches per second
-    public static final double PATH_FOLLOWING_PROFILE_KP = 7.0;	//5.00;
+    public static final double PATH_FOLLOWING_PROFILE_KP = 5.0;	//5.00;
     public static final double PATH_FOLLOWING_PROFILE_KI = 0.0;	//0.03;
     public static final double PATH_FOLLOWING_PROFILE_KV = 0.1; //0.02;
     public static final double PATH_FOLLOWING_PROFILE_KFFV = 1.0;
-    public static final double PATH_FOLLOWING_PROFILE_KFFA = 0.05;
+    public static final double PATH_FOLLOWING_PROFILE_KFFA = 0.1;
     public static final double PATH_FOLLOWING_GOAL_POS_TOLERANCE = 0.75;
     public static final double PATH_FOLLOWING_GOAL_VEL_TOLERANCE = 12.0;
     public static final double PATH_STOP_STEERING_DISTANCE = 9.0;
@@ -114,5 +114,6 @@ public class Constants {
     public static final double WILD_TURTLE_SPEED = 40;
     public static final double NORMAL_SPEED = 60;
     public static final double FLOOR_IT_SPEED = 80;
-    public static final double KEEEEEEEEEEEEEEEEEEENS_SPEED = 100;
+    public static final double WARP_SPEED=100;
+    public static final double KEEEEEEEEEEEEEEEEEEENS_SPEED = 120;
 }

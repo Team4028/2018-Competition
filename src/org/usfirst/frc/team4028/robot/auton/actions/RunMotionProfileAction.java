@@ -4,7 +4,6 @@ import org.usfirst.frc.team4028.robot.RobotState;
 import org.usfirst.frc.team4028.robot.subsystems.Chassis;
 import org.usfirst.frc.team4028.util.control.Path;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 
 /* Runs a motion profile */
@@ -19,7 +18,7 @@ public class RunMotionProfileAction implements Action {
 	
 	@Override
 	public void start() {
-		//RobotState.getInstance().reset(Timer.getFPGATimestamp(), _path.getStartPose());
+		RobotState.getInstance().reset(Timer.getFPGATimestamp(), _path.getStartPose());
 		_chassis.setWantDrivePath(_path, _path.isReversed());
 		_startTime = Timer.getFPGATimestamp();
 	}
@@ -32,7 +31,7 @@ public class RunMotionProfileAction implements Action {
 				System.out.println("Attention Idiots: You Morons Forgot to Plug in The Encoder");
 			}
 		}
-	}	// Nothing here since trajController updates in its own thread
+	}
 
 	@Override
 	public void done() {	

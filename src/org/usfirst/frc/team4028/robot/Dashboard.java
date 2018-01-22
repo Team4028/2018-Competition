@@ -33,6 +33,7 @@ public class Dashboard {
 		_autonModeChooser.addObject("Switch", GeneralEnums.AUTON_MODE.SWITCH);
 		_autonModeChooser.addObject("Double Switch", GeneralEnums.AUTON_MODE.DOUBLE_SWITCH);
 		_autonModeChooser.addObject("Triple Switch", GeneralEnums.AUTON_MODE.TRIPLE_SWITCH);
+		_autonModeChooser.addObject("Tokyo Drift", GeneralEnums.AUTON_MODE.TOKYO_DRIFT);
 		SmartDashboard.putData("Auton Mode Chooser", _autonModeChooser);
 	}
 	
@@ -65,6 +66,8 @@ public class Dashboard {
 				return new DoubleSwitch();
 			case TRIPLE_SWITCH:
 				return new TripleSwitch();
+			case TOKYO_DRIFT:
+				return new TokyoDriftTest();
 			default:
 				return new DoNothing();
 		}

@@ -8,6 +8,7 @@ public class GeneralEnums {
 		AUTO_RUN,
 		SWITCH,
 		DOUBLE_SWITCH,
-		TRIPLE_SWITCH
+		TRIPLE_SWITCH,
+		TOKYO_DRIFT
 	}
 }

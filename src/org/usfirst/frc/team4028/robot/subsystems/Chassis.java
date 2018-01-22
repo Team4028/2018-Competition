@@ -57,6 +57,9 @@ public class Chassis implements Subsystem{
 	private double _targetAngle;
 	private double _setpointright;
 	
+	private double _leftTargetVelocity;
+	private double _rightTargetVelocity;
+	
 	// acc/dec variables
 	private boolean _isAccelDecelEnabled = true;
 	private double _currentThrottleCmdScaled, _previousThrottleCmdScaled;
@@ -317,6 +320,8 @@ public class Chassis implements Subsystem{
 		Twist command = _pathFollower.update(timestamp, _robotPose, RobotState.getInstance().getDistanceDriven(), RobotState.getInstance().getPredictedVelocity().dx);
 		if (!_pathFollower.isFinished()) {
 			Kinematics.DriveVelocity setpoint = Kinematics.inverseKinematics(command);
+			_leftTargetVelocity = setpoint.left;
+			_rightTargetVelocity = setpoint.right;
 			updateVelocitySetpoint(setpoint.left, setpoint.right);
 		} else {
 			updateVelocitySetpoint(0.0, 0.0);
@@ -527,6 +532,7 @@ public class Chassis implements Subsystem{
 	
 	@Override
 	public void updateLogData(LogDataBE logData) {
+		/*
 		logData.AddData("Chassis:LeftDriveMtr%VBus", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.LeftDriveMtrPercentVBus, 2)));
 		logData.AddData("Chassis:LeftDriveMtrPos [m]", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.LeftDriveMtrPos, 2)));
 		logData.AddData("Chassis:LeftDriveMtrVel [m/s]", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.LeftDriveMtrMPS, 2)));
@@ -536,6 +542,13 @@ public class Chassis implements Subsystem{
 		logData.AddData("Chassis:RightDriveMtrPos [m]", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.RightDriveMtrPos, 2)));
 		logData.AddData("Chassis:RightDriveMtrVel [m/s]", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.RightDriveMtrMPS, 2)));
 		logData.AddData("Chassis:RightDriveMtrAccel [m/s/s]", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.RightDriveMtrMPSPerSec, 2)));
+		*/
+		
+		logData.AddData("Left Actual Velocity [in/s]", String.valueOf(GeneralUtilities.RoundDouble(getLeftVelocityInchesPerSec(), 2)));
+		logData.AddData("Left Target Velocity [in/s]", String.valueOf(GeneralUtilities.RoundDouble(_leftTargetVelocity, 2)));
+		
+		logData.AddData("Right Actual Velocity [in/s]", String.valueOf(GeneralUtilities.RoundDouble(-getRightVelocityInchesPerSec(), 2)));
+		logData.AddData("Right Target Velocity [in/s]", String.valueOf(GeneralUtilities.RoundDouble(_rightTargetVelocity, 2)));
 	}
 	
 	public void UpdateDriveTrainPerfMetrics() {
