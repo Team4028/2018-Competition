@@ -25,7 +25,7 @@ import com.ctre.phoenix.motorcontrol.VelocityMeasPeriod;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.DriverStation;
 
 public class Chassis implements Subsystem{
 	// singleton pattern
@@ -59,6 +59,8 @@ public class Chassis implements Subsystem{
 	
 	private double _leftTargetVelocity;
 	private double _rightTargetVelocity;
+	
+	private boolean _isAutoShiftingEnabled = false;
 	
 	// acc/dec variables
 	private boolean _isAccelDecelEnabled = true;
@@ -144,13 +146,14 @@ public class Chassis implements Subsystem{
 						return;
 						
 					case FOLLOW_PATH:
-						_leftMaster.selectProfileSlot(kVelocityControlSlot, 0);
-						_rightMaster.selectProfileSlot(kVelocityControlSlot, 0);
-						
 						if (isHighGear()) {
 							setHighGearVelocityGains();
 						} else {
 							setLowGearVelocityGains();
+						}
+						
+						if (_isAutoShiftingEnabled) {
+							autoShift();
 						}
 						
 						if (_pathFollower != null) 
@@ -158,6 +161,7 @@ public class Chassis implements Subsystem{
 						return;
 						
 					case PERCENT_VBUS:
+						enableAutoShifting(false);
 						return;
 						
 					case VELOCITY_SETPOINT:
@@ -333,7 +337,8 @@ public class Chassis implements Subsystem{
      * 
      * @see Path
      */
-    public synchronized void setWantDrivePath(Path path, boolean reversed) {
+    public synchronized void setWantDrivePath(Path path, boolean reversed, boolean isShiftingEnabled) {
+    	enableAutoShifting(isShiftingEnabled);
         if (_currentPath != path || _chassisState != ChassisState.FOLLOW_PATH) {
             configureTalonsForSpeedControl();
             RobotState.getInstance().resetDistanceDriven();
@@ -378,6 +383,18 @@ public class Chassis implements Subsystem{
 	
 	public synchronized boolean isHighGear() {
 		return _shifterSolenoid.get() == Constants.SHIFTER_HIGH_GEAR_POS;
+	}
+	
+	public synchronized void autoShift() {
+		if ((getLeftVelocityInchesPerSec() + getRightVelocityInchesPerSec()) > 60.0 * 2.0) {
+			setHighGear(true);
+		} else if ((getLeftVelocityInchesPerSec() + getRightVelocityInchesPerSec()) < 50.0 * 2.0) {
+			setHighGear(false);
+		}
+	}
+	
+	public synchronized void enableAutoShifting(boolean isEnabled) {
+		_isAutoShiftingEnabled = isEnabled;
 	}
 	
 	public void zeroEncoders() {
@@ -519,13 +536,14 @@ public class Chassis implements Subsystem{
 	@Override
 	public void outputToSmartDashboard() {
 		//SmartDashboard.putNumber("Left Position", getLeftPosInRot());
-		//SmartDashboard.putNumber("Left Drive Inches/Sec", getLeftSpeed());
+		//SmartDashboard.putNumber("Left Drive Inches/Sec", getLeftVelocityInchesPerSec());
 		//SmartDashboard.putNumber("Right Position", getRightPosInRot());
-		//SmartDashboard.putNumber("Right Drive Inches/Sec", getLeftSpeed());
+		//SmartDashboard.putNumber("Right Drive Inches/Sec", getRightVelocityInchesPerSec());
+		DriverStation.reportWarning(Double.toString(getRightVelocityInchesPerSec()), false);
 		
 		//SmartDashboard.putNumber("Left Position in Inches", getLeftDistanceInches());
 		//SmartDashboard.putNumber("Right Position in Inches", getRightDistanceInches());
-		SmartDashboard.putNumber("Left Target Velocity", _setpointright);
+		//SmartDashboard.putNumber("Left Target Velocity", _setpointright);
 		//SmartDashboard.putNumber("Left Position", _leftMaster.getSelectedSensorPosition(0));
 		//SmartDashboard.putNumber("Left Position Quadruature", _leftMaster.getSensorCollection().getQuadraturePosition());
 	}

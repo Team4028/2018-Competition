@@ -33,6 +33,8 @@ public class Dashboard {
 		_autonModeChooser.addObject("Switch", GeneralEnums.AUTON_MODE.SWITCH);
 		_autonModeChooser.addObject("Double Switch", GeneralEnums.AUTON_MODE.DOUBLE_SWITCH);
 		_autonModeChooser.addObject("Triple Switch", GeneralEnums.AUTON_MODE.TRIPLE_SWITCH);
+		_autonModeChooser.addObject("Scale", GeneralEnums.AUTON_MODE.SCALE);
+		_autonModeChooser.addObject("Double Scale", GeneralEnums.AUTON_MODE.DOUBLE_SCALE_AS_SEABASS_IS_OFF_AUTON_TEAM);
 		_autonModeChooser.addObject("Tokyo Drift", GeneralEnums.AUTON_MODE.TOKYO_DRIFT);
 		SmartDashboard.putData("Auton Mode Chooser", _autonModeChooser);
 	}
@@ -66,8 +68,12 @@ public class Dashboard {
 				return new DoubleSwitch();
 			case TRIPLE_SWITCH:
 				return new TripleSwitch();
+			case SCALE:
+				return new Scale();
 			case TOKYO_DRIFT:
 				return new TokyoDriftTest();
+			case DOUBLE_SCALE_AS_SEABASS_IS_OFF_AUTON_TEAM:
+				return new DoubleScale();
 			default:
 				return new DoNothing();
 		}

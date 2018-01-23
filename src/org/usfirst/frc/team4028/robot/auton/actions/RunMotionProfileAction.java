@@ -11,15 +11,21 @@ public class RunMotionProfileAction implements Action {
 	private Chassis _chassis = Chassis.getInstance();
 	private Path _path;
 	private double _startTime;
+	private boolean _isShiftingEnabled;
+	
+	public RunMotionProfileAction(Path p, boolean isShiftingEnabled) {
+		_isShiftingEnabled = isShiftingEnabled;
+		_path = p;
+	}
 	
 	public RunMotionProfileAction(Path p) {
-		_path = p;
+		this(p, false);
 	}
 	
 	@Override
 	public void start() {
 		RobotState.getInstance().reset(Timer.getFPGATimestamp(), _path.getStartPose());
-		_chassis.setWantDrivePath(_path, _path.isReversed());
+		_chassis.setWantDrivePath(_path, _path.isReversed(), _isShiftingEnabled);
 		_startTime = Timer.getFPGATimestamp();
 	}
 

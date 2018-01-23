@@ -99,7 +99,7 @@ public class Constants {
                             
     public static final double SEGMENT_COMPLETION_TOLERANCE = 0.1; // inches
     public static final double PATH_FOLLOWING_MAX_ACCEL = 100.0; // inches per second^2
-    public static final double PATH_FOLLOWING_MAX_VEL = 80.0; // inches per second
+    public static final double PATH_FOLLOWING_MAX_VEL = 120.0; // inches per second
     public static final double PATH_FOLLOWING_PROFILE_KP = 5.0;	//5.00;
     public static final double PATH_FOLLOWING_PROFILE_KI = 0.0;	//0.03;
     public static final double PATH_FOLLOWING_PROFILE_KV = 0.1; //0.02;
@@ -114,6 +114,6 @@ public class Constants {
     public static final double WILD_TURTLE_SPEED = 40;
     public static final double NORMAL_SPEED = 60;
     public static final double FLOOR_IT_SPEED = 80;
-    public static final double WARP_SPEED=100;
-    public static final double KEEEEEEEEEEEEEEEEEEENS_SPEED = 120;
+    public static final double WARP_SPEED = 100;
+    public static final double KEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEENS_SPEED = 120;
 }
