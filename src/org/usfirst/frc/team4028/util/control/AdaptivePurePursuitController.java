@@ -11,35 +11,32 @@ public class AdaptivePurePursuitController {
 
     public static class Command {
         public Twist delta = Twist.identity();
-        public double cross_track_error;
-        public double max_velocity;
-        public double end_velocity;
-        public Translation lookahead_point;
-        public double remaining_path_length;
+        public double crossTrackError;
+        public double maxVelocity;
+        public double endVelocity;
+        public Translation lookaheadPoint;
+        public double remainingPathLength;
 
-        public Command() {
-        }
-
-        public Command(Twist delta, double cross_track_error, double max_velocity, double end_velocity,
-                Translation lookahead_point, double remaining_path_length) {
+        public Command(Twist delta, double crossTrackError, double maxVelocity, double endVelocity,
+                Translation lookaheadVelocity, double remainingPathLength) {
             this.delta = delta;
-            this.cross_track_error = cross_track_error;
-            this.max_velocity = max_velocity;
-            this.end_velocity = end_velocity;
-            this.lookahead_point = lookahead_point;
-            this.remaining_path_length = remaining_path_length;
+            this.crossTrackError = crossTrackError;
+            this.maxVelocity = maxVelocity;
+            this.endVelocity = endVelocity;
+            this.lookaheadPoint = lookaheadVelocity;
+            this.remainingPathLength = remainingPathLength;
         }
     }
 
-    Path mPath;
-    boolean mAtEndOfPath = false;
-    final boolean mReversed;
+    Path path;
+    boolean atEndOfPath = false;
+    final boolean reversed;
     final Lookahead mLookahead = new Lookahead(Constants.MIN_LOOKAHEAD, Constants.MAX_LOOKAHEAD,
             Constants.MIN_LOOKAHEAD_SPEED, Constants.MAX_LOOKAHEAD_SPEED);
 
     public AdaptivePurePursuitController(Path path, boolean reversed) {
-        mPath = path;
-        mReversed = reversed;
+        this.path = path;
+        this.reversed = reversed;
     }
 
     /**
@@ -50,12 +47,12 @@ public class AdaptivePurePursuitController {
      * @return movement command for the robot to follow
      */
     public Command update(RigidTransform pose) {
-        if (mReversed) {
+        if (reversed) {
             pose = new RigidTransform(pose.getTranslation(),
                     pose.getRotation().rotateBy(Rotation.fromRadians(Math.PI)));
         }
 
-        final Path.TargetPointReport report = mPath.getTargetPoint(pose.getTranslation(), mLookahead);
+        final Path.TargetPointReport report = path.getTargetPoint(pose.getTranslation(), mLookahead);
         if (isFinished()) {
             // Stop.
             return new Command(Twist.identity(), report.closest_point_distance, report.max_speed, 0.0,
@@ -67,11 +64,11 @@ public class AdaptivePurePursuitController {
         // Ensure we don't overshoot the end of the path (once the lookahead speed drops to zero).
         if (report.lookahead_point_speed < 1E-6 && report.remaining_path_distance < arc.length) {
             scale_factor = Math.max(0.0, report.remaining_path_distance / arc.length);
-            mAtEndOfPath = true;
+            atEndOfPath = true;
         } else {
-            mAtEndOfPath = false;
+            atEndOfPath = false;
         }
-        if (mReversed) {
+        if (reversed) {
             scale_factor *= -1;
         }
 
@@ -84,7 +81,7 @@ public class AdaptivePurePursuitController {
     }
 
     public boolean hasPassedMarker(String marker) {
-        return mPath.hasPassedMarker(marker);
+        return path.hasPassedMarker(marker);
     }
 
     public static class Arc {
@@ -186,6 +183,6 @@ public class AdaptivePurePursuitController {
      * @return has the robot reached the end of the path
      */
     public boolean isFinished() {
-        return mAtEndOfPath;
+        return atEndOfPath;
     }
 }

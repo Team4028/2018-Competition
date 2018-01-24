@@ -55,7 +55,7 @@ public class Constants {
 
     // Units: setpoint, error, and output are in inches per second.
     // PID gains for drive velocity loop (LOW_GEAR)
-    public static final double DRIVE_LOW_GEAR_VELOCITY_KP = 0.6; //0.45;
+    public static final double DRIVE_LOW_GEAR_VELOCITY_KP = 0.8; //0.45;
     public static final double DRIVE_LOW_GEAR_VELOCITY_KI = 0.0;
     public static final double DRIVE_LOW_GEAR_VELOCITY_KD = 5.0; //2.0;
     public static final double DRIVE_LOW_GEAR_VELOCITY_KF = 0.38; //0.5;
@@ -109,7 +109,7 @@ public class Constants {
     public static final double PATH_FOLLOWING_GOAL_VEL_TOLERANCE = 12.0;
     public static final double PATH_STOP_STEERING_DISTANCE = 9.0;
     
-    public static final double CELERY_SPEED = 0.0000001;
+    public static final double CELERY_SPEED = 0 - 1e-9;
     public static final double TURTLE_SPEED = 20;
     public static final double WILD_TURTLE_SPEED = 40;
     public static final double NORMAL_SPEED = 60;

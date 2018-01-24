@@ -9,24 +9,24 @@ public class Translation {
         return IDENTITY;
     }
 
-    protected double x_, y_;
+    protected double _x, _y;
 
     public Translation() {
         this(0, 0);
     }
 
     public Translation(double x, double y) {
-        x_ = x;
-        y_ = y;
+        _x = x;
+        _y = y;
     }
 
     public Translation(Translation other) {
-        this(other.x_, other.y_);
+        this(other._x, other._y);
     }
 
     public Translation(Translation start, Translation end) {
-        x_ = end.x_ - start.x_;
-        y_ = end.y_ - start.y_;
+        _x = end._x - start._x;
+        _y = end._y - start._y;
     }
 
     /**
@@ -35,23 +35,15 @@ public class Translation {
      * @return sqrt(x^2 + y^2)
      */
     public double norm() {
-        return Math.hypot(x_, y_);
+        return Math.hypot(_x, _y);
     }
 
     public double x() {
-        return x_;
+        return _x;
     }
 
     public double y() {
-        return y_;
-    }
-
-    public void setX(double x) {
-        x_ = x;
-    }
-
-    public void setY(double y) {
-        y_ = y;
+        return _y;
     }
 
     /**
@@ -62,7 +54,7 @@ public class Translation {
      * @return The combined effect of translating by this object and the other.
      */
     public Translation translateBy(Translation other) {
-        return new Translation(x_ + other.x_, y_ + other.y_);
+        return new Translation(_x + other._x, _y + other._y);
     }
 
     /**
@@ -73,11 +65,11 @@ public class Translation {
      * @return This translation rotated by rotation.
      */
     public Translation rotateBy(Rotation rotation) {
-        return new Translation(x_ * rotation.cos() - y_ * rotation.sin(), x_ * rotation.sin() + y_ * rotation.cos());
+        return new Translation(_x * rotation.cos() - _y * rotation.sin(), _x * rotation.sin() + _y * rotation.cos());
     }
 
     public Rotation direction() {
-        return new Rotation(x_, y_, true);
+        return new Rotation(_x, _y, true);
     }
 
     /**
@@ -86,7 +78,7 @@ public class Translation {
      * @return Translation by -x and -y.
      */
     public Translation inverse() {
-        return new Translation(-x_, -y_);
+        return new Translation(-_x, -_y);
     }
 
     public Translation interpolate(Translation other, double x) {
@@ -99,17 +91,11 @@ public class Translation {
     }
 
     public Translation extrapolate(Translation other, double x) {
-        return new Translation(x * (other.x_ - x_) + x_, x * (other.y_ - y_) + y_);
+        return new Translation(x * (other._x - _x) + _x, x * (other._y - _y) + _y);
     }
 
     public Translation scale(double s) {
-        return new Translation(x_ * s, y_ * s);
-    }
-
-    @Override
-    public String toString() {
-        final DecimalFormat fmt = new DecimalFormat("#0.000");
-        return "(" + fmt.format(x_) + "," + fmt.format(y_) + ")";
+        return new Translation(_x * s, _y * s);
     }
 
     public static Rotation getAngle(Translation a, Translation b) {
@@ -121,10 +107,16 @@ public class Translation {
     }
     
     public static double dot(Translation a, Translation b) {
-        return a.x_ * b.x_ + a.y_ * b.y_;
+        return a._x * b._x + a._y * b._y;
     }
 
     public static double cross(Translation a, Translation b) {
-        return a.x_ * b.y_ - a.y_ * b.x_;
+        return a._x * b._y - a._y * b._x;
+    }
+    
+    @Override
+    public String toString() {
+        final DecimalFormat fmt = new DecimalFormat("#0.000");
+        return "(" + fmt.format(_x) + "," + fmt.format(_y) + ")";
     }
 }

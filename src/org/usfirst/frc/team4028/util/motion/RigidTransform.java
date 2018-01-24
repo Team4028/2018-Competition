@@ -15,31 +15,23 @@ public class RigidTransform implements Interpolable<RigidTransform>{
 
     private final static double kEps = 1E-9;
 
-    protected Translation translation_;
-    protected Rotation rotation_;
+    protected Translation _translation;
+    protected Rotation _rotation;
 
     public RigidTransform() {
-        translation_ = new Translation();
-        rotation_ = new Rotation();
+        _translation = new Translation();
+        _rotation = new Rotation();
     }
 
     public RigidTransform(Translation translation, Rotation rotation) {
-        translation_ = translation;
-        rotation_ = rotation;
+        _translation = translation;
+        _rotation = rotation;
     }
 
     public RigidTransform(RigidTransform other) {
-        translation_ = new Translation(other.translation_);
-        rotation_ = new Rotation(other.rotation_);
-    }
-
-    public static RigidTransform fromTranslation(Translation translation) {
-        return new RigidTransform(translation, new Rotation());
-    }
-
-    public static RigidTransform fromRotation(Rotation rotation) {
-        return new RigidTransform(new Translation(), rotation);
-    }
+        _translation = new Translation(other._translation);
+        _rotation = new Rotation(other._rotation);
+    } 
 
     /**
      * Obtain a new RigidTransform2d from a (constant curvature) velocity. See:
@@ -79,15 +71,11 @@ public class RigidTransform implements Interpolable<RigidTransform>{
     }
 
     public Translation getTranslation() {
-        return translation_;
-    }
-
-    public void setTranslation(Translation translation) {
-        translation_ = translation;
+        return _translation;
     }
 
     public Rotation getRotation() {
-        return rotation_;
+        return _rotation;
     }
 
     /**
@@ -99,8 +87,8 @@ public class RigidTransform implements Interpolable<RigidTransform>{
      * @return This transform * other
      */
     public RigidTransform transformBy(RigidTransform other) {
-        return new RigidTransform(translation_.translateBy(other.translation_.rotateBy(rotation_)),
-                rotation_.rotateBy(other.rotation_));
+        return new RigidTransform(_translation.translateBy(other._translation.rotateBy(_rotation)),
+                _rotation.rotateBy(other._rotation));
     }
 
     /**
@@ -109,12 +97,12 @@ public class RigidTransform implements Interpolable<RigidTransform>{
      * @return The opposite of this transform.
      */
     public RigidTransform inverse() {
-        Rotation rotation_inverted = rotation_.inverse();
-        return new RigidTransform(translation_.inverse().rotateBy(rotation_inverted), rotation_inverted);
-    }
+        Rotation rotation_inverted = _rotation.inverse();
+        return new RigidTransform(_translation.inverse().rotateBy(rotation_inverted), rotation_inverted);
+    } 
 
     public RigidTransform normal() {
-        return new RigidTransform(translation_, rotation_.normal());
+        return new RigidTransform(_translation, _rotation.normal());
     }
 
     /**
@@ -123,11 +111,11 @@ public class RigidTransform implements Interpolable<RigidTransform>{
      */
     public Translation intersection(RigidTransform other) {
         final Rotation other_rotation = other.getRotation();
-        if (rotation_.isParallel(other_rotation)) {
+        if (_rotation.isParallel(other_rotation)) {
             // Lines are parallel.
             return new Translation(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
         }
-        if (Math.abs(rotation_.cos()) < Math.abs(other_rotation.cos())) {
+        if (Math.abs(_rotation.cos()) < Math.abs(other_rotation.cos())) {
             return intersectionInternal(this, other);
         } else {
             return intersectionInternal(other, this);
@@ -170,6 +158,6 @@ public class RigidTransform implements Interpolable<RigidTransform>{
     
     @Override
     public String toString() {
-    	return translation_.toString() + " | " + rotation_.toString();
+    	return _translation.toString() + " | " + _rotation.toString();
     }
 }

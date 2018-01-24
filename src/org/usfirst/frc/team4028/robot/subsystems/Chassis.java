@@ -25,7 +25,6 @@ import com.ctre.phoenix.motorcontrol.VelocityMeasPeriod;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.DriverStation;
 
 public class Chassis implements Subsystem{
 	// singleton pattern
@@ -57,8 +56,7 @@ public class Chassis implements Subsystem{
 	private double _targetAngle;
 	private double _setpointright;
 	
-	private double _leftTargetVelocity;
-	private double _rightTargetVelocity;
+	private double _leftTargetVelocity, _rightTargetVelocity;
 	
 	private boolean _isAutoShiftingEnabled = false;
 	
@@ -83,7 +81,6 @@ public class Chassis implements Subsystem{
 		PERCENT_VBUS, 
 		AUTO_TURN, 
 		FOLLOW_PATH,
-		VELOCITY_SETPOINT
 	}
 	
 	// private constructor for singleton pattern
@@ -119,8 +116,6 @@ public class Chassis implements Subsystem{
 		/* Shifter */
 		_shifterSolenoid = new DoubleSolenoid(Constants.PCM_CAN_BUS_ADDR, Constants.SHIFTER_SOLENOID_EXTEND_PCM_PORT, 
 												Constants.SHIFTER_SOLENOID_RETRACT_PCM_PORT);
-		
-		setBrakeMode(false);
 		
 		_lastScanPerfMetricsSnapShot = new ChassisDrivePerfMetrics();
 	}
@@ -163,9 +158,6 @@ public class Chassis implements Subsystem{
 					case PERCENT_VBUS:
 						enableAutoShifting(false);
 						return;
-						
-					case VELOCITY_SETPOINT:
-						return;
 				}
 			}
 		}
@@ -173,7 +165,6 @@ public class Chassis implements Subsystem{
 		@Override
 		public void onStop(double timestamp) {
 			synchronized (Chassis.this) {
-				setHighGear(true);
 				stop();
 			}
 		}
@@ -187,7 +178,7 @@ public class Chassis implements Subsystem{
      * Check if the drive talons are configured for velocity control
      */
     protected static boolean usesTalonVelocityControl(ChassisState state) {
-        if (state == ChassisState.VELOCITY_SETPOINT || state == ChassisState.FOLLOW_PATH) {
+        if (state == ChassisState.FOLLOW_PATH) {
             return true;
         }
         return false;
@@ -244,11 +235,11 @@ public class Chassis implements Subsystem{
      * @param left_inches_per_sec
      * @param right_inches_per_sec
      */
-    public synchronized void setVelocitySetpoint(double left_inches_per_sec, double right_inches_per_sec) {
+    /*public synchronized void setVelocitySetpoint(double left_inches_per_sec, double right_inches_per_sec) {
         configureTalonsForSpeedControl();
         _chassisState = ChassisState.VELOCITY_SETPOINT;
         updateVelocitySetpoint(left_inches_per_sec, right_inches_per_sec);
-    }
+    } */
 
     /**
      * Configures talons for velocity control
@@ -346,7 +337,8 @@ public class Chassis implements Subsystem{
             _chassisState = ChassisState.FOLLOW_PATH;
             _currentPath = path;
         } else {
-            setVelocitySetpoint(0, 0);
+        	_chassisState = ChassisState.PERCENT_VBUS;
+            arcadeDrive(0.0,0.0);
         }
     }
 
@@ -539,7 +531,6 @@ public class Chassis implements Subsystem{
 		//SmartDashboard.putNumber("Left Drive Inches/Sec", getLeftVelocityInchesPerSec());
 		//SmartDashboard.putNumber("Right Position", getRightPosInRot());
 		//SmartDashboard.putNumber("Right Drive Inches/Sec", getRightVelocityInchesPerSec());
-		DriverStation.reportWarning(Double.toString(getRightVelocityInchesPerSec()), false);
 		
 		//SmartDashboard.putNumber("Left Position in Inches", getLeftDistanceInches());
 		//SmartDashboard.putNumber("Right Position in Inches", getRightDistanceInches());

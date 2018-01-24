@@ -8,7 +8,7 @@ import org.usfirst.frc.team4028.robot.paths.Paths.PATHS;
 import org.usfirst.frc.team4028.util.control.Path;
 
 public class Scale extends AutonBase{
-	Path toScale = Paths.getPath(PATHS.L_SCALE);
+	Path toScale = Paths.getPath(PATHS.R_SCALE);
 	@Override
 	public void routine() {
 		runAction(new RunMotionProfileAction(toScale, true));

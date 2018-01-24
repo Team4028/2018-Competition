@@ -51,6 +51,14 @@ public class Paths {
 		L_SCALE_TO_R_SWITCH_PT_1,
 		L_SCALE_TO_R_SWITCH_PT_2,
 		
+		R_SCALE,
+		R_SCALE_TO_L_SWITCH_PT_1,
+		R_SCALE_TO_L_SWITCH_PT_2,
+		R_SCALE_TO_R_SWITCH_PT_1,
+		R_SCALE_TO_R_SWITCH_PT_2,
+		R_SWITCH_TO_R_SCALE_PT_1,
+		R_SWITCH_TO_R_SCALE_PT_2,
+		
 		// Tokyo Drift Test
 		TOKYO_DRIFT_PT_1,
 		TOKYO_DRIFT_PT_2,
@@ -160,11 +168,11 @@ public class Paths {
 				path.setIsReversed(false);
 				return path;
 			case L_SWITCH_TO_L_SCALE_PT_1:
-				path = buildPathFromWaypoints(reversePath(getLeftScaleToLeftSwitch2Waypoints()));
+				path = buildPathFromWaypoints(getLeftSwitchToLeftScale1Waypoints());
 				path.setIsReversed(true);
 				return path;
 			case L_SWITCH_TO_L_SCALE_PT_2:
-				path = buildPathFromWaypoints(reversePath(getLeftScaleToLeftSwitch1Waypoints()));
+				path = buildPathFromWaypoints(getLeftSwitchToLeftScale2Waypoints());
 				path.setIsReversed(false);
 				return path;
 			case L_SCALE_TO_R_SWITCH_PT_1:
@@ -173,6 +181,11 @@ public class Paths {
 				return path;
 			case L_SCALE_TO_R_SWITCH_PT_2:
 				path = buildPathFromWaypoints(getLeftScaleToRightSwitch2Waypoints());
+				path.setIsReversed(false);
+				return path;
+				
+			case R_SCALE:
+				path = buildPathFromWaypoints(getRightScaleWaypoints());
 				path.setIsReversed(false);
 				return path;
 				
@@ -293,6 +306,17 @@ public class Paths {
     	return sWaypoints;
 	}
 	
+	private static ArrayList<Waypoint> getRightScaleWaypoints() {
+		ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
+		sWaypoints.add(new Waypoint(18,50,0,0));
+        sWaypoints.add(new Waypoint(232,50,40,Constants.FLOOR_IT_SPEED));
+        sWaypoints.add(new Waypoint(232,200,0,Constants.FLOOR_IT_SPEED));
+        sWaypoints.add(new Waypoint(232,243,10,Constants.NORMAL_SPEED));
+        sWaypoints.add(new Waypoint(280,243,0,Constants.WILD_TURTLE_SPEED));
+        return sWaypoints;
+	}
+	
+	// Scale Then Switch
 	private static ArrayList<Waypoint> getLeftScaleToLeftSwitch1Waypoints() {
 		ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
         sWaypoints.add(new Waypoint(285,80,0,0));
@@ -306,23 +330,40 @@ public class Paths {
         sWaypoints.add(new Waypoint(265,60,0,0));
         sWaypoints.add(new Waypoint(265,75,8,60));
         sWaypoints.add(new Waypoint(245,92,8,60));
-        sWaypoints.add(new Waypoint(213,92,0,60));
+        sWaypoints.add(new Waypoint(213,92,0,40));
         return sWaypoints;
 	}
 	
 	private static ArrayList<Waypoint> getLeftScaleToRightSwitch1Waypoints() {
 		ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
         sWaypoints.add(new Waypoint(285,80,0,0));
-        sWaypoints.add(new Waypoint(243,80,10,60));
-        sWaypoints.add(new Waypoint(243,60,0,60));
+        sWaypoints.add(new Waypoint(243,80,10,Constants.NORMAL_SPEED));
+        sWaypoints.add(new Waypoint(243,60,0,Constants.NORMAL_SPEED));
         return sWaypoints;
 	}
 	
 	private static ArrayList<Waypoint> getLeftScaleToRightSwitch2Waypoints() {
 		ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
         sWaypoints.add(new Waypoint(243,60,0,0));
-        sWaypoints.add(new Waypoint(243,203,10,60));
-        sWaypoints.add(new Waypoint(213,203,0,60));
+        sWaypoints.add(new Waypoint(243,190,20,Constants.NORMAL_SPEED));
+        sWaypoints.add(new Waypoint(213,190,0,Constants.WILD_TURTLE_SPEED));
+        return sWaypoints;
+	}
+	
+	// Double Scale
+	private static ArrayList<Waypoint> getLeftSwitchToLeftScale1Waypoints() {
+		ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
+        sWaypoints.add(new Waypoint(213,92,0,0));
+        sWaypoints.add(new Waypoint(233,92,10,60));
+        sWaypoints.add(new Waypoint(233,62,0,60));
+        return sWaypoints;
+	}
+	
+	private static ArrayList<Waypoint> getLeftSwitchToLeftScale2Waypoints() {
+		ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
+		sWaypoints.add(new Waypoint(233,62,0,0));
+        sWaypoints.add(new Waypoint(233,80,10,60));
+        sWaypoints.add(new Waypoint(285,80,0,40));
         return sWaypoints;
 	}
 	
