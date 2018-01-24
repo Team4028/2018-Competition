@@ -7,6 +7,7 @@ import java.util.Date;
 import org.usfirst.frc.team4028.robot.auton.AutonExecuter;
 import org.usfirst.frc.team4028.robot.sensors.Ultrasonic;
 import org.usfirst.frc.team4028.robot.subsystems.*;
+import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_PRESET_POSITION;
 import org.usfirst.frc.team4028.util.DataLogger;
 import org.usfirst.frc.team4028.util.GeneralUtilities;
 import org.usfirst.frc.team4028.util.LogDataBE;
@@ -23,6 +24,7 @@ public class Robot extends IterativeRobot {
 	
 	// Subsystems
 	private Chassis _chassis = Chassis.getInstance();
+	private Elevator _elevator = Elevator.getInstance();
 	
 	// Sensors
 	private Ultrasonic _ultrasonic = Ultrasonic.getInstance();
@@ -52,6 +54,7 @@ public class Robot extends IterativeRobot {
 		_buildMsg = GeneralUtilities.WriteBuildInfoToDashboard(ROBOT_NAME);
 		
 		_enabledLooper.register(_chassis.getLoop());
+		_enabledLooper.register(_elevator.getLoop());
 		_enabledLooper.register(RobotStateEstimator.getInstance().getLoop());
 		
 		_dashboard.printStartupMessage();
@@ -172,6 +175,36 @@ public class Robot extends IterativeRobot {
 			_chassis.toggleShifter();
 		}
 		
+		// elevator throttle & buttons
+		if((Math.abs(_dos.getOperator_Elevator_JoystickCmd()) > 0.05) )
+		{
+			_elevator.JogAxis(_dos.getOperator_Elevator_JoystickCmd());
+		}
+		else if (_dos.getIsOperator_ElevatorScaleHgt_BtnJustPressed())
+		{
+			_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.SCALE_HEIGHT);
+		}
+		else if (_dos.getIsOperator_ElevatorSwitchHgt_BtnJustPressed())
+		{
+			_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.SWITCH_HEIGHT);
+		}
+		else if (_dos.getIsOperator_ElevatorPyrmdLvl1Hgt_BtnJustPressed())
+		{
+			_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.CUBE_ON_PYRAMID_LEVEL_1);
+		}
+		else if (_dos.getIsOperator_ElevatorCubeOnFloorHgt_BtnJustPressed())
+		{
+			_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.CUBE_ON_FLOOR);
+		}		
+		else if (_dos.getIsOperator_ElevatorHome_BtnJustPressed())
+		{
+			_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.HOME);
+		}			
+		else
+		{
+			_elevator.stop();
+		}
+		
 		// Refresh Dashboard
 		outputAllToDashboard();
 		
@@ -183,6 +216,7 @@ public class Robot extends IterativeRobot {
 	//	so we have one easy way to stop all motion
 	private void stopAll() {
 		_chassis.stop();
+		_elevator.stop();
 	}
 	
 	// typically called in *Perodic method to push data to the Dashboard
@@ -196,6 +230,7 @@ public class Robot extends IterativeRobot {
     		// each subsystem should add a call to a outputToSmartDashboard method
     		// to push its data out to the dashboard
     		_chassis.outputToSmartDashboard(); 
+    		_elevator.outputToSmartDashboard();
     		_ultrasonic.outputToDashboard();
 	    	
     		// write the overall robot dashboard info
@@ -223,6 +258,7 @@ public class Robot extends IterativeRobot {
 	    	
 	    	// ask each subsystem that exists to add its data
 	    	_chassis.updateLogData(logData);
+	    	_elevator.updateLogData(logData);
     	}
 	}
 }

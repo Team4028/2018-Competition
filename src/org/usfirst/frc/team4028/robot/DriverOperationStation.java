@@ -48,17 +48,17 @@ import edu.wpi.first.wpilibj.XboxController;
 		OPERATOR_RIGHT_Y_AXIS			
 		
 		--- Operator Buttons --------
-		OPERATOR_GREEN_BUTTON_A			
-		OPERATOR_RED_BUTTON_B			
-		OPERATOR_BLUE_BUTTON_X			
-		OPERATOR_YELLOW_BUTTON_Y		
+		OPERATOR_GREEN_BUTTON_A			CUBE_ON_FLOOR
+		OPERATOR_RED_BUTTON_B			CUBE_ON_PYRAMID_LEVEL_1
+		OPERATOR_BLUE_BUTTON_X			SWITCH_HEIGHT
+		OPERATOR_YELLOW_BUTTON_Y		SCALE_HEIGHT
 		OPERATOR_LEFT_BUMPER			
 		OPERATOR_RIGHT_BUMPER			
-		OPERATOR_BACK_BUTTON			
+		OPERATOR_BACK_BUTTON			HOME
 		OPERATOR_START_BUTTON			
 		OPERATOR_LEFT_THUMBSTICK		
 		OPERATOR_RIGHT_THUMBSTICK	
-							
+													
 		==== ENGINEERING  ==========================================================
 					
 		--- Engineer Joysticks --------
@@ -89,6 +89,8 @@ public class DriverOperationStation
 		private XboxController _operatorGamepad;
 		private XboxController _engineeringGamepad;
 			
+		private static final double JOYSTICK_DEADBAND = 0.05;
+		
 		// singleton pattern
 		private static DriverOperationStation _instance = new DriverOperationStation();
 
@@ -288,29 +290,29 @@ public class DriverOperationStation
 		// == Operator Just Pressed buttons ==
 		// ===================================
 	
-//		public boolean getIsOperator_Back_BtnJustPressed() {
-//			return _operatorGamepad.getBackButtonPressed();
-//		}
+		public boolean getIsOperator_ElevatorHome_BtnJustPressed() {
+			return _operatorGamepad.getBackButtonPressed();
+		}
 	
 //		public boolean getIsOperator_Start_BtnJustPressed() {
 //			return _operatorGamepad.getStartButtonPressed();
 //		}
 		
-//		public boolean getIsOperator_YellowY_BtnJustPressed() {
-//			return _operatorGamepad.getYButtonPressed();
-//		}
+		public boolean getIsOperator_ElevatorScaleHgt_BtnJustPressed() {
+			return _operatorGamepad.getYButtonPressed();
+		}
 		 
-//		public boolean getIsOperator_RedB_BtnJustPressed() {
-//			return _operatorGamepad.getBButtonPressed();
-//		}
+		public boolean getIsOperator_ElevatorPyrmdLvl1Hgt_BtnJustPressed() {
+			return _operatorGamepad.getBButtonPressed();
+		}
 		
-//		public boolean getIsOperator_GreenA_BtnJustPressed() {
-//			return _operatorGamepad.getAButtonPressed();
-//		}	
+		public boolean getIsOperator_ElevatorCubeOnFloorHgt_BtnJustPressed() {
+			return _operatorGamepad.getAButtonPressed();
+		}	
 	
-//		public boolean getIsOperator_BlueX_BtnJustPressed() {
-//			return _operatorGamepad.getXButtonPressed();
-//		}
+		public boolean getIsOperator_ElevatorSwitchHgt_BtnJustPressed() {
+			return _operatorGamepad.getXButtonPressed();
+		}
 		
 //		public boolean getIsOperator_LeftBumper_BtnJustPressed() {
 //			return _operatorGamepad.getBumperPressed(Hand.kLeft);
@@ -420,9 +422,15 @@ public class DriverOperationStation
 		// ======== Operator Joysticks =========
 		// ===================================
 	
-//		public double getOperator_LeftY_JoystickCmd() {
-//			return _operatorGamepad.getY(Hand.kLeft);
-//		}
+		public double getOperator_Elevator_JoystickCmd() {
+			if(Math.abs(_operatorGamepad.getY(Hand.kLeft)) >= JOYSTICK_DEADBAND){
+				// flip the sign, pushing the joystick up is a # < 0
+				return _operatorGamepad.getY(Hand.kLeft) * -1.0;
+			}
+			else{
+				return 0.0;
+			}
+		}
 		
 //		public double getOperator_LeftX_JoystickCmd() {
 //			return _operatorGamepad.getX(Hand.kLeft);
