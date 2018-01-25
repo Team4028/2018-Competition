@@ -21,8 +21,9 @@ public class Constants {
 	public static final int LEFT_DRIVE_SLAVE_CAN_BUS_ADDR = 12;
 	public static final int RIGHT_DRIVE_MASTER_CAN_BUS_ADDR = 9;
 	public static final int RIGHT_DRIVE_SLAVE_CAN_BUS_ADDR = 10;
-	public static final int ELEVATOR_MASTER_CAN_BUS_ADDR = 1;
-	public static final int ELEVATOR_SLAVE_CAN_BUS_ADDR = 2;
+	
+	public static final int ELEVATOR_MASTER_CAN_BUS_ADDR = 7;
+	public static final int ELEVATOR_SLAVE_CAN_BUS_ADDR = 8;
 	
 	// NavX (on Roborio)
 	public static final SPI.Port NAVX_PORT = Port.kMXP;

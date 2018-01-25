@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //	Rev		By			D/T				Description
 //	0		CadeR		22-Jan		Initial Version
 //  1		TomB		24-Jan		Convert to use looper, implement state machine
+//	2		TomB		25-Jan		Added Cade's feedback: error tol, inpos property
 //-------------------------------------------------------------
 public class Elevator implements Subsystem 
 {
@@ -61,10 +62,13 @@ public class Elevator implements Subsystem
 	private double _lastScanActualVelocityNU_100mS = 0;
 	
 	// define general constants
-	private static final double ELEVATOR_MOVE_TO_HOME_VELOCITY_CMD = -0.25;   
-	private static final long ELEVATOR_MAXIMUM_MOVE_TO_HOME_TIME_IN_MSEC = 50000;
-	
 	public static final double NU_PER_INCH = 106.040268456;
+	
+	private static final double ELEVATOR_MOVE_TO_HOME_VELOCITY_CMD = -0.25;   
+	private static final long ELEVATOR_MAXIMUM_MOVE_TO_HOME_TIME_IN_MSEC = 5000;	// 5 sec
+	
+	private static final double ELEVATOR_POS_ALLOWABLE_ERROR_IN_INCHES = 0.25;	// +/- 0.25
+	private static final int ELEVATOR_POS_ALLOWABLE_ERROR_IN_NU = (int)Math.round(ELEVATOR_POS_ALLOWABLE_ERROR_IN_INCHES * .25);
 	
 	private static final int HOME_POSITION = 0;
 	private static final int CUBE_ON_FLOOR_POSITION = 100;
@@ -166,6 +170,10 @@ public class Elevator implements Subsystem
 		// set accel and cruise velocities
 		_elevatorMasterMotor.configMotionCruiseVelocity(CRUISE_VELOCITY, 0);
 		_elevatorMasterMotor.configMotionAcceleration(ACCELERATION, 0);
+		
+		// set allowable closed loop gain
+		// +/- 0.25 
+		_elevatorMasterMotor.configAllowableClosedloopError(0, ELEVATOR_POS_ALLOWABLE_ERROR_IN_NU, 0);
 		
 		// set initial elevator state
 		_elevatorState = ELEVATOR_STATE.NEED_TO_HOME;
@@ -417,8 +425,33 @@ public class Elevator implements Subsystem
 		SmartDashboard.putNumber("Elevator:Position", actualPosition);
 		SmartDashboard.putNumber("Elevator:Velocity", GeneralUtilities.RoundDouble(actualVelocity, 2));
 		SmartDashboard.putNumber("Elevator:Acceleration", GeneralUtilities.RoundDouble(actualAcceleration, 2));
+		SmartDashboard.putBoolean("Elevator:InPosition", IsAtTargetPosition());
 		SmartDashboard.putString("Elevator:State", _elevatorState.toString());
 	}
+
+	// this property indicates if the elevator is w/i the position deadband of the target position
+	public boolean IsAtTargetPosition() 
+	{
+        if (_elevatorState == ELEVATOR_STATE.GOTO_AND_HOLD_TARGET_POSTION)
+        {
+        	int currentError = Math.abs(_elevatorMasterMotor.getSelectedSensorPosition(0) - _targetElevatorPosition);
+            if( currentError < ELEVATOR_POS_ALLOWABLE_ERROR_IN_NU) 
+            {
+            	return true;
+            } else
+            {
+            	return false;
+            }
+        } 
+        else if (_elevatorState == ELEVATOR_STATE.JOG_AXIS)
+        {
+        	return true;
+        } 
+        else
+        {
+        	return false;
+        }
+    }
 
 	@Override
 	public void updateLogData(LogDataBE logData) 
