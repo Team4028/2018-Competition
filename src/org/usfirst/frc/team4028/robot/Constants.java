@@ -21,6 +21,10 @@ public class Constants {
 	public static final int LEFT_DRIVE_SLAVE_CAN_BUS_ADDR = 12;
 	public static final int RIGHT_DRIVE_MASTER_CAN_BUS_ADDR = 9;
 	public static final int RIGHT_DRIVE_SLAVE_CAN_BUS_ADDR = 10;
+	public static final int LEFT_ARM_ROTATOR_MOTOR_CAN_ADDRESS = 0;
+	public static final int RIGHT_ARM_ROTATOR_MOTOR_CAN_ADDRESS = 1;
+	public static final int LEFT_INFEED_DRIVE_MOTOR_CAN_ADDRESS = 2;
+	public static final int RIGHT_INFEED_DRIVE_MOTOR_CAN_ADDRESS = 3;
 	
 	// NavX (on Roborio)
 	public static final SPI.Port NAVX_PORT = Port.kMXP;
@@ -35,6 +39,11 @@ public class Constants {
 	// Solenoid Positions
 	public static final Value SHIFTER_LOW_GEAR_POS = DoubleSolenoid.Value.kForward;
 	public static final Value SHIFTER_HIGH_GEAR_POS = DoubleSolenoid.Value.kReverse;
+	
+	// Infeed Position Constants
+	public static final double INFEED_POSITION = 2300;
+	public static final double INFEED_MINIMUM_ALLOWED_ERROR_POSITION = 2200;
+	public static final double INFEED_MAXIMUM_ALLOWED_ERROR_POSITION = 2400;
 	
 	// Logging
 	// this is where the USB stick is mounted on the RoboRIO filesystem.  
