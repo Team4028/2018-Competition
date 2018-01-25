@@ -25,6 +25,8 @@ public class Dashboard {
 	// Define all Dashboard Sendable Choosers (use generic types based on enums)
 	private SendableChooser<AUTON_MODE> _autonModeChooser = new SendableChooser<>();
 	
+	private boolean _isSwitchLeft, _isScaleLeft;
+	
 	// private constructor for singleton pattern
 	private Dashboard() {
 		// setup Auton Mode Chooser
@@ -36,12 +38,20 @@ public class Dashboard {
 		_autonModeChooser.addObject("Scale", GeneralEnums.AUTON_MODE.SCALE);
 		_autonModeChooser.addObject("Double Scale", GeneralEnums.AUTON_MODE.DOUBLE_SCALE);
 		_autonModeChooser.addObject("Scale then Switch", GeneralEnums.AUTON_MODE.SCALE_THEN_SWITCH);
-		_autonModeChooser.addObject("Tokyo Drift", GeneralEnums.AUTON_MODE.TOKYO_DRIFT);
 		SmartDashboard.putData("Auton Mode Chooser", _autonModeChooser);
+		
+		getGameData();
 	}
 	
-	public boolean getIsFMSAttached() {
+	private boolean getIsFMSAttached() {
 		return DriverStation.getInstance().isFMSAttached();
+	}
+	
+	private void getGameData() {
+		String gameData = DriverStation.getInstance().getGameSpecificMessage();
+		
+		_isSwitchLeft = (gameData.charAt(0) == 'L');
+		_isScaleLeft = (gameData.charAt(1) == 'L');
 	}
 	
 	public void printStartupMessage() {
@@ -57,26 +67,22 @@ public class Dashboard {
 	public AutonBase getSelectedAuton() {
 		// Returns the autonBase object associated with the auton selected on the dashboard 
 		switch(_autonModeChooser.getSelected()) {
-			case UNDEFINED:
-				return new DoNothing();
 			case DO_NOTHING:
 				return new DoNothing();
 			case AUTO_RUN:
 				return new AutoRun();
 			case SWITCH:
-				return new Switch();
+				return new Switch(_isSwitchLeft);
 			case DOUBLE_SWITCH:
-				return new DoubleSwitch();
+				return new DoubleSwitch(_isSwitchLeft);
 			case TRIPLE_SWITCH:
-				return new TripleSwitch();
+				return new TripleSwitch(_isSwitchLeft);
 			case SCALE:
-				return new Scale();
+				return new Scale(_isScaleLeft);
 			case DOUBLE_SCALE:
-				return new DoubleScale();
+				return new DoubleScale(_isScaleLeft);
 			case SCALE_THEN_SWITCH:
-				return new ScaleThenSwitch();
-			case TOKYO_DRIFT:
-				return new TokyoDriftTest();
+				return new ScaleThenSwitch(_isSwitchLeft, _isScaleLeft);
 			default:
 				return new DoNothing();
 		}

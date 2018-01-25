@@ -20,16 +20,14 @@ public class Paths {
 		
 		// Second Switch Cube
 		L_SWITCH_TO_FRONT_OF_PYRAMID,
-		IN_FRONT_OF_PYRAMID_TO_LEFT_SWITCH,
-		
 		R_SWITCH_TO_FRONT_OF_PYRAMID,
-		IN_FRONT_OF_PYRAMID_TO_RIGHT_SWITCH,
 		
 		TO_PYRAMID,
-		AWAY_FROM_PYRAMID,
-		S_TURN_FROM_PYRAMID_TO_RIGHT,
+		
 		S_TURN_FROM_PYRAMID_TO_LEFT,
 		TO_L_SWITCH_AFTER_S_TURN,
+		
+		S_TURN_FROM_PYRAMID_TO_RIGHT,
 		TO_R_SWITCH_AFTER_S_TURN,
 		
 		// Third Switch Cube
@@ -58,10 +56,6 @@ public class Paths {
 		R_SCALE_TO_R_SWITCH_PT_2,
 		R_SWITCH_TO_R_SCALE_PT_1,
 		R_SWITCH_TO_R_SCALE_PT_2,
-		
-		// Tokyo Drift Test
-		TOKYO_DRIFT_PT_1,
-		TOKYO_DRIFT_PT_2,
 	}
 	
 	public static Path getPath(PATHS pathName) {
@@ -85,25 +79,14 @@ public class Paths {
 				path = buildPathFromWaypoints(flipPath(getRightSwitchtoFrontofPyramidWaypoints()));
 				path.setIsReversed(true);
 				return path;
-			case IN_FRONT_OF_PYRAMID_TO_LEFT_SWITCH:
-				path = buildPathFromWaypoints(flipPath(getFrontofPyramidtoRightSwitchWaypoints()));
-				path.setIsReversed(false);
-				return path;
 			case R_SWITCH_TO_FRONT_OF_PYRAMID:
 				path = buildPathFromWaypoints(getRightSwitchtoFrontofPyramidWaypoints());
 				path.setIsReversed(true);
 				return path;
-			case IN_FRONT_OF_PYRAMID_TO_RIGHT_SWITCH:
-				path = buildPathFromWaypoints(getFrontofPyramidtoRightSwitchWaypoints());
-				path.setIsReversed(false);
-				return path;
+				
 			case TO_PYRAMID:
 				path = buildPathFromWaypoints(getToPyramidWaypoints());
 				path.setIsReversed(false);
-				return path;
-			case AWAY_FROM_PYRAMID:
-				path = buildPathFromWaypoints(getAwayFromPyramidWaypoints());
-				path.setIsReversed(true);
 				return path;
 			
 			case AWAY_FROM_LEFT_SWITCH:
@@ -189,13 +172,29 @@ public class Paths {
 				path.setIsReversed(false);
 				return path;
 				
-			case TOKYO_DRIFT_PT_1:
-				path = buildPathFromWaypoints(getTokyoDrift1Waypoints());
+			case R_SCALE_TO_R_SWITCH_PT_1:
+				path = buildPathFromWaypoints(flipPath(getLeftScaleToLeftSwitch1Waypoints()));
+				path.setIsReversed(true);
+				return path;
+			case R_SCALE_TO_R_SWITCH_PT_2:
+				path = buildPathFromWaypoints(flipPath(getLeftScaleToLeftSwitch2Waypoints()));
 				path.setIsReversed(false);
 				return path;
-			case TOKYO_DRIFT_PT_2:
-				path = buildPathFromWaypoints(getTokyoDrift2Waypoints());
+			case R_SWITCH_TO_R_SCALE_PT_1:
+				path = buildPathFromWaypoints(flipPath(getLeftSwitchToLeftScale1Waypoints()));
 				path.setIsReversed(true);
+				return path;
+			case R_SWITCH_TO_R_SCALE_PT_2:
+				path = buildPathFromWaypoints(flipPath(getLeftSwitchToLeftScale2Waypoints()));
+				path.setIsReversed(false);
+				return path;
+			case R_SCALE_TO_L_SWITCH_PT_1:
+				path = buildPathFromWaypoints(flipPath(getLeftScaleToRightSwitch1Waypoints()));
+				path.setIsReversed(true);
+				return path;
+			case R_SCALE_TO_L_SWITCH_PT_2:
+				path = buildPathFromWaypoints(flipPath(getLeftScaleToRightSwitch2Waypoints()));
+				path.setIsReversed(false);
 				return path;
 				
 			default:
@@ -232,12 +231,6 @@ public class Paths {
 	}
 	
 	// Switch (Second Cube)
-	private static ArrayList<Waypoint> getAwayFromPyramidWaypoints() {
-        ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
-        sWaypoints.add(new Waypoint(91,162,0,0));
-        sWaypoints.add(new Waypoint(45,162,0,Constants.NORMAL_SPEED));
-        return sWaypoints;
-	}
 	
 	private static ArrayList<Waypoint> getRightSwitchtoFrontofPyramidWaypoints() {
 		ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
@@ -252,15 +245,6 @@ public class Paths {
         ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
         sWaypoints.add(new Waypoint(50,162,0,0));
         sWaypoints.add(new Waypoint(91,162,0,Constants.FLOOR_IT_SPEED));
-        return sWaypoints;
-	}
-	
-	private static ArrayList<Waypoint> getFrontofPyramidtoRightSwitchWaypoints() {
-        ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
-        sWaypoints.add(new Waypoint(45,162,0,0));
-        sWaypoints.add(new Waypoint(62,162,15,Constants.FLOOR_IT_SPEED));
-        sWaypoints.add(new Waypoint(80,224,15,Constants.NORMAL_SPEED));
-        sWaypoints.add(new Waypoint(122,224,0,Constants.WILD_TURTLE_SPEED));
         return sWaypoints;
 	}
 	
@@ -330,7 +314,7 @@ public class Paths {
         sWaypoints.add(new Waypoint(265,60,0,0));
         sWaypoints.add(new Waypoint(265,75,8,60));
         sWaypoints.add(new Waypoint(245,92,8,60));
-        sWaypoints.add(new Waypoint(213,92,0,40));
+        sWaypoints.add(new Waypoint(213,92,0,50));
         return sWaypoints;
 	}
 	
@@ -363,24 +347,7 @@ public class Paths {
 		ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
 		sWaypoints.add(new Waypoint(233,62,0,0));
         sWaypoints.add(new Waypoint(233,80,10,60));
-        sWaypoints.add(new Waypoint(285,80,0,40));
-        return sWaypoints;
-	}
-	
-	// Tokyo Drift
-	private static ArrayList<Waypoint> getTokyoDrift1Waypoints() {
-        ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
-        sWaypoints.add(new Waypoint(18,162,0,0));
-        sWaypoints.add(new Waypoint(50,162,10,60));
-        sWaypoints.add(new Waypoint(50,180,0,60));
-        return sWaypoints;
-	}
-	
-	private static ArrayList<Waypoint> getTokyoDrift2Waypoints() {
-		ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
-		sWaypoints.add(new Waypoint(50,180,0,0));
-        sWaypoints.add(new Waypoint(50,162,10,60));
-        sWaypoints.add(new Waypoint(100,162,0,60));
+        sWaypoints.add(new Waypoint(285,80,0,50));
         return sWaypoints;
 	}
 }

@@ -16,7 +16,7 @@ public class Looper {
 	private final List<Loop> _loops;
 	private final Object _taskRunningLock = new Object();
 	private double _timestamp = 0.0;
-	private double _dt = 0.0;
+	private double _totally_useless_variable_that_exists_just_to_annoy_Patrick = 0.0;
 	
 	private final Runnable _runnable = new Runnable() {
 		@Override
@@ -28,7 +28,7 @@ public class Looper {
                         loop.onLoop(now);
                     }
                     
-                    _dt = now - _timestamp;
+                    _totally_useless_variable_that_exists_just_to_annoy_Patrick = now - _timestamp;
                     _timestamp = now;
                 }
             }

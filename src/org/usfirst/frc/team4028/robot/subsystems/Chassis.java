@@ -113,7 +113,6 @@ public class Chassis implements Subsystem{
 		
 		reloadGains();
 		
-		/* Shifter */
 		_shifterSolenoid = new DoubleSolenoid(Constants.PCM_CAN_BUS_ADDR, Constants.SHIFTER_SOLENOID_EXTEND_PCM_PORT, 
 												Constants.SHIFTER_SOLENOID_RETRACT_PCM_PORT);
 		
@@ -315,11 +314,12 @@ public class Chassis implements Subsystem{
 		Twist command = _pathFollower.update(timestamp, _robotPose, RobotState.getInstance().getDistanceDriven(), RobotState.getInstance().getPredictedVelocity().dx);
 		if (!_pathFollower.isFinished()) {
 			Kinematics.DriveVelocity setpoint = Kinematics.inverseKinematics(command);
+			updateVelocitySetpoint(setpoint.left, setpoint.right);
 			_leftTargetVelocity = setpoint.left;
 			_rightTargetVelocity = setpoint.right;
-			updateVelocitySetpoint(setpoint.left, setpoint.right);
 		} else {
-			updateVelocitySetpoint(0.0, 0.0);
+			_chassisState = ChassisState.PERCENT_VBUS;
+			arcadeDrive(0.0,0.0);
 		}
 	}
 	
