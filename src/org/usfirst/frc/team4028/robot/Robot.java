@@ -23,6 +23,7 @@ public class Robot extends IterativeRobot {
 	
 	// Subsystems
 	private Chassis _chassis = Chassis.getInstance();
+	private Infeed _infeed = Infeed.getInstance();
 	
 	// Sensors
 	private Ultrasonic _ultrasonic = Ultrasonic.getInstance();
@@ -52,6 +53,7 @@ public class Robot extends IterativeRobot {
 		_buildMsg = GeneralUtilities.WriteBuildInfoToDashboard(ROBOT_NAME);
 		
 		_enabledLooper.register(_chassis.getLoop());
+		_enabledLooper.register(_infeed.getLoop());
 		_enabledLooper.register(RobotStateEstimator.getInstance().getLoop());
 		
 		_dashboard.printStartupMessage();
@@ -171,6 +173,15 @@ public class Robot extends IterativeRobot {
 		if (_dos.getIsShiftGearJustPressed()) {
 			_chassis.toggleShifter();
 		}
+		
+		if (_dos.getIsDriver_ReZeroInfeed_BtnJustPressed()) {
+			_infeed.reZeroArms();
+		}
+		
+		if (_dos.getIsDriver_MoveToInfeedPosition_BtnJustPressed()) {
+			_infeed.moveArmsToInfeedPosition();
+		}
+			
 		
 		// Refresh Dashboard
 		outputAllToDashboard();

@@ -11,19 +11,21 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.VictorSP;
 
 public class Infeed {	
 	
 	// define enum for infeed axis
-	private enum INFEED_STATE{
+	private enum INFEED_STATE {
 		NEED_TO_HOME,
 		MOVING_TO_HOME,
-		TIMEOUT,
+		AT_HOME,
 		MOVE_TO_INFEED,
 		INFEED_CUBE,
-		JOG_AXIS,
+		STORE_ARMS,
+		TIMEOUT,
 	} 
-	
+		
 	// define class level working variables
 	private INFEED_STATE _infeedState;
 	
@@ -34,8 +36,8 @@ public class Infeed {
 	
 	TalonSRX _leftArmRotatorMotor; 
 	TalonSRX _rightArmRotatorMotor;
-	TalonSRX _leftInfeedDriveMotor;
-	TalonSRX _rightInfeedDriveMotor;
+	VictorSP _leftInfeedDriveMotor;
+	VictorSP _rightInfeedDriveMotor;
 	
 	//singleton pattern 
 	private static Infeed _instance = new Infeed();
@@ -51,7 +53,7 @@ public class Infeed {
 		//====================================================================================
 		
 		//Left Arm Rotator Motor
-		_leftArmRotatorMotor = new TalonSRX(Constants.LEFT_ARM_ROTATOR_MOTOR_CAN_ADDRESS);
+		_leftArmRotatorMotor = new TalonSRX(Constants.LEFT_SWITCHBLADE_MOTOR_CAN_ADDRESS);
 		
 		_leftArmRotatorMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0);
 		
@@ -68,17 +70,17 @@ public class Infeed {
 		_leftArmRotatorMotor.setInverted(false);
 		
 		_leftArmRotatorMotor.selectProfileSlot(0, 0);
-		_leftArmRotatorMotor.config_kF(0, 0.11, 0);
-		_leftArmRotatorMotor.config_kP(0, 2.5, 0);
-		_leftArmRotatorMotor.config_kI(0, 0, 0);
-		_leftArmRotatorMotor.config_kD(0, 0, 0);
+		_leftArmRotatorMotor.config_kF(0, Constants.INFEED_MOTION_MAGIC_F, 0);
+		_leftArmRotatorMotor.config_kP(0, Constants.INFEED_MOTION_MAGIC_P, 0);
+		_leftArmRotatorMotor.config_kI(0, Constants.INFEED_MOTION_MAGIC_I, 0);
+		_leftArmRotatorMotor.config_kD(0, Constants.INFEED_MOTION_MAGIC_D, 0);
 		
-		_leftArmRotatorMotor.configMotionCruiseVelocity(3000, 0);
-		_leftArmRotatorMotor.configMotionAcceleration(2000, 0);
+		_leftArmRotatorMotor.configMotionCruiseVelocity(Constants.INFEED_MOTION_MAGIC_MAX_VEL, 0);
+		_leftArmRotatorMotor.configMotionAcceleration(Constants.INFEED_MOTION_MAGIC_MAX_ACC, 0);
 		
 		//=====================================================================================
 		//Right Arm Rotator Motor
-		_rightArmRotatorMotor = new TalonSRX(Constants.RIGHT_ARM_ROTATOR_MOTOR_CAN_ADDRESS);
+		_rightArmRotatorMotor = new TalonSRX(Constants.RIGHT_SWITCHBLADE_MOTOR_CAN_ADDRESS);
 		
 		_rightArmRotatorMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0);
 		
@@ -94,27 +96,22 @@ public class Infeed {
 		
 		_rightArmRotatorMotor.setInverted(true);
 		
-		_rightArmRotatorMotor.selectProfileSlot(0, 0);
-		_rightArmRotatorMotor.config_kF(0, 0.11, 0);
-		_rightArmRotatorMotor.config_kP(0, 2.5, 0);
-		_rightArmRotatorMotor.config_kI(0, 0, 0);
-		_rightArmRotatorMotor.config_kD(0, 0, 0);
+		_rightArmRotatorMotor.config_kF(0, Constants.INFEED_MOTION_MAGIC_F, 0);
+		_rightArmRotatorMotor.config_kP(0, Constants.INFEED_MOTION_MAGIC_P, 0);
+		_rightArmRotatorMotor.config_kI(0, Constants.INFEED_MOTION_MAGIC_I, 0);
+		_rightArmRotatorMotor.config_kD(0, Constants.INFEED_MOTION_MAGIC_D, 0);
 		
-		_rightArmRotatorMotor.configMotionCruiseVelocity(3000, 0);
-		_rightArmRotatorMotor.configMotionAcceleration(2000, 0);
+		_rightArmRotatorMotor.configMotionCruiseVelocity(Constants.INFEED_MOTION_MAGIC_MAX_VEL, 0);
+		_rightArmRotatorMotor.configMotionAcceleration(Constants.INFEED_MOTION_MAGIC_MAX_ACC, 0);
 		
 		//=====================================================================================
 		//Left Arm Drive Motor
-		_leftInfeedDriveMotor = new TalonSRX(Constants.LEFT_INFEED_DRIVE_MOTOR_CAN_ADDRESS); 
-		
-		_leftInfeedDriveMotor.configOpenloopRamp(5, 0);
-		
+		_leftInfeedDriveMotor = new VictorSP(Constants.LEFT_INFEED_DRIVE_PWM_ADDRESS); 
+			
 		//=====================================================================================
 		//Right Arm Drive Motor
-		_rightInfeedDriveMotor = new TalonSRX(Constants.RIGHT_INFEED_DRIVE_MOTOR_CAN_ADDRESS);
-		
-		_rightInfeedDriveMotor.configOpenloopRamp(5, 0);
-		
+		_rightInfeedDriveMotor = new VictorSP(Constants.RIGHT_INFEED_DRIVE_PWM_ADDRESS);
+				
 		//=====================================================================================
 		
 		//Initially Configure Booleans
@@ -150,8 +147,14 @@ public class Infeed {
 					case MOVING_TO_HOME:
 						homeArms();
 						break;
+					
+					case AT_HOME:
+						break;
 						
 					case MOVE_TO_INFEED:
+						_leftArmRotatorMotor.set(ControlMode.MotionMagic, Constants.INFEED_POSITION);
+						_rightArmRotatorMotor.set(ControlMode.MotionMagic, Constants.INFEED_POSITION);
+						
 						if(Constants.INFEED_MINIMUM_ALLOWED_ERROR_POSITION 
 								< _leftArmRotatorMotor.getSelectedSensorPosition(0) && 
 								_leftArmRotatorMotor.getSelectedSensorPosition(0) < 
@@ -159,13 +162,17 @@ public class Infeed {
 							_areArmsInInfeedPosition = true;
 							_infeedState = INFEED_STATE.INFEED_CUBE;
 						}
+					
+						_infeedState = INFEED_STATE.NEED_TO_HOME;
 						break;
 						
 					case INFEED_CUBE:
-						
+						_leftInfeedDriveMotor.set(0.5);
+						_rightInfeedDriveMotor.set(0.5);
 						break;
 						
-					case JOG_AXIS:
+					case STORE_ARMS:
+						
 						break;
 						
 					case TIMEOUT:
@@ -221,34 +228,27 @@ public class Infeed {
 		
 		if (_isRightArmHomed && _isLeftArmHomed) {
 			_areArmsHomed = true;
-			_infeedState = INFEED_STATE.GOTO_AND_HOLD_TARGET_POSTION;
+			_infeedState = INFEED_STATE.AT_HOME;
 		}
 	}
 	
-	private void displayVelocity() {
-		double armVelocity = _leftArmRotatorMotor.getSelectedSensorVelocity(0);
-		//SmartDashboard.putNumber("Left Arm Velocity:", armVelocity);
-	}
+//	private void displayVelocity() {
+//		double armVelocity = _leftArmRotatorMotor.getSelectedSensorVelocity(0);
+//		//SmartDashboard.putNumber("Left Arm Velocity:", armVelocity);
+//	}
 	
-	private void commandToPostion1() {
-		_leftArmRotatorMotor.set(ControlMode.MotionMagic, 2340);
-		_rightArmRotatorMotor.set(ControlMode.MotionMagic, 2340);
-	}
-	
-	private void commandToPosition2() {
-		_leftArmRotatorMotor.set(ControlMode.MotionMagic, 1000);
-		_rightArmRotatorMotor.set(ControlMode.MotionMagic, 1000);
-	}
-
-	private void moveArmsToPosition(double rawJoystickCmd) {
-		if (_areArmsHomed == true) {
-			double targetPos = rawJoystickCmd * 2048;
-			_leftArmRotatorMotor.set(ControlMode.MotionMagic, targetPos);
-			_rightArmRotatorMotor.set(ControlMode.MotionMagic, targetPos);
+	public void moveArmsToInfeedPosition() {
+		if (_areArmsHomed) {
+			_infeedState = INFEED_STATE.MOVE_TO_INFEED;
 		}
 		else {
-			//DriverStation.reportWarning("Home Arms first", false);
+			DriverStation.reportWarning("Function Not Avaliable until Arms are Homed", false);
 		}
+	}
+	
+	public void reZeroArms() {
+		_areArmsHomed = false;
+		_infeedState = INFEED_STATE.NEED_TO_HOME;
 	}
 	
 //	public void MoveArms(double throttleCmd) {
@@ -264,8 +264,8 @@ public class Infeed {
 	private void stop() {
 		_leftArmRotatorMotor.set(ControlMode.PercentOutput, 0);
 		_rightArmRotatorMotor.set(ControlMode.PercentOutput, 0);
-		_leftInfeedDriveMotor.set(ControlMode.PercentOutput, 0);
-		_rightInfeedDriveMotor.set(ControlMode.PercentOutput, 0);
+		_leftInfeedDriveMotor.stopMotor();
+		_rightInfeedDriveMotor.stopMotor();
 	}
 }
 

@@ -17,14 +17,19 @@ public class Constants {
 	public static final int PCM_CAN_BUS_ADDR = 0;	
 	
 	// Talons Can Bus Address
-	public static final int LEFT_DRIVE_MASTER_CAN_BUS_ADDR = 11;
-	public static final int LEFT_DRIVE_SLAVE_CAN_BUS_ADDR = 12;
-	public static final int RIGHT_DRIVE_MASTER_CAN_BUS_ADDR = 9;
-	public static final int RIGHT_DRIVE_SLAVE_CAN_BUS_ADDR = 10;
-	public static final int LEFT_ARM_ROTATOR_MOTOR_CAN_ADDRESS = 0;
-	public static final int RIGHT_ARM_ROTATOR_MOTOR_CAN_ADDRESS = 1;
-	public static final int LEFT_INFEED_DRIVE_MOTOR_CAN_ADDRESS = 2;
-	public static final int RIGHT_INFEED_DRIVE_MOTOR_CAN_ADDRESS = 3;
+	public static final int LEFT_DRIVE_MASTER_CAN_BUS_ADDR = 1;
+	public static final int LEFT_DRIVE_SLAVE_CAN_BUS_ADDR = 2;
+	public static final int RIGHT_DRIVE_MASTER_CAN_BUS_ADDR = 3;
+	public static final int RIGHT_DRIVE_SLAVE_CAN_BUS_ADDR = 4;
+	public static final int LEFT_SWITCHBLADE_MOTOR_CAN_ADDRESS = 5;
+	public static final int RIGHT_SWITCHBLADE_MOTOR_CAN_ADDRESS = 6;
+	public static final int ELEVATOR_LIFT_MASTER_CAN_ADDRESS = 7;
+	public static final int ELEVATOR_LIFT_SLAVE_CAN_ADDRESS = 8;
+	public static final int CARRIAGE_DRIVE_CAN_ADDRESS = 9; // this is a VictorSPX
+	
+	//Victor SP PWM Address
+	public static final int LEFT_INFEED_DRIVE_PWM_ADDRESS = 0;
+	public static final int RIGHT_INFEED_DRIVE_PWM_ADDRESS = 1;
 	
 	// NavX (on Roborio)
 	public static final SPI.Port NAVX_PORT = Port.kMXP;
@@ -42,8 +47,8 @@ public class Constants {
 	
 	// Infeed Position Constants
 	public static final double INFEED_POSITION = 2300;
-	public static final double INFEED_MINIMUM_ALLOWED_ERROR_POSITION = 2200;
-	public static final double INFEED_MAXIMUM_ALLOWED_ERROR_POSITION = 2400;
+	public static final double INFEED_MINIMUM_ALLOWED_ERROR_POSITION = 2275;
+	public static final double INFEED_MAXIMUM_ALLOWED_ERROR_POSITION = 2325;
 	
 	// Logging
 	// this is where the USB stick is mounted on the RoboRIO filesystem.  
@@ -52,6 +57,15 @@ public class Constants {
 	public static final String ALTERNATE_LOG_FILE_PATH = "/media/sdb1/logging";
 	
 	/* CONTROL LOOP GAINS */
+	// PID gains for infeed
+	public static final double INFEED_MOTION_MAGIC_P = 2.5;
+    public static final double INFEED_MOTION_MAGIC_I = 0;
+    public static final double INFEED_MOTION_MAGIC_D = 0;
+    public static final double INFEED_MOTION_MAGIC_F = 0.11;
+        
+    public static final int INFEED_MOTION_MAGIC_MAX_VEL = 3000;
+    public static final int INFEED_MOTION_MAGIC_MAX_ACC = 2000;
+    
 	// PID gains for motion magic loop (LOW GEAR)
 	public static final double DRIVE_MOTION_MAGIC_P = 1.0; //4.0
     public static final double DRIVE_MOTION_MAGIC_I = 0.002; // 0.0

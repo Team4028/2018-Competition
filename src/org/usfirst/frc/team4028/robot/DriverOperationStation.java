@@ -139,13 +139,13 @@ public class DriverOperationStation
 //			return _driverGamepad.getBButtonPressed();
 //		}
 	
-//		public boolean getIsDriver_GreenA_BtnJustPressed() {
-//			return _driverGamepad.getAButtonPressed();
-//		}	
+		public boolean getIsDriver_MoveToInfeedPosition_BtnJustPressed() {
+			return _driverGamepad.getAButtonPressed();
+		}	
 
-//		public boolean getIsDriver_BlueX_BtnJustPressed() {
-//			return _driverGamepad.getXButtonPressed();
-//		}
+		public boolean getIsDriver_ReZeroInfeed_BtnJustPressed() {
+			return _driverGamepad.getXButtonPressed();
+		}
 		
 //		public boolean getIsDriver_LeftBumper_BtnJustPressed() {
 //			return _driverGamepad.getBumperPressed(Hand.kLeft);
