@@ -62,33 +62,36 @@ public class Elevator implements Subsystem
 	
 	// define general constants
 	private static final double ELEVATOR_MOVE_TO_HOME_VELOCITY_CMD = -0.25;   
-	private static final long ELEVATOR_MAXIMUM_MOVE_TO_HOME_TIME_IN_MSEC = 5000;
+	private static final long ELEVATOR_MAXIMUM_MOVE_TO_HOME_TIME_IN_MSEC = 50000;
 	
-	public static final double NU_PER_INCH_OF_TRAVEL = 106.040268456;
+	public static final double NU_PER_INCH = 106.040268456;
 	
 	private static final int HOME_POSITION = 0;
 	private static final int CUBE_ON_FLOOR_POSITION = 100;
 	private static final int CUBE_ON_PYRAMID_LEVEL_1_POSITION = 200;
 	private static final int SWITCH_HEIGHT_POSITION = 1000;
 	private static final int SCALE_HEIGHT_POSITION = 3605;
-	private static final double JOG_VELOCITY = 0.25;
+	private static final double JOG_UP_VELOCITY = 0.35;
+	private static final double JOG_DOWN_VELOCITY = -0.25;
 	
 	private static final int MOVING_UP_SLOT_INDEX = 1;
 	private static final int MOVING_DOWN_SLOT_INDEX = 0;
 	
+	private static final boolean IS_VERBOSE_LOGGING_ENABLED = true;
+	
 	// define PID Constants
-	public static final int CRUISE_VELOCITY = 0; //30000;			// native units per 100 mSec
-	public static final int ACCELERATION = 0; //20000;		// native units per 100 mSec per sec
+	public static final int CRUISE_VELOCITY = 30000;			// native units per 100 mSec
+	public static final int ACCELERATION = 20000;				// native units per 100 mSec per sec
 	
-	public static final double FEED_FORWARD_GAIN_UP = 0.0; // 3.4074425;
-	public static final double PROPORTIONAL_GAIN_UP = 0.0; // 3;
-	public static final double INTEGRAL_GAIN_UP = 0.0; // 0;
-	public static final double DERIVATIVE_GAIN_UP = 0.0; // .7;
+	public static final double FEED_FORWARD_GAIN_UP = 3.4074425;
+	public static final double PROPORTIONAL_GAIN_UP = 3.0;
+	public static final double INTEGRAL_GAIN_UP = 0.0; 
+	public static final double DERIVATIVE_GAIN_UP = 0.7;
 	
-	public static final double FEED_FORWARD_GAIN_DOWN = 0.0; // 3.4074425;
-	public static final double PROPORTIONAL_GAIN_DOWN = 0.0; // 2;
-	public static final double INTEGRAL_GAIN_DOWN = 0.0; // 0;
-	public static final double DERIVATIVE_GAIN_DOWN = 0.0; // .7;
+	public static final double FEED_FORWARD_GAIN_DOWN = 3.4074425;
+	public static final double PROPORTIONAL_GAIN_DOWN = 2.0;
+	public static final double INTEGRAL_GAIN_DOWN = 0.0; 
+	public static final double DERIVATIVE_GAIN_DOWN = 0.7;
 	
 	// singleton pattern
 	private static Elevator _instance = new Elevator();
@@ -166,6 +169,7 @@ public class Elevator implements Subsystem
 		
 		// set initial elevator state
 		_elevatorState = ELEVATOR_STATE.NEED_TO_HOME;
+		ReportStateChg("ElevatorAxis (State) initial ==> [NEED_TO_HOME]");
 	}
 	
 	// this is run by Looper typically at a 10mS interval (or 2x the RoboRio Scan time)
@@ -192,18 +196,20 @@ public class Elevator implements Subsystem
 				switch(_elevatorState) 
 				{
 					case NEED_TO_HOME:
+						// snapshot start time
+						_elevatorHomeStartTime = System.currentTimeMillis();
 						// change state
 						_elevatorState = ELEVATOR_STATE.MOVING_TO_HOME;
-						DriverStation.reportWarning("ElevatorAxis (State) [NEED_TO_HOME] ==> [MOVING_TO_HOME]", false);
+						ReportStateChg("ElevatorAxis (State) [NEED_TO_HOME] ==> [MOVING_TO_HOME]");
 						break;
 						
 					case MOVING_TO_HOME:
 						// are we on the rev (home) limit switch
-						if(getIsOnHomeLimtSwitch())
+						if(!_elevatorMasterMotor.getSensorCollection().isRevLimitSwitchClosed())
 						{
 							// change state
 							_elevatorState = ELEVATOR_STATE.AT_HOME;
-							DriverStation.reportWarning("ElevatorAxis (State) [MOVING_TO_HOME] ==> [AT_HOME]", false);
+							ReportStateChg("ElevatorAxis (State) [MOVING_TO_HOME] ==> [AT_HOME]");
 						} 
 						else 
 						{
@@ -213,7 +219,7 @@ public class Elevator implements Subsystem
 		    				{
 								// change state
 		    					_elevatorState = ELEVATOR_STATE.TIMEOUT;
-		    					DriverStation.reportWarning("ElevatorAxis (State) [MOVING_TO_HOME] ==> [TIMEOUT]", false);
+		    					ReportStateChg("ElevatorAxis (State) [MOVING_TO_HOME] ==> [TIMEOUT]");
 		    				} 
 		    				else 
 		    				{
@@ -224,6 +230,7 @@ public class Elevator implements Subsystem
 						break;
 						
 					case AT_HOME:
+						_elevatorMasterMotor.set(ControlMode.PercentOutput, 0);
 						zeroSensors();
 							
 						// set default position after homing
@@ -231,8 +238,7 @@ public class Elevator implements Subsystem
 						
 						// change state
     					_elevatorState = ELEVATOR_STATE.GOTO_AND_HOLD_TARGET_POSTION;
-    					DriverStation.reportWarning("ElevatorAxis (State) [AT_HOME] ==> [GOTO_AND_HOLD_TARGET_POSTION]", false);
-
+    					ReportStateChg("ElevatorAxis (State) [AT_HOME] ==> [GOTO_AND_HOLD_TARGET_POSTION]");
 						break;
 											
 					case GOTO_AND_HOLD_TARGET_POSTION:
@@ -270,8 +276,9 @@ public class Elevator implements Subsystem
 						break;
 						
 					case TIMEOUT:
+						_elevatorMasterMotor.set(ControlMode.PercentOutput, 0);
 						// add logic to control spamming
-						DriverStation.reportWarning("ElevatorAxis (State) [TIMEOUT] error homing axis", false);
+						ReportStateChg("ElevatorAxis (State) [TIMEOUT] error homing axis");
 						break;
 				}
 			}
@@ -297,43 +304,33 @@ public class Elevator implements Subsystem
 		switch(presetPosition)
 		{
 			case HOME:
-				DriverStation.reportWarning("ElevatorAxis (State) [" 
-						+ _elevatorState.toString()
-						+ "] ==> [GOTO_AND_HOLD_TARGET_POSTION:HOME]", false);
 				_targetElevatorPosition = HOME_POSITION;
 				_elevatorState = ELEVATOR_STATE.GOTO_AND_HOLD_TARGET_POSTION;
+				ReportStateChg("ElevatorAxis (State) [" + _elevatorState.toString() + "] ==> [GOTO_AND_HOLD_TARGET_POSTION:HOME]");
 				break;
 				
 			case CUBE_ON_FLOOR:
-				DriverStation.reportWarning("ElevatorAxis (State) [" 
-						+ _elevatorState.toString()
-						+ "] ==> [GOTO_AND_HOLD_TARGET_POSTION:CUBE_ON_FLOOR]", false);
 				_targetElevatorPosition = CUBE_ON_FLOOR_POSITION;
 				_elevatorState = ELEVATOR_STATE.GOTO_AND_HOLD_TARGET_POSTION;
+				ReportStateChg("ElevatorAxis (State) [" + _elevatorState.toString() + "] ==> [GOTO_AND_HOLD_TARGET_POSTION:CUBE_ON_FLOOR]");
 				break;
 				
 			case CUBE_ON_PYRAMID_LEVEL_1:
-				DriverStation.reportWarning("ElevatorAxis (State) [" 
-						+ _elevatorState.toString()
-						+ "] ==> [GOTO_AND_HOLD_TARGET_POSTION:PYR1]", false);
 				_targetElevatorPosition = CUBE_ON_PYRAMID_LEVEL_1_POSITION;
 				_elevatorState = ELEVATOR_STATE.GOTO_AND_HOLD_TARGET_POSTION;
+				ReportStateChg("ElevatorAxis (State) [" + _elevatorState.toString() + "] ==> [GOTO_AND_HOLD_TARGET_POSTION:PYR1]");
 				break;
 				
 			case SWITCH_HEIGHT:
-				DriverStation.reportWarning("ElevatorAxis (State) [" 
-						+ _elevatorState.toString()
-						+ "] ==> [GOTO_AND_HOLD_TARGET_POSTION:SWITCH]", false);
 				_targetElevatorPosition = SWITCH_HEIGHT_POSITION;
 				_elevatorState = ELEVATOR_STATE.GOTO_AND_HOLD_TARGET_POSTION;
+				ReportStateChg("ElevatorAxis (State) [" + _elevatorState.toString() + "] ==> [GOTO_AND_HOLD_TARGET_POSTION:SWITCH]");
 				break;
 				
 			case SCALE_HEIGHT:
-				DriverStation.reportWarning("ElevatorAxis (State) [" 
-						+ _elevatorState.toString()
-						+ "] ==> [GOTO_AND_HOLD_TARGET_POSTION:SCALE]", false);
 				_targetElevatorPosition = SCALE_HEIGHT_POSITION;
 				_elevatorState = ELEVATOR_STATE.GOTO_AND_HOLD_TARGET_POSTION;
+				ReportStateChg("ElevatorAxis (State) [" + _elevatorState.toString() + "] ==> [GOTO_AND_HOLD_TARGET_POSTION:SCALE]");
 				break;
 				
 			case OTHER:
@@ -351,19 +348,19 @@ public class Elevator implements Subsystem
 			if(_elevatorState != ELEVATOR_STATE.JOG_AXIS)
 			{
 				// change the state
-				DriverStation.reportWarning("ElevatorAxis (State) ==> [JOG_AXIS]", false);		
 				_elevatorState = ELEVATOR_STATE.JOG_AXIS;
+				ReportStateChg("ElevatorAxis (State) ==> [JOG_AXIS]");	
 			}
 
 			if(speedCmd > 0)
 			{
 				// jog at a fixed rate in a + direction
-				_targetElevatorVelocity = JOG_VELOCITY;
+				_targetElevatorVelocity = JOG_UP_VELOCITY;
 			}
 			else if(speedCmd < 0)
 			{
 				// jog at a fixed rate in a - direction
-				_targetElevatorVelocity = JOG_VELOCITY * -1.0;
+				_targetElevatorVelocity = JOG_DOWN_VELOCITY;
 			}
 		}
 		else
@@ -375,7 +372,10 @@ public class Elevator implements Subsystem
 	@Override
 	public void stop() 
 	{		
-		if(_elevatorState != ELEVATOR_STATE.GOTO_AND_HOLD_TARGET_POSTION)
+		if(_elevatorState != ELEVATOR_STATE.GOTO_AND_HOLD_TARGET_POSTION
+				&& _elevatorState != ELEVATOR_STATE.NEED_TO_HOME
+				&& _elevatorState != ELEVATOR_STATE.MOVING_TO_HOME
+				&& _elevatorState != ELEVATOR_STATE.TIMEOUT)
 		{
 			// set target to current location
 			_targetElevatorPosition = _elevatorMasterMotor.getSelectedSensorPosition(0);
@@ -383,7 +383,7 @@ public class Elevator implements Subsystem
 			// implemented as active hold in place for now (vs just turning motors off)
 			// flip back to hold position mode using the current position
 			_elevatorState = ELEVATOR_STATE.GOTO_AND_HOLD_TARGET_POSTION;
-			DriverStation.reportWarning("ElevatorAxis (State) ==> [GOTO_AND_HOLD_TARGET_POSTION]", false);
+			ReportStateChg("ElevatorAxis (State) stop ==> [GOTO_AND_HOLD_TARGET_POSTION]");
 		}
 	}
 
@@ -403,9 +403,9 @@ public class Elevator implements Subsystem
 		boolean isDisplayNativeUnits = true;
 		if(!isDisplayNativeUnits)
 		{
-			actualPosition =  _actualPositionNU / NU_PER_INCH_OF_TRAVEL;
-			actualVelocity = 10 * _actualVelocityNU_100mS / NU_PER_INCH_OF_TRAVEL;
-			actualAcceleration = 1000 * 10 * (_actualAccelerationNU_100mS_mS / NU_PER_INCH_OF_TRAVEL);
+			actualPosition =  _actualPositionNU / NU_PER_INCH;
+			actualVelocity = 10 * _actualVelocityNU_100mS / NU_PER_INCH;
+			actualAcceleration = 1000 * 10 * (_actualAccelerationNU_100mS_mS / NU_PER_INCH);
 		}
 		else
 		{
@@ -426,9 +426,11 @@ public class Elevator implements Subsystem
 		//logData.AddData("Chassis:LeftDriveMtr%VBus", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.LeftDriveMtrPercentVBus, 2)));	
 	} 
 	
-	private boolean getIsOnHomeLimtSwitch()
+	private void ReportStateChg(String message)
 	{
-		return !(_elevatorMasterMotor.getSensorCollection().isRevLimitSwitchClosed());
+		if(IS_VERBOSE_LOGGING_ENABLED)
+		{
+			System.out.println(message);
+		}
 	}
-	
 }
