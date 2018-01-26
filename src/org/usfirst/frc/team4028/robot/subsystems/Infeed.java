@@ -11,6 +11,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.PWM;
 import edu.wpi.first.wpilibj.VictorSP;
 
 public class Infeed {	
@@ -21,7 +22,7 @@ public class Infeed {
 		MOVING_TO_HOME,
 		AT_HOME,
 		MOVE_TO_INFEED,
-		INFEED_CUBE,
+		MOVE_TO_WIDE_INFEED,
 		STORE_ARMS,
 		TIMEOUT,
 	} 
@@ -33,6 +34,7 @@ public class Infeed {
 	Boolean _isRightArmHomed;
 	Boolean _areArmsHomed;
 	Boolean _areArmsInInfeedPosition;
+	Boolean _areArmsInWideInfeedPosition;
 	
 	TalonSRX _leftArmRotatorMotor; 
 	TalonSRX _rightArmRotatorMotor;
@@ -119,6 +121,7 @@ public class Infeed {
 		_isRightArmHomed = false;
 		_areArmsHomed = false;
 		_areArmsInInfeedPosition = false;
+		_areArmsInWideInfeedPosition = false;
 		
 		_infeedState = INFEED_STATE.NEED_TO_HOME;
 	}
@@ -141,6 +144,11 @@ public class Infeed {
 				switch(_infeedState) {
 					case NEED_TO_HOME:
 						_infeedState = INFEED_STATE.MOVING_TO_HOME;
+						
+						_areArmsHomed = false;
+						_isLeftArmHomed = false;
+						_isRightArmHomed = false;
+						
 						DriverStation.reportWarning("InfeedAxis (State) [NEED_TO_HOME] ==> [MOVING_TO_HOME]", false);
 						break;
 						
@@ -149,6 +157,7 @@ public class Infeed {
 						break;
 					
 					case AT_HOME:
+						_areArmsHomed = true;
 						break;
 						
 					case MOVE_TO_INFEED:
@@ -160,19 +169,25 @@ public class Infeed {
 								_leftArmRotatorMotor.getSelectedSensorPosition(0) < 
 								Constants.INFEED_MAXIMUM_ALLOWED_ERROR_POSITION) {
 							_areArmsInInfeedPosition = true;
-							_infeedState = INFEED_STATE.INFEED_CUBE;
+							System.out.println("INFEED IN POSITION");
 						}
-					
-						_infeedState = INFEED_STATE.NEED_TO_HOME;
 						break;
+					
+					case MOVE_TO_WIDE_INFEED:
+						_leftArmRotatorMotor.set(ControlMode.MotionMagic, 1500);
+						_rightArmRotatorMotor.set(ControlMode.MotionMagic, 1500);
 						
-					case INFEED_CUBE:
-						_leftInfeedDriveMotor.set(0.5);
-						_rightInfeedDriveMotor.set(0.5);
+						if(1400
+								< _leftArmRotatorMotor.getSelectedSensorPosition(0) && 
+								_leftArmRotatorMotor.getSelectedSensorPosition(0) < 
+								1600) {
+							_areArmsInWideInfeedPosition = true;
+						}
 						break;
 						
 					case STORE_ARMS:
-						
+						_leftArmRotatorMotor.set(ControlMode.MotionMagic, 0);
+						_rightArmRotatorMotor.set(ControlMode.MotionMagic, 0);
 						break;
 						
 					case TIMEOUT:
@@ -227,7 +242,6 @@ public class Infeed {
 		}
 		
 		if (_isRightArmHomed && _isLeftArmHomed) {
-			_areArmsHomed = true;
 			_infeedState = INFEED_STATE.AT_HOME;
 		}
 	}
@@ -246,8 +260,23 @@ public class Infeed {
 		}
 	}
 	
+	public void moveArmsToWideInfeedPosition() {
+		if (_areArmsHomed) {
+			_infeedState = INFEED_STATE.MOVE_TO_WIDE_INFEED;
+		}
+		else {
+			DriverStation.reportWarning("Function Not Avaliable until Arms are Homed", false);
+		}
+	}
+	
+	public void infeedCube() {
+		if(_areArmsInInfeedPosition || _areArmsInWideInfeedPosition) {
+			_leftInfeedDriveMotor.setSpeed(0.4);
+			_rightInfeedDriveMotor.setSpeed(0.4);
+		}
+	}
+	
 	public void reZeroArms() {
-		_areArmsHomed = false;
 		_infeedState = INFEED_STATE.NEED_TO_HOME;
 	}
 	
@@ -261,11 +290,16 @@ public class Infeed {
 //		}
 //	}
 	
+	public void stopDriveMotors() {
+		_leftInfeedDriveMotor.setSpeed(0);
+		_rightInfeedDriveMotor.setSpeed(0);
+	}
+	
 	private void stop() {
-		_leftArmRotatorMotor.set(ControlMode.PercentOutput, 0);
-		_rightArmRotatorMotor.set(ControlMode.PercentOutput, 0);
-		_leftInfeedDriveMotor.stopMotor();
-		_rightInfeedDriveMotor.stopMotor();
+		_leftArmRotatorMotor.set(ControlMode.MotionMagic, 0);
+		_leftArmRotatorMotor.set(ControlMode.MotionMagic, 0);
+		_leftInfeedDriveMotor.setSpeed(0);
+		_rightInfeedDriveMotor.setSpeed(0);
 	}
 }
 

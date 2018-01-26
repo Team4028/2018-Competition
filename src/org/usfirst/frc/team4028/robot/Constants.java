@@ -47,8 +47,8 @@ public class Constants {
 	
 	// Infeed Position Constants
 	public static final double INFEED_POSITION = 2300;
-	public static final double INFEED_MINIMUM_ALLOWED_ERROR_POSITION = 2275;
-	public static final double INFEED_MAXIMUM_ALLOWED_ERROR_POSITION = 2325;
+	public static final double INFEED_MINIMUM_ALLOWED_ERROR_POSITION = 2200;
+	public static final double INFEED_MAXIMUM_ALLOWED_ERROR_POSITION = 2400;
 	
 	// Logging
 	// this is where the USB stick is mounted on the RoboRIO filesystem.  
@@ -62,7 +62,7 @@ public class Constants {
     public static final double INFEED_MOTION_MAGIC_I = 0;
     public static final double INFEED_MOTION_MAGIC_D = 0;
     public static final double INFEED_MOTION_MAGIC_F = 0.11;
-        
+         
     public static final int INFEED_MOTION_MAGIC_MAX_VEL = 3000;
     public static final int INFEED_MOTION_MAGIC_MAX_ACC = 2000;
     
