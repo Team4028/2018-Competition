@@ -68,7 +68,7 @@ public class Elevator implements Subsystem
 	private static final long ELEVATOR_MAXIMUM_MOVE_TO_HOME_TIME_IN_MSEC = 5000;	// 5 sec
 	
 	private static final double ELEVATOR_POS_ALLOWABLE_ERROR_IN_INCHES = 0.25;	// +/- 0.25
-	private static final int ELEVATOR_POS_ALLOWABLE_ERROR_IN_NU = (int)Math.round(ELEVATOR_POS_ALLOWABLE_ERROR_IN_INCHES * .25);
+	private static final int ELEVATOR_POS_ALLOWABLE_ERROR_IN_NU = (int)Math.round(ELEVATOR_POS_ALLOWABLE_ERROR_IN_INCHES * NU_PER_INCH);
 	
 	private static final int HOME_POSITION = 0;
 	private static final int CUBE_ON_FLOOR_POSITION = 100;
