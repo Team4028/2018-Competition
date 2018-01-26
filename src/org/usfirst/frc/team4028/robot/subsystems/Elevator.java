@@ -70,18 +70,21 @@ public class Elevator implements Subsystem
 	private static final double ELEVATOR_POS_ALLOWABLE_ERROR_IN_INCHES = 0.25;	// +/- 0.25
 	private static final int ELEVATOR_POS_ALLOWABLE_ERROR_IN_NU = (int)Math.round(ELEVATOR_POS_ALLOWABLE_ERROR_IN_INCHES * NU_PER_INCH);
 	
+	// hardcoded preset positions (in native units, 0 = home position)
 	private static final int HOME_POSITION = 0;
 	private static final int CUBE_ON_FLOOR_POSITION = 100;
 	private static final int CUBE_ON_PYRAMID_LEVEL_1_POSITION = 200;
 	private static final int SWITCH_HEIGHT_POSITION = 1000;
 	private static final int SCALE_HEIGHT_POSITION = 3605;
+	
+	// hardcoded preset jogging velocities
 	private static final double JOG_UP_VELOCITY = 0.35;
 	private static final double JOG_DOWN_VELOCITY = -0.25;
 	
-	private static final int MOVING_UP_SLOT_INDEX = 1;
-	private static final int MOVING_DOWN_SLOT_INDEX = 0;
-	
 	private static final boolean IS_VERBOSE_LOGGING_ENABLED = true;
+	
+	private static final int MOVING_UP_PID_SLOT_INDEX = 1;
+	private static final int MOVING_DOWN_PID_SLOT_INDEX = 0;
 	
 	// define PID Constants
 	public static final int CRUISE_VELOCITY = 30000;			// native units per 100 mSec
@@ -149,30 +152,30 @@ public class Elevator implements Subsystem
 		_elevatorSlaveMotor.configPeakOutputForward(1, 0);
 		_elevatorSlaveMotor.configPeakOutputReverse(-1, 0);
 		
-		// config velocity measurement
+		// config velocity measurement (2x of scan time, looper is 10 mS)
 		_elevatorMasterMotor.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_5Ms, 0);
 		_elevatorMasterMotor.configVelocityMeasurementWindow(32, 0);
 		
 		// Setup MotionMagic Mode
-		_elevatorMasterMotor.selectProfileSlot(MOVING_DOWN_SLOT_INDEX, 0);
+		_elevatorMasterMotor.selectProfileSlot(MOVING_DOWN_PID_SLOT_INDEX, 0);
 		
 		// set closed loop gains
-		_elevatorMasterMotor.config_kF(MOVING_DOWN_SLOT_INDEX, FEED_FORWARD_GAIN_DOWN, 0);
-		_elevatorMasterMotor.config_kP(MOVING_DOWN_SLOT_INDEX, PROPORTIONAL_GAIN_DOWN, 0);
-		_elevatorMasterMotor.config_kI(MOVING_DOWN_SLOT_INDEX, INTEGRAL_GAIN_DOWN, 0);
-		_elevatorMasterMotor.config_kD(MOVING_DOWN_SLOT_INDEX, DERIVATIVE_GAIN_DOWN, 0);
+		_elevatorMasterMotor.config_kF(MOVING_DOWN_PID_SLOT_INDEX, FEED_FORWARD_GAIN_DOWN, 0);
+		_elevatorMasterMotor.config_kP(MOVING_DOWN_PID_SLOT_INDEX, PROPORTIONAL_GAIN_DOWN, 0);
+		_elevatorMasterMotor.config_kI(MOVING_DOWN_PID_SLOT_INDEX, INTEGRAL_GAIN_DOWN, 0);
+		_elevatorMasterMotor.config_kD(MOVING_DOWN_PID_SLOT_INDEX, DERIVATIVE_GAIN_DOWN, 0);
 		
-		_elevatorMasterMotor.config_kF(MOVING_UP_SLOT_INDEX, FEED_FORWARD_GAIN_UP, 0);
-		_elevatorMasterMotor.config_kP(MOVING_UP_SLOT_INDEX, PROPORTIONAL_GAIN_UP, 0);
-		_elevatorMasterMotor.config_kI(MOVING_UP_SLOT_INDEX, INTEGRAL_GAIN_UP, 0);
-		_elevatorMasterMotor.config_kD(MOVING_UP_SLOT_INDEX, DERIVATIVE_GAIN_UP, 0);
+		_elevatorMasterMotor.config_kF(MOVING_UP_PID_SLOT_INDEX, FEED_FORWARD_GAIN_UP, 0);
+		_elevatorMasterMotor.config_kP(MOVING_UP_PID_SLOT_INDEX, PROPORTIONAL_GAIN_UP, 0);
+		_elevatorMasterMotor.config_kI(MOVING_UP_PID_SLOT_INDEX, INTEGRAL_GAIN_UP, 0);
+		_elevatorMasterMotor.config_kD(MOVING_UP_PID_SLOT_INDEX, DERIVATIVE_GAIN_UP, 0);
 		
 		// set accel and cruise velocities
 		_elevatorMasterMotor.configMotionCruiseVelocity(CRUISE_VELOCITY, 0);
 		_elevatorMasterMotor.configMotionAcceleration(ACCELERATION, 0);
 		
 		// set allowable closed loop gain
-		// +/- 0.25 
+		// +/- 0.25"
 		_elevatorMasterMotor.configAllowableClosedloopError(0, ELEVATOR_POS_ALLOWABLE_ERROR_IN_NU, 0);
 		
 		// set initial elevator state
@@ -258,10 +261,10 @@ public class Elevator implements Subsystem
 	
 						// set appropriate gain slot to use
 						if(_targetElevatorPosition > _actualPositionNU) {
-							_elevatorMasterMotor.selectProfileSlot(MOVING_UP_SLOT_INDEX, 0);
+							_elevatorMasterMotor.selectProfileSlot(MOVING_UP_PID_SLOT_INDEX, 0);
 						}
 						else {
-							_elevatorMasterMotor.selectProfileSlot(MOVING_DOWN_SLOT_INDEX, 0);
+							_elevatorMasterMotor.selectProfileSlot(MOVING_DOWN_PID_SLOT_INDEX, 0);
 						}
 						
 						_elevatorMasterMotor.set(ControlMode.MotionMagic, _targetElevatorPosition, 0);
@@ -440,17 +443,18 @@ public class Elevator implements Subsystem
         if (_elevatorState == ELEVATOR_STATE.GOTO_AND_HOLD_TARGET_POSTION)
         {
         	int currentError = Math.abs(_elevatorMasterMotor.getSelectedSensorPosition(0) - _targetElevatorPosition);
-            if( currentError < ELEVATOR_POS_ALLOWABLE_ERROR_IN_NU) 
+            if ( currentError < ELEVATOR_POS_ALLOWABLE_ERROR_IN_NU) 
             {
             	return true;
-            } else
+            } 
+            else
             {
             	return false;
             }
         } 
         else if (_elevatorState == ELEVATOR_STATE.JOG_AXIS)
         {
-        	return true;
+        	return false;
         } 
         else
         {
