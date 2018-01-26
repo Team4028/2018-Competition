@@ -81,6 +81,7 @@ public class Chassis implements Subsystem{
 		PERCENT_VBUS, 
 		AUTO_TURN, 
 		FOLLOW_PATH,
+		VELOCITY_SETPOINT
 	}
 	
 	// private constructor for singleton pattern
@@ -177,7 +178,7 @@ public class Chassis implements Subsystem{
      * Check if the drive talons are configured for velocity control
      */
     protected static boolean usesTalonVelocityControl(ChassisState state) {
-        if (state == ChassisState.FOLLOW_PATH) {
+        if ((state == ChassisState.FOLLOW_PATH) || (state == ChassisState.VELOCITY_SETPOINT)) {
             return true;
         }
         return false;
@@ -200,7 +201,7 @@ public class Chassis implements Subsystem{
 			
 		// if acc/dec mode is enabled
 		if(_isAccelDecelEnabled) {
-			//implement speed scaling
+			// implement speed scaling
 			_arcadeDriveThrottleCmdAdj = calcAccelDecelThrottleCmd(_currentThrottleCmdScaled, _previousThrottleCmdScaled, _lastCmdChgTimeStamp);
 			
 			_currentThrottleCmdAccDec = _arcadeDriveThrottleCmdAdj;
@@ -234,11 +235,11 @@ public class Chassis implements Subsystem{
      * @param left_inches_per_sec
      * @param right_inches_per_sec
      */
-    /*public synchronized void setVelocitySetpoint(double left_inches_per_sec, double right_inches_per_sec) {
+    public synchronized void setVelocitySetpoint(double left_inches_per_sec, double right_inches_per_sec) {
         configureTalonsForSpeedControl();
         _chassisState = ChassisState.VELOCITY_SETPOINT;
         updateVelocitySetpoint(left_inches_per_sec, right_inches_per_sec);
-    } */
+    } 
 
     /**
      * Configures talons for velocity control
@@ -318,8 +319,7 @@ public class Chassis implements Subsystem{
 			_leftTargetVelocity = setpoint.left;
 			_rightTargetVelocity = setpoint.right;
 		} else {
-			_chassisState = ChassisState.PERCENT_VBUS;
-			arcadeDrive(0.0,0.0);
+			setVelocitySetpoint(0.0, 0.0);
 		}
 	}
 	
@@ -337,8 +337,7 @@ public class Chassis implements Subsystem{
             _chassisState = ChassisState.FOLLOW_PATH;
             _currentPath = path;
         } else {
-        	_chassisState = ChassisState.PERCENT_VBUS;
-            arcadeDrive(0.0,0.0);
+        	setVelocitySetpoint(0.0, 0.0);
         }
     }
 

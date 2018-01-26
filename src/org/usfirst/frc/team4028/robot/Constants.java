@@ -98,7 +98,7 @@ public class Constants {
     public static final double INERTIA_STEERING_GAIN = 0.0; // angular velocity command is multiplied by this gain *
                             
     public static final double SEGMENT_COMPLETION_TOLERANCE = 0.1; // inches
-    public static final double PATH_FOLLOWING_MAX_ACCEL = 100.0; // inches per second^2
+    public static final double PATH_FOLLOWING_MAX_ACCEL = 120.0; // inches per second^2
     public static final double PATH_FOLLOWING_MAX_VEL = 120.0; // inches per second
     public static final double PATH_FOLLOWING_PROFILE_KP = 5.0;	//5.00;
     public static final double PATH_FOLLOWING_PROFILE_KI = 0.0;	//0.03;

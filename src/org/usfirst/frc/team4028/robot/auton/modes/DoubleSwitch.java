@@ -20,7 +20,7 @@ public class DoubleSwitch extends AutonBase {
 		} else {
 			toSwitch = Paths.getPath(PATHS.R_SWITCH);
 			fromSwitchToFrontOfPyramidPath = Paths.getPath(PATHS.R_SWITCH_TO_FRONT_OF_PYRAMID);
-			sTurnAwayFromPyramid = Paths.getPath(PATHS.S_TURN_FROM_PYRAMID_TO_LEFT);
+			sTurnAwayFromPyramid = Paths.getPath(PATHS.S_TURN_FROM_PYRAMID_TO_RIGHT);
 			toSwitchAfterSTurn = Paths.getPath(PATHS.TO_R_SWITCH_AFTER_S_TURN);
 		}
 		toThePyramid = Paths.getPath(PATHS.TO_PYRAMID);
