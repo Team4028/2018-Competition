@@ -292,6 +292,7 @@ public class Elevator implements Subsystem
 			}
 		}
 		
+		// run logic when the looper stops
 		@Override
 		public void onStop(double timestamp) 
 		{
@@ -302,6 +303,7 @@ public class Elevator implements Subsystem
 		}
 	};
 	
+	// return the internal loop reference
 	public Loop getLoop() {
 		return _loop;
 	}
@@ -347,6 +349,7 @@ public class Elevator implements Subsystem
 		}
 	}
 	
+	// support joystick like jogging but at a fixed velocity
 	public void JogAxis(double speedCmd)
 	{
 		if(_elevatorState == ELEVATOR_STATE.GOTO_AND_HOLD_TARGET_POSTION 
@@ -377,6 +380,7 @@ public class Elevator implements Subsystem
 		}
 	}
 	
+	// implemented as active hold in place for now (vs just turning motors off)
 	@Override
 	public void stop() 
 	{		
@@ -388,19 +392,20 @@ public class Elevator implements Subsystem
 			// set target to current location
 			_targetElevatorPosition = _elevatorMasterMotor.getSelectedSensorPosition(0);
 			
-			// implemented as active hold in place for now (vs just turning motors off)
 			// flip back to hold position mode using the current position
 			_elevatorState = ELEVATOR_STATE.GOTO_AND_HOLD_TARGET_POSTION;
 			ReportStateChg("ElevatorAxis (State) stop ==> [GOTO_AND_HOLD_TARGET_POSTION]");
 		}
 	}
 
+	// reset (rzero) all sensors
 	@Override
 	public void zeroSensors() 
 	{
 		_elevatorMasterMotor.setSelectedSensorPosition(0, 0, 0);
 	}
 	
+	// output data to the dashboard on the drivers station
 	@Override
 	public void outputToSmartDashboard() 
 	{
@@ -453,12 +458,17 @@ public class Elevator implements Subsystem
         }
     }
 
+	// add data elements to be logged  to the input param (which is passed by ref)
 	@Override
 	public void updateLogData(LogDataBE logData) 
 	{
-		//logData.AddData("Chassis:LeftDriveMtr%VBus", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.LeftDriveMtrPercentVBus, 2)));	
+		logData.AddData("Elevator:PostionNu", String.valueOf(_actualPositionNU));	
+		logData.AddData("Elevator:VelocityNu", String.valueOf(_actualVelocityNU_100mS));	
+		logData.AddData("Elevator:AccelNu", String.valueOf(_actualAccelerationNU_100mS_mS));	
+		logData.AddData("Elevator:State", _elevatorState.toString());	
 	} 
 	
+	// private helper method to control how we write to the drivers station
 	private void ReportStateChg(String message)
 	{
 		if(IS_VERBOSE_LOGGING_ENABLED)
