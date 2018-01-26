@@ -53,7 +53,7 @@ public class Robot extends IterativeRobot {
 	public void robotInit() {
 		_buildMsg = GeneralUtilities.WriteBuildInfoToDashboard(ROBOT_NAME);
 		
-		// TODO: remove me  _enabledLooper.register(_chassis.getLoop());
+		_enabledLooper.register(_chassis.getLoop());
 		_enabledLooper.register(_elevator.getLoop());
 		_enabledLooper.register(RobotStateEstimator.getInstance().getLoop());
 		
