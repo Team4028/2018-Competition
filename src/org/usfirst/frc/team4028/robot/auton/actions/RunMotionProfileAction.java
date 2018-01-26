@@ -1,10 +1,8 @@
 package org.usfirst.frc.team4028.robot.auton.actions;
 
-import org.usfirst.frc.team4028.robot.RobotState;
 import org.usfirst.frc.team4028.robot.subsystems.Chassis;
 import org.usfirst.frc.team4028.util.control.Path;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 
 /* Runs a motion profile */
