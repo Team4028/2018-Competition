@@ -23,7 +23,7 @@ public class Robot extends IterativeRobot {
 	private static final String ROBOT_NAME = "2018 COMPETITION";
 	
 	// Subsystems
-	///private Chassis _chassis = Chassis.getInstance();
+	private Chassis _chassis = Chassis.getInstance();
 	private Elevator _elevator = Elevator.getInstance();
 	
 	// Sensors
@@ -113,7 +113,7 @@ public class Robot extends IterativeRobot {
 		_autonExecuter.setAutoMode(_dashboard.getSelectedAuton());
 		_autonExecuter.start();
 		
-		///_chassis.zeroSensors();
+		_chassis.zeroSensors();
 		
 		// init data logging
 		_dataLogger = GeneralUtilities.setupLogging("auton");
@@ -149,9 +149,9 @@ public class Robot extends IterativeRobot {
 		
 		stopAll();
 		
-		///_chassis.setHighGear(false);
-		///_chassis.setBrakeMode(false);
-		///_chassis.zeroSensors();
+		_chassis.setHighGear(false);
+		_chassis.setBrakeMode(false);
+		_chassis.zeroSensors();
 		
 		// init data logging
 		_dataLogger = GeneralUtilities.setupLogging("auton");
@@ -166,13 +166,13 @@ public class Robot extends IterativeRobot {
 	public void teleopPeriodic() {
 		// Chassis Throttle & Turn
 		if ((Math.abs(_dos.getThrottleCmd()) > 0.05) || (Math.abs(_dos.getTurnCmd()) > 0.05)) {
-			///_chassis.arcadeDrive(-1.0 * _dos.getThrottleCmd(), _dos.getTurnCmd());
+			_chassis.arcadeDrive(-1.0 * _dos.getThrottleCmd(), _dos.getTurnCmd());
 		} else {
-			///_chassis.stop();
+			_chassis.stop();
 		}
 		
 		if (_dos.getIsShiftGearJustPressed()) {
-			///_chassis.toggleShifter();
+			_chassis.toggleShifter();
 		}
 		
 		// elevator throttle & buttons
@@ -215,7 +215,7 @@ public class Robot extends IterativeRobot {
 	// all subsystems with motors should add a call here to a stop method
 	//	so we have one easy way to stop all motion
 	private void stopAll() {
-		///_chassis.stop();
+		_chassis.stop();
 		_elevator.stop();
 	}
 	
@@ -229,7 +229,7 @@ public class Robot extends IterativeRobot {
     	if((new Date().getTime() - _lastDashboardWriteTimeMSec) > 100) {
     		// each subsystem should add a call to a outputToSmartDashboard method
     		// to push its data out to the dashboard
-    		///_chassis.outputToSmartDashboard(); 
+    		_chassis.outputToSmartDashboard(); 
     		_elevator.outputToSmartDashboard();
     		_ultrasonic.outputToDashboard();
 	    	
@@ -250,14 +250,16 @@ public class Robot extends IterativeRobot {
 	}
 	
 	// typically called in *Perodic method to optionally log data to the USB stick
-	private void logAllData() { 
+	private void logAllData() 
+	{ 
 		// always call this 1st to calc drive metrics
-    	if(_dataLogger != null) {    	
+    	if(_dataLogger != null)
+    	{    	
 	    	// create a new, empty logging class
         	LogDataBE logData = new LogDataBE();
 	    	
 	    	// ask each subsystem that exists to add its data
-	    	///_chassis.updateLogData(logData);
+	    	_chassis.updateLogData(logData);
 	    	_elevator.updateLogData(logData);
     	}
 	}
