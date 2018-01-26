@@ -82,8 +82,7 @@ import edu.wpi.first.wpilibj.XboxController;
 		ENGINEER_RIGHT_THUMBSTICK						
 		*/
 
-public class DriverOperationStation 
-{
+public class DriverOperationStation {
 		// class level private variables
 		private XboxController _driverGamepad;
 		private XboxController _operatorGamepad;
@@ -94,14 +93,12 @@ public class DriverOperationStation
 		// singleton pattern
 		private static DriverOperationStation _instance = new DriverOperationStation();
 
-		public static DriverOperationStation getInstance() 
-		{
+		public static DriverOperationStation getInstance() {
 			return _instance;
 		}
 		
 		// private constructor for singleton pattern
-		private DriverOperationStation() 
-		{
+		private DriverOperationStation() {
 			_driverGamepad = new XboxController(Constants.DRIVER_GAMEPAD_USB_PORT);				// std Logitech F310 Gamepad  
 			_operatorGamepad = new XboxController(Constants.OPERATOR_GAMEPAD_USB_PORT);			// std Logitech F310 Gamepad  
 			_engineeringGamepad = new XboxController(Constants.ENGINEERING_GAMEPAD_USB_PORT);	// std Logitech F310 Gamepad  
@@ -426,8 +423,7 @@ public class DriverOperationStation
 			if(Math.abs(_operatorGamepad.getY(Hand.kLeft)) >= JOYSTICK_DEADBAND){
 				// flip the sign, pushing the joystick up is a # < 0
 				return _operatorGamepad.getY(Hand.kLeft) * -1.0;
-			}
-			else{
+			} else {
 				return 0.0;
 			}
 		}

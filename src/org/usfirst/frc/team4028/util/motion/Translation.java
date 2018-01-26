@@ -29,21 +29,17 @@ public class Translation {
         _y = end._y - start._y;
     }
 
-    /**
-     * The "norm" of a transform is the Euclidean distance in x and y.
-     * 
-     * @return sqrt(x^2 + y^2)
-     */
+    /** The "norm" of a transform is the Euclidean distance in x and y. */
     public double norm() {
         return Math.hypot(_x, _y);
     }
-
+    
     public double x() {
-        return _x;
+    	return _x;
     }
-
+    
     public double y() {
-        return _y;
+    	return _y;
     }
 
     /**

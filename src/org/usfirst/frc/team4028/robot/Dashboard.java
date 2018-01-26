@@ -4,7 +4,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import org.usfirst.frc.team4028.robot.GeneralEnums.AUTON_MODE;
 import org.usfirst.frc.team4028.robot.auton.AutonBase;
 import org.usfirst.frc.team4028.robot.auton.modes.*;
 
@@ -22,6 +21,18 @@ public class Dashboard {
 		return _instance;
 	}
 	
+	public enum AUTON_MODE {
+		UNDEFINED,
+		DO_NOTHING,
+		AUTO_RUN,
+		SWITCH,
+		DOUBLE_SWITCH,
+		TRIPLE_SWITCH,
+		SCALE,
+		DOUBLE_SCALE,
+		SCALE_THEN_SWITCH
+	}
+	
 	// Define all Dashboard Sendable Choosers (use generic types based on enums)
 	private SendableChooser<AUTON_MODE> _autonModeChooser = new SendableChooser<>();
 	
@@ -30,24 +41,22 @@ public class Dashboard {
 	// private constructor for singleton pattern
 	private Dashboard() {
 		// setup Auton Mode Chooser
-		_autonModeChooser.addDefault("Do Nothing", GeneralEnums.AUTON_MODE.DO_NOTHING);
-		_autonModeChooser.addObject("Auto Run", GeneralEnums.AUTON_MODE.AUTO_RUN);
-		_autonModeChooser.addObject("Switch", GeneralEnums.AUTON_MODE.SWITCH);
-		_autonModeChooser.addObject("Double Switch", GeneralEnums.AUTON_MODE.DOUBLE_SWITCH);
-		_autonModeChooser.addObject("Triple Switch", GeneralEnums.AUTON_MODE.TRIPLE_SWITCH);
-		_autonModeChooser.addObject("Scale", GeneralEnums.AUTON_MODE.SCALE);
-		_autonModeChooser.addObject("Double Scale", GeneralEnums.AUTON_MODE.DOUBLE_SCALE);
-		_autonModeChooser.addObject("Scale then Switch", GeneralEnums.AUTON_MODE.SCALE_THEN_SWITCH);
+		_autonModeChooser.addDefault("Do Nothing", AUTON_MODE.DO_NOTHING);
+		_autonModeChooser.addObject("Auto Run", AUTON_MODE.AUTO_RUN);
+		_autonModeChooser.addObject("Switch", AUTON_MODE.SWITCH);
+		_autonModeChooser.addObject("Double Switch", AUTON_MODE.DOUBLE_SWITCH);
+		_autonModeChooser.addObject("Triple Switch", AUTON_MODE.TRIPLE_SWITCH);
+		_autonModeChooser.addObject("Scale", AUTON_MODE.SCALE);
+		_autonModeChooser.addObject("Double Scale", AUTON_MODE.DOUBLE_SCALE);
+		_autonModeChooser.addObject("Scale then Switch", AUTON_MODE.SCALE_THEN_SWITCH);
 		SmartDashboard.putData("Auton Mode Chooser", _autonModeChooser);
-		
-		getGameData();
 	}
 	
 	private boolean getIsFMSAttached() {
 		return DriverStation.getInstance().isFMSAttached();
 	}
 	
-	private void getGameData() {
+	public void getGameData() {
 		String gameData = DriverStation.getInstance().getGameSpecificMessage();
 		
 		_isSwitchLeft = (gameData.charAt(0) == 'L');
@@ -57,11 +66,8 @@ public class Dashboard {
 	public void printStartupMessage() {
 		// This prints once during robotInit
 		boolean isFMSAttached = getIsFMSAttached();
-		String _fmsDebugMsg = "?";
 		
-		_fmsDebugMsg = "Is FMS Attached: [" + isFMSAttached + "]";
-		
-		DriverStation.reportWarning(">>>>> " + _fmsDebugMsg + " <<<<<<", false);
+		DriverStation.reportWarning(">>>>> Is FMS Attached : [" + isFMSAttached + "] <<<<<<", false);
 	}
 	
 	public AutonBase getSelectedAuton() {

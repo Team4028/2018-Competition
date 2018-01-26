@@ -1,8 +1,6 @@
 package org.usfirst.frc.team4028.util.control;
 
-/**
- * A utility class for interpolating lookahead distance based on current speed.
- */
+/** A utility class for interpolating lookahead distance based on current speed. */
 public class Lookahead {
 	public final double minDistance, maxDistance;
 	public final double minSpeed, maxSpeed;

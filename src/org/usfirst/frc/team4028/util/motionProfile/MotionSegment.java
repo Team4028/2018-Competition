@@ -1,7 +1,8 @@
 package org.usfirst.frc.team4028.util.motionProfile;
 
 import static org.usfirst.frc.team4028.util.GeneralUtilities.epsilonEquals;
-import static org.usfirst.frc.team4028.util.motionProfile.MotionUtil.kEpsilon;
+
+import org.usfirst.frc.team4028.robot.Constants;
 
 public class MotionSegment {
 	protected MotionState mStart;
@@ -22,14 +23,14 @@ public class MotionSegment {
      * 3. The time, position, velocity, and acceleration of the profile are consistent.
      */
     public boolean isValid() {
-        if (!epsilonEquals(start().acc(), end().acc(), kEpsilon)) {
+        if (!epsilonEquals(start().acc(), end().acc(), Constants.EPSILON_NEGATIVE_6)) {
             // Acceleration is not constant within the segment.
             System.err.println(
                     "Segment acceleration not constant! Start acc: " + start().acc() + ", End acc: " + end().acc());
             return false;
         }
-        if (Math.signum(start().vel()) * Math.signum(end().vel()) < 0.0 && !epsilonEquals(start().vel(), 0.0, kEpsilon)
-                && !epsilonEquals(end().vel(), 0.0, kEpsilon)) {
+        if (Math.signum(start().vel()) * Math.signum(end().vel()) < 0.0 && !epsilonEquals(start().vel(), 0.0, Constants.EPSILON_NEGATIVE_6)
+                && !epsilonEquals(end().vel(), 0.0, Constants.EPSILON_NEGATIVE_6)) {
             // Velocity direction reverses within the segment.
             System.err.println("Segment velocity reverses! Start vel: " + start().vel() + ", End vel: " + end().vel());
             return false;

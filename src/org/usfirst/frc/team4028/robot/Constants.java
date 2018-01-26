@@ -119,4 +119,8 @@ public class Constants {
     public static final double FLOOR_IT_SPEED = 80;
     public static final double WARP_SPEED = 100;
     public static final double KEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEENS_SPEED = 120;
+    
+    public static final double EPSILON_NEGATIVE_6 = 1e-6;
+    public static final double EPSILON_NEGATIVE_9 = 1e-9;
+    public static final double BIG_NUMBER = 1e6;
 }

@@ -13,25 +13,14 @@ import org.usfirst.frc.team4028.util.*;
  * point and direction in space that defines an (x,y) coordinate system. Transforms (or poses) keep track of the spatial
  * relationship between different frames.
  *
- * Robot frames of interest (from parent to child):
+ * Robot frames of interest:
  *
  * 1. Field frame: origin is where the robot is turned on
  *
  * 2. Vehicle frame: origin is the center of the robot wheelbase, facing forwards
  *
- * 3. Camera frame: origin is the center of the camera imager relative to the robot base.
- *
- * 4. Goal frame: origin is the center of the boiler (note that orientation in this frame is arbitrary). Also note that
- * there can be multiple goal frames.
- *
- * As a kinematic chain with 4 frames, there are 3 transforms of interest:
- *
- * 1. Field-to-vehicle: This is tracked over time by integrating encoder and gyro measurements. It will inevitably
+ * Field-to-vehicle: This is tracked over time by integrating encoder and gyro measurements. It will inevitably
  * drift, but is usually accurate over short time periods.
- *
- * 2. Vehicle-to-camera: This is a constant.
- *
- * 3. Camera-to-goal: This is a pure translation, and is measured by the vision system.
  */
 public class RobotState {
 	private static RobotState instance_ = new RobotState();

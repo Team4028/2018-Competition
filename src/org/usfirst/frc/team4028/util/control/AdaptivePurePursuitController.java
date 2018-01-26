@@ -7,8 +7,6 @@ import org.usfirst.frc.team4028.util.motion.Translation;
 import org.usfirst.frc.team4028.util.motion.Twist;
 
 public class AdaptivePurePursuitController {
-	private static final double kReallyBigNumber = 1E6;
-
     public static class Command {
         public Twist delta = Twist.identity();
         public double crossTrackError;
@@ -148,7 +146,7 @@ public class AdaptivePurePursuitController {
     }
 
     public static double getLength(RigidTransform pose, Translation point, Translation center, double radius) {
-        if (radius < kReallyBigNumber) {
+        if (radius < Constants.BIG_NUMBER) {
             final Translation centerToPoint = new Translation(center, point);
             final Translation centerToPose = new Translation(center, pose.getTranslation());
             // If the point is behind pose, we want the opposite of this angle. To determine if the point is behind,

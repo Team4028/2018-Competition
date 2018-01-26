@@ -2,18 +2,15 @@ package org.usfirst.frc.team4028.util.motion;
 
 import static org.usfirst.frc.team4028.util.GeneralUtilities.epsilonEquals;
 
+import org.usfirst.frc.team4028.robot.Constants;
 import org.usfirst.frc.team4028.util.Interpolable;
 
 public class RigidTransform implements Interpolable<RigidTransform>{
-	protected static final double kEpsilon = 1E-9;
-
     protected static final RigidTransform kIdentity = new RigidTransform();
 
     public static final RigidTransform identity() {
         return kIdentity;
     }
-
-    private final static double kEps = 1E-9;
 
     protected Translation _translation;
     protected Rotation _rotation;
@@ -41,7 +38,7 @@ public class RigidTransform implements Interpolable<RigidTransform>{
         double sin_theta = Math.sin(delta.dtheta);
         double cos_theta = Math.cos(delta.dtheta);
         double s, c;
-        if (Math.abs(delta.dtheta) < kEps) {
+        if (Math.abs(delta.dtheta) < Constants.EPSILON_NEGATIVE_9) {
             s = 1.0 - 1.0 / 6.0 * delta.dtheta * delta.dtheta;
             c = .5 * delta.dtheta;
         } else {
@@ -60,7 +57,7 @@ public class RigidTransform implements Interpolable<RigidTransform>{
         final double half_dtheta = 0.5 * dtheta;
         final double cos_minus_one = transform.getRotation().cos() - 1.0;
         double halftheta_by_tan_of_halfdtheta;
-        if (Math.abs(cos_minus_one) < kEps) {
+        if (Math.abs(cos_minus_one) < Constants.EPSILON_NEGATIVE_9) {
             halftheta_by_tan_of_halfdtheta = 1.0 - 1.0 / 12.0 * dtheta * dtheta;
         } else {
             halftheta_by_tan_of_halfdtheta = -(half_dtheta * transform.getRotation().sin()) / cos_minus_one;
@@ -127,7 +124,7 @@ public class RigidTransform implements Interpolable<RigidTransform>{
      */
     public boolean isColinear(RigidTransform other) {
         final Twist twist = log(inverse().transformBy(other));
-        return (epsilonEquals(twist.dy, 0.0, kEpsilon) && epsilonEquals(twist.dtheta, 0.0, kEpsilon));
+        return (epsilonEquals(twist.dy, 0.0, Constants.EPSILON_NEGATIVE_9) && epsilonEquals(twist.dtheta, 0.0, Constants.EPSILON_NEGATIVE_9));
     }
 
     private static Translation intersectionInternal(RigidTransform a, RigidTransform b) {
