@@ -9,9 +9,9 @@ import edu.wpi.first.wpilibj.DriverStation;
    http://www.pdocs.kauailabs.com/navx-mxp/software/roborio-libraries/java/
    http://www.pdocs.kauailabs.com/navx-mxp/examples/rotate-to-angle-2/ */
 public class NavXGyro {
-	
 	// singleton pattern
 	private static NavXGyro _instance = new NavXGyro();
+	
 	public static NavXGyro getInstance() {
 		return _instance;
 	}
@@ -32,8 +32,16 @@ public class NavXGyro {
 		return _angleAdjustment + _navXSensor.getYaw(); 
 	}
 	
-	public void zeroYaw()  { 
+	public void zeroYaw() { 
 		_navXSensor.zeroYaw(); 
+	}
+	
+	public boolean isPitchPastThreshhold() {
+		if(_navXSensor.getPitch()>=Constants.MAX_PITCH_POSITIVE || _navXSensor.getPitch()<= Constants.MAX_PITCH_NEGATIVE) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	public void setAngleAdjustment(double angle) {

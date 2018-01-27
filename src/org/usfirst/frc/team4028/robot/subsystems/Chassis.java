@@ -25,6 +25,8 @@ import com.ctre.phoenix.motorcontrol.VelocityMeasPeriod;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Chassis implements Subsystem{
 	// singleton pattern
@@ -40,9 +42,10 @@ public class Chassis implements Subsystem{
 	// define class level variables for Robot objects
 	private TalonSRX _leftMaster, _leftSlave, _rightMaster, _rightSlave;
 	private DoubleSolenoid _shifterSolenoid;
-	private NavXGyro _navX = NavXGyro.getInstance();
 	
+	private NavXGyro _navX = NavXGyro.getInstance();
 	private RobotState _robotState = RobotState.getInstance();
+	
 	private PathFollower _pathFollower;
 	
 	private Path _currentPath = null;
@@ -217,9 +220,13 @@ public class Chassis implements Subsystem{
 		
 		_arcadeDriveTurnCmdAdj = newTurnCmdScaled;
 		
-		// send cmd to mtr controllers
-		_leftMaster.set(ControlMode.PercentOutput, _arcadeDriveThrottleCmdAdj - 0.7 * _arcadeDriveTurnCmdAdj);
-		_rightMaster.set(ControlMode.PercentOutput, _arcadeDriveThrottleCmdAdj + 0.7 * _arcadeDriveTurnCmdAdj);
+		if(_navX.isPitchPastThreshhold()) {
+			stop();
+		} else {
+			// send cmd to mtr controllers
+			_leftMaster.set(ControlMode.PercentOutput, _arcadeDriveThrottleCmdAdj - 0.7 * _arcadeDriveTurnCmdAdj);
+			_rightMaster.set(ControlMode.PercentOutput, _arcadeDriveThrottleCmdAdj + 0.7 * _arcadeDriveTurnCmdAdj);
+		}
 	}
 	
 	public synchronized void tankDrive(DriveCommand command) {
@@ -380,10 +387,10 @@ public class Chassis implements Subsystem{
 	}
 	
 	public synchronized void autoShift() {
-		if ((getLeftVelocityInchesPerSec() + getRightVelocityInchesPerSec()) > 60.0 * 2.0) {
+		if ((getLeftVelocityInchesPerSec() + (-1.0 * getRightVelocityInchesPerSec())) > 65.0 * 2.0) {
 			setHighGear(true);
-		} else if ((getLeftVelocityInchesPerSec() + getRightVelocityInchesPerSec()) < 50.0 * 2.0) {
-			setHighGear(false);
+		} else if ((getLeftVelocityInchesPerSec() + getRightVelocityInchesPerSec()) < 40.0 * 2.0) {
+			//setHighGear(false);
 		}
 	}
 	
@@ -530,9 +537,9 @@ public class Chassis implements Subsystem{
 	@Override
 	public void outputToSmartDashboard() {
 		//SmartDashboard.putNumber("Left Position", getLeftPosInRot());
-		//SmartDashboard.putNumber("Left Drive Inches/Sec", getLeftVelocityInchesPerSec());
+		SmartDashboard.putNumber("Left Drive Inches/Sec", getLeftVelocityInchesPerSec());
 		//SmartDashboard.putNumber("Right Position", getRightPosInRot());
-		//SmartDashboard.putNumber("Right Drive Inches/Sec", getRightVelocityInchesPerSec());
+		SmartDashboard.putNumber("Right Drive Inches/Sec", -getRightVelocityInchesPerSec());
 		
 		//SmartDashboard.putNumber("Left Position in Inches", getLeftDistanceInches());
 		//SmartDashboard.putNumber("Right Position in Inches", getRightDistanceInches());

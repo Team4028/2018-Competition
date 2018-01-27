@@ -82,7 +82,7 @@ import edu.wpi.first.wpilibj.XboxController;
 		ENGINEER_RIGHT_THUMBSTICK						
 		*/
 
-public class DriverOperationStation {
+public class DriverOperatorStation {
 		// class level private variables
 		private XboxController _driverGamepad;
 		private XboxController _operatorGamepad;
@@ -91,14 +91,14 @@ public class DriverOperationStation {
 		private static final double JOYSTICK_DEADBAND = 0.05;
 		
 		// singleton pattern
-		private static DriverOperationStation _instance = new DriverOperationStation();
+		private static DriverOperatorStation _instance = new DriverOperatorStation();
 
-		public static DriverOperationStation getInstance() {
+		public static DriverOperatorStation getInstance() {
 			return _instance;
 		}
 		
 		// private constructor for singleton pattern
-		private DriverOperationStation() {
+		private DriverOperatorStation() {
 			_driverGamepad = new XboxController(Constants.DRIVER_GAMEPAD_USB_PORT);				// std Logitech F310 Gamepad  
 			_operatorGamepad = new XboxController(Constants.OPERATOR_GAMEPAD_USB_PORT);			// std Logitech F310 Gamepad  
 			_engineeringGamepad = new XboxController(Constants.ENGINEERING_GAMEPAD_USB_PORT);	// std Logitech F310 Gamepad  

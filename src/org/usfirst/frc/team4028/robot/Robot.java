@@ -31,7 +31,7 @@ public class Robot extends IterativeRobot {
 	private Ultrasonic _ultrasonic = Ultrasonic.getInstance();
 	
 	// Other
-	private DriverOperationStation _dos = DriverOperationStation.getInstance();
+	private DriverOperatorStation _dos = DriverOperatorStation.getInstance();
 	private AutonExecuter _autonExecuter = null;
 	private Dashboard _dashboard = Dashboard.getInstance();
 	private DataLogger _dataLogger = null;
