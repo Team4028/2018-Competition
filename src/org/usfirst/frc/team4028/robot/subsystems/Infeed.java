@@ -11,7 +11,6 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.PWM;
 import edu.wpi.first.wpilibj.VictorSP;
 
 public class Infeed {	
@@ -41,6 +40,21 @@ public class Infeed {
 	VictorSP _leftInfeedDriveMotor;
 	VictorSP _rightInfeedDriveMotor;
 	
+	/* CONTROL LOOP GAINS */
+	// PID gains for infeed
+	private static final double LEFT_SWITCHBLADE_MOTION_MAGIC_F = 0.7869230169; //Since the two motors have different gear boxes 
+	private static final double LEFT_SWITCHBLADE_MOTION_MAGIC_P = 0;			//for testing, the F-values are very different
+    private static final double LEFT_SWITCHBLADE_MOTION_MAGIC_I = 0;			// |
+    private static final double LEFT_SWITCHBLADE_MOTION_MAGIC_D = 0;			// |
+    																			// |
+    private static final double RIGHT_SWITCHBLADE_MOTION_MAGIC_F = 0.3354098361;// V
+    private static final double RIGHT_SWITCHBLADE_MOTION_MAGIC_P = 0;
+    private static final double RIGHT_SWITCHBLADE_MOTION_MAGIC_I = 0;
+    private static final double RIGHT_SWITCHBLADE_MOTION_MAGIC_D = 0;
+            
+    private static final int INFEED_MOTION_MAGIC_MAX_VEL = 3000;
+    private static final int INFEED_MOTION_MAGIC_MAX_ACC = 2000;
+	
 	//singleton pattern 
 	private static Infeed _instance = new Infeed();
 	
@@ -57,7 +71,7 @@ public class Infeed {
 		//Left Arm Rotator Motor
 		_leftArmRotatorMotor = new TalonSRX(Constants.LEFT_SWITCHBLADE_MOTOR_CAN_ADDRESS);
 		
-		_leftArmRotatorMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0);
+		 
 		
 		_leftArmRotatorMotor.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed, 0);
 		_leftArmRotatorMotor.configForwardLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
@@ -72,13 +86,13 @@ public class Infeed {
 		_leftArmRotatorMotor.setInverted(false);
 		
 		_leftArmRotatorMotor.selectProfileSlot(0, 0);
-		_leftArmRotatorMotor.config_kF(0, Constants.INFEED_MOTION_MAGIC_F, 0);
-		_leftArmRotatorMotor.config_kP(0, Constants.INFEED_MOTION_MAGIC_P, 0);
-		_leftArmRotatorMotor.config_kI(0, Constants.INFEED_MOTION_MAGIC_I, 0);
-		_leftArmRotatorMotor.config_kD(0, Constants.INFEED_MOTION_MAGIC_D, 0);
+		_leftArmRotatorMotor.config_kF(0, LEFT_SWITCHBLADE_MOTION_MAGIC_F, 0);
+		_leftArmRotatorMotor.config_kP(0, LEFT_SWITCHBLADE_MOTION_MAGIC_P, 0);
+		_leftArmRotatorMotor.config_kI(0, LEFT_SWITCHBLADE_MOTION_MAGIC_I, 0);
+		_leftArmRotatorMotor.config_kD(0, LEFT_SWITCHBLADE_MOTION_MAGIC_D, 0);
 		
-		_leftArmRotatorMotor.configMotionCruiseVelocity(Constants.INFEED_MOTION_MAGIC_MAX_VEL, 0);
-		_leftArmRotatorMotor.configMotionAcceleration(Constants.INFEED_MOTION_MAGIC_MAX_ACC, 0);
+		_leftArmRotatorMotor.configMotionCruiseVelocity(INFEED_MOTION_MAGIC_MAX_VEL, 0);
+		_leftArmRotatorMotor.configMotionAcceleration(INFEED_MOTION_MAGIC_MAX_ACC, 0);
 		
 		//=====================================================================================
 		//Right Arm Rotator Motor
@@ -98,13 +112,13 @@ public class Infeed {
 		
 		_rightArmRotatorMotor.setInverted(true);
 		
-		_rightArmRotatorMotor.config_kF(0, Constants.INFEED_MOTION_MAGIC_F, 0);
-		_rightArmRotatorMotor.config_kP(0, Constants.INFEED_MOTION_MAGIC_P, 0);
-		_rightArmRotatorMotor.config_kI(0, Constants.INFEED_MOTION_MAGIC_I, 0);
-		_rightArmRotatorMotor.config_kD(0, Constants.INFEED_MOTION_MAGIC_D, 0);
+		_rightArmRotatorMotor.config_kF(0, RIGHT_SWITCHBLADE_MOTION_MAGIC_F, 0);
+		_rightArmRotatorMotor.config_kP(0, RIGHT_SWITCHBLADE_MOTION_MAGIC_P, 0);
+		_rightArmRotatorMotor.config_kI(0, RIGHT_SWITCHBLADE_MOTION_MAGIC_I, 0);
+		_rightArmRotatorMotor.config_kD(0, RIGHT_SWITCHBLADE_MOTION_MAGIC_D, 0);
 		
-		_rightArmRotatorMotor.configMotionCruiseVelocity(Constants.INFEED_MOTION_MAGIC_MAX_VEL, 0);
-		_rightArmRotatorMotor.configMotionAcceleration(Constants.INFEED_MOTION_MAGIC_MAX_ACC, 0);
+		_rightArmRotatorMotor.configMotionCruiseVelocity(INFEED_MOTION_MAGIC_MAX_VEL, 0);
+		_rightArmRotatorMotor.configMotionAcceleration(INFEED_MOTION_MAGIC_MAX_ACC, 0);
 		
 		//=====================================================================================
 		//Left Arm Drive Motor
