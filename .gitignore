@@ -59,3 +59,7 @@ bin/org/usfirst/frc/team4028/robot/auton/actions/RunMotionProfileAction.class
 *.class
 *.class
 src/org/usfirst/frc/team4028/robot/DashboardInputs.java
+*.classpath
+*.class
+*.class
+*.jar
