@@ -1,5 +1,6 @@
-package org.usfirst.frc.team4028.robot;
+package org.usfirst.frc.team4028.util;
 
+import org.usfirst.frc.team4028.robot.Constants;
 import org.usfirst.frc.team4028.util.motion.RigidTransform;
 import org.usfirst.frc.team4028.util.motion.Rotation;
 import org.usfirst.frc.team4028.util.motion.Twist;
@@ -21,18 +22,14 @@ public class Kinematics {
         return forwardKinematics(left_wheel_delta, right_wheel_delta, delta_rotation);
     }
 
-    /**
-     * Forward kinematics using encoders and explicitly measured rotation (ex. from gyro)
-     */
+    /** Forward kinematics using encoders and explicitly measured rotation (ex. from gyro) */
     public static Twist forwardKinematics(double left_wheel_delta, double right_wheel_delta,
             double delta_rotation_rads) {
         final double dx = (left_wheel_delta + right_wheel_delta) / 2.0;
         return new Twist(dx, 0, delta_rotation_rads);
     }
 
-    /**
-     * For convenience, forward kinematic with an absolute rotation and previous rotation.
-     */
+    /** For convenience, forward kinematic with an absolute rotation and previous rotation. */
     public static Twist forwardKinematics(Rotation prev_heading, double left_wheel_delta, double right_wheel_delta,
             Rotation current_heading) {
         return forwardKinematics(left_wheel_delta, right_wheel_delta,
@@ -47,20 +44,15 @@ public class Kinematics {
         return integrateForwardKinematics(current_pose, with_gyro);
     }
 
-    /**
-     * For convenience, integrate forward kinematics with a Twist2d and previous rotation.
-     */
+    /** For convenience, integrate forward kinematics with a Twist2d and previous rotation. */
     public static RigidTransform integrateForwardKinematics(RigidTransform current_pose,
             Twist forward_kinematics) {
         return current_pose.transformBy(RigidTransform.exp(forward_kinematics));
     }
 
-    /**
-     * Class that contains left and right wheel velocities
-     */
+    /** Class that contains left and right wheel velocities */
     public static class DriveVelocity {
-        public final double left;
-        public final double right;
+        public final double left, right;
 
         public DriveVelocity(double left, double right) {
             this.left = left;
@@ -68,9 +60,7 @@ public class Kinematics {
         }
     }
 
-    /**
-     * Uses inverse kinematics to convert a Twist2d into left and right wheel velocities
-     */
+    /** Uses inverse kinematics to convert a Twist2d into left and right wheel velocities */
     public static DriveVelocity inverseKinematics(Twist velocity) {
         if (Math.abs(velocity.dtheta) < kEpsilon) {
             return new DriveVelocity(velocity.dx, velocity.dx);

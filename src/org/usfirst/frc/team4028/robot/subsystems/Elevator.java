@@ -111,8 +111,8 @@ public class Elevator implements Subsystem
 	private Elevator()
 	{
 		// config master & slave talon objects
-		_elevatorMasterMotor = new TalonSRX(Constants.ELEVATOR_MASTER_CAN_BUS_ADDR);
-		_elevatorSlaveMotor = new TalonSRX(Constants.ELEVATOR_SLAVE_CAN_BUS_ADDR);
+		_elevatorMasterMotor = new TalonSRX(Constants.ELEVATOR_LIFT_MASTER_CAN_ADDRESS);
+		_elevatorSlaveMotor = new TalonSRX(Constants.ELEVATOR_LIFT_SLAVE_CAN_ADDRESS);
 		
 		// config slave mode
 		_elevatorSlaveMotor.follow(_elevatorMasterMotor);

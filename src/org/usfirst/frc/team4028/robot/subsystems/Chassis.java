@@ -3,8 +3,8 @@ package org.usfirst.frc.team4028.robot.subsystems;
 import java.util.Date;
 
 import org.usfirst.frc.team4028.robot.Constants;
-import org.usfirst.frc.team4028.robot.Kinematics;
-import org.usfirst.frc.team4028.robot.RobotState;
+import org.usfirst.frc.team4028.util.Kinematics;
+import org.usfirst.frc.team4028.robot.sensors.RobotState;
 import org.usfirst.frc.team4028.robot.sensors.NavXGyro;
 import org.usfirst.frc.team4028.util.DriveCommand;
 import org.usfirst.frc.team4028.util.GeneralUtilities;
@@ -25,7 +25,6 @@ import com.ctre.phoenix.motorcontrol.VelocityMeasPeriod;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Chassis implements Subsystem{
 	// singleton pattern
@@ -55,7 +54,11 @@ public class Chassis implements Subsystem{
 	private ChassisState _chassisState;
 	
 	private double _targetAngle;
-	private double _setpointright;
+	//private double _setpointright;
+	
+	private double _leftTargetVelocity, _rightTargetVelocity;
+	
+	private boolean _isAutoShiftingEnabled = false;
 	
 	// acc/dec variables
 	private boolean _isAccelDecelEnabled = true;
@@ -111,11 +114,8 @@ public class Chassis implements Subsystem{
 		
 		reloadGains();
 		
-		/* Shifter */
 		_shifterSolenoid = new DoubleSolenoid(Constants.PCM_CAN_BUS_ADDR, Constants.SHIFTER_SOLENOID_EXTEND_PCM_PORT, 
 												Constants.SHIFTER_SOLENOID_RETRACT_PCM_PORT);
-		
-		setBrakeMode(false);
 		
 		_lastScanPerfMetricsSnapShot = new ChassisDrivePerfMetrics();
 	}
@@ -141,13 +141,14 @@ public class Chassis implements Subsystem{
 						return;
 						
 					case FOLLOW_PATH:
-						_leftMaster.selectProfileSlot(kVelocityControlSlot, 0);
-						_rightMaster.selectProfileSlot(kVelocityControlSlot, 0);
-						
 						if (isHighGear()) {
 							setHighGearVelocityGains();
 						} else {
 							setLowGearVelocityGains();
+						}
+						
+						if (_isAutoShiftingEnabled) {
+							autoShift();
 						}
 						
 						if (_pathFollower != null) 
@@ -155,8 +156,9 @@ public class Chassis implements Subsystem{
 						return;
 						
 					case PERCENT_VBUS:
+						enableAutoShifting(false);
 						return;
-						
+					
 					case VELOCITY_SETPOINT:
 						return;
 				}
@@ -166,7 +168,6 @@ public class Chassis implements Subsystem{
 		@Override
 		public void onStop(double timestamp) {
 			synchronized (Chassis.this) {
-				setHighGear(true);
 				stop();
 			}
 		}
@@ -180,7 +181,7 @@ public class Chassis implements Subsystem{
      * Check if the drive talons are configured for velocity control
      */
     protected static boolean usesTalonVelocityControl(ChassisState state) {
-        if (state == ChassisState.VELOCITY_SETPOINT || state == ChassisState.FOLLOW_PATH) {
+        if ((state == ChassisState.FOLLOW_PATH) || (state == ChassisState.VELOCITY_SETPOINT)) {
             return true;
         }
         return false;
@@ -203,7 +204,7 @@ public class Chassis implements Subsystem{
 			
 		// if acc/dec mode is enabled
 		if(_isAccelDecelEnabled) {
-			//implement speed scaling
+			// implement speed scaling
 			_arcadeDriveThrottleCmdAdj = calcAccelDecelThrottleCmd(_currentThrottleCmdScaled, _previousThrottleCmdScaled, _lastCmdChgTimeStamp);
 			
 			_currentThrottleCmdAccDec = _arcadeDriveThrottleCmdAdj;
@@ -241,7 +242,7 @@ public class Chassis implements Subsystem{
         configureTalonsForSpeedControl();
         _chassisState = ChassisState.VELOCITY_SETPOINT;
         updateVelocitySetpoint(left_inches_per_sec, right_inches_per_sec);
-    }
+    } 
 
     /**
      * Configures talons for velocity control
@@ -266,7 +267,7 @@ public class Chassis implements Subsystem{
             final double max_desired = Math.max(Math.abs(left_inches_per_sec), Math.abs(right_inches_per_sec));
             final double scale = max_desired > Constants.DRIVE_VELOCITY_MAX_SETPOINT
                     ? Constants.DRIVE_VELOCITY_MAX_SETPOINT / max_desired : 1.0;
-            _setpointright = inchesPerSecondToNativeUnits(left_inches_per_sec * scale);
+            //_setpointright = inchesPerSecondToNativeUnits(left_inches_per_sec * scale);
             _leftMaster.set(ControlMode.Velocity, inchesPerSecondToNativeUnits(left_inches_per_sec * scale));
             _rightMaster.set(ControlMode.Velocity, inchesPerSecondToNativeUnits(right_inches_per_sec * scale));
         } else {
@@ -318,8 +319,10 @@ public class Chassis implements Subsystem{
 		if (!_pathFollower.isFinished()) {
 			Kinematics.DriveVelocity setpoint = Kinematics.inverseKinematics(command);
 			updateVelocitySetpoint(setpoint.left, setpoint.right);
+			_leftTargetVelocity = setpoint.left;
+			_rightTargetVelocity = setpoint.right;
 		} else {
-			updateVelocitySetpoint(0.0, 0.0);
+			setVelocitySetpoint(0.0, 0.0);
 		}
 	}
 	
@@ -328,7 +331,8 @@ public class Chassis implements Subsystem{
      * 
      * @see Path
      */
-    public synchronized void setWantDrivePath(Path path, boolean reversed) {
+    public synchronized void setWantDrivePath(Path path, boolean reversed, boolean isShiftingEnabled) {
+    	enableAutoShifting(isShiftingEnabled);
         if (_currentPath != path || _chassisState != ChassisState.FOLLOW_PATH) {
             configureTalonsForSpeedControl();
             RobotState.getInstance().resetDistanceDriven();
@@ -336,7 +340,7 @@ public class Chassis implements Subsystem{
             _chassisState = ChassisState.FOLLOW_PATH;
             _currentPath = path;
         } else {
-            setVelocitySetpoint(0, 0);
+        	setVelocitySetpoint(0.0, 0.0);
         }
     }
 
@@ -373,6 +377,18 @@ public class Chassis implements Subsystem{
 	
 	public synchronized boolean isHighGear() {
 		return _shifterSolenoid.get() == Constants.SHIFTER_HIGH_GEAR_POS;
+	}
+	
+	public synchronized void autoShift() {
+		if ((getLeftVelocityInchesPerSec() + getRightVelocityInchesPerSec()) > 60.0 * 2.0) {
+			setHighGear(true);
+		} else if ((getLeftVelocityInchesPerSec() + getRightVelocityInchesPerSec()) < 50.0 * 2.0) {
+			setHighGear(false);
+		}
+	}
+	
+	public synchronized void enableAutoShifting(boolean isEnabled) {
+		_isAutoShiftingEnabled = isEnabled;
 	}
 	
 	public void zeroEncoders() {
@@ -514,19 +530,20 @@ public class Chassis implements Subsystem{
 	@Override
 	public void outputToSmartDashboard() {
 		//SmartDashboard.putNumber("Left Position", getLeftPosInRot());
-		//SmartDashboard.putNumber("Left Drive Inches/Sec", getLeftSpeed());
+		//SmartDashboard.putNumber("Left Drive Inches/Sec", getLeftVelocityInchesPerSec());
 		//SmartDashboard.putNumber("Right Position", getRightPosInRot());
-		//SmartDashboard.putNumber("Right Drive Inches/Sec", getLeftSpeed());
+		//SmartDashboard.putNumber("Right Drive Inches/Sec", getRightVelocityInchesPerSec());
 		
 		//SmartDashboard.putNumber("Left Position in Inches", getLeftDistanceInches());
 		//SmartDashboard.putNumber("Right Position in Inches", getRightDistanceInches());
-		SmartDashboard.putNumber("Left Target Velocity", _setpointright);
+		//SmartDashboard.putNumber("Left Target Velocity", _setpointright);
 		//SmartDashboard.putNumber("Left Position", _leftMaster.getSelectedSensorPosition(0));
 		//SmartDashboard.putNumber("Left Position Quadruature", _leftMaster.getSensorCollection().getQuadraturePosition());
 	}
 	
 	@Override
 	public void updateLogData(LogDataBE logData) {
+		/*
 		logData.AddData("Chassis:LeftDriveMtr%VBus", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.LeftDriveMtrPercentVBus, 2)));
 		logData.AddData("Chassis:LeftDriveMtrPos [m]", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.LeftDriveMtrPos, 2)));
 		logData.AddData("Chassis:LeftDriveMtrVel [m/s]", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.LeftDriveMtrMPS, 2)));
@@ -536,6 +553,13 @@ public class Chassis implements Subsystem{
 		logData.AddData("Chassis:RightDriveMtrPos [m]", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.RightDriveMtrPos, 2)));
 		logData.AddData("Chassis:RightDriveMtrVel [m/s]", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.RightDriveMtrMPS, 2)));
 		logData.AddData("Chassis:RightDriveMtrAccel [m/s/s]", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.RightDriveMtrMPSPerSec, 2)));
+		*/
+		
+		logData.AddData("Left Actual Velocity [in/s]", String.valueOf(GeneralUtilities.RoundDouble(getLeftVelocityInchesPerSec(), 2)));
+		logData.AddData("Left Target Velocity [in/s]", String.valueOf(GeneralUtilities.RoundDouble(_leftTargetVelocity, 2)));
+		
+		logData.AddData("Right Actual Velocity [in/s]", String.valueOf(GeneralUtilities.RoundDouble(-getRightVelocityInchesPerSec(), 2)));
+		logData.AddData("Right Target Velocity [in/s]", String.valueOf(GeneralUtilities.RoundDouble(_rightTargetVelocity, 2)));
 	}
 	
 	public void UpdateDriveTrainPerfMetrics() {
