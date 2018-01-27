@@ -3,8 +3,8 @@ package org.usfirst.frc.team4028.robot.subsystems;
 import java.util.Date;
 
 import org.usfirst.frc.team4028.robot.Constants;
-import org.usfirst.frc.team4028.robot.Kinematics;
-import org.usfirst.frc.team4028.robot.RobotState;
+import org.usfirst.frc.team4028.util.Kinematics;
+import org.usfirst.frc.team4028.robot.sensors.RobotState;
 import org.usfirst.frc.team4028.robot.sensors.NavXGyro;
 import org.usfirst.frc.team4028.util.DriveCommand;
 import org.usfirst.frc.team4028.util.GeneralUtilities;
@@ -54,7 +54,7 @@ public class Chassis implements Subsystem{
 	private ChassisState _chassisState;
 	
 	private double _targetAngle;
-	private double _setpointright;
+	//private double _setpointright;
 	
 	private double _leftTargetVelocity, _rightTargetVelocity;
 	
@@ -157,6 +157,9 @@ public class Chassis implements Subsystem{
 						
 					case PERCENT_VBUS:
 						enableAutoShifting(false);
+						return;
+					
+					case VELOCITY_SETPOINT:
 						return;
 				}
 			}
@@ -264,7 +267,7 @@ public class Chassis implements Subsystem{
             final double max_desired = Math.max(Math.abs(left_inches_per_sec), Math.abs(right_inches_per_sec));
             final double scale = max_desired > Constants.DRIVE_VELOCITY_MAX_SETPOINT
                     ? Constants.DRIVE_VELOCITY_MAX_SETPOINT / max_desired : 1.0;
-            _setpointright = inchesPerSecondToNativeUnits(left_inches_per_sec * scale);
+            //_setpointright = inchesPerSecondToNativeUnits(left_inches_per_sec * scale);
             _leftMaster.set(ControlMode.Velocity, inchesPerSecondToNativeUnits(left_inches_per_sec * scale));
             _rightMaster.set(ControlMode.Velocity, inchesPerSecondToNativeUnits(right_inches_per_sec * scale));
         } else {

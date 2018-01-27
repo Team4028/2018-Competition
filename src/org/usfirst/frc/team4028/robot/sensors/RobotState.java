@@ -1,4 +1,4 @@
-package org.usfirst.frc.team4028.robot;
+package org.usfirst.frc.team4028.robot.sensors;
 
 import org.usfirst.frc.team4028.util.motion.RigidTransform;
 import org.usfirst.frc.team4028.util.motion.Rotation;
