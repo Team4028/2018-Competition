@@ -5,6 +5,7 @@ import java.text.DecimalFormat;
 import java.util.Date;
 
 import org.usfirst.frc.team4028.robot.auton.AutonExecuter;
+import org.usfirst.frc.team4028.robot.sensors.PDPMonitor;
 import org.usfirst.frc.team4028.robot.sensors.RobotStateEstimator;
 import org.usfirst.frc.team4028.robot.sensors.Ultrasonic;
 import org.usfirst.frc.team4028.robot.subsystems.*;
@@ -29,7 +30,7 @@ public class Robot extends IterativeRobot {
 	
 	// Sensors
 	private Ultrasonic _ultrasonic = Ultrasonic.getInstance();
-	
+	private PDPMonitor _pdpm = PDPMonitor.getInstance();
 	// Other
 	private DriverOperationStation _dos = DriverOperationStation.getInstance();
 	private AutonExecuter _autonExecuter = null;
