@@ -212,6 +212,7 @@ public class Robot extends IterativeRobot {
 	//	so we have one easy way to stop all motion
 	private void stopAll() {
 		_chassis.stop();
+		_elevator.stop();
 	}
 	
 	// typically called in *Perodic method to push data to the Dashboard

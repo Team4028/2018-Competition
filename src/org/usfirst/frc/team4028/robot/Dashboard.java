@@ -52,10 +52,6 @@ public class Dashboard {
 		SmartDashboard.putData("Auton Mode Chooser", _autonModeChooser);
 	}
 	
-	private boolean getIsFMSAttached() {
-		return DriverStation.getInstance().isFMSAttached();
-	}
-	
 	public void getGameData() {
 		String gameData = DriverStation.getInstance().getGameSpecificMessage();
 		
@@ -65,7 +61,7 @@ public class Dashboard {
 	
 	public void printStartupMessage() {
 		// This prints once during robotInit
-		boolean isFMSAttached = getIsFMSAttached();
+		boolean isFMSAttached = DriverStation.getInstance().isFMSAttached();
 		
 		DriverStation.reportWarning(">>>>> Is FMS Attached : [" + isFMSAttached + "] <<<<<<", false);
 	}

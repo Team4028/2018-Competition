@@ -25,7 +25,6 @@ import com.ctre.phoenix.motorcontrol.VelocityMeasPeriod;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Chassis implements Subsystem{
@@ -41,7 +40,7 @@ public class Chassis implements Subsystem{
 	
 	// define class level variables for Robot objects
 	private TalonSRX _leftMaster, _leftSlave, _rightMaster, _rightSlave;
-	private DoubleSolenoid _shifterSolenoid;
+	private DoubleSolenoid _shifter;
 	
 	private NavXGyro _navX = NavXGyro.getInstance();
 	private RobotState _robotState = RobotState.getInstance();
@@ -117,7 +116,7 @@ public class Chassis implements Subsystem{
 		
 		reloadGains();
 		
-		_shifterSolenoid = new DoubleSolenoid(Constants.PCM_CAN_BUS_ADDR, Constants.SHIFTER_SOLENOID_EXTEND_PCM_PORT, 
+		_shifter = new DoubleSolenoid(Constants.PCM_CAN_BUS_ADDR, Constants.SHIFTER_SOLENOID_EXTEND_PCM_PORT, 
 												Constants.SHIFTER_SOLENOID_RETRACT_PCM_PORT);
 		
 		_lastScanPerfMetricsSnapShot = new ChassisDrivePerfMetrics();
@@ -285,12 +284,7 @@ public class Chassis implements Subsystem{
     }
 	
 	public synchronized void setBrakeMode(boolean isBrakeMode) {
-		NeutralMode mode;
-		if (isBrakeMode) {
-			mode = NeutralMode.Brake;
-		} else {
-			mode = NeutralMode.Coast;
-		}
+		NeutralMode mode = (isBrakeMode ? NeutralMode.Brake : NeutralMode.Coast);
 		
 		_leftMaster.setNeutralMode(mode);
 		_leftSlave.setNeutralMode(mode);
@@ -304,9 +298,7 @@ public class Chassis implements Subsystem{
 	} 
 	
 	private synchronized void moveToTarget() {
-		double angleError;
-		
-		angleError = _targetAngle - _navX.getYaw();
+		double angleError = _targetAngle - _navX.getYaw();
 		
 		double encoderError = GeneralUtilities.degreesToEncoderRotations(angleError);
 		
@@ -367,7 +359,7 @@ public class Chassis implements Subsystem{
     }
     
     public synchronized void toggleShifter() {
-    	if (_shifterSolenoid.get() == Constants.SHIFTER_HIGH_GEAR_POS) {
+    	if (isHighGear()) {
     		setHighGear(false);
     	} else {
     		setHighGear(true);
@@ -376,14 +368,14 @@ public class Chassis implements Subsystem{
 	
 	public synchronized void setHighGear(boolean isHighGear) {
 		if (isHighGear) {
-			_shifterSolenoid.set(Constants.SHIFTER_HIGH_GEAR_POS);
+			_shifter.set(Constants.SHIFTER_HIGH_GEAR_POS);
 		} else {
-			_shifterSolenoid.set(Constants.SHIFTER_LOW_GEAR_POS);
+			_shifter.set(Constants.SHIFTER_LOW_GEAR_POS);
 		}
 	}
 	
 	public synchronized boolean isHighGear() {
-		return _shifterSolenoid.get() == Constants.SHIFTER_HIGH_GEAR_POS;
+		return _shifter.get() == Constants.SHIFTER_HIGH_GEAR_POS;
 	}
 	
 	public synchronized void autoShift() {
@@ -637,7 +629,7 @@ public class Chassis implements Subsystem{
 		return accDecInRPMPerSec;
 	}
 	
-	class ChassisDrivePerfMetrics {
+	protected class ChassisDrivePerfMetrics {
 		public double LeftDriveMtrPercentVBus;
 		public double LeftDriveMtrPos;
 		public double LeftDriveMtrMPS;			// velocity

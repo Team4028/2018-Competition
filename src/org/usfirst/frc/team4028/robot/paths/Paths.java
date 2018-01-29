@@ -295,8 +295,8 @@ public class Paths {
         sWaypoints.add(new Waypoint(160,50,0,120));
         sWaypoints.add(new Waypoint(232,50,40,100));
         sWaypoints.add(new Waypoint(232,100,0,80));
-        sWaypoints.add(new Waypoint(232,210,0,120));
-        sWaypoints.add(new Waypoint(232,243,10,60));
+        sWaypoints.add(new Waypoint(232,220,0,120));
+        sWaypoints.add(new Waypoint(232,243,15,60));
         sWaypoints.add(new Waypoint(280,243,0,40));
         return sWaypoints;
 	}

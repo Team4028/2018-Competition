@@ -1,7 +1,9 @@
 package org.usfirst.frc.team4028.util.motionProfile;
 
 import org.usfirst.frc.team4028.robot.Constants;
+
 import org.usfirst.frc.team4028.util.motionProfile.MotionProfileGoal.CompletionBehavior;
+
 public class MotionProfileGenerator {
 	 // Static class.
     private MotionProfileGenerator() {}
