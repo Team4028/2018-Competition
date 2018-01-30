@@ -5,10 +5,7 @@ import static org.usfirst.frc.team4028.util.GeneralUtilities.epsilonEquals;
 import org.usfirst.frc.team4028.robot.Constants;
 
 public class MotionState {
-	protected final double t;
-    protected final double pos;
-    protected final double vel;
-    protected final double acc;
+	protected final double t, pos, vel, acc;
 
     public static MotionState kInvalidState = new MotionState(Double.NaN, Double.NaN, Double.NaN, Double.NaN);
 
@@ -110,6 +107,7 @@ public class MotionState {
     public String toString() {
         return "(t=" + t + ", pos=" + pos + ", vel=" + vel + ", acc=" + acc + ")";
     }
+    
     /** Checks if two MotionStates are epsilon-equals (all fields are equal within a nominal tolerance) */
     @Override
     public boolean equals(Object other) {

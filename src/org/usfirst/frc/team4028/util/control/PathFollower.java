@@ -22,7 +22,7 @@ public class PathFollower {
         mLastSteeringDelta = Twist.identity();
         mVelocityController = new ProfileFollower();
         mVelocityController.setConstraints(
-                new MotionProfileConstraints(Constants.PATH_FOLLOWING_MAX_VEL, Constants.PATH_FOLLOWING_MAX_ACCEL));
+                new MotionProfileConstraints(Constants.PATH_FOLLOWING_MAX_VEL, Constants.PATH_FOLLOWING_MAX_ACCEL, Constants.PATH_FOLLOWING_MAX_DECEL));
     }
 
     /**
@@ -47,7 +47,7 @@ public class PathFollower {
                             Math.abs(steering_command.endVelocity), CompletionBehavior.VIOLATE_MAX_ACCEL,
                             Constants.PATH_FOLLOWING_GOAL_POS_TOLERANCE, Constants.PATH_FOLLOWING_GOAL_VEL_TOLERANCE),
                     new MotionProfileConstraints(Math.min(Constants.PATH_FOLLOWING_MAX_VEL, steering_command.maxVelocity),
-                            Constants.PATH_FOLLOWING_MAX_ACCEL));
+                            Constants.PATH_FOLLOWING_MAX_ACCEL, Constants.PATH_FOLLOWING_MAX_DECEL));
 
             if (steering_command.remainingPathLength < Constants.PATH_STOP_STEERING_DISTANCE) {
                 doneSteering = true;
