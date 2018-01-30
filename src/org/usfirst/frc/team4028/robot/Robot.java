@@ -30,9 +30,10 @@ public class Robot extends IterativeRobot {
 	
 	// Sensors
 	private Ultrasonic _ultrasonic = Ultrasonic.getInstance();
-	private PDPMonitor _pdpm = PDPMonitor.getInstance();
+	//private PDPMonitor _pdpm = PDPMonitor.getInstance();
+	
 	// Other
-	private DriverOperationStation _dos = DriverOperationStation.getInstance();
+	private DriverOperatorStation _dos = DriverOperatorStation.getInstance();
 	private AutonExecuter _autonExecuter = null;
 	private Dashboard _dashboard = Dashboard.getInstance();
 	private DataLogger _dataLogger = null;
@@ -213,6 +214,7 @@ public class Robot extends IterativeRobot {
 	//	so we have one easy way to stop all motion
 	private void stopAll() {
 		_chassis.stop();
+		_elevator.stop();
 	}
 	
 	// typically called in *Perodic method to push data to the Dashboard

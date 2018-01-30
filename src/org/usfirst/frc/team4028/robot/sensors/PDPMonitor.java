@@ -35,9 +35,11 @@ public class PDPMonitor {
 	
 
 	public void outputToSmartDashboard() {
+		/*
 		SmartDashboard.putNumber("Chassis Current: ", MonitorTotalCurrent());
 		SmartDashboard.putNumber("Chassis Energy:", MonitorTotalEnergy());
 		SmartDashboard.putNumber("Chassis Power:", MonitorTotalPower());
 		SmartDashboard.putNumber("Chassis Voltage:", MonitorVoltage());
+		*/
 	}
 }

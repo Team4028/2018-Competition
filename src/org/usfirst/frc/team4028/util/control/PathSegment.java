@@ -119,7 +119,7 @@ public class PathSegment {
     
     public void createMotionProfiler(MotionState start_state, double end_speed) {
     	MotionProfileConstraints motionConstraints = new MotionProfileConstraints(maxSpeed, 
-    			Constants.PATH_FOLLOWING_MAX_ACCEL);
+    			Constants.PATH_FOLLOWING_MAX_ACCEL, Constants.PATH_FOLLOWING_MAX_DECEL);
     	MotionProfileGoal goal_state = new MotionProfileGoal(getLength(), end_speed);
     	speedController = MotionProfileGenerator.generateProfile(motionConstraints, goal_state, start_state);
     }

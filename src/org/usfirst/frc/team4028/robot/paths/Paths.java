@@ -283,7 +283,7 @@ public class Paths {
 	private static ArrayList<Waypoint>  getLeftScaleWaypoints() {
 		ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
         sWaypoints.add(new Waypoint(18,50,0,0));
-        sWaypoints.add(new Waypoint(195,50,20,80));
+        sWaypoints.add(new Waypoint(195,50,20,120));
         sWaypoints.add(new Waypoint(245,80,20,60));
         sWaypoints.add(new Waypoint(285,80,0,60));
     	return sWaypoints;
@@ -292,10 +292,12 @@ public class Paths {
 	private static ArrayList<Waypoint> getRightScaleWaypoints() {
 		ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
 		sWaypoints.add(new Waypoint(18,50,0,0));
-        sWaypoints.add(new Waypoint(232,50,40,Constants.FLOOR_IT_SPEED));
-        sWaypoints.add(new Waypoint(232,200,0,Constants.FLOOR_IT_SPEED));
-        sWaypoints.add(new Waypoint(232,243,10,Constants.NORMAL_SPEED));
-        sWaypoints.add(new Waypoint(280,243,0,Constants.WILD_TURTLE_SPEED));
+        sWaypoints.add(new Waypoint(160,50,0,120));
+        sWaypoints.add(new Waypoint(232,50,40,100));
+        sWaypoints.add(new Waypoint(232,100,0,80));
+        sWaypoints.add(new Waypoint(232,220,0,120));
+        sWaypoints.add(new Waypoint(232,243,15,60));
+        sWaypoints.add(new Waypoint(280,243,0,40));
         return sWaypoints;
 	}
 	
