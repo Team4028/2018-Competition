@@ -25,6 +25,7 @@ import com.ctre.phoenix.motorcontrol.VelocityMeasPeriod;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Chassis implements Subsystem{
@@ -113,6 +114,9 @@ public class Chassis implements Subsystem{
         _leftMaster.configVelocityMeasurementWindow(32, 0);
         _rightMaster.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_10Ms, 0);
         _rightMaster.configVelocityMeasurementWindow(32, 0);
+        
+        _leftMaster.configOpenloopRamp(0.5, 10);
+        _rightMaster.configOpenloopRamp(0.5, 10);
 		
 		reloadGains();
 		
@@ -159,6 +163,7 @@ public class Chassis implements Subsystem{
 						
 					case PERCENT_VBUS:
 						enableAutoShifting(false);
+						//DriverStation.reportWarning(Double.toString(_navX.getPitch()), false);
 						return;
 					
 					case VELOCITY_SETPOINT:
@@ -219,13 +224,20 @@ public class Chassis implements Subsystem{
 		
 		_arcadeDriveTurnCmdAdj = newTurnCmdScaled;
 		
+		
 		if(_navX.isPitchPastThreshhold()) {
-			stop();
+			_leftMaster.set(ControlMode.PercentOutput, 0.0);
+			_rightMaster.set(ControlMode.PercentOutput, 0.0);
+			DriverStation.reportError("Tipping Threshold", false);
 		} else {
 			// send cmd to mtr controllers
-			_leftMaster.set(ControlMode.PercentOutput, _arcadeDriveThrottleCmdAdj - 0.7 * _arcadeDriveTurnCmdAdj);
-			_rightMaster.set(ControlMode.PercentOutput, _arcadeDriveThrottleCmdAdj + 0.7 * _arcadeDriveTurnCmdAdj);
-		}
+			_rightMaster.set(ControlMode.PercentOutput, - 0.8 * _arcadeDriveThrottleCmdAdj - 0.7 * _arcadeDriveTurnCmdAdj);
+			_leftMaster.set(ControlMode.PercentOutput,- 0.8 * _arcadeDriveThrottleCmdAdj + 0.7 * _arcadeDriveTurnCmdAdj);
+		} 
+		
+
+		//_leftMaster.set(ControlMode.PercentOutput, 0.8 * _arcadeDriveThrottleCmdAdj - 0.7 * _arcadeDriveTurnCmdAdj);
+		//_rightMaster.set(ControlMode.PercentOutput, 0.8 * _arcadeDriveThrottleCmdAdj + 0.7 * _arcadeDriveTurnCmdAdj);
 	}
 	
 	public synchronized void tankDrive(DriveCommand command) {
@@ -298,7 +310,7 @@ public class Chassis implements Subsystem{
 	} 
 	
 	private synchronized void moveToTarget() {
-		double angleError = _targetAngle - _navX.getYaw();
+		double angleError = _targetAngle;// - _navX.getYaw();
 		
 		double encoderError = GeneralUtilities.degreesToEncoderRotations(angleError);
 		
@@ -309,7 +321,7 @@ public class Chassis implements Subsystem{
 	}
 	
 	public synchronized double autoAimError() {
-		return _targetAngle - _navX.getYaw();
+		return _targetAngle;// - _navX.getYaw();
 	}
 	
 	private void updatePathFollower(double timestamp) {
@@ -395,6 +407,7 @@ public class Chassis implements Subsystem{
 		_rightMaster.getSensorCollection().setQuadraturePosition(0, 10);
 	}
 
+	
 	public void zeroGyro() {
 		_navX.zeroYaw();
 	}
@@ -406,7 +419,7 @@ public class Chassis implements Subsystem{
 	public void setGyroAngle(double yaw) {
 		_navX.zeroYaw();
 		_navX.setAngleAdjustment(yaw);
-	}
+	} 
 	
 	public double getLeftPosInRot() {
 		return _leftMaster.getSelectedSensorPosition(0) / CODES_PER_REV;

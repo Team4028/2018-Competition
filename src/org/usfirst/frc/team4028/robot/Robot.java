@@ -30,7 +30,8 @@ public class Robot extends IterativeRobot {
 	
 	// Sensors
 	private Ultrasonic _ultrasonic = Ultrasonic.getInstance();
-	private PDPMonitor _pdpm = PDPMonitor.getInstance();
+	//private PDPMonitor _pdpm = PDPMonitor.getInstance();
+	
 	// Other
 	private DriverOperatorStation _dos = DriverOperatorStation.getInstance();
 	private AutonExecuter _autonExecuter = null;

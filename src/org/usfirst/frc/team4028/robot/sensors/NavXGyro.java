@@ -36,8 +36,17 @@ public class NavXGyro {
 		_navXSensor.zeroYaw(); 
 	}
 	
+	public double getPitch() {
+		try {
+			return _navXSensor.getPitch();
+		} catch (Exception ex) {
+			DriverStation.reportError("Error getting pitch from navX: " + ex.getMessage(), false);
+			return 0.0;
+		}
+	}
+	
 	public boolean isPitchPastThreshhold() {
-		if(_navXSensor.getPitch()>=Constants.MAX_PITCH_POSITIVE || _navXSensor.getPitch()<= Constants.MAX_PITCH_NEGATIVE) {
+		if(getPitch() >= Constants.MAX_PITCH_POSITIVE || getPitch() <= Constants.MAX_PITCH_NEGATIVE) {
 			return true;
 		} else {
 			return false;
