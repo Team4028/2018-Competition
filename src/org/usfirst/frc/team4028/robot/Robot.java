@@ -182,17 +182,30 @@ public class Robot extends IterativeRobot {
 			_infeed.moveArmsToInfeedPosition();
 		}
 		
+		if (_dos.getIsDriver_MoveToWideInfeedPosition_BtnJustPressed()) {
+			_infeed.moveArmsToWideInfeedPosition();
+		}
+		
+		if (_dos.getIsDriver_MoveToSqueezeInfeedPosition_BtnJustPressed()) {
+			_infeed.moveArmsToSqueezeInfeedPosition();
+		}
+		
+		if (_dos.getIsDriver_StoreInfeedArms_BtnJustPressed()) {
+			_infeed.storeArms();
+		}
+		
+		if (_dos.getIsDriver_StaggerInfeedManuver_BtnJustPressed()) {
+			_infeed.staggerInfeedManuver();
+		}
+			
 		if (_dos.getIsDriver_InfeedCube_BtnPressed()) {
-			_infeed.infeedCube();
+			_infeed.driveInfeedWheels();
 		}
 		else {
 			_infeed.stopDriveMotors();
 		}
-		if (_dos.getIsDriver_MoveToWideInfeedPosition_BtnJustPressed()) {
-			_infeed.moveArmsToWideInfeedPosition();
-		}
-			
 		
+		_ultrasonic.getIsCubeInRange();
 		// Refresh Dashboard
 		outputAllToDashboard();
 		

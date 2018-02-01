@@ -44,12 +44,7 @@ public class Constants {
 	// Solenoid Positions
 	public static final Value SHIFTER_LOW_GEAR_POS = DoubleSolenoid.Value.kForward;
 	public static final Value SHIFTER_HIGH_GEAR_POS = DoubleSolenoid.Value.kReverse;
-	
-	// Infeed Position Constants
-	public static final double INFEED_POSITION = 2300;
-	public static final double INFEED_MINIMUM_ALLOWED_ERROR_POSITION = 2200;
-	public static final double INFEED_MAXIMUM_ALLOWED_ERROR_POSITION = 2400;
-	
+		
 	// Logging
 	// this is where the USB stick is mounted on the RoboRIO filesystem.  
 	// You can confirm by logging into the RoboRIO using WinSCP

@@ -123,27 +123,27 @@ public class DriverOperationStation
 		// === Driver Just Pressed buttons ===
 		// ===================================
 	
-//		public boolean getIsDriver_Back_BtnJustPressed() {
-//			return _driverGamepad.getBackButtonPressed();
-//		}
+		public boolean getIsDriver_StaggerInfeedManuver_BtnJustPressed() {
+			return _driverGamepad.getBackButtonPressed();
+		}
 	
-//		public boolean getIsDriver_Start_BtnJustPressed() {
-//			return _driverGamepad.getStartButtonPressed();
-//		}
+		public boolean getIsDriver_ReZeroInfeed_BtnJustPressed() {
+			return _driverGamepad.getStartButtonPressed();
+		}
 		
 		public boolean getIsDriver_MoveToWideInfeedPosition_BtnJustPressed() {
 			return _driverGamepad.getYButtonPressed();
 		}
 		 
-//		public boolean getIsDriver_RedB_BtnJustPressed() {
-//			return _driverGamepad.getBButtonPressed();
-//		}
+		public boolean getIsDriver_StoreInfeedArms_BtnJustPressed() {
+			return _driverGamepad.getBButtonPressed();
+		}
 	
 		public boolean getIsDriver_MoveToInfeedPosition_BtnJustPressed() {
 			return _driverGamepad.getAButtonPressed();
 		}	
 
-		public boolean getIsDriver_ReZeroInfeed_BtnJustPressed() {
+		public boolean getIsDriver_MoveToSqueezeInfeedPosition_BtnJustPressed() {
 			return _driverGamepad.getXButtonPressed();
 		}
 		
@@ -223,9 +223,9 @@ public class DriverOperationStation
 //			return _driverGamepad.getYButton();
 //		}
 		
-		public boolean getIsDriver_InfeedCube_BtnPressed() {
-			return _driverGamepad.getBButton();
-		}
+//		public boolean getIsDriver_RedB_BtnPressed() {
+//			return _driverGamepad.getBButton();
+//		}
 		
 //		public boolean getIsDriver_GreenA_BtnPressed() {
 //			return _driverGamepad.getAButton();
@@ -239,9 +239,9 @@ public class DriverOperationStation
 //			return _driverGamepad.getBumper(Hand.kLeft);
 //		}
 		
-//		public boolean getIsDriver_RightBumper_BtnPressed() {
-//			return _driverGamepad.getBumper(Hand.kRight);
-//		}
+		public boolean getIsDriver_InfeedCube_BtnPressed() {
+			return _driverGamepad.getBumper(Hand.kRight);
+		}
 		
 //		public boolean getIsDriver_LeftStick_BtnPressed() {
 //			return _driverGamepad.getStickButton(Hand.kLeft);

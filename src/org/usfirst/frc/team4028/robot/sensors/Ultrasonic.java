@@ -37,10 +37,10 @@ public class Ultrasonic {
 		ultrasonicSensor = new AnalogInput(Constants.ULTRASONIC_PORT);
 	}
 		
-	public void calculateDistanceReadings() 
+	private void calculateDistanceReadings() 
 	{
 		// convert value from mV to V
-		_ultrasonicSensorOutputVoltage = (ultrasonicSensor.getVoltage()*1000); 
+		_ultrasonicSensorOutputVoltage = (ultrasonicSensor.getAverageVoltage()*1000); 
 		//System.out.println("Voltage Read:" + ultrasonicSensorOutputVoltage);
 		//System.out.println("Value: " + ultrasonicSensorOutputVoltage/16);
 		
@@ -72,6 +72,7 @@ public class Ultrasonic {
 	}
 	
 	public boolean getIsCubeInRange() {
+		calculateDistanceReadings();
 		return _isCubeInRobot;
 	}
 	
