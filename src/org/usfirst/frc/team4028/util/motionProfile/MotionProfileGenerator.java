@@ -41,13 +41,13 @@ public class MotionProfileGenerator {
         // Clamp the start state to be valid.
         MotionState start_state = new MotionState(prev_state.t(), prev_state.pos(),
                 Math.signum(prev_state.vel()) * Math.min(Math.abs(prev_state.vel()), constraints.maxAbsVel()),
-                Math.signum(prev_state.acc()) * Math.min(Math.abs(prev_state.acc()), Constants.PATH_FOLLOWING_MAX_ACCEL));
+                Math.signum(prev_state.acc()) * Math.min(Math.abs(prev_state.acc()), constraints.maxAcc));
         MotionProfile profile = new MotionProfile();
         profile.reset(start_state);
         // If our velocity is headed away from the goal, the first thing we need to do is to stop.
         if (start_state.vel() < 0.0 && delta_pos > 0.0) {
-            final double stopping_time = Math.abs(start_state.vel() / Constants.PATH_FOLLOWING_MAX_ACCEL);
-            profile.appendControl(Constants.PATH_FOLLOWING_MAX_ACCEL, stopping_time);
+            final double stopping_time = Math.abs(start_state.vel() / constraints.maxAcc);
+            profile.appendControl(constraints.maxAcc, stopping_time);
             start_state = profile.endState();
             delta_pos = goal_state.pos() - start_state.pos();
         }
@@ -56,7 +56,7 @@ public class MotionProfileGenerator {
         final double min_abs_vel_at_goal = Math.sqrt(Math.abs(min_abs_vel_at_goal_sqr));
         final double max_abs_vel_at_goal = Math.sqrt(start_state.vel2() + 2.0 * constraints.maxAcc() * delta_pos);
         double goal_vel = goal_state.max_abs_vel();
-        double max_acc = Constants.PATH_FOLLOWING_MAX_ACCEL;
+        double max_acc = constraints.maxAcc;
         if (min_abs_vel_at_goal_sqr > 0.0
                 && min_abs_vel_at_goal > (goal_state.max_abs_vel() + goal_state.vel_tolerance())) {
             // Overshoot is unavoidable with the current constraints. Look at completion_behavior to see what we should
@@ -79,8 +79,8 @@ public class MotionProfileGenerator {
                 max_acc = Math.abs(goal_vel * goal_vel - start_state.vel2()) / (2.0 * delta_pos);
             } else {
                 // We are going to overshoot the goal, so the first thing we need to do is come to a stop.
-                final double stopping_time = Math.abs(start_state.vel() / Constants.PATH_FOLLOWING_MAX_ACCEL);
-                profile.appendControl(-Constants.PATH_FOLLOWING_MAX_ACCEL, stopping_time);
+                final double stopping_time = Math.abs(start_state.vel() / constraints.maxAcc);
+                profile.appendControl(-constraints.maxAcc, stopping_time);
                 // Now we need to travel backwards, so generate a flipped profile.
                 profile.appendProfile(generateFlippedProfile(constraints, goal_state, profile.endState()));
                 profile.consolidate();
@@ -109,7 +109,7 @@ public class MotionProfileGenerator {
         }
         // Figure out how much distance will be covered during deceleration.
         final double distance_decel = Math.max(0.0,
-                (start_state.vel2() - goal_vel * goal_vel) / (2.0 * Constants.PATH_FOLLOWING_MAX_ACCEL));
+                (start_state.vel2() - goal_vel * goal_vel) / (2.0 * constraints.maxAcc));
         final double distance_cruise = Math.max(0.0, goal_state.pos() - start_state.pos() - distance_decel);
         // Cruise at constant velocity.
         if (distance_cruise > 0.0) {
@@ -141,7 +141,7 @@ public class MotionProfileGenerator {
         // Clamp the start state to be valid.
         MotionState startState = new MotionState(prevState.t(), prevState.pos(),
                 Math.signum(prevState.vel()) * Math.min(Math.abs(prevState.vel()), constraints.maxAbsVel()),
-                Math.signum(prevState.acc()) * Math.min(Math.abs(prevState.acc()), constraints.maxAcc()));
+                getMaxAccDec(prevState.acc(), constraints));
         MotionProfile profile = new MotionProfile();
         profile.reset(startState);
         // If our velocity is headed away from the goal, the first thing we need to do is to stop.
@@ -212,6 +212,7 @@ public class MotionProfileGenerator {
         final double distanceDecel = Math.max(0.0,
                 (startState.vel2() - goalVel * goalVel) / (2.0 * maxDecel));
         final double distanceCruise = Math.max(0.0, goalState.pos() - startState.pos() - distanceDecel);
+        //System.out.println(distanceDecel);
         // Cruise at constant velocity.
         if (distanceCruise > 0.0) {
             final double cruise_time = distanceCruise / startState.vel();
@@ -220,11 +221,22 @@ public class MotionProfileGenerator {
         }
         // Decelerate to goal velocity.
         if (distanceDecel > 0.0) {
-            final double decel_time = (startState.vel() - goalVel) / maxDecel;
-            profile.appendControl(-maxAcc, decel_time);
+            final double decelTime = (startState.vel() - goalVel) / maxDecel;
+            profile.appendControl(-maxDecel, decelTime);
         }
-
+        
         profile.consolidate();
         return profile;
+    }
+    
+    private static double getMaxAccDec(double prevStateAcc, MotionProfileConstraints constraints) {
+    	if (Math.signum(prevStateAcc) == 1.0) {
+    		return Math.min(prevStateAcc, constraints.maxAcc);
+    	} 
+    	else if (Math.signum(prevStateAcc) == -1.0) {
+    		return -1.0 * Math.max(prevStateAcc, constraints.maxDecel);
+    	} else {
+    		return 0.0;
+    	}
     }
 }

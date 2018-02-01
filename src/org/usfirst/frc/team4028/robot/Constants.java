@@ -33,7 +33,7 @@ public class Constants {
 	
 	// NavX (on Roborio)
 	public static final SPI.Port NAVX_PORT = Port.kMXP;
-	public static final double MAX_PITCH_POSITIVE = 3.0;
+	public static final double MAX_PITCH_POSITIVE = 7.0;
 	public static final double MAX_PITCH_NEGATIVE = -10.0;
 	
 	// Analog In Ports on RoboRIO
@@ -123,8 +123,8 @@ public class Constants {
     public static final double INERTIA_STEERING_GAIN = 0.0; // angular velocity command is multiplied by this gain *
                             
     public static final double SEGMENT_COMPLETION_TOLERANCE = 0.1; // inches
-    public static final double PATH_FOLLOWING_MAX_ACCEL = 120.0; // inches per second^2
-    public static final double PATH_FOLLOWING_MAX_DECEL = 120.0;
+    public static final double PATH_FOLLOWING_STANDARD_ACCEL = 120.0; // inches per second^2
+    public static final double PATH_FOLLOWING_STANDARD_DECEL = 120.0;
     public static final double PATH_FOLLOWING_MAX_VEL = 120.0; // inches per second
     public static final double PATH_FOLLOWING_PROFILE_KP = 7.0;	//5.00;
     public static final double PATH_FOLLOWING_PROFILE_KI = 0.0;	//0.03;

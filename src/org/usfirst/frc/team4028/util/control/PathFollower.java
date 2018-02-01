@@ -9,20 +9,26 @@ import org.usfirst.frc.team4028.util.motionProfile.MotionProfileGoal.CompletionB
 import org.usfirst.frc.team4028.util.motionProfile.MotionState;
 import org.usfirst.frc.team4028.util.motionProfile.ProfileFollower;
 
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 public class PathFollower {
     AdaptivePurePursuitController mSteeringController;
     Twist mLastSteeringDelta;
     ProfileFollower mVelocityController;
     boolean overrideFinished = false;
     boolean doneSteering = false;
+    double maxAccel, maxDecel;
 
     /** Create a new PathFollower for a given path */
-    public PathFollower(Path path, boolean reversed) {
+    public PathFollower(Path path, boolean reversed, double maxAccel, double maxDecel) {
         mSteeringController = new AdaptivePurePursuitController(path, reversed);
         mLastSteeringDelta = Twist.identity();
         mVelocityController = new ProfileFollower();
+        this.maxAccel = maxAccel;
+        this.maxDecel = maxDecel;
         mVelocityController.setConstraints(
-                new MotionProfileConstraints(Constants.PATH_FOLLOWING_MAX_VEL, Constants.PATH_FOLLOWING_MAX_ACCEL, Constants.PATH_FOLLOWING_MAX_DECEL));
+                new MotionProfileConstraints(Constants.PATH_FOLLOWING_MAX_VEL, maxAccel, maxDecel));
     }
 
     /**
@@ -47,7 +53,7 @@ public class PathFollower {
                             Math.abs(steering_command.endVelocity), CompletionBehavior.VIOLATE_MAX_ACCEL,
                             Constants.PATH_FOLLOWING_GOAL_POS_TOLERANCE, Constants.PATH_FOLLOWING_GOAL_VEL_TOLERANCE),
                     new MotionProfileConstraints(Math.min(Constants.PATH_FOLLOWING_MAX_VEL, steering_command.maxVelocity),
-                            Constants.PATH_FOLLOWING_MAX_ACCEL, Constants.PATH_FOLLOWING_MAX_DECEL));
+                            maxAccel, maxDecel));
 
             if (steering_command.remainingPathLength < Constants.PATH_STOP_STEERING_DISTANCE) {
                 doneSteering = true;

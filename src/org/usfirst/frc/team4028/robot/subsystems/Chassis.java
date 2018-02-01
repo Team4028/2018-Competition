@@ -231,8 +231,8 @@ public class Chassis implements Subsystem{
 			DriverStation.reportError("Tipping Threshold", false);
 		} else {
 			// send cmd to mtr controllers
-			_rightMaster.set(ControlMode.PercentOutput, - 0.8 * _arcadeDriveThrottleCmdAdj - 0.7 * _arcadeDriveTurnCmdAdj);
-			_leftMaster.set(ControlMode.PercentOutput,- 0.8 * _arcadeDriveThrottleCmdAdj + 0.7 * _arcadeDriveTurnCmdAdj);
+			_leftMaster.set(ControlMode.PercentOutput, - 0.8 * _arcadeDriveThrottleCmdAdj - 0.7 * _arcadeDriveTurnCmdAdj);
+			_rightMaster.set(ControlMode.PercentOutput,- 0.8 * _arcadeDriveThrottleCmdAdj + 0.7 * _arcadeDriveTurnCmdAdj);
 		} 
 		
 
@@ -347,7 +347,7 @@ public class Chassis implements Subsystem{
         if (_currentPath != path || _chassisState != ChassisState.FOLLOW_PATH) {
             configureTalonsForSpeedControl();
             RobotState.getInstance().resetDistanceDriven();
-            _pathFollower = new PathFollower(path, reversed);
+            _pathFollower = new PathFollower(path, reversed, path.maxAccel, path.maxDecel);
             _chassisState = ChassisState.FOLLOW_PATH;
             _currentPath = path;
         } else {
@@ -541,16 +541,11 @@ public class Chassis implements Subsystem{
 	// Publish Data to the Dashboard
 	@Override
 	public void outputToSmartDashboard() {
-		//SmartDashboard.putNumber("Left Position", getLeftPosInRot());
-		SmartDashboard.putNumber("Left Drive Inches/Sec", getLeftVelocityInchesPerSec());
-		//SmartDashboard.putNumber("Right Position", getRightPosInRot());
-		SmartDashboard.putNumber("Right Drive Inches/Sec", -getRightVelocityInchesPerSec());
+		SmartDashboard.putNumber("Left Position in Inches", getLeftVelocityInchesPerSec());
+		SmartDashboard.putNumber("Right Position in Inches", getRightVelocityInchesPerSec());
 		
-		//SmartDashboard.putNumber("Left Position in Inches", getLeftDistanceInches());
-		//SmartDashboard.putNumber("Right Position in Inches", getRightDistanceInches());
-		//SmartDashboard.putNumber("Left Target Velocity", _setpointright);
-		//SmartDashboard.putNumber("Left Position", _leftMaster.getSelectedSensorPosition(0));
-		//SmartDashboard.putNumber("Left Position Quadruature", _leftMaster.getSensorCollection().getQuadraturePosition());
+		SmartDashboard.putNumber("Left Target Velocity", _leftTargetVelocity);
+		SmartDashboard.putNumber("Right Target Velocity", _rightTargetVelocity);
 	}
 	
 	@Override

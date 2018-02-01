@@ -227,9 +227,9 @@ public class Robot extends IterativeRobot {
     	if((new Date().getTime() - _lastDashboardWriteTimeMSec) > 100) {
     		// each subsystem should add a call to a outputToSmartDashboard method
     		// to push its data out to the dashboard
-    		_chassis.outputToSmartDashboard(); 
-    		_elevator.outputToSmartDashboard();
-    		_ultrasonic.outputToDashboard();
+    		//_chassis.outputToSmartDashboard(); 
+    		//_elevator.outputToSmartDashboard();
+    		//_ultrasonic.outputToDashboard();
 	    	
     		// write the overall robot dashboard info
 	    	SmartDashboard.putString("Robot Build", _buildMsg);
@@ -242,6 +242,8 @@ public class Robot extends IterativeRobot {
     		// snapshot last time
     		_lastDashboardWriteTimeMSec = new Date().getTime();
     	}
+    	
+    	_chassis.outputToSmartDashboard();
     	
     	// snapshot when this scan ended
     	_lastScanEndTimeInMSec = new Date().getTime();

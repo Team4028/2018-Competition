@@ -12,9 +12,12 @@ import org.usfirst.frc.team4028.util.motion.Translation;
 public class PathBuilder {
 	private static final double kEpsilon = 1E-9;
     private static final double kReallyBigNumber = 1E9;
+    private static double maxAccel, maxDecel;
 
-    public static Path buildPathFromWaypoints(List<Waypoint> w) {
+    public static Path buildPathFromWaypoints(List<Waypoint> w, double max_Accel, double max_Decel) {
         Path p = new Path();
+        maxAccel = max_Accel;
+        maxDecel = max_Decel;
         if (w.size() < 2)
             throw new Error("Path must contain at least 2 waypoints");
         int i = 0;
@@ -27,6 +30,7 @@ public class PathBuilder {
         new Line(w.get(w.size() - 2), w.get(w.size() - 1)).addToPath(p, 0);
         p.extrapolateLast();
         p.verifySpeeds();
+        p.setAccDec(maxAccel, maxDecel);
         return p;
     }
 
@@ -125,10 +129,10 @@ public class PathBuilder {
             if (pathLength > kEpsilon) {
                 if (b.marker != null) {
                     p.addSegment(new PathSegment(start.x(), start.y(), end.x(), end.y(), b.speed,
-                            p.getLastMotionState(), endSpeed, b.marker));
+                            p.getLastMotionState(), endSpeed, maxAccel, maxDecel, b.marker));
                 } else {
                     p.addSegment(new PathSegment(start.x(), start.y(), end.x(), end.y(), b.speed,
-                            p.getLastMotionState(), endSpeed));
+                            p.getLastMotionState(), endSpeed, maxAccel, maxDecel));
                 }
             }
 
@@ -161,7 +165,7 @@ public class PathBuilder {
             a.addToPath(p, speed);
             if (radius > kEpsilon && radius < kReallyBigNumber) {
                 p.addSegment(new PathSegment(a.end.x(), a.end.y(), b.start.x(), b.start.y(), center.x(), center.y(),
-                        speed, p.getLastMotionState(), b.speed));
+                        speed, p.getLastMotionState(), b.speed, maxAccel, maxDecel));
             }
         }
 

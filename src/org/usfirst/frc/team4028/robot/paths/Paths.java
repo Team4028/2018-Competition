@@ -59,146 +59,152 @@ public class Paths {
 	}
 	
 	public static Path getPath(PATHS pathName) {
+		return getPath(pathName, Constants.PATH_FOLLOWING_STANDARD_ACCEL, Constants.PATH_FOLLOWING_STANDARD_DECEL);
+	}
+	
+	public static Path getPath(PATHS pathName, double max_Accel, double max_Decel) {
 		Path path;
+		double maxAccel = max_Accel;
+		double maxDecel = max_Decel;
 		switch(pathName) {		
 			case AUTO_RUN:
-				path = buildPathFromWaypoints(getAutoRunWaypoints());
+				path = buildPathFromWaypoints(getAutoRunWaypoints(), maxAccel, maxDecel);
 				path.setIsReversed(false);
 				return path;
 				
 			case L_SWITCH:
-		        path = buildPathFromWaypoints(getLeftSwitchWaypoints());
+		        path = buildPathFromWaypoints(getLeftSwitchWaypoints(), maxAccel, maxDecel);
 		        path.setIsReversed(false);
 		        return path;
 			case R_SWITCH:
-				path = buildPathFromWaypoints(flipPath(getLeftSwitchWaypoints()));
+				path = buildPathFromWaypoints(flipPath(getLeftSwitchWaypoints()), maxAccel, maxDecel);
 				path.setIsReversed(false);
 				return path;
 				
 			case L_SWITCH_TO_FRONT_OF_PYRAMID:
-				path = buildPathFromWaypoints(flipPath(getRightSwitchtoFrontofPyramidWaypoints()));
+				path = buildPathFromWaypoints(flipPath(getRightSwitchtoFrontofPyramidWaypoints()), maxAccel, maxDecel);
 				path.setIsReversed(true);
 				return path;
 			case R_SWITCH_TO_FRONT_OF_PYRAMID:
-				path = buildPathFromWaypoints(getRightSwitchtoFrontofPyramidWaypoints());
+				path = buildPathFromWaypoints(getRightSwitchtoFrontofPyramidWaypoints(), maxAccel, maxDecel);
 				path.setIsReversed(true);
 				return path;
 				
 			case TO_PYRAMID:
-				path = buildPathFromWaypoints(getToPyramidWaypoints());
+				path = buildPathFromWaypoints(getToPyramidWaypoints(), maxAccel, maxDecel);
 				path.setIsReversed(false);
 				return path;
 			
 			case AWAY_FROM_LEFT_SWITCH:
-				path = buildPathFromWaypoints(getAwayFromLeftSwitchForThirdCubeWaypoints());
+				path = buildPathFromWaypoints(getAwayFromLeftSwitchForThirdCubeWaypoints(), maxAccel, maxDecel);
 				path.setIsReversed(true);
 				return path;
 			case PYRAMID_FOR_THIRD_CUBE_FROM_LEFT:
-				path = buildPathFromWaypoints(gettoLeftPyramidForThirdCubeWaypoints());
+				path = buildPathFromWaypoints(gettoLeftPyramidForThirdCubeWaypoints(), maxAccel, maxDecel);
 				path.setIsReversed(false);
 				return path;
 			case AWAY_FROM_RIGHT_SWITCH:
-				path = buildPathFromWaypoints(flipPath(getAwayFromLeftSwitchForThirdCubeWaypoints()));
+				path = buildPathFromWaypoints(flipPath(getAwayFromLeftSwitchForThirdCubeWaypoints()), maxAccel, maxDecel);
 				path.setIsReversed(true);
 				return path;
 			case PYRAMID_FOR_THIRD_CUBE_FROM_RIGHT:
-				path = buildPathFromWaypoints(flipPath(gettoLeftPyramidForThirdCubeWaypoints()));
+				path = buildPathFromWaypoints(flipPath(gettoLeftPyramidForThirdCubeWaypoints()), maxAccel, maxDecel);
 				path.setIsReversed(false);
 				return path;
 			case S_TURN_FROM_PYRAMID_TO_LEFT:
-				path = buildPathFromWaypoints(getSTurnFromPyramidtoLeftWaypoints());
+				path = buildPathFromWaypoints(getSTurnFromPyramidtoLeftWaypoints(), maxAccel, maxDecel);
 				path.setIsReversed(true);
 				return path;
 			case TO_L_SWITCH_AFTER_S_TURN:
-				path = buildPathFromWaypoints(gettoLeftSwitchAfterSTurn());
+				path = buildPathFromWaypoints(gettoLeftSwitchAfterSTurn(), maxAccel, maxDecel);
 				path.setIsReversed(false);
 				return path;
 			case AWAY_FROM_L_PYRAMID:
-				path = buildPathFromWaypoints(reversePath(gettoLeftPyramidForThirdCubeWaypoints()));
+				path = buildPathFromWaypoints(reversePath(gettoLeftPyramidForThirdCubeWaypoints()), maxAccel, maxDecel);
 				path.setIsReversed(true);
 				return path;
 			case TO_L_SWITCH_WITH_CUBE_3:
-				path = buildPathFromWaypoints(reversePath(getAwayFromLeftSwitchForThirdCubeWaypoints()));
+				path = buildPathFromWaypoints(reversePath(getAwayFromLeftSwitchForThirdCubeWaypoints()), maxAccel, maxDecel);
 				path.setIsReversed(false);
 				return path;
 			case S_TURN_FROM_PYRAMID_TO_RIGHT:
-				path = buildPathFromWaypoints(flipPath(getSTurnFromPyramidtoLeftWaypoints()));
+				path = buildPathFromWaypoints(flipPath(getSTurnFromPyramidtoLeftWaypoints()), maxAccel, maxDecel);
 				path.setIsReversed(true);
 				return path;
 			case TO_R_SWITCH_AFTER_S_TURN:
-				path = buildPathFromWaypoints(flipPath(gettoLeftSwitchAfterSTurn()));
+				path = buildPathFromWaypoints(flipPath(gettoLeftSwitchAfterSTurn()), maxAccel, maxDecel);
 				path.setIsReversed(false);
 				return path;
 			case AWAY_FROM_R_PYRAMID:
-				path = buildPathFromWaypoints(reversePath(flipPath(gettoLeftPyramidForThirdCubeWaypoints())));
+				path = buildPathFromWaypoints(reversePath(flipPath(gettoLeftPyramidForThirdCubeWaypoints())), maxAccel, maxDecel);
 				path.setIsReversed(true);
 				return path;
 			case TO_R_SWITCH_WITH_CUBE_3:
-				path = buildPathFromWaypoints(flipPath(reversePath(getAwayFromLeftSwitchForThirdCubeWaypoints())));
+				path = buildPathFromWaypoints(flipPath(reversePath(getAwayFromLeftSwitchForThirdCubeWaypoints())), maxAccel, maxDecel);
 				path.setIsReversed(false);
 				return path;
 				
 			case L_SCALE:
-				path = buildPathFromWaypoints(getLeftScaleWaypoints());
+				path = buildPathFromWaypoints(getLeftScaleWaypoints(), maxAccel, maxDecel);
 				path.setIsReversed(false);
 				return path;
 			case L_SCALE_TO_L_SWITCH_PT_1:
-				path = buildPathFromWaypoints(getLeftScaleToLeftSwitch1Waypoints());
+				path = buildPathFromWaypoints(getLeftScaleToLeftSwitch1Waypoints(), maxAccel, maxDecel);
 				path.setIsReversed(true);
 				return path;
 			case L_SCALE_TO_L_SWITCH_PT_2:
-				path = buildPathFromWaypoints(getLeftScaleToLeftSwitch2Waypoints());
+				path = buildPathFromWaypoints(getLeftScaleToLeftSwitch2Waypoints(), maxAccel, maxDecel);
 				path.setIsReversed(false);
 				return path;
 			case L_SWITCH_TO_L_SCALE_PT_1:
-				path = buildPathFromWaypoints(getLeftSwitchToLeftScale1Waypoints());
+				path = buildPathFromWaypoints(getLeftSwitchToLeftScale1Waypoints(), maxAccel, maxDecel);
 				path.setIsReversed(true);
 				return path;
 			case L_SWITCH_TO_L_SCALE_PT_2:
-				path = buildPathFromWaypoints(getLeftSwitchToLeftScale2Waypoints());
+				path = buildPathFromWaypoints(getLeftSwitchToLeftScale2Waypoints(), maxAccel, maxDecel);
 				path.setIsReversed(false);
 				return path;
 			case L_SCALE_TO_R_SWITCH_PT_1:
-				path = buildPathFromWaypoints(getLeftScaleToRightSwitch1Waypoints());
+				path = buildPathFromWaypoints(getLeftScaleToRightSwitch1Waypoints(), maxAccel, maxDecel);
 				path.setIsReversed(true);
 				return path;
 			case L_SCALE_TO_R_SWITCH_PT_2:
-				path = buildPathFromWaypoints(getLeftScaleToRightSwitch2Waypoints());
+				path = buildPathFromWaypoints(getLeftScaleToRightSwitch2Waypoints(), maxAccel, maxDecel);
 				path.setIsReversed(false);
 				return path;
 				
 			case R_SCALE:
-				path = buildPathFromWaypoints(getRightScaleWaypoints());
+				path = buildPathFromWaypoints(getRightScaleWaypoints(), maxAccel, maxDecel);
 				path.setIsReversed(false);
 				return path;
 				
 			case R_SCALE_TO_R_SWITCH_PT_1:
-				path = buildPathFromWaypoints(flipPath(getLeftScaleToLeftSwitch1Waypoints()));
+				path = buildPathFromWaypoints(flipPath(getLeftScaleToLeftSwitch1Waypoints()), maxAccel, maxDecel);
 				path.setIsReversed(true);
 				return path;
 			case R_SCALE_TO_R_SWITCH_PT_2:
-				path = buildPathFromWaypoints(flipPath(getLeftScaleToLeftSwitch2Waypoints()));
+				path = buildPathFromWaypoints(flipPath(getLeftScaleToLeftSwitch2Waypoints()), maxAccel, maxDecel);
 				path.setIsReversed(false);
 				return path;
 			case R_SWITCH_TO_R_SCALE_PT_1:
-				path = buildPathFromWaypoints(flipPath(getLeftSwitchToLeftScale1Waypoints()));
+				path = buildPathFromWaypoints(flipPath(getLeftSwitchToLeftScale1Waypoints()), maxAccel, maxDecel);
 				path.setIsReversed(true);
 				return path;
 			case R_SWITCH_TO_R_SCALE_PT_2:
-				path = buildPathFromWaypoints(flipPath(getLeftSwitchToLeftScale2Waypoints()));
+				path = buildPathFromWaypoints(flipPath(getLeftSwitchToLeftScale2Waypoints()), maxAccel, maxDecel);
 				path.setIsReversed(false);
 				return path;
 			case R_SCALE_TO_L_SWITCH_PT_1:
-				path = buildPathFromWaypoints(flipPath(getLeftScaleToRightSwitch1Waypoints()));
+				path = buildPathFromWaypoints(flipPath(getLeftScaleToRightSwitch1Waypoints()), maxAccel, maxDecel);
 				path.setIsReversed(true);
 				return path;
 			case R_SCALE_TO_L_SWITCH_PT_2:
-				path = buildPathFromWaypoints(flipPath(getLeftScaleToRightSwitch2Waypoints()));
+				path = buildPathFromWaypoints(flipPath(getLeftScaleToRightSwitch2Waypoints()), maxAccel, maxDecel);
 				path.setIsReversed(false);
 				return path;
 				
 			default:
-				path = buildPathFromWaypoints(getDoNothingWaypoints());
+				path = buildPathFromWaypoints(getDoNothingWaypoints(), maxAccel, maxDecel);
 				path.setIsReversed(true);
 				return path;
 		}
