@@ -33,7 +33,7 @@ import edu.wpi.first.wpilibj.XboxController;
 		DRIVER_LEFT_BUMPER			
 		DRIVER_RIGHT_BUMPER			
 		DRIVER_BACK_BUTTON			
-		DRIVER_START_BUTTON			
+		DRIVER_START_BUTTON							Switch Camera
 		DRIVER_LEFT_THUMBSTICK
 		DRIVER_RIGHT_THUMBSTICK
 								
@@ -126,9 +126,9 @@ public class DriverOperatorStation {
 //			return _driverGamepad.getBackButtonPressed();
 //		}
 	
-//		public boolean getIsDriver_Start_BtnJustPressed() {
-//			return _driverGamepad.getStartButtonPressed();
-//		}
+		public boolean getIsDriver_SwitchCamera_BtnJustPressed() {
+			return _driverGamepad.getStartButtonPressed();
+		}
 		
 //		public boolean getIsDriver_YellowY_BtnJustPressed() {
 //			return _driverGamepad.getYButtonPressed();
