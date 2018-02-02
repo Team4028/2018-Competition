@@ -260,6 +260,7 @@ public class Robot extends IterativeRobot {
 	    	_chassis.updateLogData(logData);
 	    	_elevator.updateLogData(logData);
 	    	
+	    	
 	    	_dataLogger.WriteDataLine(logData);
     	}
 	}

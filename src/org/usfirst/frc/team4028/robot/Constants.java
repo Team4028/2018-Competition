@@ -123,8 +123,8 @@ public class Constants {
     public static final double INERTIA_STEERING_GAIN = 0.0; // angular velocity command is multiplied by this gain *
                             
     public static final double SEGMENT_COMPLETION_TOLERANCE = 0.1; // inches
-    public static final double PATH_FOLLOWING_STANDARD_ACCEL = 120.0; // inches per second^2
-    public static final double PATH_FOLLOWING_STANDARD_DECEL = 120.0;
+    public static final double PATH_FOLLOWING_STANDARD_ACCEL = 100.0; // inches per second^2
+    public static final double PATH_FOLLOWING_STANDARD_DECEL = 100.0;
     public static final double PATH_FOLLOWING_MAX_VEL = 120.0; // inches per second
     public static final double PATH_FOLLOWING_PROFILE_KP = 7.0;	//5.00;
     public static final double PATH_FOLLOWING_PROFILE_KI = 0.0;	//0.03;
@@ -133,7 +133,7 @@ public class Constants {
     public static final double PATH_FOLLOWING_PROFILE_KFFA = 0.05;
     public static final double PATH_FOLLOWING_GOAL_POS_TOLERANCE = 0.75;
     public static final double PATH_FOLLOWING_GOAL_VEL_TOLERANCE = 12.0;
-    public static final double PATH_STOP_STEERING_DISTANCE = 0.1;
+    public static final double PATH_STOP_STEERING_DISTANCE = 5.0;
     
     public static final double CELERY_SPEED = 0.0000001;
     public static final double TURTLE_SPEED = 20;
@@ -142,6 +142,19 @@ public class Constants {
     public static final double FLOOR_IT_SPEED = 80;
     public static final double WARP_SPEED = 100;
     public static final double KEEEEEEEEEEEEEEEEEEENS_SPEED = 120;
+    
+    public static final double LEFT_SWITCH_FRONT_X_DELTA = 0;
+    public static final double LEFT_SWITCH_FRONT_Y_DELTA = 0;
+    public static final double LEFT_SWITCH_BACK_X_DELTA = 0;
+    public static final double LEFT_SCALE_DELTA_X = 0;
+    public static final double LEFT_SCALE_DELTA_Y = 0;
+    public static final double LEFT_SWITCH_BACK_DELTA_Y = 0;
+    public static final double RIGHT_SWITCH_FRONT_X_DELTA = 0;
+    public static final double RIGHT_SWITCH_FRONT_Y_DELTA = 0;
+    public static final double RIGHT_SWITCH_BACK_X_DELTA = 0;
+    public static final double RIGHT_SCALE_DELTA_X = 0;
+    public static final double RIGHT_SCALE_DELTA_Y = 0;
+    public static final double RIGHT_SWITCH_BACK_DELTA_Y = 0;
     
     public static final double BIG_NUMBER = 1e6;
     public static final double EPSILON_NEGATIVE_6 = 1e-6;

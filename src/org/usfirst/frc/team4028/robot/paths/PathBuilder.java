@@ -98,6 +98,11 @@ public class PathBuilder {
             speed = s;
             marker = m;
         }
+        public void adjustWaypoint(double x, double y)
+        {
+        	pos = new Translation(pos.x()+x,pos.y()+y);
+        	
+        }
           
         public void flipWaypoint() {
         	pos = new Translation(pos.x(), 324 - pos.y());
