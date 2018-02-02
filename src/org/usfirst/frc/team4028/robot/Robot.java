@@ -7,6 +7,7 @@ import java.util.Date;
 import org.usfirst.frc.team4028.robot.auton.AutonExecuter;
 import org.usfirst.frc.team4028.robot.sensors.PDPMonitor;
 import org.usfirst.frc.team4028.robot.sensors.RobotStateEstimator;
+import org.usfirst.frc.team4028.robot.sensors.SwitchableCameraServer;
 import org.usfirst.frc.team4028.robot.sensors.Ultrasonic;
 import org.usfirst.frc.team4028.robot.subsystems.*;
 import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_PRESET_POSITION;
@@ -30,6 +31,7 @@ public class Robot extends IterativeRobot {
 	
 	// Sensors
 	private Ultrasonic _ultrasonic = Ultrasonic.getInstance();
+	private SwitchableCameraServer _switchableCameraServer = SwitchableCameraServer.getInstance();
 	//private PDPMonitor _pdpm = PDPMonitor.getInstance();
 	
 	// Other
@@ -201,6 +203,13 @@ public class Robot extends IterativeRobot {
 			_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.HOME);
 		} else {
 			_elevator.stop();
+		}
+		
+		//Camera Switch initiated
+		if (_dos.getIsDriver_SwitchCamera_BtnJustPressed() == true)
+		{
+			_switchableCameraServer.SwitchCamera();
+//			System.out.println("		switching cameras...");
 		}
 		
 		// Refresh Dashboard
