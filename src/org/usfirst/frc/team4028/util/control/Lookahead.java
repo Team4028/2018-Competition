@@ -1,24 +1,20 @@
 package org.usfirst.frc.team4028.util.control;
 
-/**
- * A utility class for interpolating lookahead distance based on current speed.
- */
+/** A utility class for interpolating lookahead distance based on current speed. */
 public class Lookahead {
-	public final double minDistance;
-	public final double maxDistance;
-	public final double minSpeed;
-	public final double maxSpeed;
+	public final double minDistance, maxDistance;
+	public final double minSpeed, maxSpeed;
 	
 	protected final double deltaDistance;
 	protected final double deltaSpeed;
 	
-	public Lookahead(double min_distance, double max_distance, double min_speed, double max_speed) {
-		this.minDistance = min_distance;
-        this.maxDistance = max_distance;
-        this.minSpeed = min_speed;
-        this.maxSpeed = max_speed;
-        deltaDistance = max_distance - min_distance;
-        deltaSpeed = max_speed - min_speed;
+	public Lookahead(double minDistance, double maxDistance, double minSpeed, double maxSpeed) {
+		this.minDistance = minDistance;
+        this.maxDistance = maxDistance;
+        this.minSpeed = minSpeed;
+        this.maxSpeed = maxSpeed;
+        deltaDistance = maxDistance - minDistance;
+        deltaSpeed = maxSpeed - minSpeed;
 	}
 	
 	public double getLookaheadForSpeed(double speed) {

@@ -35,9 +35,7 @@ public class Path {
         segments.add(segment);
     }
 
-    /**
-     * @return the last MotionState in the path
-     */
+    /** @return the last MotionState in the path */
     public MotionState getLastMotionState() {
         if (segments.size() > 0) {
             MotionState endState = segments.get(segments.size() - 1).getEndState();
@@ -63,9 +61,7 @@ public class Path {
         return currentSegment.getRemainingDistance(currentSegment.getClosestPoint(robotPos));
     }
     
-    /**
-     * @return the length of the current segment
-     */
+    /** @return the length of the current segment */
     public double getSegmentLength() {
         PathSegment currentSegment = segments.get(0);
         return currentSegment.getLength();
@@ -166,9 +162,7 @@ public class Path {
             mMarkersCrossed.add(marker);
     }
 
-    /**
-     * Ensures that all speeds in the path are attainable and robot can slow down in time
-     */
+    /** Ensures that all speeds in the path are attainable and robot can slow down in time */
     public void verifySpeeds() {
         double maxStartSpeed = 0.0;
         double[] startSpeeds = new double[segments.size() + 1];

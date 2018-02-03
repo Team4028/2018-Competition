@@ -27,9 +27,7 @@ public class ProfileFollower {
         resetProfile();
     }
 
-    /**
-     * Completely clear all state related to the current profile (min and max outputs are maintained).
-     */
+    /** Completely clear all state related to the current profile (min and max outputs are maintained) */
     public void resetProfile() {
         mTotalError = 0.0;
         mInitialState = MotionState.kInvalidState;
@@ -42,9 +40,7 @@ public class ProfileFollower {
         resetSetpoint();
     }
 
-    /**
-     * Specify a goal and constraints for achieving the goal.
-     */
+    /** Specify a goal and constraints for achieving the goal */
     public void setGoalAndConstraints(MotionProfileGoal goal, MotionProfileConstraints constraints) {
         if (mGoal != null && !mGoal.equals(goal) && mLatestSetpoint != null) {
             // Clear the final state bit since the goal has changed.
@@ -58,9 +54,7 @@ public class ProfileFollower {
         setGoalAndConstraints(goal, mConstraints);
     }
 
-    /**
-     * @return The current goal (null if no goal has been set since the latest call to reset()).
-     */
+    /** @return The current goal (null if no goal has been set since the latest call to reset()) */
     public MotionProfileGoal getGoal() {
         return mGoal;
     }
