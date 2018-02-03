@@ -7,6 +7,7 @@ import java.util.Date;
 import org.usfirst.frc.team4028.robot.auton.AutonExecuter;
 import org.usfirst.frc.team4028.robot.sensors.PDPMonitor;
 import org.usfirst.frc.team4028.robot.sensors.RobotStateEstimator;
+import org.usfirst.frc.team4028.robot.sensors.SwitchableCameraServer;
 import org.usfirst.frc.team4028.robot.sensors.Ultrasonic;
 import org.usfirst.frc.team4028.robot.subsystems.*;
 import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_PRESET_POSITION;
@@ -26,10 +27,13 @@ public class Robot extends IterativeRobot {
 	
 	// Subsystems
 	private Chassis _chassis = Chassis.getInstance();
+	private Infeed _infeed = Infeed.getInstance();
 	private Elevator _elevator = Elevator.getInstance();
+
 	
 	// Sensors
 	private Ultrasonic _ultrasonic = Ultrasonic.getInstance();
+	private SwitchableCameraServer _switchableCameraServer = SwitchableCameraServer.getInstance();
 	//private PDPMonitor _pdpm = PDPMonitor.getInstance();
 	
 	// Other
@@ -57,6 +61,7 @@ public class Robot extends IterativeRobot {
 		_buildMsg = GeneralUtilities.WriteBuildInfoToDashboard(ROBOT_NAME);
 		
 		_enabledLooper.register(_chassis.getLoop());
+		_enabledLooper.register(_infeed.getLoop());
 		_enabledLooper.register(_elevator.getLoop());
 		_enabledLooper.register(RobotStateEstimator.getInstance().getLoop());
 		
@@ -170,7 +175,7 @@ public class Robot extends IterativeRobot {
 	// ================================================================
 	@Override
 	public void teleopPeriodic() {
-		/* CHASSIS */
+		// =============  CHASSIS ============= 
 		if ((Math.abs(_dos.getThrottleCmd()) > 0.05) || (Math.abs(_dos.getTurnCmd()) > 0.05)) {
 			_chassis.arcadeDrive(-1.0 * _dos.getThrottleCmd(), _dos.getTurnCmd());
 		} else {
@@ -181,7 +186,41 @@ public class Robot extends IterativeRobot {
 			_chassis.toggleShifter();
 		}
 		
-		/* ELEVATOR */
+		//=============  INFEED ============= 
+		if (_dos.getIsDriver_ReZeroInfeed_BtnJustPressed()) {
+			_infeed.reZeroArms();
+		}
+		
+		if (_dos.getIsDriver_MoveToInfeedPosition_BtnJustPressed()) {
+			_infeed.moveArmsToInfeedPosition();
+		}
+		
+		if (_dos.getIsDriver_MoveToWideInfeedPosition_BtnJustPressed()) {
+			_infeed.moveArmsToWideInfeedPosition();
+		}
+		
+		if (_dos.getIsDriver_MoveToSqueezeInfeedPosition_BtnJustPressed()) {
+			_infeed.moveArmsToSqueezeInfeedPosition();
+		}
+		
+		if (_dos.getIsDriver_StoreInfeedArms_BtnJustPressed()) {
+			_infeed.storeArms();
+		}
+		
+		if (_dos.getIsDriver_StaggerInfeedManuver_BtnJustPressed()) {
+			_infeed.staggerInfeedManuver();
+		}
+			
+		if (_dos.getIsDriver_InfeedCube_BtnPressed()) {
+			_infeed.driveInfeedWheels();
+		}
+		else {
+			_infeed.stopDriveMotors();
+		}
+		
+		//_ultrasonic.getIsCubeInRange();
+
+		// =============  ELEVATOR ============= 
 		if (_dos.getOperator_Elevator_JoystickCmd() > 0.05) {
 			_elevator.JogAxis(_dos.getOperator_Elevator_JoystickCmd());
 		}
@@ -203,10 +242,16 @@ public class Robot extends IterativeRobot {
 			_elevator.stop();
 		}
 		
-		// Refresh Dashboard
+		// ============= Camera Switch ============= 
+		if (_dos.getIsOperator_SwitchCamera_BtnJustPressed() == true)
+		{
+			_switchableCameraServer.SwitchCamera();
+		}
+		
+		// ============= Refresh Dashboard =============
 		outputAllToDashboard();
 		
-		// Optionally Log Data
+		// ============= Optionally Log Data =============
 		logAllData();
 	}
 	
