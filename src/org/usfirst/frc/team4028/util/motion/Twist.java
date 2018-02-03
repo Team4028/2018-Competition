@@ -7,8 +7,7 @@ public class Twist {
 		return _identity;
 	}
 	
-	public final double dx;
-	public final double dy;
+	public final double dx, dy;
 	public final double dtheta; // Radians
 	
 	public Twist(double dx, double dy, double dtheta) {

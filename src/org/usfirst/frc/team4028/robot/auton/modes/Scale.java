@@ -7,12 +7,20 @@ import org.usfirst.frc.team4028.robot.paths.Paths;
 import org.usfirst.frc.team4028.robot.paths.Paths.PATHS;
 import org.usfirst.frc.team4028.util.control.Path;
 
-public class AutoRun extends AutonBase {
-	Path path = Paths.getPath(PATHS.AUTO_RUN);
+public class Scale extends AutonBase{
+	Path toScale;
+	
+	public Scale(boolean isScaleLeft) {
+		if (isScaleLeft) {
+			toScale = Paths.getPath(PATHS.L_SCALE);
+		} else {
+			toScale = Paths.getPath(PATHS.R_SCALE);
+		}
+	}
 	
 	@Override
 	public void routine() {
-		runAction(new RunMotionProfileAction(path));
+		runAction(new RunMotionProfileAction(toScale, true));
 		runAction(new PrintTimeFromStart(_startTime));
 	}
 }

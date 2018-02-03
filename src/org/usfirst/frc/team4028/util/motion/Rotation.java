@@ -11,24 +11,24 @@ public class Rotation {
 
     protected static final double kEpsilon = 1E-9;
 
-    protected double cos_angle_;
-    protected double sin_angle_;
+    protected double cosAngle;
+    protected double sinAngle;
 
     public Rotation() {
         this(1, 0, false);
     }
 
     public Rotation(double x, double y, boolean normalize) {
-        cos_angle_ = x;
-        sin_angle_ = y;
+        cosAngle = x;
+        sinAngle = y;
         if (normalize) {
             normalize();
         }
     }
 
     public Rotation(Rotation other) {
-        cos_angle_ = other.cos_angle_;
-        sin_angle_ = other.sin_angle_;
+        cosAngle = other.cosAngle;
+        sinAngle = other.sinAngle;
     }
 
     public Rotation(Translation direction, boolean normalize) {
@@ -48,37 +48,37 @@ public class Rotation {
      * Normalizing forces us to re-scale the sin and cos to reset rounding errors.
      */
     public void normalize() {
-        double magnitude = Math.hypot(cos_angle_, sin_angle_);
+        double magnitude = Math.hypot(cosAngle, sinAngle);
         if (magnitude > kEpsilon) {
-            sin_angle_ /= magnitude;
-            cos_angle_ /= magnitude;
+            sinAngle /= magnitude;
+            cosAngle /= magnitude;
         } else {
-            sin_angle_ = 0;
-            cos_angle_ = 1;
+            sinAngle = 0;
+            cosAngle = 1;
         }
     }
 
     public double cos() {
-        return cos_angle_;
+        return cosAngle;
     }
 
     public double sin() {
-        return sin_angle_;
+        return sinAngle;
     }
 
     public double tan() {
-        if (Math.abs(cos_angle_) < kEpsilon) {
-            if (sin_angle_ >= 0.0) {
+        if (Math.abs(cosAngle) < kEpsilon) {
+            if (sinAngle >= 0.0) {
                 return Double.POSITIVE_INFINITY;
             } else {
                 return Double.NEGATIVE_INFINITY;
             }
         }
-        return sin_angle_ / cos_angle_;
+        return sinAngle / cosAngle;
     }
 
     public double getRadians() {
-        return Math.atan2(sin_angle_, cos_angle_);
+        return Math.atan2(sinAngle, cosAngle);
     }
 
     public double getDegrees() {
@@ -93,12 +93,12 @@ public class Rotation {
      * @return This rotation rotated by other.
      */
     public Rotation rotateBy(Rotation other) {
-        return new Rotation(cos_angle_ * other.cos_angle_ - sin_angle_ * other.sin_angle_,
-                cos_angle_ * other.sin_angle_ + sin_angle_ * other.cos_angle_, true);
+        return new Rotation(cosAngle * other.cosAngle - sinAngle * other.sinAngle,
+                cosAngle * other.sinAngle + sinAngle * other.cosAngle, true);
     }
 
     public Rotation normal() {
-        return new Rotation(-sin_angle_, cos_angle_, false);
+        return new Rotation(-sinAngle, cosAngle, false);
     }
 
     /**
@@ -107,7 +107,7 @@ public class Rotation {
      * @return The opposite of this rotation.
      */
     public Rotation inverse() {
-        return new Rotation(cos_angle_, -sin_angle_, false);
+        return new Rotation(cosAngle, -sinAngle, false);
     }
 
     public boolean isParallel(Rotation other) {
@@ -115,17 +115,7 @@ public class Rotation {
     }
 
     public Translation toTranslation() {
-        return new Translation(cos_angle_, sin_angle_);
-    }
-
-    public Rotation interpolate(Rotation other, double x) {
-        if (x <= 0) {
-            return new Rotation(this);
-        } else if (x >= 1) {
-            return new Rotation(other);
-        }
-        double angle_diff = inverse().rotateBy(other).getRadians();
-        return this.rotateBy(Rotation.fromRadians(angle_diff * x));
+        return new Translation(cosAngle, sinAngle);
     }
     
     @Override

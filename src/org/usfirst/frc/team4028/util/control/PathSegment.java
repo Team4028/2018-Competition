@@ -119,28 +119,22 @@ public class PathSegment {
     
     public void createMotionProfiler(MotionState start_state, double end_speed) {
     	MotionProfileConstraints motionConstraints = new MotionProfileConstraints(maxSpeed, 
-    			Constants.PATH_FOLLOWING_MAX_ACCEL);
+    			Constants.PATH_FOLLOWING_MAX_ACCEL, Constants.PATH_FOLLOWING_MAX_DECEL);
     	MotionProfileGoal goal_state = new MotionProfileGoal(getLength(), end_speed);
     	speedController = MotionProfileGenerator.generateProfile(motionConstraints, goal_state, start_state);
     }
     
-    /**
-     * @return starting point of the segment
-     */
+    /** @return starting point of the segment */
     public Translation getStart() {
         return start;
     }
 
-    /**
-     * @return end point of the segment
-     */
+    /** @return end point of the segment */
     public Translation getEnd() {
         return end;
     }
 
-    /**
-     * @return the total length of the segment
-     */
+    /** @return the total length of the segment */
     public double getLength() {
         if (isLine) {
             return deltaStart.norm();
@@ -165,7 +159,6 @@ public class PathSegment {
      *            the current position of the robot
      * @return the point on the segment closest to the robot
      */
-    
     public Translation getClosestPoint(Translation position) {
     	if (isLine) {
             Translation delta = new Translation(start, end);
@@ -230,9 +223,7 @@ public class PathSegment {
 
     private double getDistanceTravelled(Translation robotPosition) {
         Translation pathPosition = getClosestPoint(robotPosition);
-        double remainingDist = getRemainingDistance(pathPosition);
-        return getLength() - remainingDist;
-
+        return getLength() - getRemainingDistance(pathPosition);
     }
 
     public double getSpeedByDistance(double dist) {
@@ -270,8 +261,7 @@ public class PathSegment {
         if (isLine) {
             return "(" + "start: " + start + ", end: " + end + ", speed: " + maxSpeed + ")";
         } else {
-            return "(" + "start: " + start + ", end: " + end + ", center: " + center + ", speed: " + maxSpeed
-                    + ")"; 
+            return "(" + "start: " + start + ", end: " + end + ", center: " + center + ", speed: " + maxSpeed + ")"; 
         }
     }
 }

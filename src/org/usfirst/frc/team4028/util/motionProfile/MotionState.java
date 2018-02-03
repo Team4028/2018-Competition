@@ -1,13 +1,11 @@
 package org.usfirst.frc.team4028.util.motionProfile;
 
 import static org.usfirst.frc.team4028.util.GeneralUtilities.epsilonEquals;
-import static org.usfirst.frc.team4028.util.motionProfile.MotionUtil.kEpsilon;
+
+import org.usfirst.frc.team4028.robot.Constants;
 
 public class MotionState {
-	protected final double t;
-    protected final double pos;
-    protected final double vel;
-    protected final double acc;
+	protected final double t, pos, vel, acc;
 
     public static MotionState kInvalidState = new MotionState(Double.NaN, Double.NaN, Double.NaN, Double.NaN);
 
@@ -67,14 +65,14 @@ public class MotionState {
      * @return The time when we are next at pos() if we are extrapolating with a positive dt. NaN if we never reach pos.
      */
     public double nextTimeAtPos(double pos) {
-        if (epsilonEquals(pos, this.pos, kEpsilon)) {
+        if (epsilonEquals(pos, this.pos, Constants.EPSILON_NEGATIVE_6)) {
             // Already at pos.
             return t;
         }
-        if (epsilonEquals(acc, 0.0, kEpsilon)) {
+        if (epsilonEquals(acc, 0.0, Constants.EPSILON_NEGATIVE_6)) {
             // Zero acceleration case.
             final double delta_pos = pos - this.pos;
-            if (!epsilonEquals(vel, 0.0, kEpsilon) && Math.signum(delta_pos) == Math.signum(vel)) {
+            if (!epsilonEquals(vel, 0.0, Constants.EPSILON_NEGATIVE_6) && Math.signum(delta_pos) == Math.signum(vel)) {
                 // Constant velocity heading towards pos.
                 return delta_pos / vel + t;
             }
@@ -109,17 +107,14 @@ public class MotionState {
     public String toString() {
         return "(t=" + t + ", pos=" + pos + ", vel=" + vel + ", acc=" + acc + ")";
     }
-    /**
-    * Checks if two MotionStates are epsilon-equals (all fields are equal within a nominal tolerance).
-    */
+    
+    /** Checks if two MotionStates are epsilon-equals (all fields are equal within a nominal tolerance) */
     @Override
     public boolean equals(Object other) {
-        return (other instanceof MotionState) && equals((MotionState) other, kEpsilon);
+        return (other instanceof MotionState) && equals((MotionState) other, Constants.EPSILON_NEGATIVE_6);
     }
 
-    /**
-     * Checks if two MotionStates are epsilon-equals (all fields are equal within a specified tolerance).
-     */
+    /** Checks if two MotionStates are epsilon-equals (all fields are equal within a specified tolerance) */
     public boolean equals(MotionState other, double epsilon) {
         return coincident(other, epsilon) && epsilonEquals(acc, other.acc, epsilon);
     }
@@ -129,20 +124,16 @@ public class MotionState {
      * may be different).
      */
     public boolean coincident(MotionState other) {
-        return coincident(other, kEpsilon);
+        return coincident(other, Constants.EPSILON_NEGATIVE_6);
     }
 
-    /**
-     * Checks if two MotionStates are coincident (t, pos, and vel are equal within a specified tolerance, but
-     */
+    /** Checks if two MotionStates are coincident (t, pos, and vel are equal within a specified tolerance) */
     public boolean coincident(MotionState other, double epsilon) {
         return epsilonEquals(t, other.t, epsilon) && epsilonEquals(pos, other.pos, epsilon)
                 && epsilonEquals(vel, other.vel, epsilon);
     }
 
-    /**
-     * Returns a MotionState that is the mirror image of this one. Pos, vel, and acc are all negated, but time is not.
-     */
+    /** Returns a MotionState that is the mirror image of this one. Pos, vel, and acc are all negated, but time is not */
     public MotionState flipped() {
         return new MotionState(t, -pos, -vel, -acc);
     }

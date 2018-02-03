@@ -20,3 +20,10 @@
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+*.class
+*.class
+bin/org/usfirst/frc/team4028/robot/auton/actions/ResetPoseReverse.class
+bin/org/usfirst/frc/team4028/robot/auton/actions/ResetPoseFromPathAction.class
+*.class
+*.class
+*.class

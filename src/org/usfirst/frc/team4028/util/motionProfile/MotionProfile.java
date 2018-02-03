@@ -1,12 +1,13 @@
 package org.usfirst.frc.team4028.util.motionProfile;
 
-import static org.usfirst.frc.team4028.util.motionProfile.MotionUtil.kEpsilon;
 import static org.usfirst.frc.team4028.util.GeneralUtilities.epsilonEquals;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+
+import org.usfirst.frc.team4028.robot.Constants;
 
 /**
  * A motion profile specifies a 1D time-parameterized trajectory. The trajectory is composed of successively coincident
@@ -15,9 +16,7 @@ import java.util.Optional;
 public class MotionProfile {
 	protected List<MotionSegment> mSegments;
 	
-	/**
-     * Create an empty MotionProfile.
-     */
+	/** Create an empty MotionProfile */
     public MotionProfile() {
         mSegments = new ArrayList<>();
     }
@@ -74,10 +73,10 @@ public class MotionProfile {
      * @return Empty if the time is outside the time bounds of the profile, or the resulting MotionState otherwise.
      */
     public Optional<MotionState> stateByTime(double t) {
-        if (t < startTime() && t + kEpsilon >= startTime()) {
+        if (t < startTime() && t + Constants.EPSILON_NEGATIVE_6 >= startTime()) {
             return Optional.of(startState());
         }
-        if (t > endTime() && t - kEpsilon <= endTime()) {
+        if (t > endTime() && t - Constants.EPSILON_NEGATIVE_6 <= endTime()) {
             return Optional.of(endState());
         }
         for (MotionSegment s : mSegments) {
@@ -122,7 +121,7 @@ public class MotionProfile {
     public Optional<MotionState> firstStateByPos(double pos) {
         for (MotionSegment s : mSegments) {
             if (s.containsPos(pos)) {
-                if (epsilonEquals(s.end().pos(), pos, kEpsilon)) {
+                if (epsilonEquals(s.end().pos(), pos, Constants.EPSILON_NEGATIVE_6)) {
                     return Optional.of(s.end());
                 }
                 final double t = Math.min(s.start().nextTimeAtPos(pos), s.end().t());
@@ -226,23 +225,17 @@ public class MotionProfile {
         }
     }
 
-    /**
-     * @return The number of segments.
-     */
+    /** @return The number of segments */
     public int size() {
         return mSegments.size();
     }
 
-    /**
-     * @return The list of segments.
-     */
+    /** @return The list of segments */
     public List<MotionSegment> segments() {
         return mSegments;
     }
     
-    /**
-     * @return The first state in the profile (or kInvalidState if empty).
-     */
+    /** @return The first state in the profile (or kInvalidState if empty) */
     public MotionState startState() {
         if (isEmpty()) {
             return MotionState.kInvalidState;
@@ -250,23 +243,17 @@ public class MotionProfile {
         return mSegments.get(0).start();
     }
 
-    /**
-     * @return The time of the first state in the profile (or NaN if empty).
-     */
+    /** @return The time of the first state in the profile (or NaN if empty) */
     public double startTime() {
         return startState().t();
     }
 
-    /**
-     * @return The pos of the first state in the profile (or NaN if empty).
-     */
+    /** @return The pos of the first state in the profile (or NaN if empty) */
     public double startPos() {
         return startState().pos();
     }
 
-    /**
-     * @return The last state in the profile (or kInvalidState if empty).
-     */
+    /** @return The last state in the profile (or kInvalidState if empty) */
     public MotionState endState() {
         if (isEmpty()) {
             return MotionState.kInvalidState;
@@ -274,16 +261,12 @@ public class MotionProfile {
         return mSegments.get(mSegments.size() - 1).end();
     }
 
-    /**
-     * @return The time of the last state in the profile (or NaN if empty).
-     */
+    /** @return The time of the last state in the profile (or NaN if empty) */
     public double endTime() {
         return endState().t();
     }
 
-    /**
-     * @return The pos of the last state in the profile (or NaN if empty).
-     */
+    /** @return The pos of the last state in the profile (or NaN if empty) */
     public double endPos() {
         return endState().pos();
     }

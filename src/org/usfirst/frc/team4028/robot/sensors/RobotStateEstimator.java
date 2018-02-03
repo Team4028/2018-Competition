@@ -1,5 +1,6 @@
-package org.usfirst.frc.team4028.robot;
+package org.usfirst.frc.team4028.robot.sensors;
 
+import org.usfirst.frc.team4028.util.Kinematics;
 import org.usfirst.frc.team4028.robot.subsystems.Chassis;
 import org.usfirst.frc.team4028.util.loops.Loop;
 import org.usfirst.frc.team4028.util.motion.Rotation;

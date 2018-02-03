@@ -5,8 +5,12 @@ import java.text.DecimalFormat;
 import java.util.Date;
 
 import org.usfirst.frc.team4028.robot.auton.AutonExecuter;
+import org.usfirst.frc.team4028.robot.sensors.PDPMonitor;
+import org.usfirst.frc.team4028.robot.sensors.RobotStateEstimator;
+import org.usfirst.frc.team4028.robot.sensors.SwitchableCameraServer;
 import org.usfirst.frc.team4028.robot.sensors.Ultrasonic;
 import org.usfirst.frc.team4028.robot.subsystems.*;
+import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_PRESET_POSITION;
 import org.usfirst.frc.team4028.util.DataLogger;
 import org.usfirst.frc.team4028.util.GeneralUtilities;
 import org.usfirst.frc.team4028.util.LogDataBE;
@@ -24,12 +28,16 @@ public class Robot extends IterativeRobot {
 	// Subsystems
 	private Chassis _chassis = Chassis.getInstance();
 	private Infeed _infeed = Infeed.getInstance();
+	private Elevator _elevator = Elevator.getInstance();
+
 	
 	// Sensors
 	private Ultrasonic _ultrasonic = Ultrasonic.getInstance();
+	private SwitchableCameraServer _switchableCameraServer = SwitchableCameraServer.getInstance();
+	//private PDPMonitor _pdpm = PDPMonitor.getInstance();
 	
 	// Other
-	private DriverOperationStation _dos = DriverOperationStation.getInstance();
+	private DriverOperatorStation _dos = DriverOperatorStation.getInstance();
 	private AutonExecuter _autonExecuter = null;
 	private Dashboard _dashboard = Dashboard.getInstance();
 	private DataLogger _dataLogger = null;
@@ -54,6 +62,7 @@ public class Robot extends IterativeRobot {
 		
 		_enabledLooper.register(_chassis.getLoop());
 		_enabledLooper.register(_infeed.getLoop());
+		_enabledLooper.register(_elevator.getLoop());
 		_enabledLooper.register(RobotStateEstimator.getInstance().getLoop());
 		
 		_dashboard.printStartupMessage();
@@ -83,6 +92,7 @@ public class Robot extends IterativeRobot {
 			_dataLogger = null;
 		}
 		
+		_chassis.setBrakeMode(false);
 		stopAll();
 	}
 
@@ -108,18 +118,21 @@ public class Robot extends IterativeRobot {
 		
 		_enabledLooper.start();
 		
+		_dashboard.getGameData();
+		
 		_autonExecuter = new AutonExecuter();
 		_autonExecuter.setAutoMode(_dashboard.getSelectedAuton());
 		_autonExecuter.start();
 		
-		_chassis.zeroSensors();
+		_chassis.zeroGyro();
+		_chassis.setBrakeMode(true);
 		
 		// init data logging
 		_dataLogger = GeneralUtilities.setupLogging("auton");
 		// snapshot time to control spamming
 		_lastDashboardWriteTimeMSec = new Date().getTime();
 		
-		_autonStartTime=System.currentTimeMillis();
+		_autonStartTime = System.currentTimeMillis();
 	}
 
 	// ================================================================
@@ -150,7 +163,6 @@ public class Robot extends IterativeRobot {
 		
 		_chassis.setHighGear(false);
 		_chassis.setBrakeMode(false);
-		_chassis.zeroSensors();
 		
 		// init data logging
 		_dataLogger = GeneralUtilities.setupLogging("auton");
@@ -163,7 +175,7 @@ public class Robot extends IterativeRobot {
 	// ================================================================
 	@Override
 	public void teleopPeriodic() {
-		// Chassis Throttle & Turn
+		// =============  CHASSIS ============= 
 		if ((Math.abs(_dos.getThrottleCmd()) > 0.05) || (Math.abs(_dos.getTurnCmd()) > 0.05)) {
 			_chassis.arcadeDrive(-1.0 * _dos.getThrottleCmd(), _dos.getTurnCmd());
 		} else {
@@ -174,6 +186,7 @@ public class Robot extends IterativeRobot {
 			_chassis.toggleShifter();
 		}
 		
+		//=============  INFEED ============= 
 		if (_dos.getIsDriver_ReZeroInfeed_BtnJustPressed()) {
 			_infeed.reZeroArms();
 		}
@@ -205,11 +218,40 @@ public class Robot extends IterativeRobot {
 			_infeed.stopDriveMotors();
 		}
 		
-		_ultrasonic.getIsCubeInRange();
-		// Refresh Dashboard
+		//_ultrasonic.getIsCubeInRange();
+
+		// =============  ELEVATOR ============= 
+		if (_dos.getOperator_Elevator_JoystickCmd() > 0.05) {
+			_elevator.JogAxis(_dos.getOperator_Elevator_JoystickCmd());
+		}
+		else if (_dos.getIsOperator_ElevatorScaleHgt_BtnJustPressed()) {
+			_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.SCALE_HEIGHT);
+		} 
+		else if (_dos.getIsOperator_ElevatorSwitchHgt_BtnJustPressed()) {
+			_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.SWITCH_HEIGHT);
+		}
+		else if (_dos.getIsOperator_ElevatorPyrmdLvl1Hgt_BtnJustPressed()) {
+			_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.CUBE_ON_PYRAMID_LEVEL_1);
+		}
+		else if (_dos.getIsOperator_ElevatorCubeOnFloorHgt_BtnJustPressed()) {
+			_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.CUBE_ON_FLOOR);
+		}
+		else if (_dos.getIsOperator_ElevatorHome_BtnJustPressed()) {
+			_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.HOME);
+		} else {
+			_elevator.stop();
+		}
+		
+		// ============= Camera Switch ============= 
+		if (_dos.getIsOperator_SwitchCamera_BtnJustPressed() == true)
+		{
+			_switchableCameraServer.SwitchCamera();
+		}
+		
+		// ============= Refresh Dashboard =============
 		outputAllToDashboard();
 		
-		// Optionally Log Data
+		// ============= Optionally Log Data =============
 		logAllData();
 	}
 	
@@ -217,6 +259,7 @@ public class Robot extends IterativeRobot {
 	//	so we have one easy way to stop all motion
 	private void stopAll() {
 		_chassis.stop();
+		_elevator.stop();
 	}
 	
 	// typically called in *Perodic method to push data to the Dashboard
@@ -230,6 +273,7 @@ public class Robot extends IterativeRobot {
     		// each subsystem should add a call to a outputToSmartDashboard method
     		// to push its data out to the dashboard
     		_chassis.outputToSmartDashboard(); 
+    		_elevator.outputToSmartDashboard();
     		_ultrasonic.outputToDashboard();
 	    	
     		// write the overall robot dashboard info
@@ -257,6 +301,9 @@ public class Robot extends IterativeRobot {
 	    	
 	    	// ask each subsystem that exists to add its data
 	    	_chassis.updateLogData(logData);
+	    	_elevator.updateLogData(logData);
+	    	
+	    	_dataLogger.WriteDataLine(logData);
     	}
 	}
 }

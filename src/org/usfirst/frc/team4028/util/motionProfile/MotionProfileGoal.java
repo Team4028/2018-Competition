@@ -73,9 +73,7 @@ public class MotionProfileGoal {
         this(other.pos, other.max_abs_vel, other.completion_behavior, other.pos_tolerance, other.vel_tolerance);
     }
     
-    /**
-     * @return A flipped MotionProfileGoal (where the position is negated, but all other attributes remain the same).
-     */
+    /** @return A flipped MotionProfileGoal (where the position is negated, but all other attributes remain the same) */
     public MotionProfileGoal flipped() {
         return new MotionProfileGoal(-pos, max_abs_vel, completion_behavior, pos_tolerance, vel_tolerance);
     }

@@ -32,9 +32,7 @@ public class SetpointGenerator {
 
     public SetpointGenerator() {}
 
-    /**
-     * Force a reset of the profile.
-     */
+    /**Force a reset of the profile. */
     public void reset() {
         mProfile = null;
         mGoal = null;
