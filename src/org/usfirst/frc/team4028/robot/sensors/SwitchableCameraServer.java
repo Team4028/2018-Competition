@@ -102,9 +102,9 @@ public class SwitchableCameraServer
 		}
 		else 
 		{
-			DriverStation.reportError("		No Cameras Available", false);
+			DriverStation.reportError("No Cameras Available", false);
 		}
 		_rawVideoServer.setSource(nextCamera);
-		System.out.println ("	New camera = " + nextCamera.getName());
+		//System.out.println ("	New camera = " + nextCamera.getName());
 	}
 }

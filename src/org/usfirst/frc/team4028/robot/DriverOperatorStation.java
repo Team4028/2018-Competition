@@ -138,9 +138,9 @@ public class DriverOperatorStation {
 			return _driverGamepad.getBButtonPressed();
 		}
 	
-		public boolean getIsDriver_MoveToInfeedPosition_BtnJustPressed() {
-			return _driverGamepad.getAButtonPressed();
-		}	
+//		public boolean getIsDriver_MoveToInfeedPosition_BtnJustPressed() {
+//			return _driverGamepad.getAButtonPressed();
+//		}	
 
 		public boolean getIsDriver_MoveToSqueezeInfeedPosition_BtnJustPressed() {
 			return _driverGamepad.getXButtonPressed();
@@ -234,9 +234,9 @@ public class DriverOperatorStation {
 //			return _driverGamepad.getXButton();
 //		}
 		
-//		public boolean getIsDriver_LeftBumper_BtnPressed() {
-//			return _driverGamepad.getBumper(Hand.kLeft);
-//		}
+		public boolean getIsDriver_LeftBumper_BtnPressed() {
+			return _driverGamepad.getBumper(Hand.kLeft);
+		}
 		
 		public boolean getIsDriver_InfeedCube_BtnPressed() {
 			return _driverGamepad.getBumper(Hand.kRight);

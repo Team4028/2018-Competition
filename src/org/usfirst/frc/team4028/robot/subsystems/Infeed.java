@@ -13,7 +13,6 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.VictorSP;
-import javafx.beans.WeakInvalidationListener;
 
 public class Infeed {	
 	
@@ -31,6 +30,7 @@ public class Infeed {
 		INFEED,
 		WIDE,
 		SQUEEZE,
+		THIN_SIDE,
 		STORE,
 	}
 		
@@ -59,35 +59,35 @@ public class Infeed {
 	private static final int STORING_ARMS_PID_SLOT_INDEX = 1; //Store
 	private static final int STAGGER_MANUVER_PID_SLOT_INDEX = 2;
 	
-	private static final double LEFT_SWITCHBLADE_INFEED_MOTION_MAGIC_F = 0.7869230169; //Since the two motors have different gear boxes 
-	private static final double LEFT_SWITCHBLADE_INFEED_MOTION_MAGIC_P = 2.0;			//for testing, the F-values are very different
+	private static final double LEFT_SWITCHBLADE_INFEED_MOTION_MAGIC_F = 0.3354098361; //Since the two motors have different gear boxes 
+	private static final double LEFT_SWITCHBLADE_INFEED_MOTION_MAGIC_P = 1.35;			//for testing, the F-values are very different
     private static final double LEFT_SWITCHBLADE_INFEED_MOTION_MAGIC_I = 0;			// |
     private static final double LEFT_SWITCHBLADE_INFEED_MOTION_MAGIC_D = 0;			// |
     																			// |
     private static final double RIGHT_SWITCHBLADE_INFEED_MOTION_MAGIC_F = 0.3354098361;// V
-    private static final double RIGHT_SWITCHBLADE_INFEED_MOTION_MAGIC_P = 2.5;
+    private static final double RIGHT_SWITCHBLADE_INFEED_MOTION_MAGIC_P = 1.35;
     private static final double RIGHT_SWITCHBLADE_INFEED_MOTION_MAGIC_I = 0;
     private static final double RIGHT_SWITCHBLADE_INFEED_MOTION_MAGIC_D = 0;
     
-    private static final double LEFT_SWITCHBLADE_STORE_MOTION_MAGIC_F = 0.7869230169; //Since the two motors have different gear boxes 
-	private static final double LEFT_SWITCHBLADE_STORE_MOTION_MAGIC_P = 2.5;			//for testing, the F-values are very different
+    private static final double LEFT_SWITCHBLADE_STORE_MOTION_MAGIC_F = 0.3354098361; //Since the two motors have different gear boxes 
+	private static final double LEFT_SWITCHBLADE_STORE_MOTION_MAGIC_P = 3.0;			//for testing, the F-values are very different
     private static final double LEFT_SWITCHBLADE_STORE_MOTION_MAGIC_I = 0;			// |
     private static final double LEFT_SWITCHBLADE_STORE_MOTION_MAGIC_D = 0;			// |
     																			// |
     private static final double RIGHT_SWITCHBLADE_STORE_MOTION_MAGIC_F = 0.3354098361;// V
-    private static final double RIGHT_SWITCHBLADE_STORE_MOTION_MAGIC_P = 6.0; 
+    private static final double RIGHT_SWITCHBLADE_STORE_MOTION_MAGIC_P = 3.0; 
     private static final double RIGHT_SWITCHBLADE_STORE_MOTION_MAGIC_I = 0;
-    private static final double RIGHT_SWITCHBLADE_STORE_MOTION_MAGIC_D = 70;
+    private static final double RIGHT_SWITCHBLADE_STORE_MOTION_MAGIC_D = 0;
     
-    private static final double LEFT_SWITCHBLADE_STAGGER_MOTION_MAGIC_F = 0.7869230169; //Since the two motors have different gear boxes 
-	private static final double LEFT_SWITCHBLADE_STAGGER_MOTION_MAGIC_P = 3.0;			//for testing, the F-values are very different
+    private static final double LEFT_SWITCHBLADE_STAGGER_MOTION_MAGIC_F = 0.3354098361; //Since the two motors have different gear boxes 
+	private static final double LEFT_SWITCHBLADE_STAGGER_MOTION_MAGIC_P = 1.8;			//for testing, the F-values are very different
     private static final double LEFT_SWITCHBLADE_STAGGER_MOTION_MAGIC_I = 0;			// |
     private static final double LEFT_SWITCHBLADE_STAGGER_MOTION_MAGIC_D = 0;			// |
     																			// |
     private static final double RIGHT_SWITCHBLADE_STAGGER_MOTION_MAGIC_F = 0.3354098361;// V
-    private static final double RIGHT_SWITCHBLADE_STAGGER_MOTION_MAGIC_P = 5.0;
+    private static final double RIGHT_SWITCHBLADE_STAGGER_MOTION_MAGIC_P = 1.8;
     private static final double RIGHT_SWITCHBLADE_STAGGER_MOTION_MAGIC_I = 0;
-    private static final double RIGHT_SWITCHBLADE_STAGGER_MOTION_MAGIC_D = 20;
+    private static final double RIGHT_SWITCHBLADE_STAGGER_MOTION_MAGIC_D = 0;
             
     private static final int INFEED_MOTION_MAGIC_MAX_VEL = 3000;
     private static final int INFEED_MOTION_MAGIC_MAX_ACC = 2000;
@@ -97,16 +97,17 @@ public class Infeed {
 	
 	// Infeed Position Constants [THESE ARE ANGLE MEASURES IN DEGREES]
 	private static final double HOME_POSITION_ANGLE = 0; //Is Home
-    private static final double INFEED_POSITION_ANGLE = 180; //2050;	
-	private static final double WIDE_INFEED_POSITION_ANGLE = 154;
-	private static final double SQUEEZE_INFEED_POSITION_ANGLE = 195;
+    private static final double INFEED_POSITION_ANGLE = 150; //2050;	
+	private static final double WIDE_INFEED_POSITION_ANGLE = 120;
+	private static final double SQUEEZE_INFEED_POSITION_ANGLE = 170;
 	private static final double STORE_POSITION_ANGLE = 10;
-	private static final double STAGGER_POSITION_ANGLE = 188;
+	private static final double THIN_SIDE_POSITION_ANGLE = 190;
+	private static final double STAGGER_POSITION_ANGLE = 175;
 	
-	private static final double INFEED_ALLOWED_ERROR_ANGLE = 10;
+	private static final double INFEED_ALLOWED_ERROR_ANGLE = 15;
 	
 	// Infeed Drive Wheel Constant
-	public static final double INFEED_DRIVE_WHEELS_VBUS_COMMAND = 0.3;
+	public static final double INFEED_DRIVE_WHEELS_VBUS_COMMAND = 0.6;
 	
 	//Conversion Constant
 	public static final double DEGREES_TO_NATIVE_UNITS_CONVERSION = (4096/360);
@@ -202,12 +203,12 @@ public class Infeed {
 		//=====================================================================================
 		//Left Arm Drive Motor
 		_leftInfeedDriveMotor = new VictorSP(Constants.LEFT_INFEED_DRIVE_PWM_ADDRESS);
-		_leftInfeedDriveMotor.setInverted(true);
+		_leftInfeedDriveMotor.setInverted(false);
 			
 		//=====================================================================================
 		//Right Arm Drive Motor
 		_rightInfeedDriveMotor = new VictorSP(Constants.RIGHT_INFEED_DRIVE_PWM_ADDRESS);
-		_rightInfeedDriveMotor.setInverted(false);
+		_rightInfeedDriveMotor.setInverted(true);
 				
 		//=====================================================================================
 		
@@ -326,6 +327,9 @@ public class Infeed {
 			case SQUEEZE:
 				 _targetInfeedPosition = SQUEEZE_INFEED_POSITION_ANGLE;
 				 break;
+			case THIN_SIDE:
+				_targetInfeedPosition = THIN_SIDE_POSITION_ANGLE;
+				break;
 			case STORE:
 				 _targetInfeedPosition = STORE_POSITION_ANGLE;
 				 break;
@@ -397,6 +401,8 @@ public class Infeed {
 		}
 	}
 	
+	public vodi 
+	
 	public void staggerInfeedManuver() {
 		if(_areArmsHomed) {
 			_infeedState = INFEED_STATE.STAGGER_INFEED_MANUVER;
@@ -421,18 +427,25 @@ public class Infeed {
 	
 	public void driveInfeedWheels() {
 		if(areArmsInPosition() || _infeedState == INFEED_STATE.STAGGER_INFEED_MANUVER) {
-			_leftInfeedDriveMotor.setSpeed(-INFEED_DRIVE_WHEELS_VBUS_COMMAND);
-			_rightInfeedDriveMotor.setSpeed(INFEED_DRIVE_WHEELS_VBUS_COMMAND);
+			_leftInfeedDriveMotor.setSpeed(INFEED_DRIVE_WHEELS_VBUS_COMMAND);
+			_rightInfeedDriveMotor.setSpeed(-1*INFEED_DRIVE_WHEELS_VBUS_COMMAND);
+		}
+	}
+	
+	public void staggerDriveInfeedWheels() {
+		if(areArmsInPosition() || _infeedState == INFEED_STATE.STAGGER_INFEED_MANUVER) {
+			_leftInfeedDriveMotor.set(-1*INFEED_DRIVE_WHEELS_VBUS_COMMAND);
+			_rightInfeedDriveMotor.set(INFEED_DRIVE_WHEELS_VBUS_COMMAND);
 		}
 	}
 	
 	private boolean isStaggerManuverSetup() {
-		if (_targetInfeedPosition != WIDE_INFEED_POSITION_ANGLE) {
-			MoveToPresetPosition(INFEED_TARGET_POSITION.WIDE);
+		if (_targetInfeedPosition != INFEED_POSITION_ANGLE) {
+			MoveToPresetPosition(INFEED_TARGET_POSITION.INFEED);
 			return false;
 		}
-		double errorLeftSwitchblade = Math.abs(nativeUnitsToDegrees(_leftSwitchbladeMotor.getSelectedSensorPosition(0)) - WIDE_INFEED_POSITION_ANGLE);
-		double errorRightSwitchblade = Math.abs(nativeUnitsToDegrees(_rightSwitchbladeMotor.getSelectedSensorPosition(0)) - WIDE_INFEED_POSITION_ANGLE);
+		double errorLeftSwitchblade = Math.abs(nativeUnitsToDegrees(_leftSwitchbladeMotor.getSelectedSensorPosition(0)) - INFEED_POSITION_ANGLE);
+		double errorRightSwitchblade = Math.abs(nativeUnitsToDegrees(_rightSwitchbladeMotor.getSelectedSensorPosition(0)) - INFEED_POSITION_ANGLE);
 		
 		if(errorLeftSwitchblade < INFEED_ALLOWED_ERROR_ANGLE && errorRightSwitchblade< INFEED_ALLOWED_ERROR_ANGLE) {
 			_isStaggerAtInitialPosition = true;
@@ -456,7 +469,8 @@ public class Infeed {
 		
 	public boolean areArmsInPosition() {
 		double currentError = Math.abs(nativeUnitsToDegrees(_leftSwitchbladeMotor.getSelectedSensorPosition(0)) - _targetInfeedPosition);
-		if(currentError < INFEED_ALLOWED_ERROR_ANGLE && _targetInfeedPosition != HOME_POSITION_ANGLE && _targetInfeedPosition != STORE_POSITION_ANGLE) {
+		if(currentError < INFEED_ALLOWED_ERROR_ANGLE && _targetInfeedPosition != HOME_POSITION_ANGLE 
+				&& _targetInfeedPosition != STORE_POSITION_ANGLE) {
 			return true;
 		}
 		else {

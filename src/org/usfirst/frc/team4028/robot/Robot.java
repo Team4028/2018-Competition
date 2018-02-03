@@ -191,8 +191,8 @@ public class Robot extends IterativeRobot {
 			_infeed.reZeroArms();
 		}
 		
-		if (_dos.getIsDriver_MoveToInfeedPosition_BtnJustPressed()) {
-			_infeed.moveArmsToInfeedPosition();
+		if (_dos.getIsDriver_InfeedCube_BtnPressed()) {
+			_infeed.staggerDriveInfeedWheels();
 		}
 		
 		if (_dos.getIsDriver_MoveToWideInfeedPosition_BtnJustPressed()) {
