@@ -2,19 +2,19 @@ package org.usfirst.frc.team4028.robot.paths.profiles;
 
 /** Interface that holds all the field measurements required by the PathAdapter */
 public interface FieldProfile {
-	public double getLeftSwitchX();
+	public double getLSwitchX();
 	
-	public double getLeftSwitchY();
+	public double getLSwitchY();
 	
-	public double getRightSwitchX();
+	public double getRSwitchX();
 	
-	public double getRightSwitchY();
+	public double getRSwitchY();
 	
-	public double getLeftScaleX();
+	public double getLScaleX();
 	
-	public double getLeftScaleY();
+	public double getLScaleY();
 	
-	public double getRightScaleX();
+	public double getRScaleX();
 	
-	public double getRightScaleY();
+	public double getRScaleY();
 }

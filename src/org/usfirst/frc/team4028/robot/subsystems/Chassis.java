@@ -6,7 +6,6 @@ import org.usfirst.frc.team4028.robot.Constants;
 import org.usfirst.frc.team4028.util.Kinematics;
 import org.usfirst.frc.team4028.robot.sensors.RobotState;
 import org.usfirst.frc.team4028.robot.sensors.NavXGyro;
-import org.usfirst.frc.team4028.util.DriveCommand;
 import org.usfirst.frc.team4028.util.GeneralUtilities;
 import org.usfirst.frc.team4028.util.LogDataBE;
 import org.usfirst.frc.team4028.util.control.Path;
@@ -234,15 +233,6 @@ public class Chassis implements Subsystem{
 			_leftMaster.set(ControlMode.PercentOutput, - 0.8 * _arcadeDriveThrottleCmdAdj - 0.7 * _arcadeDriveTurnCmdAdj);
 			_rightMaster.set(ControlMode.PercentOutput,- 0.8 * _arcadeDriveThrottleCmdAdj + 0.7 * _arcadeDriveTurnCmdAdj);
 		} 
-		
-
-		//_leftMaster.set(ControlMode.PercentOutput, 0.8 * _arcadeDriveThrottleCmdAdj - 0.7 * _arcadeDriveTurnCmdAdj);
-		//_rightMaster.set(ControlMode.PercentOutput, 0.8 * _arcadeDriveThrottleCmdAdj + 0.7 * _arcadeDriveTurnCmdAdj);
-	}
-	
-	public synchronized void tankDrive(DriveCommand command) {
-		_leftMaster.set(ControlMode.PercentOutput, command.leftCmd);
-		_rightMaster.set(ControlMode.PercentOutput, command.rightCmd);
 	}
 	
 	private void setMotionMagicTargetPosition(double leftPosition, double rightPosition) {
