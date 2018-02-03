@@ -48,14 +48,14 @@ import edu.wpi.first.wpilibj.XboxController;
 		OPERATOR_RIGHT_Y_AXIS			
 		
 		--- Operator Buttons --------
-		OPERATOR_GREEN_BUTTON_A			CUBE_ON_FLOOR
-		OPERATOR_RED_BUTTON_B			CUBE_ON_PYRAMID_LEVEL_1
-		OPERATOR_BLUE_BUTTON_X			SWITCH_HEIGHT
-		OPERATOR_YELLOW_BUTTON_Y		SCALE_HEIGHT
+		OPERATOR_GREEN_BUTTON_A			Elevator CUBE_ON_FLOOR
+		OPERATOR_RED_BUTTON_B			Elevator CUBE_ON_PYRAMID_LEVEL_1
+		OPERATOR_BLUE_BUTTON_X			Elevator SWITCH_HEIGHT
+		OPERATOR_YELLOW_BUTTON_Y		Elevator SCALE_HEIGHT
 		OPERATOR_LEFT_BUMPER			
 		OPERATOR_RIGHT_BUMPER			
-		OPERATOR_BACK_BUTTON			HOME
-		OPERATOR_START_BUTTON			
+		OPERATOR_BACK_BUTTON			Elevator HOME
+		OPERATOR_START_BUTTON			Switch Camera
 		OPERATOR_LEFT_THUMBSTICK		
 		OPERATOR_RIGHT_THUMBSTICK	
 													
@@ -122,29 +122,29 @@ public class DriverOperatorStation {
 		// === Driver Just Pressed buttons ===
 		// ===================================
 	
-//		public boolean getIsDriver_Back_BtnJustPressed() {
-//			return _driverGamepad.getBackButtonPressed();
-//		}
+		public boolean getIsDriver_StaggerInfeedManuver_BtnJustPressed() {
+			return _driverGamepad.getBackButtonPressed();
+		}
 	
-		public boolean getIsDriver_SwitchCamera_BtnJustPressed() {
+		public boolean getIsDriver_ReZeroInfeed_BtnJustPressed() {
 			return _driverGamepad.getStartButtonPressed();
 		}
 		
-//		public boolean getIsDriver_YellowY_BtnJustPressed() {
-//			return _driverGamepad.getYButtonPressed();
-//		}
+		public boolean getIsDriver_MoveToWideInfeedPosition_BtnJustPressed() {
+			return _driverGamepad.getYButtonPressed();
+		}
 		 
-//		public boolean getIsDriver_RedB_BtnJustPressed() {
-//			return _driverGamepad.getBButtonPressed();
-//		}
+		public boolean getIsDriver_StoreInfeedArms_BtnJustPressed() {
+			return _driverGamepad.getBButtonPressed();
+		}
 	
-//		public boolean getIsDriver_GreenA_BtnJustPressed() {
-//			return _driverGamepad.getAButtonPressed();
-//		}	
+		public boolean getIsDriver_MoveToInfeedPosition_BtnJustPressed() {
+			return _driverGamepad.getAButtonPressed();
+		}	
 
-//		public boolean getIsDriver_BlueX_BtnJustPressed() {
-//			return _driverGamepad.getXButtonPressed();
-//		}
+		public boolean getIsDriver_MoveToSqueezeInfeedPosition_BtnJustPressed() {
+			return _driverGamepad.getXButtonPressed();
+		}
 		
 //		public boolean getIsDriver_LeftBumper_BtnJustPressed() {
 //			return _driverGamepad.getBumperPressed(Hand.kLeft);
@@ -238,9 +238,9 @@ public class DriverOperatorStation {
 //			return _driverGamepad.getBumper(Hand.kLeft);
 //		}
 		
-//		public boolean getIsDriver_RightBumper_BtnPressed() {
-//			return _driverGamepad.getBumper(Hand.kRight);
-//		}
+		public boolean getIsDriver_InfeedCube_BtnPressed() {
+			return _driverGamepad.getBumper(Hand.kRight);
+		}
 		
 //		public boolean getIsDriver_LeftStick_BtnPressed() {
 //			return _driverGamepad.getStickButton(Hand.kLeft);
@@ -291,9 +291,9 @@ public class DriverOperatorStation {
 			return _operatorGamepad.getBackButtonPressed();
 		}
 	
-//		public boolean getIsOperator_Start_BtnJustPressed() {
-//			return _operatorGamepad.getStartButtonPressed();
-//		}
+		public boolean getIsOperator_SwitchCamera_BtnJustPressed() {
+			return _operatorGamepad.getStartButtonPressed();
+		}
 		
 		public boolean getIsOperator_ElevatorScaleHgt_BtnJustPressed() {
 			return _operatorGamepad.getYButtonPressed();

@@ -12,16 +12,16 @@ public class RunMotionProfileAction implements Action {
 	private Path _path;
 	private double _startTime;
 	private boolean _isShiftingEnabled;
-	
+
 	public RunMotionProfileAction(Path p, boolean isShiftingEnabled) {
 		_isShiftingEnabled = isShiftingEnabled;
 		_path = p;
 	}
-	
+
 	public RunMotionProfileAction(Path p) {
 		this(p, false);
 	}
-	
+
 	@Override
 	public void start() {
 		RobotState.getInstance().reset(Timer.getFPGATimestamp(), _path.getStartPose());
@@ -42,9 +42,8 @@ public class RunMotionProfileAction implements Action {
 	@Override
 	public void done() {	
 		_chassis.stop();
-	}
-	
-	
+	}	
+
 	@Override
 	public boolean isFinished() {
 		if ((Timer.getFPGATimestamp() - _startTime) > 1000) {
