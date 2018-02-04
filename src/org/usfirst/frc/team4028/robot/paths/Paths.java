@@ -221,7 +221,7 @@ public class Paths {
 	protected static ArrayList<Waypoint> getAutoRunWaypoints() {
         ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
 		sWaypoints.add(new Waypoint(20,50,0,0));
-		sWaypoints.add(new Waypoint(150,50,0,Constants.FLOOR_IT_SPEED));
+		sWaypoints.add(new Waypoint(300,50,0,Constants.NORMAL_SPEED));
         return sWaypoints;
 	}
 	

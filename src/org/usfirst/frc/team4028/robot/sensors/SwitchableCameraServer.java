@@ -99,12 +99,12 @@ public class SwitchableCameraServer
 		UsbCamera nextCamera = null;
 		if(!_camList.isEmpty()) {
 			nextCamera = _camList.getNext();
+			_rawVideoServer.setSource(nextCamera);
+			System.out.println ("	New camera = " + nextCamera.getName());
 		}
 		else 
 		{
 			DriverStation.reportError("		No Cameras Available", false);
 		}
-		_rawVideoServer.setSource(nextCamera);
-		System.out.println ("	New camera = " + nextCamera.getName());
 	}
 }

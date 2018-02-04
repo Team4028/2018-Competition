@@ -75,7 +75,7 @@ public class Chassis implements Subsystem{
 	
 	private static final double _turnSpeedScalingFactor = 0.7;
 
-	private static final double CODES_PER_REV = 4590;
+	private static final double CODES_PER_REV = 30725.425;
 	public static final double CODES_PER_METER = 1367.18;
 	
 	// Chassis various states
@@ -93,21 +93,27 @@ public class Chassis implements Subsystem{
 		_rightMaster = new TalonSRX(Constants.RIGHT_DRIVE_MASTER_CAN_BUS_ADDR);
 		_rightSlave = new TalonSRX(Constants.RIGHT_DRIVE_SLAVE_CAN_BUS_ADDR);
 		
-		_leftMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0);
+		_leftMaster.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0);
 		_leftMaster.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 5, 0);
-		_rightMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0);
+		_rightMaster.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0);
 		_rightMaster.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 5, 0);
 		
 		_leftSlave.set(ControlMode.Follower, Constants.LEFT_DRIVE_MASTER_CAN_BUS_ADDR);
 		_rightSlave.set(ControlMode.Follower, Constants.RIGHT_DRIVE_MASTER_CAN_BUS_ADDR);
 
-		_leftMaster.setInverted(false);
-		_leftSlave.setInverted(false);
-		_rightMaster.setInverted(true);
-		_rightSlave.setInverted(true);
+		_leftMaster.setInverted(true);
+		_leftSlave.setInverted(true);
+		_rightMaster.setInverted(false);
+		_rightSlave.setInverted(false);
 		
 		_leftMaster.configForwardLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
 		_rightMaster.configForwardLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
+		_leftSlave.configForwardLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
+		_rightSlave.configForwardLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
+		_leftMaster.configReverseLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
+		_rightMaster.configReverseLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
+		_leftSlave.configReverseLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
+		_rightSlave.configReverseLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
 	
         _leftMaster.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_10Ms, 0);
         _leftMaster.configVelocityMeasurementWindow(32, 0);
@@ -230,8 +236,8 @@ public class Chassis implements Subsystem{
 			DriverStation.reportError("Tipping Threshold", false);
 		} else {
 			// send cmd to mtr controllers
-			_leftMaster.set(ControlMode.PercentOutput, - 0.8 * _arcadeDriveThrottleCmdAdj - 0.7 * _arcadeDriveTurnCmdAdj);
-			_rightMaster.set(ControlMode.PercentOutput,- 0.8 * _arcadeDriveThrottleCmdAdj + 0.7 * _arcadeDriveTurnCmdAdj);
+			_leftMaster.set(ControlMode.PercentOutput, -0.8 * _arcadeDriveThrottleCmdAdj + 0.7 * _arcadeDriveTurnCmdAdj);
+			_rightMaster.set(ControlMode.PercentOutput, -0.8 * _arcadeDriveThrottleCmdAdj - 0.7 * _arcadeDriveTurnCmdAdj);
 		} 
 	}
 	
@@ -316,6 +322,7 @@ public class Chassis implements Subsystem{
 	
 	private void updatePathFollower(double timestamp) {
 		RigidTransform _robotPose = _robotState.getLatestFieldToVehicle().getValue();
+		System.out.println(_robotPose.toString());
 		Twist command = _pathFollower.update(timestamp, _robotPose, RobotState.getInstance().getDistanceDriven(), RobotState.getInstance().getPredictedVelocity().dx);
 		if (!_pathFollower.isFinished()) {
 			Kinematics.DriveVelocity setpoint = Kinematics.inverseKinematics(command);
@@ -412,11 +419,11 @@ public class Chassis implements Subsystem{
 	} 
 	
 	public double getLeftPosInRot() {
-		return _leftMaster.getSelectedSensorPosition(0) / CODES_PER_REV;
+		return -_leftMaster.getSelectedSensorPosition(0) / CODES_PER_REV;
 	}
 	
 	public double getRightPosInRot() {
-		return _rightMaster.getSelectedSensorPosition(0) / CODES_PER_REV;
+		return -_rightMaster.getSelectedSensorPosition(0) / CODES_PER_REV;
 	}
 	
 	public double getLeftSpeed() {
@@ -531,11 +538,11 @@ public class Chassis implements Subsystem{
 	// Publish Data to the Dashboard
 	@Override
 	public void outputToSmartDashboard() {
-		SmartDashboard.putNumber("Left Position in Inches", getLeftVelocityInchesPerSec());
-		SmartDashboard.putNumber("Right Position in Inches", getRightVelocityInchesPerSec());
+		SmartDashboard.putNumber("Left Position in Inches", getLeftDistanceInches());
+		SmartDashboard.putNumber("Right Position in Inches", getRightDistanceInches());
 		
-		SmartDashboard.putNumber("Left Target Velocity", _leftTargetVelocity);
-		SmartDashboard.putNumber("Right Target Velocity", _rightTargetVelocity);
+		SmartDashboard.putNumber("Left Velocity", getLeftVelocityInchesPerSec());
+		SmartDashboard.putNumber("Right Velocity", getRightVelocityInchesPerSec());
 	}
 	
 	@Override

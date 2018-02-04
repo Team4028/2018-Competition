@@ -80,21 +80,21 @@ public class Constants {
 
     // Units: setpoint, error, and output are in inches per second.
     // PID gains for drive velocity loop (LOW_GEAR)
-    public static final double DRIVE_LOW_GEAR_VELOCITY_KP = 0.8;
+    public static final double DRIVE_LOW_GEAR_VELOCITY_KP = 0.0;
     public static final double DRIVE_LOW_GEAR_VELOCITY_KI = 0.0;
-    public static final double DRIVE_LOW_GEAR_VELOCITY_KD = 5.0;
-    public static final double DRIVE_LOW_GEAR_VELOCITY_KF = 0.38;
+    public static final double DRIVE_LOW_GEAR_VELOCITY_KD = 0.0;
+    public static final double DRIVE_LOW_GEAR_VELOCITY_KF = 0.181;
     public static final int DRIVE_LOW_GEAR_VELOCITY_I_ZONE = 0;
     
     // PID gains for drive velocity loop (HIGH GEAR)
-    public static final double DRIVE_HIGH_GEAR_VELOCITY_KP = 0.45; //1.2;
+    public static final double DRIVE_HIGH_GEAR_VELOCITY_KP = 0.0; //1.2;
     public static final double DRIVE_HIGH_GEAR_VELOCITY_KI = 0.0;
-    public static final double DRIVE_HIGH_GEAR_VELOCITY_KD = 1.0; //6.0;
-    public static final double DRIVE_HIGH_GEAR_VELOCITY_KF = 0.2;
+    public static final double DRIVE_HIGH_GEAR_VELOCITY_KD = 0.0; //6.0;
+    public static final double DRIVE_HIGH_GEAR_VELOCITY_KF = 0.0;
     public static final int DRIVE_HIGH_GEAR_VELOCITY_I_ZONE = 0;
     
     public static final double DRIVE_VELOCITY_NOMINAL_OUTPUT = 0.05;
-    public static final double DRIVE_VELOCITY_MAX_SETPOINT = 13.97 * 12.0; // 14 fps
+    public static final double DRIVE_VELOCITY_MAX_SETPOINT = 15 * 12.0; // 14 fps
     
     public static final double DRIVE_VOLTAGE_COMPENSATION_RAMPRATE = 0.0;
     
@@ -102,8 +102,8 @@ public class Constants {
     
 	/* Robot Physical Constants */
 	// Wheels
-	public static final double DRIVE_WHEEL_DIAMETER_INCHES = 4.05;
-	public static final double TRACK_WIDTH_INCHES = 25;
+	public static final double DRIVE_WHEEL_DIAMETER_INCHES = 6.35;
+	public static final double TRACK_WIDTH_INCHES = 24.25;
 	public static final double TRACK_SCRUBBING_FACTOR = 0.9;
 	
 	// Geometry
@@ -126,11 +126,11 @@ public class Constants {
     public static final double PATH_FOLLOWING_STANDARD_ACCEL = 100.0; // inches per second^2
     public static final double PATH_FOLLOWING_STANDARD_DECEL = 100.0;
     public static final double PATH_FOLLOWING_MAX_VEL = 120.0; // inches per second
-    public static final double PATH_FOLLOWING_PROFILE_KP = 7.0;	//5.00;
+    public static final double PATH_FOLLOWING_PROFILE_KP = 0.0;	//5.00;
     public static final double PATH_FOLLOWING_PROFILE_KI = 0.0;	//0.03;
-    public static final double PATH_FOLLOWING_PROFILE_KV = 0.02; //0.02;
+    public static final double PATH_FOLLOWING_PROFILE_KV = 0.0; //0.02;
     public static final double PATH_FOLLOWING_PROFILE_KFFV = 1.0;
-    public static final double PATH_FOLLOWING_PROFILE_KFFA = 0.05;
+    public static final double PATH_FOLLOWING_PROFILE_KFFA = 0.0;
     public static final double PATH_FOLLOWING_GOAL_POS_TOLERANCE = 0.75;
     public static final double PATH_FOLLOWING_GOAL_VEL_TOLERANCE = 12.0;
     public static final double PATH_STOP_STEERING_DISTANCE = 5.0;
@@ -146,14 +146,14 @@ public class Constants {
     public static final double LEFT_SWITCH_FRONT_X_DELTA = 0;
     public static final double LEFT_SWITCH_FRONT_Y_DELTA = 0;
     public static final double LEFT_SWITCH_BACK_X_DELTA = 0;
-    public static final double LEFT_SCALE_DELTA_X = 0;
-    public static final double LEFT_SCALE_DELTA_Y = 0;
+    public static final double LEFT_SCALE_X_DELTA = 0;
+    public static final double LEFT_SCALE_Y_DELTA = 0;
     public static final double LEFT_SWITCH_BACK_DELTA_Y = 0;
     public static final double RIGHT_SWITCH_FRONT_X_DELTA = 0;
     public static final double RIGHT_SWITCH_FRONT_Y_DELTA = 0;
     public static final double RIGHT_SWITCH_BACK_X_DELTA = 0;
-    public static final double RIGHT_SCALE_DELTA_X = 0;
-    public static final double RIGHT_SCALE_DELTA_Y = 0;
+    public static final double RIGHT_SCALE_X_DELTA = 0;
+    public static final double RIGHT_SCALE_Y_DELTA = 0;
     public static final double RIGHT_SWITCH_BACK_DELTA_Y = 0;
     
     public static final double BIG_NUMBER = 1e6;

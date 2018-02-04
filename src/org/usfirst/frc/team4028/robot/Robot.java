@@ -5,7 +5,6 @@ import java.text.DecimalFormat;
 import java.util.Date;
 
 import org.usfirst.frc.team4028.robot.auton.AutonExecuter;
-import org.usfirst.frc.team4028.robot.sensors.PDPMonitor;
 import org.usfirst.frc.team4028.robot.sensors.RobotStateEstimator;
 import org.usfirst.frc.team4028.robot.sensors.SwitchableCameraServer;
 import org.usfirst.frc.team4028.robot.sensors.Ultrasonic;
@@ -28,7 +27,7 @@ public class Robot extends IterativeRobot {
 	// Subsystems
 	private Chassis _chassis = Chassis.getInstance();
 	private Infeed _infeed = Infeed.getInstance();
-	private Elevator _elevator = Elevator.getInstance();
+	//private Elevator _elevator = Elevator.getInstance();
 
 	
 	// Sensors
@@ -62,7 +61,7 @@ public class Robot extends IterativeRobot {
 		
 		_enabledLooper.register(_chassis.getLoop());
 		_enabledLooper.register(_infeed.getLoop());
-		_enabledLooper.register(_elevator.getLoop());
+		//_enabledLooper.register(_elevator.getLoop());
 		_enabledLooper.register(RobotStateEstimator.getInstance().getLoop());
 		
 		_dashboard.printStartupMessage();
@@ -221,6 +220,7 @@ public class Robot extends IterativeRobot {
 		//_ultrasonic.getIsCubeInRange();
 
 		// =============  ELEVATOR ============= 
+		/*
 		if (_dos.getOperator_Elevator_JoystickCmd() > 0.05) {
 			_elevator.JogAxis(_dos.getOperator_Elevator_JoystickCmd());
 		}
@@ -240,7 +240,7 @@ public class Robot extends IterativeRobot {
 			_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.HOME);
 		} else {
 			_elevator.stop();
-		}
+		} */
 		
 		// ============= Camera Switch ============= 
 		if (_dos.getIsOperator_SwitchCamera_BtnJustPressed() == true)
@@ -259,7 +259,7 @@ public class Robot extends IterativeRobot {
 	//	so we have one easy way to stop all motion
 	private void stopAll() {
 		_chassis.stop();
-		_elevator.stop();
+		//_elevator.stop();
 	}
 	
 	// typically called in *Perodic method to push data to the Dashboard
@@ -303,8 +303,7 @@ public class Robot extends IterativeRobot {
 	    	
 	    	// ask each subsystem that exists to add its data
 	    	_chassis.updateLogData(logData);
-	    	_elevator.updateLogData(logData);
-	    	
+	    	//_elevator.updateLogData(logData);
 	    	
 	    	_dataLogger.WriteDataLine(logData);
     	}
