@@ -8,7 +8,7 @@ import org.usfirst.frc.team4028.robot.auton.AutonExecuter;
 import org.usfirst.frc.team4028.robot.sensors.PDPMonitor;
 import org.usfirst.frc.team4028.robot.sensors.RobotStateEstimator;
 import org.usfirst.frc.team4028.robot.sensors.SwitchableCameraServer;
-import org.usfirst.frc.team4028.robot.sensors.Ultrasonic;
+import org.usfirst.frc.team4028.robot.sensors.UltrasonicSensor;
 import org.usfirst.frc.team4028.robot.subsystems.*;
 import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_PRESET_POSITION;
 import org.usfirst.frc.team4028.util.DataLogger;
@@ -32,7 +32,7 @@ public class Robot extends IterativeRobot {
 
 	
 	// Sensors
-	private Ultrasonic _ultrasonic = Ultrasonic.getInstance();
+	private UltrasonicSensor _ultrasonic = UltrasonicSensor.getInstance();
 	private SwitchableCameraServer _switchableCameraServer = SwitchableCameraServer.getInstance();
 	//private PDPMonitor _pdpm = PDPMonitor.getInstance();
 	
@@ -185,14 +185,14 @@ public class Robot extends IterativeRobot {
 		if (_dos.getIsShiftGearJustPressed()) {
 			_chassis.toggleShifter();
 		}
-		
+	
 		//=============  INFEED ============= 
 		if (_dos.getIsDriver_ReZeroInfeed_BtnJustPressed()) {
 			_infeed.reZeroArms();
 		}
 		
 		if (_dos.getIsDriver_InfeedCube_BtnPressed()) {
-			_infeed.staggerDriveInfeedWheels();
+			_infeed.moveArmsToThinSideInfeedPosition();
 		}
 		
 		if (_dos.getIsDriver_MoveToWideInfeedPosition_BtnJustPressed()) {
