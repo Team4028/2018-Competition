@@ -221,7 +221,7 @@ public class Robot extends IterativeRobot {
 		//_ultrasonic.getIsCubeInRange();
 
 		// =============  ELEVATOR ============= 
-		if (_dos.getOperator_Elevator_JoystickCmd() > 0.05) {
+		if (Math.abs(_dos.getOperator_Elevator_JoystickCmd()) > 0.05) {
 			_elevator.JogAxis(_dos.getOperator_Elevator_JoystickCmd());
 		}
 		else if (_dos.getIsOperator_ElevatorScaleHgt_BtnJustPressed()) {
