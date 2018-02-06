@@ -38,7 +38,7 @@ public class Infeed {
 	// define class level working variables
 	private INFEED_STATE _infeedState;
 	
-	private Ultrasonic _ultrasonic;
+	//private UltrasonicSensor _ultrasonic;
 	
 	private Boolean _isLeftArmHomed;
 	private Boolean _isRightArmHomed;
@@ -213,7 +213,7 @@ public class Infeed {
 				
 		//=====================================================================================
 		
-		_ultrasonic = Ultrasonic.getInstance();
+		//_ultrasonic = UltrasonicSensor.getInstance();
 		
 		//Initially Configure Booleans
 		_isLeftArmHomed = false;

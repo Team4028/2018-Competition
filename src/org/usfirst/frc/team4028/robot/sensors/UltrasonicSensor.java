@@ -18,7 +18,7 @@ public class UltrasonicSensor {
 	}
 	
 	// class level working variables
-	AnalogInput ultrasonicSensor;
+	AnalogInput _ultrasonicSensor;
 	
 	private double _ultrasonicSensorOutputVoltage;
 	private double _distanceReadInInches;
@@ -36,13 +36,13 @@ public class UltrasonicSensor {
 	
 	// private constructor for singleton pattern
 	private UltrasonicSensor() {
-		ultrasonicSensor = new AnalogInput(Constants.ULTRASONIC_PORT);
+		_ultrasonicSensor = new AnalogInput(Constants.ULTRASONIC_PORT);
 	}
 		
 	public void calculateDistanceReadings() 
 	{
 		// convert value from mV to V
-		_ultrasonicSensorOutputVoltage = (ultrasonicSensor.getAverageVoltage()*1000); 
+		_ultrasonicSensorOutputVoltage = (_ultrasonicSensor.getAverageVoltage()*1000); 
 		//System.out.println("Voltage Read:" + ultrasonicSensorOutputVoltage);
 		//System.out.println("Value: " + ultrasonicSensorOutputVoltage/16);
 		
