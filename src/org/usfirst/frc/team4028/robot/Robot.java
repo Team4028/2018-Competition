@@ -174,7 +174,7 @@ public class Robot extends IterativeRobot {
 	// called each loop (approx every 20mS) in telop mode
 	// ================================================================
 	@Override
-	public void teleopPeriodic() {
+	public void teleopPeriodic() {		
 		// =============  CHASSIS ============= 
 		if ((Math.abs(_dos.getThrottleCmd()) > 0.05) || (Math.abs(_dos.getTurnCmd()) > 0.05)) {
 			_chassis.arcadeDrive(-1.0 * _dos.getThrottleCmd(), _dos.getTurnCmd());
@@ -191,7 +191,7 @@ public class Robot extends IterativeRobot {
 			_infeed.reZeroArms();
 		}
 		
-		if (_dos.getIsDriver_InfeedCube_BtnPressed()) {
+		if (_dos.getIsDriver_MoveToThinInfeedPosition_BtnJustPressed()) {
 			_infeed.moveArmsToThinSideInfeedPosition();
 		}
 		
@@ -210,9 +210,13 @@ public class Robot extends IterativeRobot {
 		if (_dos.getIsDriver_StaggerInfeedManuver_BtnJustPressed()) {
 			_infeed.staggerInfeedManuver();
 		}
+		
+		if (_dos.getIsDriver_AutoAcquire_BtnJustPressed()) {
+			_infeed.autoInfeedManuver();
+		}
 			
 		if (_dos.getIsDriver_InfeedCube_BtnPressed()) {
-			_infeed.driveInfeedWheels();
+			_infeed.driveInfeedWheels( );
 		}
 		else {
 			_infeed.stopDriveMotors();

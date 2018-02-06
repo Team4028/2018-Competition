@@ -144,8 +144,8 @@ public class Elevator implements Subsystem
 		_elevatorSlaveMotor.follow(_elevatorMasterMotor);
 		
 		// set motor phasing
-		_elevatorMasterMotor.setInverted(true);
-		_elevatorSlaveMotor.setInverted(true);
+		_elevatorMasterMotor.setInverted(false);
+		_elevatorSlaveMotor.setInverted(false);
 		
 		// config limit switches
 		_elevatorMasterMotor.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed, 0);
@@ -165,7 +165,7 @@ public class Elevator implements Subsystem
 		
 		// config quad encoder & phase (invert = true)
 		_elevatorMasterMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0);
-		_elevatorMasterMotor.setSensorPhase(false);
+		_elevatorMasterMotor.setSensorPhase(true);
 		_elevatorMasterMotor.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 5, 0);
 		
 		//configure the peak and nominal output voltages in both directions for both Talons

@@ -1,6 +1,7 @@
 package org.usfirst.frc.team4028.robot.subsystems;
 
 import org.usfirst.frc.team4028.robot.Constants;
+import org.usfirst.frc.team4028.robot.sensors.UltrasonicSensor;
 import org.usfirst.frc.team4028.util.loops.Loop;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -11,7 +12,6 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.VictorSP;
 
 public class Infeed {	
@@ -38,7 +38,7 @@ public class Infeed {
 	// define class level working variables
 	private INFEED_STATE _infeedState;
 	
-	//private UltrasonicSensor _ultrasonic;
+	private UltrasonicSensor _ultrasonic;
 	
 	private Boolean _isLeftArmHomed;
 	private Boolean _isRightArmHomed;
@@ -98,7 +98,7 @@ public class Infeed {
 	
 	// Infeed Position Constants [THESE ARE ANGLE MEASURES IN DEGREES]
 	private static final double HOME_POSITION_ANGLE = 0; //Is Home
-    private static final double INFEED_POSITION_ANGLE = 150; //2050;	
+    private static final double INFEED_POSITION_ANGLE = 150;	
 	private static final double WIDE_INFEED_POSITION_ANGLE = 120;
 	private static final double SQUEEZE_INFEED_POSITION_ANGLE = 170;
 	private static final double STORE_POSITION_ANGLE = 10;
@@ -213,7 +213,7 @@ public class Infeed {
 				
 		//=====================================================================================
 		
-		//_ultrasonic = UltrasonicSensor.getInstance();
+		_ultrasonic = UltrasonicSensor.getInstance();
 		
 		//Initially Configure Booleans
 		_isLeftArmHomed = false;
@@ -276,22 +276,24 @@ public class Infeed {
 					 	break;
 					 	
 					case AUTO_ACQUIRE_MANUVER:
+						if(_ultrasonic.getIsCubeInRange()) {
+							_infeedState = INFEED_STATE.STAGGER_INFEED_MANUVER;
+						}		
 						break;
 					 	
 					case STAGGER_INFEED_MANUVER:
-						if (isStaggerManuverSetup()) {
-							_leftSwitchbladeMotor.set(ControlMode.MotionMagic, degreesToNativeUnits(STAGGER_POSITION_ANGLE));
-							double positionLeftError = Math.abs(nativeUnitsToDegrees(_leftSwitchbladeMotor.getSelectedSensorPosition(0)) - STAGGER_POSITION_ANGLE);
-							double positionRightError = Math.abs(nativeUnitsToDegrees(_rightSwitchbladeMotor.getSelectedSensorPosition(0)) - STAGGER_POSITION_ANGLE);
-							if(positionLeftError < INFEED_ALLOWED_ERROR_ANGLE) {
-								_rightSwitchbladeMotor.set(ControlMode.MotionMagic, degreesToNativeUnits(STAGGER_POSITION_ANGLE));
-							}
-							
-							if (positionLeftError < INFEED_ALLOWED_ERROR_ANGLE &&
-									positionRightError < INFEED_ALLOWED_ERROR_ANGLE) {
-								driveInfeedWheels();
-							}
+						_leftSwitchbladeMotor.set(ControlMode.MotionMagic, degreesToNativeUnits(STAGGER_POSITION_ANGLE));
+						double positionLeftError = Math.abs(nativeUnitsToDegrees(_leftSwitchbladeMotor.getSelectedSensorPosition(0)) - STAGGER_POSITION_ANGLE);
+						double positionRightError = Math.abs(nativeUnitsToDegrees(_rightSwitchbladeMotor.getSelectedSensorPosition(0)) - STAGGER_POSITION_ANGLE);
+						if(positionLeftError < INFEED_ALLOWED_ERROR_ANGLE) {
+							_rightSwitchbladeMotor.set(ControlMode.MotionMagic, degreesToNativeUnits(STAGGER_POSITION_ANGLE));
 						}
+						
+						if (positionLeftError < INFEED_ALLOWED_ERROR_ANGLE &&
+								positionRightError < INFEED_ALLOWED_ERROR_ANGLE) {
+							driveInfeedWheels();
+						}
+					
 						break;
 						
 					case TIMEOUT:
@@ -432,8 +434,17 @@ public class Infeed {
 	//Methods for Handling Special Cases
 	//=====================================================================================	
 	public void staggerInfeedManuver() {
-		if(_areArmsHomed) {
+		if(_areArmsHomed && isStaggerManuverSetup()) {
 			_infeedState = INFEED_STATE.STAGGER_INFEED_MANUVER;
+		}
+		else {
+			DriverStation.reportWarning("Function Not Avaliable until Arms are Homed", false);
+		}
+	}
+	
+	public void autoInfeedManuver() {
+		if(_areArmsHomed && isStaggerManuverSetup()) {
+			_infeedState = INFEED_STATE.AUTO_ACQUIRE_MANUVER;
 		}
 		else {
 			DriverStation.reportWarning("Function Not Avaliable until Arms are Homed", false);
