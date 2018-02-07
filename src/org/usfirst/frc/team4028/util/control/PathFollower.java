@@ -20,16 +20,18 @@ public class PathFollower {
     boolean overrideFinished = false;
     boolean doneSteering = false;
     double maxAccel, maxDecel;
+    double inertiaSteeringGain;
     
     double scale, dtheta;
 
     /** Create a new PathFollower for a given path */
-    public PathFollower(Path path, boolean reversed, double maxAccel, double maxDecel) {
+    public PathFollower(Path path, boolean reversed, double maxAccel, double maxDecel, double inertiaSteeringGain) {
         mSteeringController = new AdaptivePurePursuitController(path, reversed);
         mLastSteeringDelta = Twist.identity();
         mVelocityController = new ProfileFollower();
         this.maxAccel = maxAccel;
         this.maxDecel = maxDecel;
+        this.inertiaSteeringGain=inertiaSteeringGain;
         mVelocityController.setConstraints(
                 new MotionProfileConstraints(Constants.PATH_FOLLOWING_MAX_VEL, maxAccel, maxDecel));
     }
@@ -69,10 +71,10 @@ public class PathFollower {
         if (!Double.isNaN(curvature) && Math.abs(curvature) < Constants.BIG_NUMBER) {
             // Regenerate angular velocity command from adjusted curvature.
             final double abs_velocity_setpoint = Math.abs(mVelocityController.getSetpoint().vel());
-            dtheta = mLastSteeringDelta.dx * curvature * (1.0 + Constants.INERTIA_STEERING_GAIN * abs_velocity_setpoint);
+            dtheta = mLastSteeringDelta.dx * curvature * (1.0 + inertiaSteeringGain * abs_velocity_setpoint);
         }
         scale = velocity_command / mLastSteeringDelta.dx;
-        final Twist rv = new Twist(mLastSteeringDelta.dx * scale, 0.0, dtheta * scale);
+        final Twist rv = new Twist(mLastSteeringDelta.dx * scale, 0.0, -dtheta * scale);
 
         return rv;
     }

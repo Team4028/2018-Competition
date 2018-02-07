@@ -11,29 +11,29 @@ public class RunMotionProfileAction implements Action {
 	private Chassis _chassis = Chassis.getInstance();
 	private Path _path;
 	private double _startTime;
-	private boolean _isShiftingEnabled;
+	private boolean _isHighGear;
 
-	public RunMotionProfileAction(Path p, boolean isShiftingEnabled) {
-		_isShiftingEnabled = isShiftingEnabled;
+	public RunMotionProfileAction(Path p, boolean isHighGear){
+		_isHighGear = isHighGear;
 		_path = p;
 	}
-
+	
 	public RunMotionProfileAction(Path p) {
-		this(p, false);
-	}
+		this(p,true);
+	} 
 
 	@Override
 	public void start() {
 		RobotState.getInstance().reset(Timer.getFPGATimestamp(), _path.getStartPose());
-		_chassis.setWantDrivePath(_path, _path.isReversed(), _isShiftingEnabled);
-		_chassis.setHighGear(false);
+		_chassis.setWantDrivePath(_path, _path.isReversed(), false);
+		_chassis.setHighGear(_isHighGear);
 		_startTime = Timer.getFPGATimestamp();
 	}
 
 	@Override
 	public void update() {
 		if(Timer.getFPGATimestamp() - _startTime > 0.25) {
-			if(_chassis.getLeftPosInRot() == 0 || _chassis.getRightPosInRot() == 0){
+			if(_chassis.getLeftPosInRot() == 0 || _chassis.getRightPosInRot() == 0) {
 				_chassis.forceDoneWithPath();
 				System.out.println("Attention Idiots: You Morons Forgot to Plug in The Encoder");
 			}
@@ -47,10 +47,13 @@ public class RunMotionProfileAction implements Action {
 
 	@Override
 	public boolean isFinished() {
-		if ((Timer.getFPGATimestamp() - _startTime) > 1000) {
+		if ((Timer.getFPGATimestamp() - _startTime) > 1000)
+		{
 			_chassis.forceDoneWithPath();
 			return true;
-		} else {
+		} 
+		else 
+		{
 			return _chassis.isDoneWithPath();
 		}
 	}

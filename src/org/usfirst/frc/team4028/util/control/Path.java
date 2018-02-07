@@ -16,6 +16,7 @@ public class Path {
 	HashSet<String> mMarkersCrossed = new HashSet<String>();
 	boolean isReversed;
 	public double maxAccel, maxDecel;
+	public double inertiaSteeringGain;
 	
 	public void extrapolateLast() {
 		PathSegment last = segments.get(segments.size() - 1);
@@ -39,6 +40,10 @@ public class Path {
     public void setAccDec(double maxAccel, double maxDecel) {
     	this.maxAccel = maxAccel;
     	this.maxDecel = maxDecel;
+    }
+    
+    public void setInertiaGain(double inertiaGain) {
+    	inertiaSteeringGain = inertiaGain;
     }
 
     /** @return the last MotionState in the path */

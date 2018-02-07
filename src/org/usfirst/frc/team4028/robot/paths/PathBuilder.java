@@ -14,7 +14,7 @@ public class PathBuilder {
     private static final double kReallyBigNumber = 1E9;
     private static double maxAccel, maxDecel;
 
-    public static Path buildPathFromWaypoints(List<Waypoint> w, double max_Accel, double max_Decel) {
+    public static Path buildPathFromWaypoints(List<Waypoint> w, double max_Accel, double max_Decel, double inertiaSteeringGain) {
         Path p = new Path();
         maxAccel = max_Accel;
         maxDecel = max_Decel;
@@ -31,6 +31,7 @@ public class PathBuilder {
         p.extrapolateLast();
         p.verifySpeeds();
         p.setAccDec(maxAccel, maxDecel);
+        p.setInertiaGain(inertiaSteeringGain);
         return p;
     }
 

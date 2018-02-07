@@ -56,7 +56,7 @@ public class Chassis implements Subsystem{
 	private ChassisState _chassisState;
 	
 	private double _targetAngle;
-	//private double _setpointright;
+	private double _setpointright;
 	
 	private double _leftTargetVelocity, _rightTargetVelocity;
 	
@@ -265,8 +265,8 @@ public class Chassis implements Subsystem{
         if (!usesTalonVelocityControl(_chassisState)) {
             // We entered a velocity control state.
             _leftMaster.selectProfileSlot(kVelocityControlSlot, 0);
-            _rightMaster.configNominalOutputForward(Constants.DRIVE_VELOCITY_NOMINAL_OUTPUT, 0);
-            _rightMaster.configNominalOutputReverse(-Constants.DRIVE_VELOCITY_NOMINAL_OUTPUT, 0);
+            _leftMaster.configNominalOutputForward(Constants.DRIVE_VELOCITY_NOMINAL_OUTPUT, 0);
+            _leftMaster.configNominalOutputReverse(-Constants.DRIVE_VELOCITY_NOMINAL_OUTPUT, 0);
             
             _rightMaster.selectProfileSlot(kVelocityControlSlot, 0);
             _rightMaster.configNominalOutputForward(Constants.DRIVE_VELOCITY_NOMINAL_OUTPUT, 0);
@@ -281,9 +281,9 @@ public class Chassis implements Subsystem{
             final double max_desired = Math.max(Math.abs(left_inches_per_sec), Math.abs(right_inches_per_sec));
             final double scale = max_desired > Constants.DRIVE_VELOCITY_MAX_SETPOINT
                     ? Constants.DRIVE_VELOCITY_MAX_SETPOINT / max_desired : 1.0;
-            //_setpointright = inchesPerSecondToNativeUnits(left_inches_per_sec * scale);
             _leftMaster.set(ControlMode.Velocity, inchesPerSecondToNativeUnits(left_inches_per_sec * scale));
             _rightMaster.set(ControlMode.Velocity, inchesPerSecondToNativeUnits(right_inches_per_sec * scale));
+            _setpointright = inchesPerSecondToNativeUnits(right_inches_per_sec * scale);
         } else {
             System.out.println("Hit a bad velocity control state");
             _leftMaster.set(ControlMode.Velocity, 0);
@@ -322,7 +322,7 @@ public class Chassis implements Subsystem{
 	
 	private void updatePathFollower(double timestamp) {
 		RigidTransform _robotPose = _robotState.getLatestFieldToVehicle().getValue();
-		System.out.println(_robotPose.toString());
+		//System.out.println(_robotPose.toString());
 		Twist command = _pathFollower.update(timestamp, _robotPose, RobotState.getInstance().getDistanceDriven(), RobotState.getInstance().getPredictedVelocity().dx);
 		if (!_pathFollower.isFinished()) {
 			Kinematics.DriveVelocity setpoint = Kinematics.inverseKinematics(command);
@@ -344,7 +344,7 @@ public class Chassis implements Subsystem{
         if (_currentPath != path || _chassisState != ChassisState.FOLLOW_PATH) {
             configureTalonsForSpeedControl();
             RobotState.getInstance().resetDistanceDriven();
-            _pathFollower = new PathFollower(path, reversed, path.maxAccel, path.maxDecel);
+            _pathFollower = new PathFollower(path, reversed, path.maxAccel, path.maxDecel, path.inertiaSteeringGain);
             _chassisState = ChassisState.FOLLOW_PATH;
             _currentPath = path;
         } else {
@@ -419,11 +419,11 @@ public class Chassis implements Subsystem{
 	} 
 	
 	public double getLeftPosInRot() {
-		return -_leftMaster.getSelectedSensorPosition(0) / CODES_PER_REV;
+		return _leftMaster.getSelectedSensorPosition(0) / CODES_PER_REV;
 	}
 	
 	public double getRightPosInRot() {
-		return -_rightMaster.getSelectedSensorPosition(0) / CODES_PER_REV;
+		return _rightMaster.getSelectedSensorPosition(0) / CODES_PER_REV;
 	}
 	
 	public double getLeftSpeed() {
@@ -467,7 +467,7 @@ public class Chassis implements Subsystem{
     }
 	
 	private static double inchesPerSecondToNativeUnits(double inches_per_second) {
-        return inches_per_second * 34.7;
+        return inches_per_second * 148.2;
     }
 	
 	public synchronized void reloadGains() {
@@ -525,7 +525,7 @@ public class Chassis implements Subsystem{
 
 	@Override
 	public synchronized void stop() {
-		setBrakeMode(true);
+		setBrakeMode(false);
 		arcadeDrive(0.0, 0.0);
 	}
 
@@ -543,6 +543,8 @@ public class Chassis implements Subsystem{
 		
 		SmartDashboard.putNumber("Left Velocity", getLeftVelocityInchesPerSec());
 		SmartDashboard.putNumber("Right Velocity", getRightVelocityInchesPerSec());
+		
+		SmartDashboard.putNumber("Right Setpoint", _setpointright);
 	}
 	
 	@Override
@@ -565,7 +567,10 @@ public class Chassis implements Subsystem{
 		logData.AddData("Right Actual Velocity [in/s]", String.valueOf(GeneralUtilities.RoundDouble(-getRightVelocityInchesPerSec(), 2)));
 		logData.AddData("Right Target Velocity [in/s]", String.valueOf(GeneralUtilities.RoundDouble(_rightTargetVelocity, 2)));
 		
-		_pathFollower.updateLogData(logData);
+		logData.AddData("Left Pos in Inches", String.valueOf(GeneralUtilities.RoundDouble(getLeftDistanceInches(), 2)));
+		logData.AddData("Right Pos in Inches", String.valueOf(GeneralUtilities.RoundDouble(getRightDistanceInches(), 2)));
+		
+		//_pathFollower.updateLogData(logData);
 	}
 	
 	public void UpdateDriveTrainPerfMetrics() {
