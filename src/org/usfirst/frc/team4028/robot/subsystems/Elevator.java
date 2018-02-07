@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //	0		CadeR		22-Jan		Initial Version
 //  1		TomB		24-Jan		Convert to use looper, implement state machine
 //	2		TomB		25-Jan		Added Cade's feedback: error tol, inpos property
+//	3		TomB		4-Feb		Adapted to real elevator
 //-------------------------------------------------------------
 public class Elevator implements Subsystem 
 {
@@ -61,25 +62,48 @@ public class Elevator implements Subsystem
 	private long _lastScanTimeStamp = 0;
 	private double _lastScanActualVelocityNU_100mS = 0;
 	
+	private boolean _isSoftLimitsEnabled = false;
+	
 	// define general constants
 	public static final double NU_PER_INCH = 106.040268456;
 	
-	private static final double ELEVATOR_MOVE_TO_HOME_VELOCITY_CMD = -0.25;   
+	// hardcoded preset jogging velocities
+	private static final double JOG_UP_VELOCITY = 0.5; //0.4; //0.70;
+	private static final double JOG_DOWN_VELOCITY = -0.25; //-0.50;
+	private static final double ELEVATOR_MOVE_TO_HOME_VELOCITY_CMD = -0.20;   
 	private static final long ELEVATOR_MAXIMUM_MOVE_TO_HOME_TIME_IN_MSEC = 5000;	// 5 sec
 	
 	private static final double ELEVATOR_POS_ALLOWABLE_ERROR_IN_INCHES = 0.25;	// +/- 0.25
-	private static final int ELEVATOR_POS_ALLOWABLE_ERROR_IN_NU = (int)Math.round(ELEVATOR_POS_ALLOWABLE_ERROR_IN_INCHES * NU_PER_INCH);
+	private static final int ELEVATOR_POS_ALLOWABLE_ERROR_IN_NU = InchesToNativeUnits(ELEVATOR_POS_ALLOWABLE_ERROR_IN_INCHES);
+	
+	//Conversion Constant
+	public static final double NATIVE_UNITS_PER_INCH_CONVERSION = (29638 / 41);
 	
 	// hardcoded preset positions (in native units, 0 = home position)
+	private static final int SCALE_HEIGHT_POSITION = InchesToNativeUnits(36);
+	private static final int SWITCH_HEIGHT_POSITION = InchesToNativeUnits(16);
+	private static final int CUBE_ON_PYRAMID_LEVEL_1_POSITION = InchesToNativeUnits(12);
+	private static final int CUBE_ON_FLOOR_POSITION = InchesToNativeUnits(3);
 	private static final int HOME_POSITION = 0;
-	private static final int CUBE_ON_FLOOR_POSITION = 100;
-	private static final int CUBE_ON_PYRAMID_LEVEL_1_POSITION = 200;
-	private static final int SWITCH_HEIGHT_POSITION = 1000;
-	private static final int SCALE_HEIGHT_POSITION = 3605;
+
+	private static final int ELEVATOR_MAX_TRAVEL = InchesToNativeUnits(41);
+	private static final int UP_SOFT_LIMIT = InchesToNativeUnits(40.0);
+	private static final int DOWN_SOFT_LIMIT = InchesToNativeUnits(1.0);
 	
-	// hardcoded preset jogging velocities
-	private static final double JOG_UP_VELOCITY = 0.35;
-	private static final double JOG_DOWN_VELOCITY = -0.25;
+	/*
+	 * Moveable Slide Top to Botto. = 48.5 in
+	 * 
+	 * Travel (in)	Floor to bottom of Slide	Floor to Top Stop (in)	Encoder Native Units
+	 * ===========	========================	======================	====================
+	 * 		40.75		42.75					95						29638
+	 * 		
+	 * 		
+	 * 		12			14						66.5					8736
+	 * 		3			5						57.5				
+	 * 		0			2						54.5					0
+	 */
+	
+
 	
 	private static final boolean IS_VERBOSE_LOGGING_ENABLED = true;
 	
@@ -87,18 +111,20 @@ public class Elevator implements Subsystem
 	private static final int MOVING_DOWN_PID_SLOT_INDEX = 0;
 	
 	// define PID Constants
-	public static final int CRUISE_VELOCITY = 30000;			// native units per 100 mSec
-	public static final int ACCELERATION = 20000;				// native units per 100 mSec per sec
+	public static final int CRUISE_VELOCITY = 5061; // native units per 100 mSec 50% of max
+	public static final int ACCELERATION = 4061; 	// native units per 100 mSec per sec
 	
-	public static final double FEED_FORWARD_GAIN_UP = 3.4074425;
-	public static final double PROPORTIONAL_GAIN_UP = 3.0;
-	public static final double INTEGRAL_GAIN_UP = 0.0; 
-	public static final double DERIVATIVE_GAIN_UP = 0.7;
+	public static final double FEED_FORWARD_GAIN_UP = 0.4; //3.4074425;
+	public static final double PROPORTIONAL_GAIN_UP = 0.2; //.4; //0.0731; //3.0;
+	public static final double INTEGRAL_GAIN_UP = 0; //0.03; //0.0; 
+	public static final int INTEGRAL_ZONE_UP = 0; //0.0; 
+	public static final double DERIVATIVE_GAIN_UP = 0; //4.0; //0.7;
 	
-	public static final double FEED_FORWARD_GAIN_DOWN = 3.4074425;
-	public static final double PROPORTIONAL_GAIN_DOWN = 2.0;
-	public static final double INTEGRAL_GAIN_DOWN = 0.0; 
-	public static final double DERIVATIVE_GAIN_DOWN = 0.7;
+	public static final double FEED_FORWARD_GAIN_DOWN = 0.248 ;// 1.0; //3.4074425;
+	public static final double PROPORTIONAL_GAIN_DOWN = .175; //.14; //2.0;
+	public static final double INTEGRAL_GAIN_DOWN = 0; //0.03; //0.0; 
+	public static final int INTEGRAL_ZONE_DOWN = 0; //200; //0.0; 
+	public static final double DERIVATIVE_GAIN_DOWN = 0; //3.0; // 0.7;
 	
 	// singleton pattern
 	private static Elevator _instance = new Elevator();
@@ -118,8 +144,8 @@ public class Elevator implements Subsystem
 		_elevatorSlaveMotor.follow(_elevatorMasterMotor);
 		
 		// set motor phasing
-		_elevatorMasterMotor.setInverted(false);
-		_elevatorSlaveMotor.setInverted(false);
+		_elevatorMasterMotor.setInverted(true);
+		_elevatorSlaveMotor.setInverted(true);
 		
 		// config limit switches
 		_elevatorMasterMotor.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed, 0);
@@ -139,14 +165,15 @@ public class Elevator implements Subsystem
 		
 		// config quad encoder & phase (invert = true)
 		_elevatorMasterMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0);
-		_elevatorMasterMotor.setSensorPhase(true);
+		_elevatorMasterMotor.setSensorPhase(false);
 		_elevatorMasterMotor.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 5, 0);
 		
 		//configure the peak and nominal output voltages in both directions for both Talons
-		_elevatorMasterMotor.configNominalOutputForward(0, 0);
+		_elevatorMasterMotor.configNominalOutputForward(0, 0);	// elimate rattle w/i deadband
 		_elevatorMasterMotor.configNominalOutputReverse(0, 0);
 		_elevatorMasterMotor.configPeakOutputForward(1, 0);
 		_elevatorMasterMotor.configPeakOutputReverse(-1, 0);
+		
 		_elevatorSlaveMotor.configNominalOutputForward(0, 0);
 		_elevatorSlaveMotor.configNominalOutputReverse(0, 0);
 		_elevatorSlaveMotor.configPeakOutputForward(1, 0);
@@ -164,11 +191,13 @@ public class Elevator implements Subsystem
 		_elevatorMasterMotor.config_kP(MOVING_DOWN_PID_SLOT_INDEX, PROPORTIONAL_GAIN_DOWN, 0);
 		_elevatorMasterMotor.config_kI(MOVING_DOWN_PID_SLOT_INDEX, INTEGRAL_GAIN_DOWN, 0);
 		_elevatorMasterMotor.config_kD(MOVING_DOWN_PID_SLOT_INDEX, DERIVATIVE_GAIN_DOWN, 0);
+		_elevatorMasterMotor.config_IntegralZone(MOVING_DOWN_PID_SLOT_INDEX, INTEGRAL_ZONE_DOWN, 0);
 		
 		_elevatorMasterMotor.config_kF(MOVING_UP_PID_SLOT_INDEX, FEED_FORWARD_GAIN_UP, 0);
 		_elevatorMasterMotor.config_kP(MOVING_UP_PID_SLOT_INDEX, PROPORTIONAL_GAIN_UP, 0);
 		_elevatorMasterMotor.config_kI(MOVING_UP_PID_SLOT_INDEX, INTEGRAL_GAIN_UP, 0);
 		_elevatorMasterMotor.config_kD(MOVING_UP_PID_SLOT_INDEX, DERIVATIVE_GAIN_UP, 0);
+		_elevatorMasterMotor.config_IntegralZone(MOVING_UP_PID_SLOT_INDEX, INTEGRAL_ZONE_UP, 0);
 		
 		// set accel and cruise velocities
 		_elevatorMasterMotor.configMotionCruiseVelocity(CRUISE_VELOCITY, 0);
@@ -181,6 +210,8 @@ public class Elevator implements Subsystem
 		// set initial elevator state
 		_elevatorState = ELEVATOR_STATE.NEED_TO_HOME;
 		ReportStateChg("ElevatorAxis (State) initial ==> [NEED_TO_HOME]");
+		
+		DisableSoftLimits();
 	}
 	
 	// this is run by Looper typically at a 10mS interval (or 2x the RoboRio Scan time)
@@ -220,6 +251,7 @@ public class Elevator implements Subsystem
 						{
 							// change state
 							_elevatorState = ELEVATOR_STATE.AT_HOME;
+							EnableSoftLimits();
 							ReportStateChg("ElevatorAxis (State) [MOVING_TO_HOME] ==> [AT_HOME]");
 						} 
 						else 
@@ -235,6 +267,7 @@ public class Elevator implements Subsystem
 		    				else 
 		    				{
 		    					// drive axis down in % vbus mode
+		    					DisableSoftLimits();
 		    					_elevatorMasterMotor.set(ControlMode.PercentOutput, ELEVATOR_MOVE_TO_HOME_VELOCITY_CMD);
 		    				}
 						}
@@ -260,12 +293,12 @@ public class Elevator implements Subsystem
 						_actualAccelerationNU_100mS_mS = (_actualVelocityNU_100mS - _lastScanActualVelocityNU_100mS) / deltatime;
 	
 						// set appropriate gain slot to use
-						if(_targetElevatorPosition > _actualPositionNU) {
-							_elevatorMasterMotor.selectProfileSlot(MOVING_UP_PID_SLOT_INDEX, 0);
-						}
-						else {
-							_elevatorMasterMotor.selectProfileSlot(MOVING_DOWN_PID_SLOT_INDEX, 0);
-						}
+						//if(_targetElevatorPosition > _actualPositionNU) {
+						//	_elevatorMasterMotor.selectProfileSlot(MOVING_UP_PID_SLOT_INDEX, 0);
+						//}
+						//else {
+						//	_elevatorMasterMotor.selectProfileSlot(MOVING_DOWN_PID_SLOT_INDEX, 0);
+						//}
 						
 						_elevatorMasterMotor.set(ControlMode.MotionMagic, _targetElevatorPosition, 0);
 						
@@ -284,6 +317,18 @@ public class Elevator implements Subsystem
 						
 						_lastScanTimeStamp = new Date().getTime();
 						_lastScanActualVelocityNU_100mS = _actualVelocityNU_100mS;
+						
+						if(_isSoftLimitsEnabled 
+								&& (_actualPositionNU >= UP_SOFT_LIMIT))
+						{
+							ReportStateChg("Elevator At Up Soft Limit!");
+						}
+						else if (_isSoftLimitsEnabled 
+								&& (_actualPositionNU <= DOWN_SOFT_LIMIT))
+						{
+							ReportStateChg("Elevator At Down Soft Limit!");
+						}
+						
 						break;
 						
 					case TIMEOUT:
@@ -350,6 +395,14 @@ public class Elevator implements Subsystem
 				DriverStation.reportWarning("ElevatorAxis (State) ILLEGAL value for presetPosition", false);
 				break;
 		}
+		
+		// set appropriate gain slot to use
+		if(_targetElevatorPosition > _actualPositionNU) {
+			_elevatorMasterMotor.selectProfileSlot(MOVING_UP_PID_SLOT_INDEX, 0);
+		}
+		else {
+			_elevatorMasterMotor.selectProfileSlot(MOVING_DOWN_PID_SLOT_INDEX, 0);
+		}
 	}
 	
 	// support joystick like jogging but at a fixed velocity
@@ -393,11 +446,13 @@ public class Elevator implements Subsystem
 				&& _elevatorState != ELEVATOR_STATE.TIMEOUT)
 		{
 			// set target to current location
-			_targetElevatorPosition = _elevatorMasterMotor.getSelectedSensorPosition(0);
+			//_targetElevatorPosition = _elevatorMasterMotor.getSelectedSensorPosition(0);
 			
 			// flip back to hold position mode using the current position
-			_elevatorState = ELEVATOR_STATE.GOTO_AND_HOLD_TARGET_POSTION;
-			ReportStateChg("ElevatorAxis (State) stop ==> [GOTO_AND_HOLD_TARGET_POSTION]");
+			//_elevatorState = ELEVATOR_STATE.GOTO_AND_HOLD_TARGET_POSTION;
+			//ReportStateChg("ElevatorAxis (State) stop ==> [GOTO_AND_HOLD_TARGET_POSTION]");
+			
+			_targetElevatorVelocity = 0.0;
 		}
 	}
 
@@ -462,6 +517,35 @@ public class Elevator implements Subsystem
         }
     }
 
+	private void EnableSoftLimits()
+	{
+		_elevatorMasterMotor.configReverseSoftLimitThreshold(DOWN_SOFT_LIMIT, 0);
+		_elevatorMasterMotor.configForwardSoftLimitThreshold(UP_SOFT_LIMIT, 0);	
+		
+		_elevatorMasterMotor.configReverseSoftLimitEnable(true, 0);
+		_elevatorMasterMotor.configForwardSoftLimitEnable(true, 0);		
+		
+		_isSoftLimitsEnabled = true;
+	}
+	
+	private void DisableSoftLimits()
+	{
+		_elevatorMasterMotor.configReverseSoftLimitEnable(false, 0);
+		_elevatorMasterMotor.configForwardSoftLimitEnable(false, 0);
+		
+		_isSoftLimitsEnabled = false;
+	}
+	
+	private static int InchesToNativeUnits(double positionInInches) {
+		int nativeUnits = (int)(positionInInches * NATIVE_UNITS_PER_INCH_CONVERSION);
+		return nativeUnits;
+	}
+	
+	private static double NativeUnitsToInches(double nativeUnitsMeasure) {
+		double positionInInches = nativeUnitsMeasure / NATIVE_UNITS_PER_INCH_CONVERSION;
+		return positionInInches;
+	}
+	
 	// add data elements to be logged  to the input param (which is passed by ref)
 	@Override
 	public void updateLogData(LogDataBE logData) 
@@ -480,4 +564,6 @@ public class Elevator implements Subsystem
 			System.out.println(message);
 		}
 	}
+	
+
 }
