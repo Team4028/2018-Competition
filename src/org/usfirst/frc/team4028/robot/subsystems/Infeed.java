@@ -40,10 +40,10 @@ public class Infeed {
 	
 	private UltrasonicSensor _ultrasonic;
 	
-	private Boolean _isLeftArmHomed;
-	private Boolean _isRightArmHomed;
-	private Boolean _areArmsHomed;
-	private Boolean _isStaggerAtInitialPosition;
+	private boolean _isLeftArmHomed;
+	private boolean _isRightArmHomed;
+	private boolean _areArmsHomed;
+	private boolean _isStaggerAtInitialPosition;
 	
 	private double _targetInfeedPosition;
 	
