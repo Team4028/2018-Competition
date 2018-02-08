@@ -21,6 +21,7 @@ public class UltrasonicSensor {
 	AnalogInput _ultrasonicSensor;
 	
 	private double _ultrasonicSensorOutputVoltage;
+	private double _ultrasonicSensorOutputVoltageAVG;
 	private double _distanceReadInInches;
 	private double _distanceReadInMeters;
 	
@@ -28,7 +29,7 @@ public class UltrasonicSensor {
 	boolean _isCubeInRange = false;
 	
 	// constants determined from bench testing
-	static final double VOLTS_PER_INCH = 6.7138665; //0.0098;
+	static final double VOLTS_PER_INCH = 0.0233; //0.0061742804; //0.0200271621; //0.0098;
 	static final double INCHES_PER_METER = 39.3700787;
 	
 	static final double MINIMUM_DISTANCE_FOR_CUBE_IN_ROBOT = 10;
@@ -42,7 +43,8 @@ public class UltrasonicSensor {
 	public void calculateDistanceReadings() 
 	{
 		// convert value from mV to V
-		_ultrasonicSensorOutputVoltage = (_ultrasonicSensor.getAverageVoltage()*1000); 
+		_ultrasonicSensorOutputVoltageAVG = (_ultrasonicSensor.getAverageVoltage()); 
+		_ultrasonicSensorOutputVoltage = (_ultrasonicSensor.getVoltage()); 
 		//System.out.println("Voltage Read:" + ultrasonicSensorOutputVoltage);
 		//System.out.println("Value: " + ultrasonicSensorOutputVoltage/16);
 		
@@ -91,6 +93,7 @@ public class UltrasonicSensor {
 		SmartDashboard.putBoolean("Is The Cube In The Robot?", _isCubeInRobot);
 		SmartDashboard.putNumber("Cube Distance in Inches:", _distanceReadInInches);
 		SmartDashboard.putNumber("Cube Distance In Meters:", _distanceReadInMeters);
-		SmartDashboard.putNumber("Voltage [mV]:", _ultrasonicSensorOutputVoltage);
+		SmartDashboard.putNumber("Voltage AVG [V]:", _ultrasonicSensorOutputVoltageAVG);
+		SmartDashboard.putNumber("Voltage [V]", _ultrasonicSensorOutputVoltage);
 	}
 }

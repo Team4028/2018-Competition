@@ -115,13 +115,13 @@ public class Elevator implements Subsystem
 	public static final int ACCELERATION = 4061; 	// native units per 100 mSec per sec
 	
 	public static final double FEED_FORWARD_GAIN_UP = 0.4; //3.4074425;
-	public static final double PROPORTIONAL_GAIN_UP = 0.2; //.4; //0.0731; //3.0;
+	public static final double PROPORTIONAL_GAIN_UP = 0.3; //.4; //0.0731; //3.0;
 	public static final double INTEGRAL_GAIN_UP = 0; //0.03; //0.0; 
 	public static final int INTEGRAL_ZONE_UP = 0; //0.0; 
 	public static final double DERIVATIVE_GAIN_UP = 0; //4.0; //0.7;
 	
 	public static final double FEED_FORWARD_GAIN_DOWN = 0.248 ;// 1.0; //3.4074425;
-	public static final double PROPORTIONAL_GAIN_DOWN = .175; //.14; //2.0;
+	public static final double PROPORTIONAL_GAIN_DOWN = .25; //.14; //2.0;
 	public static final double INTEGRAL_GAIN_DOWN = 0; //0.03; //0.0; 
 	public static final int INTEGRAL_ZONE_DOWN = 0; //200; //0.0; 
 	public static final double DERIVATIVE_GAIN_DOWN = 0; //3.0; // 0.7;
@@ -484,6 +484,12 @@ public class Elevator implements Subsystem
 			actualVelocity = _actualVelocityNU_100mS;
 			actualAcceleration = _actualAccelerationNU_100mS_mS;			
 		}
+		
+		double elevatorCurrent = _elevatorMasterMotor.getOutputCurrent();
+		double elevatorCommandedVoltage = _elevatorMasterMotor.getBusVoltage();
+		
+		SmartDashboard.putNumber("Elevator:Current", elevatorCurrent);
+		SmartDashboard.putNumber("Elevator:Voltage", elevatorCommandedVoltage);
 			
 		SmartDashboard.putNumber("Elevator:Position", actualPosition);
 		SmartDashboard.putNumber("Elevator:Velocity", GeneralUtilities.RoundDouble(actualVelocity, 2));

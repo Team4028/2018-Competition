@@ -98,17 +98,17 @@ public class Infeed {
 	
 	// Infeed Position Constants [THESE ARE ANGLE MEASURES IN DEGREES]
 	private static final double HOME_POSITION_ANGLE = 0; //Is Home
-    private static final double INFEED_POSITION_ANGLE = 150;	
-	private static final double WIDE_INFEED_POSITION_ANGLE = 120;
-	private static final double SQUEEZE_INFEED_POSITION_ANGLE = 170;
+    private static final double INFEED_POSITION_ANGLE = 160;	
+	private static final double WIDE_INFEED_POSITION_ANGLE = 140;
+	private static final double SQUEEZE_INFEED_POSITION_ANGLE = 180;
 	private static final double STORE_POSITION_ANGLE = 10;
-	private static final double THIN_SIDE_POSITION_ANGLE = 190;
-	private static final double STAGGER_POSITION_ANGLE = 175;
+	private static final double THIN_SIDE_POSITION_ANGLE = 200;
+	private static final double STAGGER_POSITION_ANGLE = 185;
 	
 	private static final double INFEED_ALLOWED_ERROR_ANGLE = 15;
 	
 	// Infeed Drive Wheel Constant
-	public static final double INFEED_DRIVE_WHEELS_VBUS_COMMAND = 0.6;
+	public static final double INFEED_DRIVE_WHEELS_VBUS_COMMAND = 0.75;
 	
 	//Conversion Constant
 	public static final double DEGREES_TO_NATIVE_UNITS_CONVERSION = (4096/360);

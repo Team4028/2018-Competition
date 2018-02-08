@@ -175,6 +175,9 @@ public class Robot extends IterativeRobot {
 	// ================================================================
 	@Override
 	public void teleopPeriodic() {		
+		
+		_ultrasonic.calculateDistanceReadings();
+		
 		// =============  CHASSIS ============= 
 		if ((Math.abs(_dos.getThrottleCmd()) > 0.05) || (Math.abs(_dos.getTurnCmd()) > 0.05)) {
 			_chassis.arcadeDrive(-1.0 * _dos.getThrottleCmd(), _dos.getTurnCmd());
