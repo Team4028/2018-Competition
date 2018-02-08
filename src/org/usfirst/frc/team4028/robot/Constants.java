@@ -69,14 +69,14 @@ public class Constants {
     public static final int INFEED_MOTION_MAGIC_MAX_ACC = 2000;
     
 	// PID gains for motion magic loop (LOW GEAR)
-	public static final double DRIVE_MOTION_MAGIC_P = 1.0; //4.0
-    public static final double DRIVE_MOTION_MAGIC_I = 0.002; // 0.0
-    public static final double DRIVE_MOTION_MAGIC_D = 100.0; // 95.0
-    public static final double DRIVE_MOTION_MAGIC_F = 0.45; // 0.5
+	public static final double DRIVE_MOTION_MAGIC_P = 0.175; //4.0
+    public static final double DRIVE_MOTION_MAGIC_I = 0.0; // 0.0
+    public static final double DRIVE_MOTION_MAGIC_D = 20.0; // 95.0
+    public static final double DRIVE_MOTION_MAGIC_F = 0.095; // 0.5
     public static final int DRIVE_MOTION_MAGIC_I_ZONE = 700;
     
-    public static final int DRIVE_MOTION_MAGIC_MAX_VEL = 360; //120.0;
-    public static final int DRIVE_MOTION_MAGIC_MAX_ACC = 720; //1200.0;
+    public static final int DRIVE_MOTION_MAGIC_MAX_VEL = 70 * 150; //120.0;
+    public static final int DRIVE_MOTION_MAGIC_MAX_ACC = 100 * 150; //1200.0;
 
     // Units: setpoint, error, and output are in inches per second.
     // PID gains for drive velocity loop (LOW_GEAR)

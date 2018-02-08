@@ -234,13 +234,21 @@ public class DriverOperatorStation {
 //			return _driverGamepad.getXButton();
 //		}
 		
+		public boolean getIsDriverTarget0BtnPressed() {
+			return _driverGamepad.getBumper(Hand.kLeft);
+		}
+		
+		public boolean getIsDriverTarget180BtnPressed() {
+			return _driverGamepad.getBumper(Hand.kRight);
+		} 
+		
 //		public boolean getIsDriver_LeftBumper_BtnPressed() {
 //			return _driverGamepad.getBumper(Hand.kLeft);
 //		}
 		
-		public boolean getIsDriver_InfeedCube_BtnPressed() {
+		/*public boolean getIsDriver_InfeedCube_BtnPressed() {
 			return _driverGamepad.getBumper(Hand.kRight);
-		}
+		} */
 		
 //		public boolean getIsDriver_LeftStick_BtnPressed() {
 //			return _driverGamepad.getStickButton(Hand.kLeft);

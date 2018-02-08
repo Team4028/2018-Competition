@@ -56,7 +56,7 @@ public class Chassis implements Subsystem{
 	private ChassisState _chassisState;
 	
 	private double _targetAngle;
-	private double _setpointright;
+	private double _targetPosition;
 	
 	private double _leftTargetVelocity, _rightTargetVelocity;
 	
@@ -78,12 +78,15 @@ public class Chassis implements Subsystem{
 	private static final double CODES_PER_REV = 30725.425;
 	public static final double CODES_PER_METER = 1367.18;
 	
+	private static final double ENCODER_ROTATIONS_PER_DEGREE = 46.15/3600;
+	
 	// Chassis various states
 	public enum ChassisState {
 		PERCENT_VBUS, 
 		AUTO_TURN, 
 		FOLLOW_PATH,
-		VELOCITY_SETPOINT
+		VELOCITY_SETPOINT,
+		DRIVE_SET_DISTANCE
 	}
 	
 	// private constructor for singleton pattern
@@ -148,7 +151,13 @@ public class Chassis implements Subsystem{
 						setHighGear(false);
 						_leftMaster.selectProfileSlot(kPositionControlSlot, 0);
 						_rightMaster.selectProfileSlot(kPositionControlSlot, 0);
-						moveToTarget();
+						moveToTargetAngle();
+						return;
+						
+					case DRIVE_SET_DISTANCE:
+						setHighGear(false);
+						setLowGearVelocityGains();
+						
 						return;
 						
 					case FOLLOW_PATH:
@@ -168,7 +177,6 @@ public class Chassis implements Subsystem{
 						
 					case PERCENT_VBUS:
 						enableAutoShifting(false);
-						//DriverStation.reportWarning(Double.toString(_navX.getPitch()), false);
 						return;
 					
 					case VELOCITY_SETPOINT:
@@ -241,11 +249,6 @@ public class Chassis implements Subsystem{
 		} 
 	}
 	
-	private void setMotionMagicTargetPosition(double leftPosition, double rightPosition) {
-		_leftMaster.set(ControlMode.MotionMagic, leftPosition);
-		_rightMaster.set(ControlMode.MotionMagic, rightPosition);
-	}
-	
 	/**
      * Start up velocity mode. This sets the drive train in high gear as well.
      * 
@@ -283,7 +286,6 @@ public class Chassis implements Subsystem{
                     ? Constants.DRIVE_VELOCITY_MAX_SETPOINT / max_desired : 1.0;
             _leftMaster.set(ControlMode.Velocity, inchesPerSecondToNativeUnits(left_inches_per_sec * scale));
             _rightMaster.set(ControlMode.Velocity, inchesPerSecondToNativeUnits(right_inches_per_sec * scale));
-            _setpointright = inchesPerSecondToNativeUnits(right_inches_per_sec * scale);
         } else {
             System.out.println("Hit a bad velocity control state");
             _leftMaster.set(ControlMode.Velocity, 0);
@@ -300,29 +302,43 @@ public class Chassis implements Subsystem{
 		_rightSlave.setNeutralMode(mode);
 	}
 	
-	public synchronized void setTargetAngle(double target) {
-		 _targetAngle = target;
+	public synchronized void setTargetAngle(double targetAngle) {
+		 _targetAngle = targetAngle;
 		 _chassisState = ChassisState.AUTO_TURN;
 	} 
 	
-	private synchronized void moveToTarget() {
-		double angleError = _targetAngle;// - _navX.getYaw();
+	private synchronized void moveToTargetAngle() {
+		double angleError = _navX.getYaw() > 0 ? _targetAngle - Math.abs(_navX.getYaw()) : -(_targetAngle - Math.abs(_navX.getYaw()));
 		
-		double encoderError = GeneralUtilities.degreesToEncoderRotations(angleError);
+		double encoderError = degreesToEncoderRotations(angleError);
 		
-		double leftDriveTargetPosition = getLeftPosInRot() - encoderError;
-		double rightDriveTargetPosition = getRightPosInRot() + encoderError;
+		double leftDriveTargetPosition = (getLeftPosInRot() + encoderError) * CODES_PER_REV;
+		double rightDriveTargetPosition = (getRightPosInRot() - encoderError) * CODES_PER_REV;
 		
-		setMotionMagicTargetPosition(leftDriveTargetPosition, rightDriveTargetPosition);
+		_leftMaster.set(ControlMode.MotionMagic, leftDriveTargetPosition);
+		_rightMaster.set(ControlMode.MotionMagic, rightDriveTargetPosition);
 	}
 	
 	public synchronized double autoAimError() {
-		return _targetAngle;// - _navX.getYaw();
+		return _navX.getYaw() > 0 ? _targetAngle - Math.abs(_navX.getYaw()) : -(_targetAngle - Math.abs(_navX.getYaw()));
 	}
+	
+	public synchronized void setTargetPos(double targetPosition) {
+		_targetPosition = targetPosition;
+		_chassisState = ChassisState.DRIVE_SET_DISTANCE;
+	}
+	
+	/*
+	private synchronized void moveToTargetPos() {
+		double 
+	}
+	
+	public synchronized double targetPosError() {
+		
+	} */
 	
 	private void updatePathFollower(double timestamp) {
 		RigidTransform _robotPose = _robotState.getLatestFieldToVehicle().getValue();
-		//System.out.println(_robotPose.toString());
 		Twist command = _pathFollower.update(timestamp, _robotPose, RobotState.getInstance().getDistanceDriven(), RobotState.getInstance().getPredictedVelocity().dx);
 		if (!_pathFollower.isFinished()) {
 			Kinematics.DriveVelocity setpoint = Kinematics.inverseKinematics(command);
@@ -470,6 +486,10 @@ public class Chassis implements Subsystem{
         return inches_per_second * 148.2;
     }
 	
+	public static double degreesToEncoderRotations(double degrees) {
+	    return ENCODER_ROTATIONS_PER_DEGREE * degrees;
+    }
+	
 	public synchronized void reloadGains() {
         // Low Gear
         _leftMaster.config_kP(0, Constants.DRIVE_MOTION_MAGIC_P, 0);
@@ -538,29 +558,15 @@ public class Chassis implements Subsystem{
 	// Publish Data to the Dashboard
 	@Override
 	public void outputToSmartDashboard() {
-		SmartDashboard.putNumber("Left Position in Inches", getLeftDistanceInches());
-		SmartDashboard.putNumber("Right Position in Inches", getRightDistanceInches());
+		SmartDashboard.putNumber("Left Position in Rotations", getLeftPosInRot());
+		SmartDashboard.putNumber("Right Position in Rotations", getRightPosInRot());
 		
 		SmartDashboard.putNumber("Left Velocity", getLeftVelocityInchesPerSec());
 		SmartDashboard.putNumber("Right Velocity", getRightVelocityInchesPerSec());
-		
-		SmartDashboard.putNumber("Right Setpoint", _setpointright);
 	}
 	
 	@Override
 	public void updateLogData(LogDataBE logData) {
-		/*
-		logData.AddData("Chassis:LeftDriveMtr%VBus", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.LeftDriveMtrPercentVBus, 2)));
-		logData.AddData("Chassis:LeftDriveMtrPos [m]", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.LeftDriveMtrPos, 2)));
-		logData.AddData("Chassis:LeftDriveMtrVel [m/s]", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.LeftDriveMtrMPS, 2)));
-		logData.AddData("Chassis:LeftDriveMtrAccel [m/s/s]", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.LeftDriveMtrMPSPerSec, 2)));
-
-		logData.AddData("Chassis:RightDriveMtr%VBus", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.RightDriveMtrPercentVBus, 2)));
-		logData.AddData("Chassis:RightDriveMtrPos [m]", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.RightDriveMtrPos, 2)));
-		logData.AddData("Chassis:RightDriveMtrVel [m/s]", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.RightDriveMtrMPS, 2)));
-		logData.AddData("Chassis:RightDriveMtrAccel [m/s/s]", String.valueOf(GeneralUtilities.RoundDouble(_lastScanPerfMetricsSnapShot.RightDriveMtrMPSPerSec, 2)));
-		*/
-		
 		logData.AddData("Left Actual Velocity [in/s]", String.valueOf(GeneralUtilities.RoundDouble(getLeftVelocityInchesPerSec(), 2)));
 		logData.AddData("Left Target Velocity [in/s]", String.valueOf(GeneralUtilities.RoundDouble(_leftTargetVelocity, 2)));
 		

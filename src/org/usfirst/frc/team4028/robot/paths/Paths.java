@@ -301,31 +301,30 @@ public class Paths {
 	
 	protected static ArrayList<Waypoint> getRightScaleWaypoints() {
 		ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
-		sWaypoints.add(new Waypoint(18,50,0,0));
-        sWaypoints.add(new Waypoint(160,50,0,120));
-        sWaypoints.add(new Waypoint(232,50,40,100));
-        sWaypoints.add(new Waypoint(232,100,0,80));
-        sWaypoints.add(new Waypoint(232,220,0,120));
-        sWaypoints.add(new Waypoint(232,243,15,60));
-        sWaypoints.add(new Waypoint(280,243,0,40));
+        sWaypoints.add(new Waypoint(20,50,0,0));
+        sWaypoints.add(new Waypoint(153,50,0,120));
+        sWaypoints.add(new Waypoint(226,50,40,60));
+        sWaypoints.add(new Waypoint(226,120,10,60));
+    	sWaypoints.add(new Waypoint(236,191,10,100));
+    	sWaypoints.add(new Waypoint(236,242,30,60));
+    	sWaypoints.add(new Waypoint(282,242,0,40));
         return sWaypoints;
 	}
 	
 	// Scale Then Switch
 	protected static ArrayList<Waypoint> getLeftScaleToLeftSwitch1Waypoints() {
 		ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
-        sWaypoints.add(new Waypoint(285,80,0,0));
-        sWaypoints.add(new Waypoint(265,80,10,60));
-        sWaypoints.add(new Waypoint(265,60,0,60));
+        sWaypoints.add(new Waypoint(281,82,0,0));
+        sWaypoints.add(new Waypoint(261,82,18,40));
+        sWaypoints.add(new Waypoint(261,50,0,40));
         return sWaypoints;
 	}
 	
 	protected static ArrayList<Waypoint> getLeftScaleToLeftSwitch2Waypoints() {
         ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
-        sWaypoints.add(new Waypoint(265,60,0,0));
-        sWaypoints.add(new Waypoint(265,75,8,60));
-        sWaypoints.add(new Waypoint(245,92,8,60));
-        sWaypoints.add(new Waypoint(213,92,0,50));
+        sWaypoints.add(new Waypoint(261,50,0,0));
+        sWaypoints.add(new Waypoint(261,80,25,40));
+        sWaypoints.add(new Waypoint(236,80,0,40));
         return sWaypoints;
 	}
 	

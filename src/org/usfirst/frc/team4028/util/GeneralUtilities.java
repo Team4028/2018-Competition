@@ -119,14 +119,8 @@ public class GeneralUtilities {
 		return clampedValue;
 	}
 	
-	private static final double ENCODER_ROTATIONS_PER_DEGREE = 77.371/3600;
-	
 	public static double arctan(double heading) {
 		return Math.toDegrees(Math.atan(heading));
-    }
-  
-    public static double degreesToEncoderRotations(double degrees) {
-	    return ENCODER_ROTATIONS_PER_DEGREE * degrees;
     }
     
     public static boolean epsilonEquals(double a, double b, double epsilon) {

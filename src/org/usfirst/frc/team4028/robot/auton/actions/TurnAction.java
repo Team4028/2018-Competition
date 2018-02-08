@@ -27,6 +27,6 @@ public class TurnAction implements Action{
 
 	@Override
 	public boolean isFinished() {
-		return Math.abs(_chassis.autoAimError()) < 1.0;		// Returns true when chassis is within angle deadband
+		return Math.abs(_chassis.autoAimError()) < 2.0;		// Returns true when chassis is within angle deadband
 	}
 }

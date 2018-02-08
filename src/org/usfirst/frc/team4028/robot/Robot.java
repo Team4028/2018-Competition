@@ -16,6 +16,7 @@ import org.usfirst.frc.team4028.util.LogDataBE;
 import org.usfirst.frc.team4028.util.MovingAverage;
 import org.usfirst.frc.team4028.util.loops.Looper;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -142,6 +143,8 @@ public class Robot extends IterativeRobot {
 		// Refresh Dashboard
 		outputAllToDashboard();
 		
+		_chassis.setBrakeMode(true);
+		
 		// Optionally Log Data
 		logAllData();
 	}
@@ -160,6 +163,7 @@ public class Robot extends IterativeRobot {
 		
 		stopAll();
 		
+		_chassis.zeroSensors();
 		_chassis.setHighGear(false);
 		_chassis.setBrakeMode(false);
 		
@@ -177,6 +181,12 @@ public class Robot extends IterativeRobot {
 		// =============  CHASSIS ============= 
 		if ((Math.abs(_dos.getThrottleCmd()) > 0.05) || (Math.abs(_dos.getTurnCmd()) > 0.05)) {
 			_chassis.arcadeDrive(-1.0 * _dos.getThrottleCmd(), _dos.getTurnCmd());
+		} 
+		else if (_dos.getIsDriverTarget0BtnPressed()) {
+			_chassis.setTargetAngle(0.0);
+		} 
+		else if (_dos.getIsDriverTarget180BtnPressed()) {
+			_chassis.setTargetAngle(180.0);
 		} else {
 			_chassis.stop();
 		}
@@ -209,10 +219,11 @@ public class Robot extends IterativeRobot {
 		if (_dos.getIsDriver_StaggerInfeedManuver_BtnJustPressed()) {
 			_infeed.staggerInfeedManuver();
 		}
-			
+		
+		/*
 		if (_dos.getIsDriver_InfeedCube_BtnPressed()) {
 			_infeed.driveInfeedWheels();
-		}
+		} */
 		else {
 			_infeed.stopDriveMotors();
 		}
