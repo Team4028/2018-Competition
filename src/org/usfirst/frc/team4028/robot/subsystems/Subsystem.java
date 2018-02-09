@@ -7,7 +7,7 @@ public interface Subsystem {
 	
 	public void zeroSensors();
 	
-	public void outputToSmartDashboard();
+	public void outputToShuffleboard();
 	
 	public void updateLogData(LogDataBE logData);
 }

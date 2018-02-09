@@ -1,8 +1,6 @@
 package org.usfirst.frc.team4028.robot.sensors;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class PDPMonitor {
 	PowerDistributionPanel _pdp;
