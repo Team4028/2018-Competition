@@ -4,18 +4,11 @@ import edu.wpi.cscore.MjpegServer;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.cscore.VideoMode;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.buttons.*;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Paths;
 
 import org.usfirst.frc.team4028.util.CircularQueue;
-
-import edu.wpi.cscore.CvSink;
-import edu.wpi.cscore.CvSource;
 
 
 public class SwitchableCameraServer 

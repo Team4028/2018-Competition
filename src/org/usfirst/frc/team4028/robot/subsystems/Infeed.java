@@ -2,6 +2,7 @@ package org.usfirst.frc.team4028.robot.subsystems;
 
 import org.usfirst.frc.team4028.robot.Constants;
 import org.usfirst.frc.team4028.robot.sensors.UltrasonicSensor;
+import org.usfirst.frc.team4028.util.LogDataBE;
 import org.usfirst.frc.team4028.util.loops.Loop;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -13,10 +14,13 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.VictorSP;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Infeed {	
 	
-	// define enum for infeed axis
+	//=====================================================================================
+	//Define the Class Level Variables/Enums
+	//=====================================================================================
 	private enum INFEED_STATE {
 		NEED_TO_HOME,
 		MOVING_TO_HOME,
@@ -46,6 +50,8 @@ public class Infeed {
 	private boolean _isStaggerAtInitialPosition;
 	
 	private double _targetInfeedPosition;
+	private double _leftSwitchbladeActualPosition;
+	private double _rightSwitchbladeActualPosition;
 	
 	TalonSRX _leftSwitchbladeMotor; 
 	TalonSRX _rightSwitchbladeMotor;
@@ -113,7 +119,9 @@ public class Infeed {
 	//Conversion Constant
 	public static final double DEGREES_TO_NATIVE_UNITS_CONVERSION = (4096/360);
 	
-	//singleton pattern 
+	//=====================================================================================
+	//Define Singleton Pattern
+	//=====================================================================================
 	private static Infeed _instance = new Infeed();
 	
 	public static Infeed getInstance() {
@@ -212,7 +220,7 @@ public class Infeed {
 		_rightInfeedDriveMotor.setInverted(true);
 				
 		//=====================================================================================
-		
+		//Set up Ultrasonic Sensor
 		_ultrasonic = UltrasonicSensor.getInstance();
 		
 		//Initially Configure Booleans
@@ -224,8 +232,9 @@ public class Infeed {
 		_infeedState = INFEED_STATE.NEED_TO_HOME;
 	}
 	
-	
-	// this is run by Looper typically at a 10mS interval (or 2x the RoboRio Scan time)
+	//=====================================================================================
+	//Set Up Looper to run loop at 10ms interval (2x RoboRio Cycle Time)
+	//=====================================================================================
 	private final Loop _loop = new Loop() {
 		// called in Telop & Auton Init
 		@Override
@@ -234,12 +243,12 @@ public class Infeed {
 			}
 		}
 		
-		// the goal is to have ALL motion controlled thru here
-		// ie this is the place where in the case stmts, mtr ctrls are commanded to move
+		//=====================================================================================
+		//Looper and State Machine for Commanding Infeed Axis
+		//=====================================================================================
 		@Override
 		public void onLoop(double timestamp) {
-			synchronized (Infeed.this) {
-							
+			synchronized (Infeed.this) {	
 				switch(_infeedState) {
 					case NEED_TO_HOME:
 						_infeedState = INFEED_STATE.MOVING_TO_HOME;
@@ -255,7 +264,7 @@ public class Infeed {
 						homeArms();
 						break;
 											
-					case MOVE_TO_POSITION_AND_HOLD:						
+					case MOVE_TO_POSITION_AND_HOLD:				
 						_leftSwitchbladeMotor.configMotionCruiseVelocity(INFEED_MOTION_MAGIC_MAX_VEL, 0);
 						_rightSwitchbladeMotor.configMotionCruiseVelocity(INFEED_MOTION_MAGIC_MAX_VEL, 0);
 						_leftSwitchbladeMotor.configMotionAcceleration(INFEED_MOTION_MAGIC_MAX_ACC, 0);
@@ -278,10 +287,10 @@ public class Infeed {
 					case AUTO_ACQUIRE_MANUVER:
 						if(_ultrasonic.getIsCubeInRange()) {
 							_infeedState = INFEED_STATE.STAGGER_INFEED_MANUVER;
-						}		
+						}
 						break;
 					 	
-					case STAGGER_INFEED_MANUVER:
+					case STAGGER_INFEED_MANUVER:						
 						_leftSwitchbladeMotor.set(ControlMode.MotionMagic, degreesToNativeUnits(STAGGER_POSITION_ANGLE));
 						double positionLeftError = Math.abs(nativeUnitsToDegrees(_leftSwitchbladeMotor.getSelectedSensorPosition(0)) - STAGGER_POSITION_ANGLE);
 						double positionRightError = Math.abs(nativeUnitsToDegrees(_rightSwitchbladeMotor.getSelectedSensorPosition(0)) - STAGGER_POSITION_ANGLE);
@@ -292,6 +301,11 @@ public class Infeed {
 						if (positionLeftError < INFEED_ALLOWED_ERROR_ANGLE &&
 								positionRightError < INFEED_ALLOWED_ERROR_ANGLE) {
 							driveInfeedWheels();
+						}
+						
+						if (_ultrasonic.getIsCubeInRobot()) {
+							MoveToPresetPosition(INFEED_TARGET_POSITION.INFEED);
+							_infeedState = INFEED_STATE.MOVE_TO_POSITION_AND_HOLD;
 						}
 					
 						break;
@@ -315,7 +329,9 @@ public class Infeed {
 		return _loop;
 	}
 	
-	//Support Button Mapping to discrete positions
+	//=====================================================================================
+	//Supports Button Mapping to Pre-Set Positions while staying in Same State
+	//=====================================================================================
 	public void MoveToPresetPosition(INFEED_TARGET_POSITION presetPosition) {
 		_infeedState = INFEED_STATE.MOVE_TO_POSITION_AND_HOLD;
 		_isStaggerAtInitialPosition = false;
@@ -506,12 +522,24 @@ public class Infeed {
 			return false;
 		}
 	}
-			
+	
+	//=====================================================================================
+	//Methods for Commanding the Motors to Stop
+	//=====================================================================================
 	public void stopDriveMotors() {
 		_leftInfeedDriveMotor.setSpeed(0);
 		_rightInfeedDriveMotor.setSpeed(0);
 	}
 	
+	public void stop() {
+		_leftSwitchbladeMotor.set(ControlMode.MotionMagic, 0);
+		_leftSwitchbladeMotor.set(ControlMode.MotionMagic, 0);
+		stopDriveMotors();
+	}
+	
+	//=====================================================================================
+	//Methods for Conversions between Native Units and Degrees
+	//=====================================================================================
 	private double degreesToNativeUnits(double degreeMeasure) {
 		double nativeUnits = degreeMeasure * DEGREES_TO_NATIVE_UNITS_CONVERSION;
 		return nativeUnits;
@@ -522,10 +550,20 @@ public class Infeed {
 		return degrees;
 	}
 	
-	private void stop() {
-		_leftSwitchbladeMotor.set(ControlMode.MotionMagic, 0);
-		_leftSwitchbladeMotor.set(ControlMode.MotionMagic, 0);
-		stopDriveMotors();
+	//=====================================================================================
+	//Methods for Logging and Outputting to Shuffleboard
+	//=====================================================================================	
+	public void outputToShuffleboard() {
+		SmartDashboard.putBoolean("Is the Infeed in Position?", areArmsInPosition());
 	}
+	
+	// add data elements to be logged  to the input param (which is passed by ref)
+	public void updateLogData(LogDataBE logData) {	
+		_leftSwitchbladeActualPosition = _leftSwitchbladeMotor.getSelectedSensorPosition(0);
+		_rightSwitchbladeActualPosition = _rightSwitchbladeMotor.getSelectedSensorPosition(0);
+		
+		logData.AddData("Left Infeed Position:", String.valueOf(_leftSwitchbladeActualPosition));
+		logData.AddData("Left Infeed Position:", String.valueOf(_rightSwitchbladeActualPosition));
+	} 
 }
 

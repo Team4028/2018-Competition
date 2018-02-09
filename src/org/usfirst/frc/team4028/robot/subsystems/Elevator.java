@@ -86,7 +86,7 @@ public class Elevator implements Subsystem
 	private static final int CUBE_ON_FLOOR_POSITION = InchesToNativeUnits(3);
 	private static final int HOME_POSITION = 0;
 
-	private static final int ELEVATOR_MAX_TRAVEL = InchesToNativeUnits(41);
+//	private static final int ELEVATOR_MAX_TRAVEL = InchesToNativeUnits(41);
 	private static final int UP_SOFT_LIMIT = InchesToNativeUnits(40.0);
 	private static final int DOWN_SOFT_LIMIT = InchesToNativeUnits(1.0);
 	
@@ -465,7 +465,7 @@ public class Elevator implements Subsystem
 	
 	// output data to the dashboard on the drivers station
 	@Override
-	public void outputToSmartDashboard() 
+	public void outputToShuffleboard() 
 	{
 		double actualPosition = 0;
 		double actualVelocity = 0;
@@ -547,10 +547,10 @@ public class Elevator implements Subsystem
 		return nativeUnits;
 	}
 	
-	private static double NativeUnitsToInches(double nativeUnitsMeasure) {
-		double positionInInches = nativeUnitsMeasure / NATIVE_UNITS_PER_INCH_CONVERSION;
-		return positionInInches;
-	}
+//	private static double NativeUnitsToInches(double nativeUnitsMeasure) {
+//		double positionInInches = nativeUnitsMeasure / NATIVE_UNITS_PER_INCH_CONVERSION;
+//		return positionInInches;
+//	}
 	
 	// add data elements to be logged  to the input param (which is passed by ref)
 	@Override
@@ -570,6 +570,4 @@ public class Elevator implements Subsystem
 			System.out.println(message);
 		}
 	}
-	
-
 }
