@@ -7,7 +7,7 @@ import java.util.Date;
 import org.usfirst.frc.team4028.robot.auton.AutonExecuter;
 import org.usfirst.frc.team4028.robot.sensors.RobotStateEstimator;
 import org.usfirst.frc.team4028.robot.sensors.SwitchableCameraServer;
-import org.usfirst.frc.team4028.robot.sensors.Ultrasonic;
+import org.usfirst.frc.team4028.robot.sensors.UltrasonicSensor;
 import org.usfirst.frc.team4028.robot.subsystems.*;
 import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_PRESET_POSITION;
 import org.usfirst.frc.team4028.util.DataLogger;
@@ -28,10 +28,10 @@ public class Robot extends IterativeRobot {
 	// Subsystems
 	private Chassis _chassis = Chassis.getInstance();
 	private Infeed _infeed = Infeed.getInstance();
-	//private Elevator _elevator = Elevator.getInstance();
+	private Elevator _elevator = Elevator.getInstance();
 	
 	// Sensors
-	private Ultrasonic _ultrasonic = Ultrasonic.getInstance();
+	private UltrasonicSensor _ultrasonic = UltrasonicSensor.getInstance();
 	private SwitchableCameraServer _switchableCameraServer = SwitchableCameraServer.getInstance();
 	//private PDPMonitor _pdpm = PDPMonitor.getInstance();
 	
@@ -176,16 +176,13 @@ public class Robot extends IterativeRobot {
 	// called each loop (approx every 20mS) in telop mode
 	// ================================================================
 	@Override
-	public void teleopPeriodic() {
+	public void teleopPeriodic() {		
+		
+		_ultrasonic.refreshUltrasonicValues();
+		
 		// =============  CHASSIS ============= 
 		if ((Math.abs(_dos.getThrottleCmd()) > 0.05) || (Math.abs(_dos.getTurnCmd()) > 0.05)) {
 			_chassis.arcadeDrive(-1.0 * _dos.getThrottleCmd(), _dos.getTurnCmd());
-		} 
-		else if (_dos.getIsDriverTarget0BtnPressed()) {
-			_chassis.setTargetAngle(0.0);
-		} 
-		else if (_dos.getIsDriverTarget180BtnPressed()) {
-			_chassis.setTargetAngle(180.0);
 		} else {
 			_chassis.stop();
 		}
@@ -193,14 +190,14 @@ public class Robot extends IterativeRobot {
 		if (_dos.getIsShiftGearJustPressed()) {
 			_chassis.toggleShifter();
 		}
-		
+	
 		//=============  INFEED ============= 
 		if (_dos.getIsDriver_ReZeroInfeed_BtnJustPressed()) {
 			_infeed.reZeroArms();
 		}
 		
-		if (_dos.getIsDriver_MoveToInfeedPosition_BtnJustPressed()) {
-			_infeed.moveArmsToInfeedPosition();
+		if (_dos.getIsDriver_MoveToThinInfeedPosition_BtnJustPressed()) {
+			_infeed.moveArmsToThinSideInfeedPosition();
 		}
 		
 		if (_dos.getIsDriver_MoveToWideInfeedPosition_BtnJustPressed()) {
@@ -218,11 +215,14 @@ public class Robot extends IterativeRobot {
 		if (_dos.getIsDriver_StaggerInfeedManuver_BtnJustPressed()) {
 			_infeed.staggerInfeedManuver();
 		}
-		
-		/*
+
+		if (_dos.getIsDriver_AutoAcquire_BtnJustPressed()) {
+			_infeed.autoInfeedManuver();
+		}
+			
 		if (_dos.getIsDriver_InfeedCube_BtnPressed()) {
-			_infeed.driveInfeedWheels();
-		} */
+			_infeed.driveInfeedWheels( );
+		}
 		else {
 			_infeed.stopDriveMotors();
 		}
@@ -265,14 +265,18 @@ public class Robot extends IterativeRobot {
 		logAllData();
 	}
 	
-	// all subsystems with motors should add a call here to a stop method
-	//	so we have one easy way to stop all motion
+	//=====================================================================================
+	//Methods for Stopping All Motors on Every Subsystem (Every Subsystem w/ Motors needs a method here)
+	//=====================================================================================
 	private void stopAll() {
 		_chassis.stop();
-		//_elevator.stop();
+		_elevator.stop();
+		_infeed.stop();
 	}
 	
-	// typically called in *Perodic method to push data to the Dashboard
+	//=====================================================================================
+	//Method to Push Data to ShuffleBoard
+	//=====================================================================================
 	private void outputAllToDashboard() {
 		// limit spamming
     	long scanCycleDeltaInMSecs = new Date().getTime() - _lastScanEndTimeInMSec;
@@ -282,9 +286,11 @@ public class Robot extends IterativeRobot {
     	if((new Date().getTime() - _lastDashboardWriteTimeMSec) > 100) {
     		// each subsystem should add a call to a outputToSmartDashboard method
     		// to push its data out to the dashboard
-    		//_chassis.outputToSmartDashboard(); 
-    		//_elevator.outputToSmartDashboard();
-    		//_ultrasonic.outputToDashboard();
+
+    		_chassis.outputToShuffleboard(); 
+    		_elevator.outputToShuffleboard();
+    		_infeed.outputToShuffleboard();
+    		_ultrasonic.outputToShuffleboard();
 	    	
     		// write the overall robot dashboard info
 	    	SmartDashboard.putString("Robot Build", _buildMsg);
@@ -298,13 +304,13 @@ public class Robot extends IterativeRobot {
     		_lastDashboardWriteTimeMSec = new Date().getTime();
     	}
     	
-    	_chassis.outputToSmartDashboard();
-    	
     	// snapshot when this scan ended
     	_lastScanEndTimeInMSec = new Date().getTime();
 	}
 	
-	// typically called in *Perodic method to optionally log data to the USB stick
+	//=====================================================================================
+	//Method for Logging Data to the USB Stick plugged into the RoboRio
+	//=====================================================================================
 	private void logAllData() { 
 		// always call this 1st to calc drive metrics
     	if(_dataLogger != null) {    	
@@ -313,7 +319,9 @@ public class Robot extends IterativeRobot {
 	    	
 	    	// ask each subsystem that exists to add its data
 	    	_chassis.updateLogData(logData);
-	    	//_elevator.updateLogData(logData);
+	    	_elevator.updateLogData(logData);
+	    	_infeed.updateLogData(logData);
+	    	_ultrasonic.updateLogData(logData);
 	    	
 	    	_dataLogger.WriteDataLine(logData);
     	}

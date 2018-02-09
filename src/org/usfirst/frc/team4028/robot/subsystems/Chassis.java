@@ -414,7 +414,7 @@ public class Chassis implements Subsystem{
 	}
 	
 	@Override
-	public void outputToSmartDashboard() {
+	public void outputToShuffleboard() {
 		SmartDashboard.putNumber("Left Position in Rotations", getLeftPosInRot());
 		SmartDashboard.putNumber("Right Position in Rotations", getRightPosInRot());
 		

@@ -138,7 +138,7 @@ public class DriverOperatorStation {
 			return _driverGamepad.getBButtonPressed();
 		}
 	
-		public boolean getIsDriver_MoveToInfeedPosition_BtnJustPressed() {
+		public boolean getIsDriver_MoveToThinInfeedPosition_BtnJustPressed() {
 			return _driverGamepad.getAButtonPressed();
 		}	
 
@@ -150,9 +150,9 @@ public class DriverOperatorStation {
 //			return _driverGamepad.getBumperPressed(Hand.kLeft);
 //		}
 		
-//		public boolean getIsDriver_RightBumper_BtnJustPressed() {
-//			return _driverGamepad.getBumperPressed(Hand.kRight);
-//		}
+		public boolean getIsDriver_AutoAcquire_BtnJustPressed() {
+			return _driverGamepad.getBumperPressed(Hand.kRight);
+		}
 		
 //		public boolean getIsDriver_LeftStick_BtnJustPressed() {
 //			return _driverGamepad.getStickButtonPressed(Hand.kLeft);
@@ -232,23 +232,19 @@ public class DriverOperatorStation {
 		
 //		public boolean getIsDriver_BlueX_BtnPressed() {
 //			return _driverGamepad.getXButton();
-//		}
+//		} 
 		
-		public boolean getIsDriverTarget0BtnPressed() {
+		public boolean getIsDriver_InfeedCube_BtnPressed() {
 			return _driverGamepad.getBumper(Hand.kLeft);
 		}
-		
-		public boolean getIsDriverTarget180BtnPressed() {
-			return _driverGamepad.getBumper(Hand.kRight);
-		} 
-		
-//		public boolean getIsDriver_LeftBumper_BtnPressed() {
-//			return _driverGamepad.getBumper(Hand.kLeft);
-//		}
 		
 		/*public boolean getIsDriver_InfeedCube_BtnPressed() {
 			return _driverGamepad.getBumper(Hand.kRight);
 		} */
+		
+//		public boolean getIsDriver_InfeedCube_BtnPressed() {
+//			return _driverGamepad.getBumper(Hand.kRight);
+//		}
 		
 //		public boolean getIsDriver_LeftStick_BtnPressed() {
 //			return _driverGamepad.getStickButton(Hand.kLeft);
