@@ -86,7 +86,7 @@ public class Elevator implements Subsystem
 	private static final int CUBE_ON_FLOOR_POSITION = InchesToNativeUnits(3);
 	private static final int HOME_POSITION = 0;
 
-	private static final int ELEVATOR_MAX_TRAVEL = InchesToNativeUnits(41);
+//	private static final int ELEVATOR_MAX_TRAVEL = InchesToNativeUnits(41);
 	private static final int UP_SOFT_LIMIT = InchesToNativeUnits(40.0);
 	private static final int DOWN_SOFT_LIMIT = InchesToNativeUnits(1.0);
 	
@@ -115,13 +115,13 @@ public class Elevator implements Subsystem
 	public static final int ACCELERATION = 4061; 	// native units per 100 mSec per sec
 	
 	public static final double FEED_FORWARD_GAIN_UP = 0.4; //3.4074425;
-	public static final double PROPORTIONAL_GAIN_UP = 0.2; //.4; //0.0731; //3.0;
+	public static final double PROPORTIONAL_GAIN_UP = 0.3; //.4; //0.0731; //3.0;
 	public static final double INTEGRAL_GAIN_UP = 0; //0.03; //0.0; 
 	public static final int INTEGRAL_ZONE_UP = 0; //0.0; 
 	public static final double DERIVATIVE_GAIN_UP = 0; //4.0; //0.7;
 	
 	public static final double FEED_FORWARD_GAIN_DOWN = 0.248 ;// 1.0; //3.4074425;
-	public static final double PROPORTIONAL_GAIN_DOWN = .175; //.14; //2.0;
+	public static final double PROPORTIONAL_GAIN_DOWN = .25; //.14; //2.0;
 	public static final double INTEGRAL_GAIN_DOWN = 0; //0.03; //0.0; 
 	public static final int INTEGRAL_ZONE_DOWN = 0; //200; //0.0; 
 	public static final double DERIVATIVE_GAIN_DOWN = 0; //3.0; // 0.7;
@@ -144,8 +144,8 @@ public class Elevator implements Subsystem
 		_elevatorSlaveMotor.follow(_elevatorMasterMotor);
 		
 		// set motor phasing
-		_elevatorMasterMotor.setInverted(true);
-		_elevatorSlaveMotor.setInverted(true);
+		_elevatorMasterMotor.setInverted(false);
+		_elevatorSlaveMotor.setInverted(false);
 		
 		// config limit switches
 		_elevatorMasterMotor.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed, 0);
@@ -165,7 +165,7 @@ public class Elevator implements Subsystem
 		
 		// config quad encoder & phase (invert = true)
 		_elevatorMasterMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0);
-		_elevatorMasterMotor.setSensorPhase(false);
+		_elevatorMasterMotor.setSensorPhase(true);
 		_elevatorMasterMotor.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 5, 0);
 		
 		//configure the peak and nominal output voltages in both directions for both Talons
@@ -465,7 +465,7 @@ public class Elevator implements Subsystem
 	
 	// output data to the dashboard on the drivers station
 	@Override
-	public void outputToSmartDashboard() 
+	public void outputToShuffleboard() 
 	{
 		double actualPosition = 0;
 		double actualVelocity = 0;
@@ -484,6 +484,12 @@ public class Elevator implements Subsystem
 			actualVelocity = _actualVelocityNU_100mS;
 			actualAcceleration = _actualAccelerationNU_100mS_mS;			
 		}
+		
+		double elevatorCurrent = _elevatorMasterMotor.getOutputCurrent();
+		double elevatorCommandedVoltage = _elevatorMasterMotor.getBusVoltage();
+		
+		SmartDashboard.putNumber("Elevator:Current", elevatorCurrent);
+		SmartDashboard.putNumber("Elevator:Voltage", elevatorCommandedVoltage);
 			
 		SmartDashboard.putNumber("Elevator:Position", actualPosition);
 		SmartDashboard.putNumber("Elevator:Velocity", GeneralUtilities.RoundDouble(actualVelocity, 2));
@@ -541,10 +547,10 @@ public class Elevator implements Subsystem
 		return nativeUnits;
 	}
 	
-	private static double NativeUnitsToInches(double nativeUnitsMeasure) {
-		double positionInInches = nativeUnitsMeasure / NATIVE_UNITS_PER_INCH_CONVERSION;
-		return positionInInches;
-	}
+//	private static double NativeUnitsToInches(double nativeUnitsMeasure) {
+//		double positionInInches = nativeUnitsMeasure / NATIVE_UNITS_PER_INCH_CONVERSION;
+//		return positionInInches;
+//	}
 	
 	// add data elements to be logged  to the input param (which is passed by ref)
 	@Override
@@ -564,6 +570,4 @@ public class Elevator implements Subsystem
 			System.out.println(message);
 		}
 	}
-	
-
 }
