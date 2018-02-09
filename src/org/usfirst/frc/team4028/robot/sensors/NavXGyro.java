@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj.DriverStation;
    http://www.pdocs.kauailabs.com/navx-mxp/software/roborio-libraries/java/
    http://www.pdocs.kauailabs.com/navx-mxp/examples/rotate-to-angle-2/ */
 public class NavXGyro {
-	// singleton pattern
 	private static NavXGyro _instance = new NavXGyro();
 	
 	public static NavXGyro getInstance() {
@@ -19,7 +18,6 @@ public class NavXGyro {
 	
 	private AHRS _navXSensor;
 	
-	// private constructor for singleton pattern
 	private NavXGyro() {
         try {          
         	_navXSensor = new AHRS(Constants.NAVX_PORT); // Communication via RoboRIO MXP (SPI) 

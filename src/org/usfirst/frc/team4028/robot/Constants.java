@@ -57,16 +57,6 @@ public class Constants {
 	// You can confirm by logging into the RoboRIO using WinSCP
 	public static final String PRIMARY_LOG_FILE_PATH = "/media/sda1/logging";
 	public static final String ALTERNATE_LOG_FILE_PATH = "/media/sdb1/logging";
-	
-	/* CONTROL LOOP GAINS */
-	// PID gains for infeed
-	public static final double INFEED_MOTION_MAGIC_P = 2.5;
-    public static final double INFEED_MOTION_MAGIC_I = 0;
-    public static final double INFEED_MOTION_MAGIC_D = 0;
-    public static final double INFEED_MOTION_MAGIC_F = 0.11;
-         
-    public static final int INFEED_MOTION_MAGIC_MAX_VEL = 3000;
-    public static final int INFEED_MOTION_MAGIC_MAX_ACC = 2000;
 
     // Units: setpoint, error, and output are in inches per second. 
     public static final double DRIVE_VELOCITY_NOMINAL_OUTPUT = 0.05;

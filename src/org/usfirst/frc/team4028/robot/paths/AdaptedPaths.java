@@ -8,11 +8,9 @@ import java.util.*;
 
 import org.usfirst.frc.team4028.robot.Constants;
 import org.usfirst.frc.team4028.robot.paths.PathBuilder.Waypoint;
-import org.usfirst.frc.team4028.robot.paths.profiles.PracticeField;
 import org.usfirst.frc.team4028.util.control.Path;
 
 public class AdaptedPaths extends Paths {
-	private PracticeField _practiceField = new PracticeField();
 	public static Path getAdaptedPath(PATHS pathName) {
 		return getPath(pathName, Constants.PATH_FOLLOWING_STANDARD_ACCEL, Constants.PATH_FOLLOWING_STANDARD_DECEL);
 	}

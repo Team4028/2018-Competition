@@ -16,7 +16,6 @@ import org.usfirst.frc.team4028.util.LogDataBE;
 import org.usfirst.frc.team4028.util.MovingAverage;
 import org.usfirst.frc.team4028.util.loops.Looper;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -61,7 +60,7 @@ public class Robot extends IterativeRobot {
 		
 		_enabledLooper.register(_chassis.getLoop());
 		_enabledLooper.register(_infeed.getLoop());
-		//_enabledLooper.register(_elevator.getLoop());
+		_enabledLooper.register(_elevator.getLoop());
 		_enabledLooper.register(RobotStateEstimator.getInstance().getLoop());
 		
 		_dashboard.printStartupMessage();
@@ -177,7 +176,6 @@ public class Robot extends IterativeRobot {
 	// ================================================================
 	@Override
 	public void teleopPeriodic() {		
-		
 		_ultrasonic.refreshUltrasonicValues();
 		
 		// =============  CHASSIS ============= 
@@ -226,11 +224,8 @@ public class Robot extends IterativeRobot {
 		else {
 			_infeed.stopDriveMotors();
 		}
-		
-		//_ultrasonic.getIsCubeInRange();
 
 		// =============  ELEVATOR ============= 
-		/*
 		if (Math.abs(_dos.getOperator_Elevator_JoystickCmd()) > 0.05) {
 			_elevator.JogAxis(_dos.getOperator_Elevator_JoystickCmd());
 		}
@@ -250,11 +245,10 @@ public class Robot extends IterativeRobot {
 			_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.HOME);
 		} else {
 			_elevator.stop();
-		} */
+		} 
 		
 		// ============= Camera Switch ============= 
-		if (_dos.getIsOperator_SwitchCamera_BtnJustPressed() == true)
-		{
+		if (_dos.getIsOperator_SwitchCamera_BtnJustPressed() == true) {
 			_switchableCameraServer.SwitchCamera();
 		}
 		

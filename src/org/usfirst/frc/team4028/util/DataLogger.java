@@ -74,7 +74,6 @@ public class DataLogger {
 	//============================================================================================
 	// Property Accessors follow
 	//============================================================================================
-	
 	public boolean IsLoggingEnabled() {
 		return _isLoggingEnabled;
 	}

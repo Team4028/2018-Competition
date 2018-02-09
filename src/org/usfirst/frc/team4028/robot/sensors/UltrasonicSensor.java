@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //=====================================================================================
 
 public class UltrasonicSensor {
-	
 	//=====================================================================================
 	//Define Clas Level Working Variables
 	//=====================================================================================
@@ -52,8 +51,7 @@ public class UltrasonicSensor {
 	//=====================================================================================
 	//Method for Collecting Data from Ultrasonic Sensor
 	//=====================================================================================
-	public void calculateDistanceReadings() 
-	{
+	public void calculateDistanceReadings() {
 		// convert value from mV to V
 		_ultrasonicSensorOutputVoltageAVG = (_ultrasonicSensor.getAverageVoltage()); 
 		_ultrasonicSensorOutputVoltage = (_ultrasonicSensor.getVoltage()); 

@@ -10,9 +10,6 @@ import org.usfirst.frc.team4028.util.motionProfile.MotionProfileGoal.CompletionB
 import org.usfirst.frc.team4028.util.motionProfile.MotionState;
 import org.usfirst.frc.team4028.util.motionProfile.ProfileFollower;
 
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 public class PathFollower {
     AdaptivePurePursuitController mSteeringController;
     Twist mLastSteeringDelta;

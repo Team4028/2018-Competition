@@ -1,7 +1,6 @@
 package org.usfirst.frc.team4028.robot.subsystems;
 
 public class CubeHandler {
-
 //	private Infeed _infeed = Infeed.getInstance();
 //	private Elevator _elevator = Elevator.getInstance();
 //	private Carriage _carriage = Carriage.getInstance();

@@ -150,9 +150,9 @@ public class Chassis implements Subsystem{
 						
 					case FOLLOW_PATH:
 						if (isHighGear()) {
-							setHighGearVelocityGains();
+							setPIDFGains(HIGH_GEAR_VELOCITY_PIDF_GAINS);
 						} else {
-							setLowGearVelocityGains();
+							setPIDFGains(LOW_GEAR_VELOCITY_PIDF_GAINS);
 						}
 						
 						if (_pathFollower != null) 
@@ -219,10 +219,6 @@ public class Chassis implements Subsystem{
 	public synchronized void setTargetPos(double targetPos) {
 		_leftTargetPos = getLeftPosInches() + targetPos;
 		_rightTargetPos = getRightPosInches() + targetPos;
-		System.out.println("LEFT TARGET POS: " + _leftTargetPos);
-		System.out.println("RIGHT TARGET POS: " + _rightTargetPos);
-		System.out.println("LEFT CURRENT POS: " + getLeftPosInches());
-		System.out.println("RIGHT CURRENT POS: " + getLeftPosInches());
 		setHighGear(false);
 		setMotionMagicStraightGains();
 		_chassisState = ChassisState.DRIVE_SET_DISTANCE;
@@ -366,8 +362,7 @@ public class Chassis implements Subsystem{
 	}
 	
 	public synchronized void setMotionMagicTurnGains() {
-		setPIDFGains(_leftMaster,  MOTION_MAGIC_TURN_PIDF_GAINS);
-		setPIDFGains(_rightMaster, MOTION_MAGIC_TURN_PIDF_GAINS);
+		setPIDFGains(MOTION_MAGIC_TURN_PIDF_GAINS);
         
 		_leftMaster.configMotionAcceleration(MOTION_MAGIC_TURN_MAX_ACC, 0);
 		_rightMaster.configMotionAcceleration(MOTION_MAGIC_TURN_MAX_ACC, 0);
@@ -376,8 +371,7 @@ public class Chassis implements Subsystem{
 	}
 	
 	public synchronized void setMotionMagicStraightGains() {
-		setPIDFGains(_leftMaster, MOTION_MAGIC_STRAIGHT_PIDF_GAINS);
-		setPIDFGains(_rightMaster, MOTION_MAGIC_STRAIGHT_PIDF_GAINS);
+		setPIDFGains(MOTION_MAGIC_STRAIGHT_PIDF_GAINS);
         
         _leftMaster.configMotionAcceleration(MOTION_MAGIC_STRAIGHT_MAX_ACC, 0);
 		_rightMaster.configMotionAcceleration(MOTION_MAGIC_STRAIGHT_MAX_ACC, 0);
@@ -385,21 +379,16 @@ public class Chassis implements Subsystem{
 		_rightMaster.configMotionCruiseVelocity(MOTION_MAGIC_STAIGHT_MAX_VEL, 0);
 	}
 	
-	private synchronized void setLowGearVelocityGains() {
-		setPIDFGains(_leftMaster, LOW_GEAR_VELOCITY_PIDF_GAINS);
-		setPIDFGains(_rightMaster, LOW_GEAR_VELOCITY_PIDF_GAINS);
-	}
-	
-	private synchronized void setHighGearVelocityGains() {
-		setPIDFGains(_leftMaster, HIGH_GEAR_VELOCITY_PIDF_GAINS);
-		setPIDFGains(_rightMaster, HIGH_GEAR_VELOCITY_PIDF_GAINS);
-	}
-	
-	private void setPIDFGains(TalonSRX talon, double[] gains) {
-		talon.config_kP(0, gains[0], 0);
-		talon.config_kI(0, gains[1], 0);
-		talon.config_kD(0, gains[2], 0);
-		talon.config_kF(0, gains[3], 0);
+	private void setPIDFGains(double[] gains) {
+		_leftMaster.config_kP(0, gains[0], 0);
+		_leftMaster.config_kI(0, gains[1], 0);
+		_leftMaster.config_kD(0, gains[2], 0);
+		_leftMaster.config_kF(0, gains[3], 0);
+		
+		_rightMaster.config_kP(0, gains[0], 0);
+		_rightMaster.config_kI(0, gains[1], 0);
+		_rightMaster.config_kD(0, gains[2], 0);
+		_rightMaster.config_kF(0, gains[3], 0);
 	}
 
 	@Override

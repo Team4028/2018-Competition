@@ -2,16 +2,14 @@ package org.usfirst.frc.team4028.robot.subsystems;
 
 import org.usfirst.frc.team4028.util.LogDataBE;
 
-public class Carriage implements Subsystem {
-	// singleton pattern
-	private static Carriage _instance = new Carriage();
+public class Climber implements Subsystem {
+	private static Climber _instance = new Climber();
 	
-	public static Carriage getInstance() {
+	public static Climber getInstance() {
 		return _instance;
 	}
 	
-	// private constructor for singleton pattern
-	private Carriage() {
+	private Climber() {
 	}
 
 	@Override

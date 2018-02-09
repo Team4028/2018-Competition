@@ -1,7 +1,6 @@
 package org.usfirst.frc.team4028.robot.auton.modes;
 
 import org.usfirst.frc.team4028.robot.auton.AutonBase;
-import org.usfirst.frc.team4028.robot.auton.actions.DriveSetDistanceAction;
 import org.usfirst.frc.team4028.robot.auton.actions.PrintTimeFromStart;
 import org.usfirst.frc.team4028.robot.auton.actions.RunMotionProfileAction;
 import org.usfirst.frc.team4028.robot.auton.actions.TurnAction;
