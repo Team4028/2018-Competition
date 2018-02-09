@@ -24,10 +24,6 @@ public abstract class AutonBase {
 		_active = false;
 	}
 	
-	public void printTime() {
-		System.out.println(Timer.getFPGATimestamp() - _startTime);
-	}
-	
 	public boolean isActive() {
 		return _active;
 	}

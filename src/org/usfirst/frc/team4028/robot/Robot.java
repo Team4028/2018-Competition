@@ -29,7 +29,6 @@ public class Robot extends IterativeRobot {
 	private Chassis _chassis = Chassis.getInstance();
 	private Infeed _infeed = Infeed.getInstance();
 	//private Elevator _elevator = Elevator.getInstance();
-
 	
 	// Sensors
 	private Ultrasonic _ultrasonic = Ultrasonic.getInstance();

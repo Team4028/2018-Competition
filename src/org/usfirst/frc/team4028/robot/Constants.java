@@ -67,38 +67,12 @@ public class Constants {
          
     public static final int INFEED_MOTION_MAGIC_MAX_VEL = 3000;
     public static final int INFEED_MOTION_MAGIC_MAX_ACC = 2000;
-    
-	// PID gains for motion magic loop (LOW GEAR)
-	public static final double DRIVE_MOTION_MAGIC_P = 0.175; //4.0
-    public static final double DRIVE_MOTION_MAGIC_I = 0.0; // 0.0
-    public static final double DRIVE_MOTION_MAGIC_D = 20.0; // 95.0
-    public static final double DRIVE_MOTION_MAGIC_F = 0.095; // 0.5
-    public static final int DRIVE_MOTION_MAGIC_I_ZONE = 700;
-    
-    public static final int DRIVE_MOTION_MAGIC_MAX_VEL = 70 * 150; //120.0;
-    public static final int DRIVE_MOTION_MAGIC_MAX_ACC = 100 * 150; //1200.0;
 
-    // Units: setpoint, error, and output are in inches per second.
-    // PID gains for drive velocity loop (LOW_GEAR)
-    public static final double DRIVE_LOW_GEAR_VELOCITY_KP = 0.15;
-    public static final double DRIVE_LOW_GEAR_VELOCITY_KI = 0.0;
-    public static final 			double DRIVE_LOW_GEAR_VELOCITY_KD = 1.5;
-    public static final double DRIVE_LOW_GEAR_VELOCITY_KF = 0.085;
-    public static final int DRIVE_LOW_GEAR_VELOCITY_I_ZONE = 0;
-    
-    // PID gains for drive velocity loop (HIGH GEAR)
-    public static final double DRIVE_HIGH_GEAR_VELOCITY_KP = 0.065; //1.2;
-    public static final double DRIVE_HIGH_GEAR_VELOCITY_KI = 0.0;
-    public static final double DRIVE_HIGH_GEAR_VELOCITY_KD = 1.0; //6.0;
-    public static final double DRIVE_HIGH_GEAR_VELOCITY_KF = 0.04;
-    public static final int DRIVE_HIGH_GEAR_VELOCITY_I_ZONE = 0;
-    
+    // Units: setpoint, error, and output are in inches per second. 
     public static final double DRIVE_VELOCITY_NOMINAL_OUTPUT = 0.05;
-    public static final double DRIVE_VELOCITY_MAX_SETPOINT = 15 * 12.0; // 14 fps
+    public static final double DRIVE_VELOCITY_MAX_SETPOINT = 15 * 12.0; // 15 fps
     
     public static final double DRIVE_VOLTAGE_COMPENSATION_RAMPRATE = 0.0;
-    
-    public static final double DRIVE_CLOSED_LOOP_RAMP_RATE = 0.05;
     
 	/* Robot Physical Constants */
 	// Wheels

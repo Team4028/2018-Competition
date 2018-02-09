@@ -25,7 +25,7 @@ public class RunMotionProfileAction implements Action {
 	@Override
 	public void start() {
 		RobotState.getInstance().reset(Timer.getFPGATimestamp(), _path.getStartPose());
-		_chassis.setWantDrivePath(_path, _path.isReversed(), false);
+		_chassis.setWantDrivePath(_path, _path.isReversed());
 		_chassis.setHighGear(_isHighGear);
 		_startTime = Timer.getFPGATimestamp();
 	}
@@ -47,13 +47,10 @@ public class RunMotionProfileAction implements Action {
 
 	@Override
 	public boolean isFinished() {
-		if ((Timer.getFPGATimestamp() - _startTime) > 1000)
-		{
+		if ((Timer.getFPGATimestamp() - _startTime) > 1000) {
 			_chassis.forceDoneWithPath();
 			return true;
-		} 
-		else 
-		{
+		} else {
 			return _chassis.isDoneWithPath();
 		}
 	}

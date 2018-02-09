@@ -18,7 +18,6 @@ public class NavXGyro {
 	}
 	
 	private AHRS _navXSensor;
-	private double _angleAdjustment;
 	
 	// private constructor for singleton pattern
 	private NavXGyro() {
@@ -30,7 +29,7 @@ public class NavXGyro {
 	}
 	
 	public double getYaw() { 
-		return _angleAdjustment + _navXSensor.getYaw(); 
+		return _navXSensor.getYaw(); 
 	}
 	
 	public void zeroYaw() { 
@@ -38,12 +37,7 @@ public class NavXGyro {
 	}
 	
 	public double getPitch() {
-		try {
-			return _navXSensor.getPitch();
-		} catch (Exception ex) {
-			DriverStation.reportError("Error getting pitch from navX: " + ex.getMessage(), false);
-			return 0.0;
-		}
+		return _navXSensor.getPitch();
 	}
 	
 	public boolean isPitchPastThreshhold() {
@@ -52,9 +46,5 @@ public class NavXGyro {
 		} else {
 			return false;
 		}
-	}
-	
-	public void setAngleAdjustment(double angle) {
-		_angleAdjustment = angle;
 	}
 }

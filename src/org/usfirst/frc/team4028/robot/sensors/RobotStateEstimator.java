@@ -27,14 +27,14 @@ public class RobotStateEstimator {
     private final Loop _loop = new Loop() {
 	    @Override
 	    public synchronized void onStart(double timestamp) {
-	        leftEncoderPrevDistance = chassis.getLeftDistanceInches();
-	        rightEncoderPrevDistance = chassis.getRightDistanceInches();
+	        leftEncoderPrevDistance = chassis.getLeftPosInches();
+	        rightEncoderPrevDistance = chassis.getRightPosInches();
 	    }
 	
 	    @Override
 	    public synchronized void onLoop(double timestamp) {
-	        final double left_distance = chassis.getLeftDistanceInches();
-	        final double right_distance = chassis.getRightDistanceInches();
+	        final double left_distance = chassis.getLeftPosInches();
+	        final double right_distance = chassis.getRightPosInches();
 	        final Rotation gyro_angle = Rotation.fromDegrees(chassis.getHeading());
 	        final Twist odometry_velocity = robotState.generateOdometryFromSensors(
 	                left_distance - leftEncoderPrevDistance, right_distance - rightEncoderPrevDistance, gyro_angle);

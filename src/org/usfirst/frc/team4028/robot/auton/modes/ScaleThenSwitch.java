@@ -17,8 +17,8 @@ public class ScaleThenSwitch extends AutonBase {
 			toScale = Paths.getPath(PATHS.L_SCALE);
 			
 			if (isLeftSwitch) {
-				fromScaleToSwitchPt1 = Paths.getPath(PATHS.L_SCALE_TO_L_SWITCH_PT_1);
-				fromScaleToSwitchPt2 = Paths.getPath(PATHS.L_SCALE_TO_L_SWITCH_PT_2);
+				fromScaleToSwitchPt1 = Paths.getPath(PATHS.L_SCALE_TO_L_SWITCH);
+				//fromScaleToSwitchPt2 = Paths.getPath(PATHS.L_SCALE_TO_L_SWITCH_PT_2);
 			} else {
 				fromScaleToSwitchPt1 = Paths.getPath(PATHS.L_SCALE_TO_R_SWITCH_PT_1);
 				fromScaleToSwitchPt2 = Paths.getPath(PATHS.L_SCALE_TO_R_SWITCH_PT_2);
@@ -30,8 +30,8 @@ public class ScaleThenSwitch extends AutonBase {
 				fromScaleToSwitchPt1 = Paths.getPath(PATHS.R_SCALE_TO_L_SWITCH_PT_1);
 				fromScaleToSwitchPt2 = Paths.getPath(PATHS.R_SCALE_TO_L_SWITCH_PT_2);
 			} else {
-				fromScaleToSwitchPt1 = Paths.getPath(PATHS.R_SCALE_TO_R_SWITCH_PT_1);
-				fromScaleToSwitchPt2 = Paths.getPath(PATHS.R_SCALE_TO_R_SWITCH_PT_2);
+				fromScaleToSwitchPt1 = Paths.getPath(PATHS.R_SCALE_TO_R_SWITCH);
+				//fromScaleToSwitchPt2 = Paths.getPath(PATHS.R_SCALE_TO_R_SWITCH_PT_2);
 			}
 		}
 	}

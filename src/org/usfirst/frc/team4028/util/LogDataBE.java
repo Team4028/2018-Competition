@@ -12,42 +12,33 @@ public class LogDataBE {
 	private List<String> _names;
 	private List<String> _values;
 	
-	//============================================================================================
-	// constructors follow
-	//============================================================================================
 	public LogDataBE() {
 		_names = new ArrayList<String>();
 		_values = new ArrayList<String>();
 	}
 		
-	//============================================================================================
-	// Methods follow
-	//============================================================================================
 	public void AddData(String name, String value) {
 		_names.add(name);
 		_values.add(value);
 	}
 	
-	// discard any data currently being held
+	/** discard any data currently being held */
 	public void ResetData() {
 		_names.clear();
-		_values .clear();
-		
-		//_names = new ArrayList<String>();
-		//_values = new ArrayList<String>();	
+		_values .clear();	
 	}
 
-	// build a TSV (tab separated value) string for the header row
+	/** Build a TSV (tab separated value) string for the header row */
 	public String BuildTSVHeader() {
 		return BuildTSVString(_names);
 	}
 
-	// build a TSV (tab separated value) string for a data row
+	/** Build a TSV (tab separated value) string for a data row */
 	public String BuildTSVData() {
 		return BuildTSVString(_values);
 	}
 	
-	// build a TSV string from a List<string>
+	/** Build a TSV string from a List<string> */
 	private String BuildTSVString(List<String> myList) {
 		StringBuilder sb = new StringBuilder();
 		
@@ -57,9 +48,6 @@ public class LogDataBE {
 		}
 		
 		String lineToWrite = sb.toString();
-		
-		// remove the trailing tab
-		//lineToWrite = lineToWrite.substring(0, lineToWrite.length() - 1);
 		
 		// add trailing crlf
 		lineToWrite = lineToWrite + "\r\n";

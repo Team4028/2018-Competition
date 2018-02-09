@@ -2,6 +2,8 @@ package org.usfirst.frc.team4028.robot.auton.actions;
 
 import org.usfirst.frc.team4028.robot.subsystems.Chassis;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 // Turns the chassis to a specified angle
 public class TurnAction implements Action{
 	private Chassis _chassis = Chassis.getInstance();
@@ -27,6 +29,8 @@ public class TurnAction implements Action{
 
 	@Override
 	public boolean isFinished() {
-		return Math.abs(_chassis.autoAimError()) < 2.0;		// Returns true when chassis is within angle deadband
+		SmartDashboard.putNumber("AUTO AIM ERROR", _chassis.autoAimError());
+		SmartDashboard.putNumber("GYRO", _chassis.getHeading());
+		return Math.abs(_targetAngle - _chassis.getHeading()) < 2.0;		// Returns true when chassis is within angle deadband
 	}
 }
