@@ -28,7 +28,6 @@ public class Robot extends IterativeRobot {
 	private Chassis _chassis = Chassis.getInstance();
 	private Infeed _infeed = Infeed.getInstance();
 	private Elevator _elevator = Elevator.getInstance();
-
 	
 	// Sensors
 	private UltrasonicSensor _ultrasonic = UltrasonicSensor.getInstance();
@@ -142,6 +141,8 @@ public class Robot extends IterativeRobot {
 		// Refresh Dashboard
 		outputAllToDashboard();
 		
+		_chassis.setBrakeMode(true);
+		
 		// Optionally Log Data
 		logAllData();
 	}
@@ -160,6 +161,7 @@ public class Robot extends IterativeRobot {
 		
 		stopAll();
 		
+		_chassis.zeroSensors();
 		_chassis.setHighGear(false);
 		_chassis.setBrakeMode(false);
 		
@@ -174,7 +176,6 @@ public class Robot extends IterativeRobot {
 	// ================================================================
 	@Override
 	public void teleopPeriodic() {		
-		
 		_ultrasonic.refreshUltrasonicValues();
 		
 		// =============  CHASSIS ============= 
@@ -212,7 +213,7 @@ public class Robot extends IterativeRobot {
 		if (_dos.getIsDriver_StaggerInfeedManuver_BtnJustPressed()) {
 			_infeed.staggerInfeedManuver();
 		}
-		
+
 		if (_dos.getIsDriver_AutoAcquire_BtnJustPressed()) {
 			_infeed.autoInfeedManuver();
 		}
@@ -223,8 +224,6 @@ public class Robot extends IterativeRobot {
 		else {
 			_infeed.stopDriveMotors();
 		}
-		
-		//_ultrasonic.getIsCubeInRange();
 
 		// =============  ELEVATOR ============= 
 		if (Math.abs(_dos.getOperator_Elevator_JoystickCmd()) > 0.05) {
@@ -246,11 +245,10 @@ public class Robot extends IterativeRobot {
 			_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.HOME);
 		} else {
 			_elevator.stop();
-		}
+		} 
 		
 		// ============= Camera Switch ============= 
-		if (_dos.getIsOperator_SwitchCamera_BtnJustPressed() == true)
-		{
+		if (_dos.getIsOperator_SwitchCamera_BtnJustPressed() == true) {
 			_switchableCameraServer.SwitchCamera();
 		}
 		
@@ -282,6 +280,7 @@ public class Robot extends IterativeRobot {
     	if((new Date().getTime() - _lastDashboardWriteTimeMSec) > 100) {
     		// each subsystem should add a call to a outputToSmartDashboard method
     		// to push its data out to the dashboard
+
     		_chassis.outputToShuffleboard(); 
     		_elevator.outputToShuffleboard();
     		_infeed.outputToShuffleboard();

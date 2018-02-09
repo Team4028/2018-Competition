@@ -1,6 +1,7 @@
 package org.usfirst.frc.team4028.util.control;
 
 import org.usfirst.frc.team4028.robot.Constants;
+import org.usfirst.frc.team4028.util.LogDataBE;
 import org.usfirst.frc.team4028.util.motion.RigidTransform;
 import org.usfirst.frc.team4028.util.motion.Twist;
 import org.usfirst.frc.team4028.util.motionProfile.MotionProfileConstraints;
@@ -15,14 +16,21 @@ public class PathFollower {
     ProfileFollower mVelocityController;
     boolean overrideFinished = false;
     boolean doneSteering = false;
+    double maxAccel, maxDecel;
+    double inertiaSteeringGain;
+    
+    double scale, dtheta;
 
     /** Create a new PathFollower for a given path */
-    public PathFollower(Path path, boolean reversed) {
+    public PathFollower(Path path, boolean reversed, double maxAccel, double maxDecel, double inertiaSteeringGain) {
         mSteeringController = new AdaptivePurePursuitController(path, reversed);
         mLastSteeringDelta = Twist.identity();
         mVelocityController = new ProfileFollower();
+        this.maxAccel = maxAccel;
+        this.maxDecel = maxDecel;
+        this.inertiaSteeringGain=inertiaSteeringGain;
         mVelocityController.setConstraints(
-                new MotionProfileConstraints(Constants.PATH_FOLLOWING_MAX_VEL, Constants.PATH_FOLLOWING_MAX_ACCEL, Constants.PATH_FOLLOWING_MAX_DECEL));
+                new MotionProfileConstraints(Constants.PATH_FOLLOWING_MAX_VEL, maxAccel, maxDecel));
     }
 
     /**
@@ -47,7 +55,7 @@ public class PathFollower {
                             Math.abs(steering_command.endVelocity), CompletionBehavior.VIOLATE_MAX_ACCEL,
                             Constants.PATH_FOLLOWING_GOAL_POS_TOLERANCE, Constants.PATH_FOLLOWING_GOAL_VEL_TOLERANCE),
                     new MotionProfileConstraints(Math.min(Constants.PATH_FOLLOWING_MAX_VEL, steering_command.maxVelocity),
-                            Constants.PATH_FOLLOWING_MAX_ACCEL, Constants.PATH_FOLLOWING_MAX_DECEL));
+                            maxAccel, maxDecel));
 
             if (steering_command.remainingPathLength < Constants.PATH_STOP_STEERING_DISTANCE) {
                 doneSteering = true;
@@ -56,14 +64,14 @@ public class PathFollower {
 
         final double velocity_command = mVelocityController.update(new MotionState(t, displacement, velocity, 0.0), t);
         final double curvature = mLastSteeringDelta.dtheta / mLastSteeringDelta.dx;
-        double dtheta = mLastSteeringDelta.dtheta;
+        dtheta = mLastSteeringDelta.dtheta;
         if (!Double.isNaN(curvature) && Math.abs(curvature) < Constants.BIG_NUMBER) {
             // Regenerate angular velocity command from adjusted curvature.
             final double abs_velocity_setpoint = Math.abs(mVelocityController.getSetpoint().vel());
-            dtheta = mLastSteeringDelta.dx * curvature * (1.0 + Constants.INERTIA_STEERING_GAIN * abs_velocity_setpoint);
+            dtheta = mLastSteeringDelta.dx * curvature * (1.0 + inertiaSteeringGain * abs_velocity_setpoint);
         }
-        final double scale = velocity_command / mLastSteeringDelta.dx;
-        final Twist rv = new Twist(mLastSteeringDelta.dx * scale, 0.0, dtheta * scale);
+        scale = velocity_command / mLastSteeringDelta.dx;
+        final Twist rv = new Twist(mLastSteeringDelta.dx * scale, 0.0, -dtheta * scale);
 
         return rv;
     }
@@ -75,5 +83,11 @@ public class PathFollower {
 
     public void forceFinish() {
         overrideFinished = true;
+    }
+    
+    public void updateLogData(LogDataBE logData) {
+    	logData.AddData("dTheta", Double.toString(dtheta));
+    	logData.AddData("Scale", Double.toString(scale));
+    	logData.AddData("dTheta * Scale", Double.toString(dtheta * scale));
     }
 }

@@ -33,7 +33,7 @@ public class Constants {
 	
 	// NavX (on Roborio)
 	public static final SPI.Port NAVX_PORT = Port.kMXP;
-	public static final double MAX_PITCH_POSITIVE = 3.0;
+	public static final double MAX_PITCH_POSITIVE = 7.0;
 	public static final double MAX_PITCH_NEGATIVE = -10.0;
 	  
 	// Analog In Ports on RoboRIO
@@ -44,8 +44,8 @@ public class Constants {
 	public static final int SHIFTER_SOLENOID_EXTEND_PCM_PORT = 3;
 	
 	// Solenoid Positions
-	public static final Value SHIFTER_LOW_GEAR_POS = DoubleSolenoid.Value.kReverse;
-	public static final Value SHIFTER_HIGH_GEAR_POS = DoubleSolenoid.Value.kForward;
+	public static final Value SHIFTER_LOW_GEAR_POS = DoubleSolenoid.Value.kForward;
+	public static final Value SHIFTER_HIGH_GEAR_POS = DoubleSolenoid.Value.kReverse;
 	
 	// Infeed Position Constants
 	public static final double INFEED_POSITION = 2300;
@@ -57,54 +57,18 @@ public class Constants {
 	// You can confirm by logging into the RoboRIO using WinSCP
 	public static final String PRIMARY_LOG_FILE_PATH = "/media/sda1/logging";
 	public static final String ALTERNATE_LOG_FILE_PATH = "/media/sdb1/logging";
-	
-	/* CONTROL LOOP GAINS */
-	// PID gains for infeed
-	public static final double INFEED_MOTION_MAGIC_P = 2.5;
-    public static final double INFEED_MOTION_MAGIC_I = 0;
-    public static final double INFEED_MOTION_MAGIC_D = 0;
-    public static final double INFEED_MOTION_MAGIC_F = 0.11;
-         
-    public static final int INFEED_MOTION_MAGIC_MAX_VEL = 3000;
-    public static final int INFEED_MOTION_MAGIC_MAX_ACC = 2000;
-    
-	// PID gains for motion magic loop (LOW GEAR)
-	public static final double DRIVE_MOTION_MAGIC_P = 1.0; //4.0
-    public static final double DRIVE_MOTION_MAGIC_I = 0.002; // 0.0
-    public static final double DRIVE_MOTION_MAGIC_D = 100.0; // 95.0
-    public static final double DRIVE_MOTION_MAGIC_F = 0.45; // 0.5
-    public static final int DRIVE_MOTION_MAGIC_I_ZONE = 700;
-    
-    public static final int DRIVE_MOTION_MAGIC_MAX_VEL = 360; //120.0;
-    public static final int DRIVE_MOTION_MAGIC_MAX_ACC = 720; //1200.0;
 
-    // Units: setpoint, error, and output are in inches per second.
-    // PID gains for drive velocity loop (LOW_GEAR)
-    public static final double DRIVE_LOW_GEAR_VELOCITY_KP = 0.8;
-    public static final double DRIVE_LOW_GEAR_VELOCITY_KI = 0.0;
-    public static final double DRIVE_LOW_GEAR_VELOCITY_KD = 5.0;
-    public static final double DRIVE_LOW_GEAR_VELOCITY_KF = 0.38;
-    public static final int DRIVE_LOW_GEAR_VELOCITY_I_ZONE = 0;
-    
-    // PID gains for drive velocity loop (HIGH GEAR)
-    public static final double DRIVE_HIGH_GEAR_VELOCITY_KP = 0.45; //1.2;
-    public static final double DRIVE_HIGH_GEAR_VELOCITY_KI = 0.0;
-    public static final double DRIVE_HIGH_GEAR_VELOCITY_KD = 1.0; //6.0;
-    public static final double DRIVE_HIGH_GEAR_VELOCITY_KF = 0.2;
-    public static final int DRIVE_HIGH_GEAR_VELOCITY_I_ZONE = 0;
-    
+    // Units: setpoint, error, and output are in inches per second. 
     public static final double DRIVE_VELOCITY_NOMINAL_OUTPUT = 0.05;
-    public static final double DRIVE_VELOCITY_MAX_SETPOINT = 13.97 * 12.0; // 14 fps
+    public static final double DRIVE_VELOCITY_MAX_SETPOINT = 15 * 12.0; // 15 fps
     
     public static final double DRIVE_VOLTAGE_COMPENSATION_RAMPRATE = 0.0;
     
-    public static final double DRIVE_CLOSED_LOOP_RAMP_RATE = 0.05;
-    
 	/* Robot Physical Constants */
 	// Wheels
-	public static final double DRIVE_WHEEL_DIAMETER_INCHES = 4.05;
-	public static final double TRACK_WIDTH_INCHES = 25;
-	public static final double TRACK_SCRUBBING_FACTOR = 0.9;
+	public static final double DRIVE_WHEEL_DIAMETER_INCHES = 6.35;
+	public static final double TRACK_WIDTH_INCHES = 24.25;
+	public static final double TRACK_SCRUBBING_FACTOR = 1.0;
 	
 	// Geometry
 	public static final double CENTER_TO_FRONT_BUMPER_DISTANCE = 16.33;
@@ -120,20 +84,20 @@ public class Constants {
     public static final double DELTA_LOOKAHEAD = MAX_LOOKAHEAD - MIN_LOOKAHEAD;
     public static final double DELTA_LOOKAHEAD_SPEED = MAX_LOOKAHEAD_SPEED - MIN_LOOKAHEAD_SPEED;
 
-    public static final double INERTIA_STEERING_GAIN = 0.0; // angular velocity command is multiplied by this gain *
+    public static final double INERTIA_STEERING_GAIN = 0; //-0.01; // angular velocity command is multiplied by this gain *
                             
     public static final double SEGMENT_COMPLETION_TOLERANCE = 0.1; // inches
-    public static final double PATH_FOLLOWING_MAX_ACCEL = 120.0; // inches per second^2
-    public static final double PATH_FOLLOWING_MAX_DECEL = 120.0;
+    public static final double PATH_FOLLOWING_STANDARD_ACCEL = 120.0; // inches per second^2
+    public static final double PATH_FOLLOWING_STANDARD_DECEL = 120.0;
     public static final double PATH_FOLLOWING_MAX_VEL = 120.0; // inches per second
-    public static final double PATH_FOLLOWING_PROFILE_KP = 7.0;	//5.00;
+    public static final double PATH_FOLLOWING_PROFILE_KP = 6.0; 
     public static final double PATH_FOLLOWING_PROFILE_KI = 0.0;	//0.03;
     public static final double PATH_FOLLOWING_PROFILE_KV = 0.02; //0.02;
     public static final double PATH_FOLLOWING_PROFILE_KFFV = 1.0;
-    public static final double PATH_FOLLOWING_PROFILE_KFFA = 0.05;
+    public static final double PATH_FOLLOWING_PROFILE_KFFA = 0.1;
     public static final double PATH_FOLLOWING_GOAL_POS_TOLERANCE = 0.75;
     public static final double PATH_FOLLOWING_GOAL_VEL_TOLERANCE = 12.0;
-    public static final double PATH_STOP_STEERING_DISTANCE = 0.1;
+    public static final double PATH_STOP_STEERING_DISTANCE = 2.0;
     
     public static final double CELERY_SPEED = 0.0000001;
     public static final double TURTLE_SPEED = 20;
@@ -142,6 +106,19 @@ public class Constants {
     public static final double FLOOR_IT_SPEED = 80;
     public static final double WARP_SPEED = 100;
     public static final double KEEEEEEEEEEEEEEEEEEENS_SPEED = 120;
+    
+    public static final double LEFT_SWITCH_FRONT_X_DELTA = 0;
+    public static final double LEFT_SWITCH_FRONT_Y_DELTA = 0;
+    public static final double LEFT_SWITCH_BACK_X_DELTA = 0;
+    public static final double LEFT_SCALE_X_DELTA = 0;
+    public static final double LEFT_SCALE_Y_DELTA = 0;
+    public static final double LEFT_SWITCH_BACK_DELTA_Y = 0;
+    public static final double RIGHT_SWITCH_FRONT_X_DELTA = 0;
+    public static final double RIGHT_SWITCH_FRONT_Y_DELTA = 0;
+    public static final double RIGHT_SWITCH_BACK_X_DELTA = 0;
+    public static final double RIGHT_SCALE_X_DELTA = 0;
+    public static final double RIGHT_SCALE_Y_DELTA = 0;
+    public static final double RIGHT_SWITCH_BACK_DELTA_Y = 0;
     
     public static final double BIG_NUMBER = 1e6;
     public static final double EPSILON_NEGATIVE_6 = 1e-6;

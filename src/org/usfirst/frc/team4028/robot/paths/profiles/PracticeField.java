@@ -2,43 +2,42 @@ package org.usfirst.frc.team4028.robot.paths.profiles;
 
 public class PracticeField implements FieldProfile{
 	@Override
-	public double getLeftSwitchX() {
+	public double getLSwitchX() {
 		return 0;
 	}
 
 	@Override
-	public double getLeftSwitchY() {
+	public double getLSwitchY() {
 		return 0;
 	}
 
 	@Override
-	public double getRightSwitchX() {
+	public double getRSwitchX() {
 		return 0;
 	}
 
 	@Override
-	public double getRightSwitchY() {
+	public double getRSwitchY() {
 		return 0;
 	}
 
 	@Override
-	public double getLeftScaleX() {
+	public double getLScaleX() {
 		return 0;
 	}
 
 	@Override
-	public double getLeftScaleY() {
+	public double getLScaleY() {
 		return 0;
 	}
 
 	@Override
-	public double getRightScaleX() {
+	public double getRScaleX() {
 		return 0;
 	}
 
 	@Override
-	public double getRightScaleY() {
-		// TODO Auto-generated method stub
+	public double getRScaleY() {
 		return 0;
 	}
 }

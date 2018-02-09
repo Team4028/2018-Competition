@@ -8,7 +8,7 @@ public abstract class AutonBase {
 	protected boolean _active = false;
 	protected double _startTime;
 	
-	// This contains all the runAction methods in the auton.
+	/** This contains all the runAction methods in the auton */
 	public abstract void routine();
 	
 	public void run() {
@@ -24,18 +24,10 @@ public abstract class AutonBase {
 		_active = false;
 	}
 	
-	public void printTime() {
-		System.out.println(Timer.getFPGATimestamp() - _startTime);
-	}
-	
-	public boolean isActive() {
-		return _active;
-	}
-	
-	// Runs an action until isFinished() returns true
+	/** Runs an action until isFinished() returns true */
 	public void runAction(Action action) {
 		action.start();
-		while (isActive() && !action.isFinished()) {
+		while (_active && !action.isFinished()) {
 			action.update();
 		}
 		action.done();

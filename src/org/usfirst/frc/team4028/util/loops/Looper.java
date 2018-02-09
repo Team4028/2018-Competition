@@ -26,7 +26,6 @@ public class Looper {
                     for (Loop loop : _loops) {
                         loop.onLoop(now);
                     }
-                    _timestamp = now;
                 }
             }
         }
@@ -38,14 +37,14 @@ public class Looper {
 		_loops = new ArrayList<>();
 	}
 	
-	// Adds subsystem to the looper
+	/** Adds subsystem to the looper */
 	public synchronized void register(Loop loop) {
 		synchronized (_taskRunningLock) {
 			_loops.add(loop);
 		}
 	}
 	
-	// Calls the onStart() method in every subsystem on thread startup
+	/** Calls the onStart() method in every subsystem on thread startup */
 	public synchronized void start() {
         if (!_running) {
             System.out.println("Starting loops");
@@ -60,7 +59,7 @@ public class Looper {
         }
     }
 	
-	// Calls the onStop() method in every subsystem on thread termination
+	/** Calls the onStop() method in every subsystem on thread termination */
 	public synchronized void stop() {
 		if (_running) {
 			System.out.println("Stopping loops");

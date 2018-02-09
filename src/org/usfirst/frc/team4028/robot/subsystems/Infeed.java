@@ -14,10 +14,10 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.VictorSP;
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Infeed {	
-	
 	//=====================================================================================
 	//Define the Class Level Variables/Enums
 	//=====================================================================================
@@ -129,7 +129,6 @@ public class Infeed {
 	}
 	
 	private Infeed() {
-		
 		//====================================================================================
 		//	Begin Setting Up Motors
 		//====================================================================================
@@ -361,32 +360,26 @@ public class Infeed {
 	//Method for Homing Arms
 	//=====================================================================================
 	private void homeArms() {
-	
 		if (_leftSwitchbladeMotor.getSensorCollection().isRevLimitSwitchClosed() == false) {
 			_leftSwitchbladeMotor.setSelectedSensorPosition(0, 0, 0);
 			_leftSwitchbladeMotor.set(ControlMode.PercentOutput, 0);
 			_isLeftArmHomed = true;
 		}
-		
 		else if (_isLeftArmHomed == false) {
 			_leftSwitchbladeMotor.set(ControlMode.PercentOutput, -.1);
 		}
-		
 		else {
 			_leftSwitchbladeMotor.set(ControlMode.PercentOutput, 0);
 		}
-		
 		
 		if (_rightSwitchbladeMotor.getSensorCollection().isRevLimitSwitchClosed() == false) {
 			_rightSwitchbladeMotor.setSelectedSensorPosition(0, 0, 0);
 			_rightSwitchbladeMotor.set(ControlMode.PercentOutput, 0);
 			_isRightArmHomed = true;
 		}
-		
 		else if (_isRightArmHomed == false) {
 			_rightSwitchbladeMotor.set(ControlMode.PercentOutput, -.1);
 		}
-		
 		else {
 			_rightSwitchbladeMotor.set(ControlMode.PercentOutput, 0);
 		}
@@ -404,8 +397,7 @@ public class Infeed {
 	public void storeArms() {
 		if (_areArmsHomed) {
 			MoveToPresetPosition(INFEED_TARGET_POSITION.STORE);
-		}
-		else {
+		}else {
 			DriverStation.reportWarning("Function Not Avaliable until Arms are Homed", false);
 		}
 	}
@@ -413,8 +405,7 @@ public class Infeed {
 	public void moveArmsToInfeedPosition() {
 		if (_areArmsHomed) {
 			MoveToPresetPosition(INFEED_TARGET_POSITION.INFEED);
-		}
-		else {
+		} else {
 			DriverStation.reportWarning("Function Not Avaliable until Arms are Homed", false);
 		}
 	}
@@ -422,8 +413,7 @@ public class Infeed {
 	public void moveArmsToWideInfeedPosition() {
 		if (_areArmsHomed) {
 			MoveToPresetPosition(INFEED_TARGET_POSITION.WIDE);
-		}
-		else {
+		} else {
 			DriverStation.reportWarning("Function Not Avaliable until Arms are Homed", false);
 		}
 	}
@@ -431,8 +421,7 @@ public class Infeed {
 	public void moveArmsToSqueezeInfeedPosition() {
 		if (_areArmsHomed) {
 			MoveToPresetPosition(INFEED_TARGET_POSITION.SQUEEZE);
-		}
-		else {
+		} else {
 			DriverStation.reportWarning("Function Not Avaliable until Arms are Homed", false);
 		}
 	}
@@ -440,8 +429,7 @@ public class Infeed {
 	public void moveArmsToThinSideInfeedPosition() {
 		if (_areArmsHomed) {
 			MoveToPresetPosition(INFEED_TARGET_POSITION.THIN_SIDE);
-		}
-		else {
+		} else {
 			DriverStation.reportWarning("Function Not Avaliable until Arms are Homed", false);
 		}
 	}
@@ -452,8 +440,7 @@ public class Infeed {
 	public void staggerInfeedManuver() {
 		if(_areArmsHomed && isStaggerManuverSetup()) {
 			_infeedState = INFEED_STATE.STAGGER_INFEED_MANUVER;
-		}
-		else {
+		} else {
 			DriverStation.reportWarning("Function Not Avaliable until Arms are Homed", false);
 		}
 	}
@@ -461,8 +448,7 @@ public class Infeed {
 	public void autoInfeedManuver() {
 		if(_areArmsHomed && isStaggerManuverSetup()) {
 			_infeedState = INFEED_STATE.AUTO_ACQUIRE_MANUVER;
-		}
-		else {
+		} else {
 			DriverStation.reportWarning("Function Not Avaliable until Arms are Homed", false);
 		}
 	}
@@ -506,8 +492,7 @@ public class Infeed {
 			
 			_infeedState = INFEED_STATE.STAGGER_INFEED_MANUVER;
 			return true;
-		}
-		else {
+		} else {
 			return false;
 		}
 	}
@@ -517,8 +502,7 @@ public class Infeed {
 		if(currentError < INFEED_ALLOWED_ERROR_ANGLE && _targetInfeedPosition != HOME_POSITION_ANGLE 
 				&& _targetInfeedPosition != STORE_POSITION_ANGLE) {
 			return true;
-		}
-		else {
+		} else {
 			return false;
 		}
 	}
@@ -566,4 +550,3 @@ public class Infeed {
 		logData.AddData("Left Infeed Position:", String.valueOf(_rightSwitchbladeActualPosition));
 	} 
 }
-

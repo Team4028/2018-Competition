@@ -19,7 +19,7 @@ import org.usfirst.frc.team4028.util.*;
  *
  * 2. Vehicle frame: origin is the center of the robot wheelbase, facing forwards
  *
- * Field-to-vehicle: This is tracked over time by integrating encoder and gyro measurements. It will inevitably
+ * Field-to-vehicle is tracked over time by integrating encoder and gyro measurements. It will inevitably
  * drift, but is usually accurate over short time periods.
  */
 public class RobotState {

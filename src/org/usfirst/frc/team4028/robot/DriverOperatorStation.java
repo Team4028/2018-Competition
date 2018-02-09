@@ -232,11 +232,15 @@ public class DriverOperatorStation {
 		
 //		public boolean getIsDriver_BlueX_BtnPressed() {
 //			return _driverGamepad.getXButton();
-//		}
+//		} 
 		
 		public boolean getIsDriver_InfeedCube_BtnPressed() {
 			return _driverGamepad.getBumper(Hand.kLeft);
 		}
+		
+		/*public boolean getIsDriver_InfeedCube_BtnPressed() {
+			return _driverGamepad.getBumper(Hand.kRight);
+		} */
 		
 //		public boolean getIsDriver_InfeedCube_BtnPressed() {
 //			return _driverGamepad.getBumper(Hand.kRight);
