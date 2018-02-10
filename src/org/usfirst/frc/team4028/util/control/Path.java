@@ -15,6 +15,8 @@ public class Path {
 	PathSegment prevSegment;
 	HashSet<String> mMarkersCrossed = new HashSet<String>();
 	boolean isReversed;
+	public double maxAccel, maxDecel;
+	public double inertiaSteeringGain;
 	
 	public void extrapolateLast() {
 		PathSegment last = segments.get(segments.size() - 1);
@@ -33,6 +35,15 @@ public class Path {
      */
     public void addSegment(PathSegment segment) {
         segments.add(segment);
+    }
+    
+    public void setAccDec(double maxAccel, double maxDecel) {
+    	this.maxAccel = maxAccel;
+    	this.maxDecel = maxDecel;
+    }
+    
+    public void setInertiaGain(double inertiaGain) {
+    	inertiaSteeringGain = inertiaGain;
     }
 
     /** @return the last MotionState in the path */
@@ -170,7 +181,7 @@ public class Path {
         for (int i = segments.size() - 1; i >= 0; i--) {
             PathSegment segment = segments.get(i);
             maxStartSpeed += Math
-                    .sqrt(maxStartSpeed * maxStartSpeed + 2 * Constants.PATH_FOLLOWING_MAX_ACCEL * segment.getLength());
+                    .sqrt(maxStartSpeed * maxStartSpeed + 2 * maxAccel * segment.getLength());
             startSpeeds[i] = segment.getStartState().vel();
             // System.out.println(maxStartSpeed + ", " + startSpeeds[i]);
             if (startSpeeds[i] > maxStartSpeed) {

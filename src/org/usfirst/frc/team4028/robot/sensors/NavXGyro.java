@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj.DriverStation;
    http://www.pdocs.kauailabs.com/navx-mxp/software/roborio-libraries/java/
    http://www.pdocs.kauailabs.com/navx-mxp/examples/rotate-to-angle-2/ */
 public class NavXGyro {
-	// singleton pattern
 	private static NavXGyro _instance = new NavXGyro();
 	
 	public static NavXGyro getInstance() {
@@ -18,9 +17,7 @@ public class NavXGyro {
 	}
 	
 	private AHRS _navXSensor;
-	private double _angleAdjustment;
 	
-	// private constructor for singleton pattern
 	private NavXGyro() {
         try {          
         	_navXSensor = new AHRS(Constants.NAVX_PORT); // Communication via RoboRIO MXP (SPI) 
@@ -30,7 +27,7 @@ public class NavXGyro {
 	}
 	
 	public double getYaw() { 
-		return _angleAdjustment + _navXSensor.getYaw(); 
+		return _navXSensor.getYaw(); 
 	}
 	
 	public void zeroYaw() { 
@@ -38,12 +35,7 @@ public class NavXGyro {
 	}
 	
 	public double getPitch() {
-		try {
-			return _navXSensor.getPitch();
-		} catch (Exception ex) {
-			DriverStation.reportError("Error getting pitch from navX: " + ex.getMessage(), false);
-			return 0.0;
-		}
+		return _navXSensor.getPitch();
 	}
 	
 	public boolean isPitchPastThreshhold() {
@@ -52,9 +44,5 @@ public class NavXGyro {
 		} else {
 			return false;
 		}
-	}
-	
-	public void setAngleAdjustment(double angle) {
-		_angleAdjustment = angle;
 	}
 }

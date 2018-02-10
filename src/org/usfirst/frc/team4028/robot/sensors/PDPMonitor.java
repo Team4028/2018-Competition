@@ -1,18 +1,17 @@
 package org.usfirst.frc.team4028.robot.sensors;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class PDPMonitor {
-	PowerDistributionPanel _pdp;
 	//Singleton Pattern
 	private static PDPMonitor _instance = new PDPMonitor();
 	public static PDPMonitor getInstance() {
 		return _instance;
 	}
+		
+	PowerDistributionPanel _pdp;
 	
-	//Private Constructor to enforce Singleton
+	// Private Constructor to enforce Singleton
 	private PDPMonitor() {
 		_pdp = new PowerDistributionPanel();
 	}
@@ -33,7 +32,6 @@ public class PDPMonitor {
 		return _pdp.getVoltage();
 	}
 	
-
 	public void outputToSmartDashboard() {
 		/*
 		SmartDashboard.putNumber("Chassis Current: ", MonitorTotalCurrent());

@@ -28,8 +28,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //	2		TomB		25-Jan		Added Cade's feedback: error tol, inpos property
 //	3		TomB		4-Feb		Adapted to real elevator
 //-------------------------------------------------------------
-public class Elevator implements Subsystem 
-{
+public class Elevator implements Subsystem {
 	// define enums for the elevator axis
 	private enum ELEVATOR_STATE {
 		NEED_TO_HOME,
@@ -86,7 +85,7 @@ public class Elevator implements Subsystem
 	private static final int CUBE_ON_FLOOR_POSITION = InchesToNativeUnits(3);
 	private static final int HOME_POSITION = 0;
 
-	private static final int ELEVATOR_MAX_TRAVEL = InchesToNativeUnits(41);
+//	private static final int ELEVATOR_MAX_TRAVEL = InchesToNativeUnits(41);
 	private static final int UP_SOFT_LIMIT = InchesToNativeUnits(40.0);
 	private static final int DOWN_SOFT_LIMIT = InchesToNativeUnits(1.0);
 	
@@ -96,14 +95,11 @@ public class Elevator implements Subsystem
 	 * Travel (in)	Floor to bottom of Slide	Floor to Top Stop (in)	Encoder Native Units
 	 * ===========	========================	======================	====================
 	 * 		40.75		42.75					95						29638
-	 * 		
-	 * 		
+	 * 			
 	 * 		12			14						66.5					8736
 	 * 		3			5						57.5				
 	 * 		0			2						54.5					0
 	 */
-	
-
 	
 	private static final boolean IS_VERBOSE_LOGGING_ENABLED = true;
 	
@@ -115,13 +111,13 @@ public class Elevator implements Subsystem
 	public static final int ACCELERATION = 4061; 	// native units per 100 mSec per sec
 	
 	public static final double FEED_FORWARD_GAIN_UP = 0.4; //3.4074425;
-	public static final double PROPORTIONAL_GAIN_UP = 0.2; //.4; //0.0731; //3.0;
+	public static final double PROPORTIONAL_GAIN_UP = 0.3; //.4; //0.0731; //3.0;
 	public static final double INTEGRAL_GAIN_UP = 0; //0.03; //0.0; 
 	public static final int INTEGRAL_ZONE_UP = 0; //0.0; 
 	public static final double DERIVATIVE_GAIN_UP = 0; //4.0; //0.7;
 	
 	public static final double FEED_FORWARD_GAIN_DOWN = 0.248 ;// 1.0; //3.4074425;
-	public static final double PROPORTIONAL_GAIN_DOWN = .175; //.14; //2.0;
+	public static final double PROPORTIONAL_GAIN_DOWN = .25; //.14; //2.0;
 	public static final double INTEGRAL_GAIN_DOWN = 0; //0.03; //0.0; 
 	public static final int INTEGRAL_ZONE_DOWN = 0; //200; //0.0; 
 	public static final double DERIVATIVE_GAIN_DOWN = 0; //3.0; // 0.7;
@@ -134,8 +130,7 @@ public class Elevator implements Subsystem
 	}
 
 	// private constructor for singleton pattern
-	private Elevator()
-	{
+	private Elevator() {
 		// config master & slave talon objects
 		_elevatorMasterMotor = new TalonSRX(Constants.ELEVATOR_LIFT_MASTER_CAN_ADDRESS);
 		_elevatorSlaveMotor = new TalonSRX(Constants.ELEVATOR_LIFT_SLAVE_CAN_ADDRESS);
@@ -144,8 +139,8 @@ public class Elevator implements Subsystem
 		_elevatorSlaveMotor.follow(_elevatorMasterMotor);
 		
 		// set motor phasing
-		_elevatorMasterMotor.setInverted(true);
-		_elevatorSlaveMotor.setInverted(true);
+		_elevatorMasterMotor.setInverted(false);
+		_elevatorSlaveMotor.setInverted(false);
 		
 		// config limit switches
 		_elevatorMasterMotor.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed, 0);
@@ -165,7 +160,7 @@ public class Elevator implements Subsystem
 		
 		// config quad encoder & phase (invert = true)
 		_elevatorMasterMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0);
-		_elevatorMasterMotor.setSensorPhase(false);
+		_elevatorMasterMotor.setSensorPhase(true);
 		_elevatorMasterMotor.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 5, 0);
 		
 		//configure the peak and nominal output voltages in both directions for both Talons
@@ -215,28 +210,21 @@ public class Elevator implements Subsystem
 	}
 	
 	// this is run by Looper typically at a 10mS interval (or 2x the RoboRio Scan time)
-	private final Loop _loop = new Loop() 
-	{
+	private final Loop _loop = new Loop() {
 		// called in Telop & Auton Init
 		@Override
-		public void onStart(double timestamp) 
-		{
-			synchronized (Elevator.this) 
-			{
-			}
+		public void onStart(double timestamp) {
+			synchronized (Elevator.this) {}
 		}
 		
 		// the goal is to have ALL motion controlled thru here
 		// ie this is the place where in the case stmts, mtr ctrls are commanded to move
 		@Override
-		public void onLoop(double timestamp) 
-		{
-			synchronized (Elevator.this) 
-			{
+		public void onLoop(double timestamp) {
+			synchronized (Elevator.this) {
 				long deltatime = 0;
 				
-				switch(_elevatorState) 
-				{
+				switch(_elevatorState) {
 					case NEED_TO_HOME:
 						// snapshot start time
 						_elevatorHomeStartTime = System.currentTimeMillis();
@@ -247,25 +235,19 @@ public class Elevator implements Subsystem
 						
 					case MOVING_TO_HOME:
 						// are we on the rev (home) limit switch
-						if(!_elevatorMasterMotor.getSensorCollection().isRevLimitSwitchClosed())
-						{
+						if(!_elevatorMasterMotor.getSensorCollection().isRevLimitSwitchClosed()) {
 							// change state
 							_elevatorState = ELEVATOR_STATE.AT_HOME;
 							EnableSoftLimits();
 							ReportStateChg("ElevatorAxis (State) [MOVING_TO_HOME] ==> [AT_HOME]");
-						} 
-						else 
-						{
+						} else {
 		    				// check for timeout
 		    				long elapsedTime = System.currentTimeMillis() - _elevatorHomeStartTime;
-		    				if (elapsedTime >= ELEVATOR_MAXIMUM_MOVE_TO_HOME_TIME_IN_MSEC) 
-		    				{
+		    				if (elapsedTime >= ELEVATOR_MAXIMUM_MOVE_TO_HOME_TIME_IN_MSEC) {
 								// change state
 		    					_elevatorState = ELEVATOR_STATE.TIMEOUT;
 		    					ReportStateChg("ElevatorAxis (State) [MOVING_TO_HOME] ==> [TIMEOUT]");
-		    				} 
-		    				else 
-		    				{
+		    				} else {
 		    					// drive axis down in % vbus mode
 		    					DisableSoftLimits();
 		    					_elevatorMasterMotor.set(ControlMode.PercentOutput, ELEVATOR_MOVE_TO_HOME_VELOCITY_CMD);
@@ -318,17 +300,12 @@ public class Elevator implements Subsystem
 						_lastScanTimeStamp = new Date().getTime();
 						_lastScanActualVelocityNU_100mS = _actualVelocityNU_100mS;
 						
-						if(_isSoftLimitsEnabled 
-								&& (_actualPositionNU >= UP_SOFT_LIMIT))
-						{
+						if(_isSoftLimitsEnabled && (_actualPositionNU >= UP_SOFT_LIMIT)) {
 							ReportStateChg("Elevator At Up Soft Limit!");
-						}
-						else if (_isSoftLimitsEnabled 
-								&& (_actualPositionNU <= DOWN_SOFT_LIMIT))
-						{
+						} 
+						else if (_isSoftLimitsEnabled && (_actualPositionNU <= DOWN_SOFT_LIMIT)) {
 							ReportStateChg("Elevator At Down Soft Limit!");
 						}
-						
 						break;
 						
 					case TIMEOUT:
@@ -342,10 +319,8 @@ public class Elevator implements Subsystem
 		
 		// run logic when the looper stops
 		@Override
-		public void onStop(double timestamp) 
-		{
-			synchronized (Elevator.this) 
-			{
+		public void onStop(double timestamp) {
+			synchronized (Elevator.this) {
 				stop();
 			}
 		}
@@ -357,10 +332,8 @@ public class Elevator implements Subsystem
 	}
 	
 	// Support Operators Gamepad Buttons mapped to discrete positions
-	public void MoveToPresetPosition(ELEVATOR_PRESET_POSITION presetPosition)
-	{
-		switch(presetPosition)
-		{
+	public void MoveToPresetPosition(ELEVATOR_PRESET_POSITION presetPosition) {
+		switch(presetPosition) {
 			case HOME:
 				_targetElevatorPosition = HOME_POSITION;
 				_elevatorState = ELEVATOR_STATE.GOTO_AND_HOLD_TARGET_POSTION;
@@ -406,45 +379,37 @@ public class Elevator implements Subsystem
 	}
 	
 	// support joystick like jogging but at a fixed velocity
-	public void JogAxis(double speedCmd)
-	{
+	public void JogAxis(double speedCmd) {
 		if(_elevatorState == ELEVATOR_STATE.GOTO_AND_HOLD_TARGET_POSTION 
 				|| _elevatorState == ELEVATOR_STATE.AT_HOME
 				|| _elevatorState == ELEVATOR_STATE.JOG_AXIS)
 		{
-			if(_elevatorState != ELEVATOR_STATE.JOG_AXIS)
-			{
+			if(_elevatorState != ELEVATOR_STATE.JOG_AXIS) {
 				// change the state
 				_elevatorState = ELEVATOR_STATE.JOG_AXIS;
 				ReportStateChg("ElevatorAxis (State) ==> [JOG_AXIS]");	
 			}
 
-			if(speedCmd > 0)
-			{
+			if(speedCmd > 0) {
 				// jog at a fixed rate in a + direction
 				_targetElevatorVelocity = JOG_UP_VELOCITY;
 			}
-			else if(speedCmd < 0)
-			{
+			else if(speedCmd < 0) {
 				// jog at a fixed rate in a - direction
 				_targetElevatorVelocity = JOG_DOWN_VELOCITY;
 			}
-		}
-		else
-		{
+		} else {
 			DriverStation.reportWarning("Wait until elevator is homed to jog", false);
 		}
 	}
 	
 	// implemented as active hold in place for now (vs just turning motors off)
 	@Override
-	public void stop() 
-	{		
+	public void stop() {		
 		if(_elevatorState != ELEVATOR_STATE.GOTO_AND_HOLD_TARGET_POSTION
 				&& _elevatorState != ELEVATOR_STATE.NEED_TO_HOME
 				&& _elevatorState != ELEVATOR_STATE.MOVING_TO_HOME
-				&& _elevatorState != ELEVATOR_STATE.TIMEOUT)
-		{
+				&& _elevatorState != ELEVATOR_STATE.TIMEOUT) {
 			// set target to current location
 			//_targetElevatorPosition = _elevatorMasterMotor.getSelectedSensorPosition(0);
 			
@@ -458,32 +423,33 @@ public class Elevator implements Subsystem
 
 	// reset (rzero) all sensors
 	@Override
-	public void zeroSensors() 
-	{
+	public void zeroSensors() {
 		_elevatorMasterMotor.setSelectedSensorPosition(0, 0, 0);
 	}
 	
 	// output data to the dashboard on the drivers station
 	@Override
-	public void outputToSmartDashboard() 
-	{
+	public void outputToShuffleboard() {
 		double actualPosition = 0;
 		double actualVelocity = 0;
 		double actualAcceleration = 0;
 		
 		boolean isDisplayNativeUnits = true;
-		if(!isDisplayNativeUnits)
-		{
+		if(!isDisplayNativeUnits) {
 			actualPosition =  _actualPositionNU / NU_PER_INCH;
 			actualVelocity = 10 * _actualVelocityNU_100mS / NU_PER_INCH;
 			actualAcceleration = 1000 * 10 * (_actualAccelerationNU_100mS_mS / NU_PER_INCH);
-		}
-		else
-		{
+		} else {
 			actualPosition = _actualPositionNU;
 			actualVelocity = _actualVelocityNU_100mS;
 			actualAcceleration = _actualAccelerationNU_100mS_mS;			
 		}
+		
+		double elevatorCurrent = _elevatorMasterMotor.getOutputCurrent();
+		double elevatorCommandedVoltage = _elevatorMasterMotor.getBusVoltage();
+		
+		SmartDashboard.putNumber("Elevator:Current", elevatorCurrent);
+		SmartDashboard.putNumber("Elevator:Voltage", elevatorCommandedVoltage);
 			
 		SmartDashboard.putNumber("Elevator:Position", actualPosition);
 		SmartDashboard.putNumber("Elevator:Velocity", GeneralUtilities.RoundDouble(actualVelocity, 2));
@@ -493,32 +459,23 @@ public class Elevator implements Subsystem
 	}
 
 	// this property indicates if the elevator is w/i the position deadband of the target position
-	public boolean IsAtTargetPosition() 
-	{
-        if (_elevatorState == ELEVATOR_STATE.GOTO_AND_HOLD_TARGET_POSTION)
-        {
+	public boolean IsAtTargetPosition() {
+        if (_elevatorState == ELEVATOR_STATE.GOTO_AND_HOLD_TARGET_POSTION) {
         	int currentError = Math.abs(_elevatorMasterMotor.getSelectedSensorPosition(0) - _targetElevatorPosition);
-            if ( currentError < ELEVATOR_POS_ALLOWABLE_ERROR_IN_NU) 
-            {
+            if ( currentError < ELEVATOR_POS_ALLOWABLE_ERROR_IN_NU) {
             	return true;
-            } 
-            else
-            {
+            } else {
             	return false;
             }
         } 
-        else if (_elevatorState == ELEVATOR_STATE.JOG_AXIS)
-        {
+        else if (_elevatorState == ELEVATOR_STATE.JOG_AXIS) {
         	return false;
-        } 
-        else
-        {
+        } else {
         	return false;
         }
     }
 
-	private void EnableSoftLimits()
-	{
+	private void EnableSoftLimits() {
 		_elevatorMasterMotor.configReverseSoftLimitThreshold(DOWN_SOFT_LIMIT, 0);
 		_elevatorMasterMotor.configForwardSoftLimitThreshold(UP_SOFT_LIMIT, 0);	
 		
@@ -528,8 +485,7 @@ public class Elevator implements Subsystem
 		_isSoftLimitsEnabled = true;
 	}
 	
-	private void DisableSoftLimits()
-	{
+	private void DisableSoftLimits() {
 		_elevatorMasterMotor.configReverseSoftLimitEnable(false, 0);
 		_elevatorMasterMotor.configForwardSoftLimitEnable(false, 0);
 		
@@ -541,15 +497,14 @@ public class Elevator implements Subsystem
 		return nativeUnits;
 	}
 	
-	private static double NativeUnitsToInches(double nativeUnitsMeasure) {
-		double positionInInches = nativeUnitsMeasure / NATIVE_UNITS_PER_INCH_CONVERSION;
-		return positionInInches;
-	}
+//	private static double NativeUnitsToInches(double nativeUnitsMeasure) {
+//		double positionInInches = nativeUnitsMeasure / NATIVE_UNITS_PER_INCH_CONVERSION;
+//		return positionInInches;
+//	}
 	
 	// add data elements to be logged  to the input param (which is passed by ref)
 	@Override
-	public void updateLogData(LogDataBE logData) 
-	{
+	public void updateLogData(LogDataBE logData) {
 		logData.AddData("Elevator:PostionNu", String.valueOf(_actualPositionNU));	
 		logData.AddData("Elevator:VelocityNu", String.valueOf(_actualVelocityNU_100mS));	
 		logData.AddData("Elevator:AccelNu", String.valueOf(_actualAccelerationNU_100mS_mS));	
@@ -557,13 +512,9 @@ public class Elevator implements Subsystem
 	} 
 	
 	// private helper method to control how we write to the drivers station
-	private void ReportStateChg(String message)
-	{
-		if(IS_VERBOSE_LOGGING_ENABLED)
-		{
+	private void ReportStateChg(String message) {
+		if(IS_VERBOSE_LOGGING_ENABLED) {
 			System.out.println(message);
 		}
 	}
-	
-
 }

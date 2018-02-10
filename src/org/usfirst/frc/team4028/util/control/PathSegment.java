@@ -2,7 +2,6 @@ package org.usfirst.frc.team4028.util.control;
 
 import java.util.Optional;
 
-import org.usfirst.frc.team4028.robot.Constants;
 import org.usfirst.frc.team4028.util.motion.Rotation;
 import org.usfirst.frc.team4028.util.motion.Translation;
 import org.usfirst.frc.team4028.util.motionProfile.MotionProfile;
@@ -18,6 +17,7 @@ public class PathSegment {
 	private Translation deltaStart;
 	private Translation deltaEnd;
 	private double maxSpeed;
+	private double maxAccel, maxDecel;
 	private boolean isLine;
 	private MotionProfile speedController;
 	private boolean extrapolateLookahead;
@@ -38,20 +38,12 @@ public class PathSegment {
      *            maximum speed allowed on the segment
      */
     public PathSegment(double x1, double y1, double x2, double y2, double maxSpeed, MotionState startState,
-            double endSpeed) {
-        this.start = new Translation(x1, y1);
-        this.end = new Translation(x2, y2);
-
-        this.deltaStart = new Translation(start, end);
-
-        this.maxSpeed = maxSpeed;
-        extrapolateLookahead = false;
-        isLine = true;
-        createMotionProfiler(startState, endSpeed);
+            double endSpeed, double maxAccel, double maxDecel) {
+        this(x1, y1, x2, y2, maxSpeed, startState, endSpeed, maxAccel, maxDecel, "");
     }
 
     public PathSegment(double x1, double y1, double x2, double y2, double maxSpeed, MotionState startState,
-            double endSpeed, String marker) {
+            double endSpeed, double maxAccel, double maxDecel, String marker) {
         this.start = new Translation(x1, y1);
         this.end = new Translation(x2, y2);
 
@@ -60,6 +52,8 @@ public class PathSegment {
         this.maxSpeed = maxSpeed;
         extrapolateLookahead = false;
         isLine = true;
+        this.maxAccel = maxAccel;
+        this.maxDecel = maxDecel;
         this.marker = marker;
         createMotionProfiler(startState, endSpeed);
     }
@@ -83,22 +77,12 @@ public class PathSegment {
      *            maximum speed allowed on the segment
      */
     public PathSegment(double x1, double y1, double x2, double y2, double cx, double cy, double maxSpeed,
-            MotionState startState, double endSpeed) {
-        this.start = new Translation(x1, y1);
-        this.end = new Translation(x2, y2);
-        this.center = new Translation(cx, cy);
-
-        this.deltaStart = new Translation(center, start);
-        this.deltaEnd = new Translation(center, end);
-
-        this.maxSpeed = maxSpeed;
-        extrapolateLookahead = false;
-        isLine = false;
-        createMotionProfiler(startState, endSpeed);
+            MotionState startState, double endSpeed, double maxAccel, double maxDecel) {
+        this(x1, y1, x2, y2, cx, cy, maxSpeed, startState, endSpeed, maxAccel, maxDecel, "");
     }
 
     public PathSegment(double x1, double y1, double x2, double y2, double cx, double cy, double maxSpeed,
-            MotionState startState, double endSpeed, String marker) {
+            MotionState startState, double endSpeed, double maxAccel, double maxDecel, String marker) {
         this.start = new Translation(x1, y1);
         this.end = new Translation(x2, y2);
         this.center = new Translation(cx, cy);
@@ -109,6 +93,8 @@ public class PathSegment {
         this.maxSpeed = maxSpeed;
         extrapolateLookahead = false;
         isLine = false;
+        this.maxAccel = maxAccel;
+        this.maxDecel = maxDecel;
         this.marker = marker;
         createMotionProfiler(startState, endSpeed);
     }
@@ -119,7 +105,7 @@ public class PathSegment {
     
     public void createMotionProfiler(MotionState start_state, double end_speed) {
     	MotionProfileConstraints motionConstraints = new MotionProfileConstraints(maxSpeed, 
-    			Constants.PATH_FOLLOWING_MAX_ACCEL, Constants.PATH_FOLLOWING_MAX_DECEL);
+    			maxAccel, maxDecel);//System.out.print(maxAccel + " | " + maxDecel);
     	MotionProfileGoal goal_state = new MotionProfileGoal(getLength(), end_speed);
     	speedController = MotionProfileGenerator.generateProfile(motionConstraints, goal_state, start_state);
     }
