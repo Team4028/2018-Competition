@@ -62,8 +62,6 @@ public class Constants {
     public static final double DRIVE_VELOCITY_NOMINAL_OUTPUT = 0.05;
     public static final double DRIVE_VELOCITY_MAX_SETPOINT = 15 * 12.0; // 15 fps
     
-    public static final double DRIVE_VOLTAGE_COMPENSATION_RAMPRATE = 0.0;
-    
 	/* Robot Physical Constants */
 	// Wheels
 	public static final double DRIVE_WHEEL_DIAMETER_INCHES = 6.35;

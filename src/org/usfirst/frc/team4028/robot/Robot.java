@@ -118,12 +118,11 @@ public class Robot extends IterativeRobot {
 		
 		_dashboard.getGameData();
 		
+		_chassis.zeroGyro();
+		
 		_autonExecuter = new AutonExecuter();
 		_autonExecuter.setAutoMode(_dashboard.getSelectedAuton());
 		_autonExecuter.start();
-		
-		_chassis.zeroGyro();
-		_chassis.setBrakeMode(true);
 		
 		// init data logging
 		_dataLogger = GeneralUtilities.setupLogging("auton");
@@ -220,8 +219,7 @@ public class Robot extends IterativeRobot {
 			
 		if (_dos.getIsDriver_InfeedCube_BtnPressed()) {
 			_infeed.driveInfeedWheels( );
-		}
-		else {
+		} else {
 			_infeed.stopDriveMotors();
 		}
 

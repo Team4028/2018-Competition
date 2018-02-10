@@ -14,6 +14,6 @@ public class CubeHandler {
 	
 	// private constructor for singleton pattern
 	private CubeHandler() {
-	
+		
 	}
 }

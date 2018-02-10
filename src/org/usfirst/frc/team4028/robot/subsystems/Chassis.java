@@ -25,15 +25,16 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class Chassis implements Subsystem{
-	// singleton pattern
+import static org.usfirst.frc.team4028.util.GeneralUtilities.setPIDFGains;
+import static org.usfirst.frc.team4028.util.GeneralUtilities.setMotionMagicConstants;
+
+public class Chassis implements Subsystem {
 	private static Chassis _instance = new Chassis();
 	
 	public static Chassis getInstance() {
 		return _instance;
 	}
 	
-	// define class level variables for Robot objects
 	private TalonSRX _leftMaster, _leftSlave, _rightMaster, _rightSlave;
 	private DoubleSolenoid _shifter;
 	
@@ -47,25 +48,19 @@ public class Chassis implements Subsystem{
 	
 	private double _targetAngle = 0;
 	private double _angleError = 180;
-	
-	private double _leftTargetPos, _rightTargetPos = 0;
-	
+	private double _leftTargetPos, _rightTargetPos;
 	private double _leftTargetVelocity, _rightTargetVelocity;
 
 	private static final double CODES_PER_REV = 30725.425;
-	
 	private static final double ENCODER_ROTATIONS_PER_DEGREE = 46.15/3600;
 	
 	private static final double[] MOTION_MAGIC_TURN_PIDF_GAINS = {0.25, 0.0, 35.0, 0.095};
 	private static final double[] MOTION_MAGIC_STRAIGHT_PIDF_GAINS = {0.0, 0.0, 0.0, 0.095};
 	private static final double[] LOW_GEAR_VELOCITY_PIDF_GAINS = {0.15, 0.0, 1.5, 0.085};
 	private static final double[] HIGH_GEAR_VELOCITY_PIDF_GAINS = {0.065, 0.0, 1.0, 0.04};
-	
-	private static final int MOTION_MAGIC_TURN_MAX_VEL = 70 * 150; 
-    private static final int MOTION_MAGIC_TURN_MAX_ACC = 150 * 150; 
     
-    private static final int MOTION_MAGIC_STAIGHT_MAX_VEL = 80 * 150; 
-    private static final int MOTION_MAGIC_STRAIGHT_MAX_ACC = 120 * 150; 
+    private static final int[] MOTION_MAGIC_TURN_VEL_ACC = {80 * 150, 150 * 150};
+    private static final int[] MOTION_MAGIC_STRAIGHT_VEL_ACC = {80 * 150, 120 * 150};
 	
 	// Chassis various states
 	private enum ChassisState {
@@ -109,12 +104,6 @@ public class Chassis implements Subsystem{
         _rightMaster.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_10Ms, 0);
         _rightMaster.configVelocityMeasurementWindow(32, 0);
         
-        _leftMaster.configNominalOutputForward(Constants.DRIVE_VELOCITY_NOMINAL_OUTPUT, 0);
-        _leftMaster.configNominalOutputReverse(-Constants.DRIVE_VELOCITY_NOMINAL_OUTPUT, 0);
-        
-        _rightMaster.configNominalOutputForward(Constants.DRIVE_VELOCITY_NOMINAL_OUTPUT, 0);
-        _rightMaster.configNominalOutputReverse(-Constants.DRIVE_VELOCITY_NOMINAL_OUTPUT, 0);
-        
         _leftMaster.configOpenloopRamp(0.5, 10);
         _rightMaster.configOpenloopRamp(0.5, 10);
         
@@ -150,9 +139,11 @@ public class Chassis implements Subsystem{
 						
 					case FOLLOW_PATH:
 						if (isHighGear()) {
-							setPIDFGains(HIGH_GEAR_VELOCITY_PIDF_GAINS);
+							setPIDFGains(_leftMaster, HIGH_GEAR_VELOCITY_PIDF_GAINS);
+							setPIDFGains(_rightMaster, HIGH_GEAR_VELOCITY_PIDF_GAINS);
 						} else {
-							setPIDFGains(LOW_GEAR_VELOCITY_PIDF_GAINS);
+							setPIDFGains(_leftMaster, LOW_GEAR_VELOCITY_PIDF_GAINS);
+							setPIDFGains(_rightMaster, LOW_GEAR_VELOCITY_PIDF_GAINS);
 						}
 						
 						if (_pathFollower != null) 
@@ -174,7 +165,8 @@ public class Chassis implements Subsystem{
 		return _loop;
 	}
 	
-	/* Chassis State: PERCENT VBUS */
+	/* ===== Chassis State: PERCENT VBUS ===== */
+	/** Arcade drive with throttle and turn inputs. Includes anti-tipping and quick-turn. */
 	public synchronized void arcadeDrive(double throttle, double turn) {
 		_chassisState = ChassisState.PERCENT_VBUS;
 		
@@ -192,6 +184,7 @@ public class Chassis implements Subsystem{
 	}
 	
 	/* Chassis State: AUTO TURN */
+	/** Set the target gyro angle for the robot to turn to. */
 	public synchronized void setTargetAngle(double targetAngle) {
 		_targetAngle = targetAngle;
 		setHighGear(false);
@@ -199,6 +192,7 @@ public class Chassis implements Subsystem{
 		_chassisState = ChassisState.AUTO_TURN;
 	} 
 	
+	/** Updates target position every cycle while using MotionMagic to turn to heading goal */
 	private synchronized void moveToTargetAngle() {
 		_angleError = _navX.getYaw() > 0 ? _targetAngle - _navX.getYaw() : _targetAngle - _navX.getYaw();
 		
@@ -211,14 +205,15 @@ public class Chassis implements Subsystem{
 		_rightMaster.set(ControlMode.MotionMagic, rightDriveTargetPosition);
 	}
 	
-	public synchronized double autoAimError() {
-		return _angleError;
+	/** Returns whether chassis has turned close enough to heading goal */
+	public synchronized boolean autoTurnOnTarget() {
+		return Math.abs(_angleError) < 2.0;
 	}
 	
 	/* Chassis State: DRIVE SET DISTANCE */
 	public synchronized void setTargetPos(double targetPos) {
-		_leftTargetPos = getLeftPosInches() + targetPos;
-		_rightTargetPos = getRightPosInches() + targetPos;
+		_leftTargetPos = inchesToNativeUnits(getLeftPosInches() + targetPos);
+		_rightTargetPos = inchesToNativeUnits(getRightPosInches() + targetPos);
 		setHighGear(false);
 		setMotionMagicStraightGains();
 		_chassisState = ChassisState.DRIVE_SET_DISTANCE;
@@ -234,6 +229,7 @@ public class Chassis implements Subsystem{
 	} 
 
 	/* Chassis State: FOLLOW PATH */
+	/** Set path for PathFollower controller to follow */
     public synchronized void setWantDrivePath(Path path, boolean reversed) {
         if (_currentPath != path || _chassisState != ChassisState.FOLLOW_PATH) {
             RobotState.getInstance().resetDistanceDriven();
@@ -246,6 +242,7 @@ public class Chassis implements Subsystem{
         }
     }
     
+    /** Update PathFollower with latest pose estimate to get new target velocity */
     private void updatePathFollower(double timestamp) {
 		RigidTransform _robotPose = _robotState.getLatestFieldToVehicle().getValue();
 		Twist command = _pathFollower.update(timestamp, _robotPose, RobotState.getInstance().getDistanceDriven(), RobotState.getInstance().getPredictedVelocity().dx);
@@ -263,6 +260,7 @@ public class Chassis implements Subsystem{
 		}
 	}
 
+    /** Returns whether Chassis has completed the set path */
     public synchronized boolean isDoneWithPath() {
         if (_chassisState == ChassisState.FOLLOW_PATH && _pathFollower != null)
             return _pathFollower.isFinished();
@@ -271,6 +269,7 @@ public class Chassis implements Subsystem{
             return true;
     }
 
+    /** Path following e-stop */
     public synchronized void forceDoneWithPath() {
         if (_chassisState == ChassisState.FOLLOW_PATH && _pathFollower != null)
             _pathFollower.forceFinish();
@@ -347,6 +346,10 @@ public class Chassis implements Subsystem{
     private static double rpmToInchesPerSecond(double rpm) {
         return rotationsToInches(rpm) / 60;
     }
+    
+    private static double inchesToNativeUnits(double inches) {
+    	return (inches * CODES_PER_REV) / (Constants.DRIVE_WHEEL_DIAMETER_INCHES * Math.PI);
+    }
 	
 	private static double inchesPerSecondToNativeUnits(double inches_per_second) {
         return inches_per_second * 148.2;
@@ -362,33 +365,19 @@ public class Chassis implements Subsystem{
 	}
 	
 	public synchronized void setMotionMagicTurnGains() {
-		setPIDFGains(MOTION_MAGIC_TURN_PIDF_GAINS);
+		setPIDFGains(_leftMaster, MOTION_MAGIC_TURN_PIDF_GAINS);
+		setPIDFGains(_rightMaster, MOTION_MAGIC_TURN_PIDF_GAINS);
         
-		_leftMaster.configMotionAcceleration(MOTION_MAGIC_TURN_MAX_ACC, 0);
-		_rightMaster.configMotionAcceleration(MOTION_MAGIC_TURN_MAX_ACC, 0);
-		_leftMaster.configMotionCruiseVelocity(MOTION_MAGIC_TURN_MAX_VEL, 0);
-		_rightMaster.configMotionCruiseVelocity(MOTION_MAGIC_TURN_MAX_VEL, 0);
+		setMotionMagicConstants(_leftMaster, MOTION_MAGIC_TURN_VEL_ACC);
+		setMotionMagicConstants(_rightMaster, MOTION_MAGIC_TURN_VEL_ACC);
 	}
 	
 	public synchronized void setMotionMagicStraightGains() {
-		setPIDFGains(MOTION_MAGIC_STRAIGHT_PIDF_GAINS);
+		setPIDFGains(_leftMaster, MOTION_MAGIC_STRAIGHT_PIDF_GAINS);
+		setPIDFGains(_rightMaster, MOTION_MAGIC_STRAIGHT_PIDF_GAINS);
         
-        _leftMaster.configMotionAcceleration(MOTION_MAGIC_STRAIGHT_MAX_ACC, 0);
-		_rightMaster.configMotionAcceleration(MOTION_MAGIC_STRAIGHT_MAX_ACC, 0);
-		_leftMaster.configMotionCruiseVelocity(MOTION_MAGIC_STAIGHT_MAX_VEL, 0);
-		_rightMaster.configMotionCruiseVelocity(MOTION_MAGIC_STAIGHT_MAX_VEL, 0);
-	}
-	
-	private void setPIDFGains(double[] gains) {
-		_leftMaster.config_kP(0, gains[0], 0);
-		_leftMaster.config_kI(0, gains[1], 0);
-		_leftMaster.config_kD(0, gains[2], 0);
-		_leftMaster.config_kF(0, gains[3], 0);
-		
-		_rightMaster.config_kP(0, gains[0], 0);
-		_rightMaster.config_kI(0, gains[1], 0);
-		_rightMaster.config_kD(0, gains[2], 0);
-		_rightMaster.config_kF(0, gains[3], 0);
+		setMotionMagicConstants(_leftMaster, MOTION_MAGIC_STRAIGHT_VEL_ACC);
+		setMotionMagicConstants(_rightMaster, MOTION_MAGIC_STRAIGHT_VEL_ACC);
 	}
 
 	@Override
