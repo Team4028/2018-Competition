@@ -35,7 +35,8 @@ public class Elevator implements Subsystem {
 		MOVING_TO_HOME,
 		AT_HOME,
 		TIMEOUT,
-		GOTO_AND_HOLD_TARGET_POSTION,
+		GOTO_TARGET_POSTION,
+		HOLD_TARGET_POSTION,
 		JOG_AXIS,
 	}
 	
@@ -49,7 +50,7 @@ public class Elevator implements Subsystem {
 	}
 	
 	// define class level working variables
-	private TalonSRX _elevatorMasterMotor, _elevatorSlaveMotor;
+	private TalonSRX _elevatorMasterMotor; //, _elevatorSlaveMotor;
 	private ELEVATOR_STATE _elevatorState;
 	private long _elevatorHomeStartTime;
 	private int _targetElevatorPosition;
@@ -60,7 +61,7 @@ public class Elevator implements Subsystem {
 	private double _actualAccelerationNU_100mS_mS = 0;
 	private long _lastScanTimeStamp = 0;
 	private double _lastScanActualVelocityNU_100mS = 0;
-	
+	private int _pidSlotInUse = -1;
 	private boolean _isSoftLimitsEnabled = false;
 	
 	// define general constants
@@ -90,7 +91,7 @@ public class Elevator implements Subsystem {
 	private static final int DOWN_SOFT_LIMIT = InchesToNativeUnits(1.0);
 	
 	/*
-	 * Moveable Slide Top to Botto. = 48.5 in
+	 * Moveable Slide Top to Bottom = 48.5 in
 	 * 
 	 * Travel (in)	Floor to bottom of Slide	Floor to Top Stop (in)	Encoder Native Units
 	 * ===========	========================	======================	====================
@@ -103,24 +104,34 @@ public class Elevator implements Subsystem {
 	
 	private static final boolean IS_VERBOSE_LOGGING_ENABLED = true;
 	
+	private static final int HOLDING_PID_SLOT_INDEX = 2;
 	private static final int MOVING_UP_PID_SLOT_INDEX = 1;
 	private static final int MOVING_DOWN_PID_SLOT_INDEX = 0;
 	
 	// define PID Constants
-	public static final int CRUISE_VELOCITY = 5061; // native units per 100 mSec 50% of max
-	public static final int ACCELERATION = 4061; 	// native units per 100 mSec per sec
+	public static final int UP_CRUISE_VELOCITY = 5061; // native units per 100 mSec 50% of max
+	public static final int UP_ACCELERATION = 4061; 	// native units per 100 mSec per sec
+	
+	public static final int DOWN_CRUISE_VELOCITY = 3751; // native units per 100 mSec 50% of max
+	public static final int DOWN_ACCELERATION = 3000; 	// native units per 100 mSec per sec
+	
+	public static final double FEED_FORWARD_GAIN_HOLD = 1.0; //1.5; //3.4074425;
+	public static final double PROPORTIONAL_GAIN_HOLD  = 0.4; //.4; //0.0731; //3.0;
+	public static final double INTEGRAL_GAIN_HOLD  = 0; //0.03; //0.0; 
+	public static final int INTEGRAL_ZONE_HOLD = 0; //0.0; 
+	public static final double DERIVATIVE_GAIN_HOLD  = 9.0; //4.0; //0.7;	
 	
 	public static final double FEED_FORWARD_GAIN_UP = 0.4; //3.4074425;
-	public static final double PROPORTIONAL_GAIN_UP = 0.3; //.4; //0.0731; //3.0;
+	public static final double PROPORTIONAL_GAIN_UP = 0.6; //.4; //0.0731; //3.0;
 	public static final double INTEGRAL_GAIN_UP = 0; //0.03; //0.0; 
 	public static final int INTEGRAL_ZONE_UP = 0; //0.0; 
-	public static final double DERIVATIVE_GAIN_UP = 0; //4.0; //0.7;
+	public static final double DERIVATIVE_GAIN_UP = 9.0; //4.0; //0.7;
 	
-	public static final double FEED_FORWARD_GAIN_DOWN = 0.248 ;// 1.0; //3.4074425;
-	public static final double PROPORTIONAL_GAIN_DOWN = .25; //.14; //2.0;
+	public static final double FEED_FORWARD_GAIN_DOWN = 0.2 ;// 1.0; //3.4074425;
+	public static final double PROPORTIONAL_GAIN_DOWN = .07; //.14; //2.0;
 	public static final double INTEGRAL_GAIN_DOWN = 0; //0.03; //0.0; 
 	public static final int INTEGRAL_ZONE_DOWN = 0; //200; //0.0; 
-	public static final double DERIVATIVE_GAIN_DOWN = 0; //3.0; // 0.7;
+	public static final double DERIVATIVE_GAIN_DOWN = 20; //3.0; // 0.7;
 	
 	// singleton pattern
 	private static Elevator _instance = new Elevator();
@@ -133,30 +144,20 @@ public class Elevator implements Subsystem {
 	private Elevator() {
 		// config master & slave talon objects
 		_elevatorMasterMotor = new TalonSRX(Constants.ELEVATOR_LIFT_MASTER_CAN_ADDRESS);
-		_elevatorSlaveMotor = new TalonSRX(Constants.ELEVATOR_LIFT_SLAVE_CAN_ADDRESS);
-		
-		// config slave mode
-		_elevatorSlaveMotor.follow(_elevatorMasterMotor);
-		
+	
 		// set motor phasing
 		_elevatorMasterMotor.setInverted(false);
-		_elevatorSlaveMotor.setInverted(false);
 		
 		// config limit switches
 		_elevatorMasterMotor.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed, 0);
 		_elevatorMasterMotor.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed, 0);
-		_elevatorSlaveMotor.configForwardLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
-		_elevatorSlaveMotor.configReverseLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
-		
+
 		// turn off all soft limits
 		_elevatorMasterMotor.configForwardSoftLimitEnable(false, 0);
 		_elevatorMasterMotor.configReverseSoftLimitEnable(false, 0);
-		_elevatorSlaveMotor.configForwardSoftLimitEnable(false, 0);
-		_elevatorSlaveMotor.configReverseSoftLimitEnable(false, 0);
-		
+
 		// config brake mode
 		_elevatorMasterMotor.setNeutralMode(NeutralMode.Brake);
-		_elevatorSlaveMotor.setNeutralMode(NeutralMode.Brake);
 		
 		// config quad encoder & phase (invert = true)
 		_elevatorMasterMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0);
@@ -169,17 +170,12 @@ public class Elevator implements Subsystem {
 		_elevatorMasterMotor.configPeakOutputForward(1, 0);
 		_elevatorMasterMotor.configPeakOutputReverse(-1, 0);
 		
-		_elevatorSlaveMotor.configNominalOutputForward(0, 0);
-		_elevatorSlaveMotor.configNominalOutputReverse(0, 0);
-		_elevatorSlaveMotor.configPeakOutputForward(1, 0);
-		_elevatorSlaveMotor.configPeakOutputReverse(-1, 0);
-		
 		// config velocity measurement (2x of scan time, looper is 10 mS)
 		_elevatorMasterMotor.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_5Ms, 0);
 		_elevatorMasterMotor.configVelocityMeasurementWindow(32, 0);
 		
 		// Setup MotionMagic Mode
-		_elevatorMasterMotor.selectProfileSlot(MOVING_DOWN_PID_SLOT_INDEX, 0);
+		SetPidSlotToUse("constr", MOVING_DOWN_PID_SLOT_INDEX);
 		
 		// set closed loop gains
 		_elevatorMasterMotor.config_kF(MOVING_DOWN_PID_SLOT_INDEX, FEED_FORWARD_GAIN_DOWN, 0);
@@ -194,9 +190,15 @@ public class Elevator implements Subsystem {
 		_elevatorMasterMotor.config_kD(MOVING_UP_PID_SLOT_INDEX, DERIVATIVE_GAIN_UP, 0);
 		_elevatorMasterMotor.config_IntegralZone(MOVING_UP_PID_SLOT_INDEX, INTEGRAL_ZONE_UP, 0);
 		
+		_elevatorMasterMotor.config_kF(HOLDING_PID_SLOT_INDEX, FEED_FORWARD_GAIN_HOLD, 0);
+		_elevatorMasterMotor.config_kP(HOLDING_PID_SLOT_INDEX, PROPORTIONAL_GAIN_HOLD, 0);
+		_elevatorMasterMotor.config_kI(HOLDING_PID_SLOT_INDEX, INTEGRAL_GAIN_HOLD, 0);
+		_elevatorMasterMotor.config_kD(HOLDING_PID_SLOT_INDEX, DERIVATIVE_GAIN_HOLD, 0);
+		_elevatorMasterMotor.config_IntegralZone(HOLDING_PID_SLOT_INDEX, INTEGRAL_ZONE_HOLD, 0);
+		
 		// set accel and cruise velocities
-		_elevatorMasterMotor.configMotionCruiseVelocity(CRUISE_VELOCITY, 0);
-		_elevatorMasterMotor.configMotionAcceleration(ACCELERATION, 0);
+		_elevatorMasterMotor.configMotionCruiseVelocity(UP_CRUISE_VELOCITY, 0);
+		_elevatorMasterMotor.configMotionAcceleration(UP_ACCELERATION, 0);
 		
 		// set allowable closed loop gain
 		// +/- 0.25"
@@ -263,29 +265,55 @@ public class Elevator implements Subsystem {
 						_targetElevatorPosition = CUBE_ON_FLOOR_POSITION;
 						
 						// change state
-    					_elevatorState = ELEVATOR_STATE.GOTO_AND_HOLD_TARGET_POSTION;
-    					ReportStateChg("ElevatorAxis (State) [AT_HOME] ==> [GOTO_AND_HOLD_TARGET_POSTION]");
+    					_elevatorState = ELEVATOR_STATE.GOTO_TARGET_POSTION;
+    					ReportStateChg("ElevatorAxis (State) [AT_HOME] ==> [GOTO_TARGET_POSTION]");
 						break;
 											
-					case GOTO_AND_HOLD_TARGET_POSTION:
+					case GOTO_TARGET_POSTION:
 						deltatime = (new Date().getTime()) - _lastScanTimeStamp;
 						
-						_actualPositionNU = _elevatorMasterMotor.getSelectedSensorPosition(0);
-						_actualVelocityNU_100mS  = _elevatorMasterMotor.getSelectedSensorVelocity(0);
-						_actualAccelerationNU_100mS_mS = (_actualVelocityNU_100mS - _lastScanActualVelocityNU_100mS) / deltatime;
-	
-						// set appropriate gain slot to use
-						//if(_targetElevatorPosition > _actualPositionNU) {
-						//	_elevatorMasterMotor.selectProfileSlot(MOVING_UP_PID_SLOT_INDEX, 0);
-						//}
-						//else {
-						//	_elevatorMasterMotor.selectProfileSlot(MOVING_DOWN_PID_SLOT_INDEX, 0);
-						//}
-						
-						_elevatorMasterMotor.set(ControlMode.MotionMagic, _targetElevatorPosition, 0);
+						if(IsAtTargetPosition())
+						{
+							// change state
+	    					_elevatorState = ELEVATOR_STATE.HOLD_TARGET_POSTION;
+	    					ReportStateChg("ElevatorAxis (State) [GOTO_TARGET_POSTION] ==> [HOLD_TARGET_POSTION]");
+						}
+						else
+						{
+							_actualPositionNU = _elevatorMasterMotor.getSelectedSensorPosition(0);
+							_actualVelocityNU_100mS  = _elevatorMasterMotor.getSelectedSensorVelocity(0);
+							_actualAccelerationNU_100mS_mS = (_actualVelocityNU_100mS - _lastScanActualVelocityNU_100mS) / deltatime;
+		
+							// set appropriate gain slot to use
+							if(_targetElevatorPosition > _actualPositionNU) {
+								SetPidSlotToUse("GotoUp", MOVING_UP_PID_SLOT_INDEX);
+							}
+							else {
+								SetPidSlotToUse("GotoDown", MOVING_DOWN_PID_SLOT_INDEX);
+							}
+							
+							_elevatorMasterMotor.set(ControlMode.MotionMagic, _targetElevatorPosition, 0);
+						}
 						
 						_lastScanTimeStamp = new Date().getTime();
 						_lastScanActualVelocityNU_100mS = _actualVelocityNU_100mS;
+						
+						break;
+						
+					case HOLD_TARGET_POSTION:
+						if(!IsAtTargetPosition())
+						{
+							// change state
+	    					_elevatorState = ELEVATOR_STATE.GOTO_TARGET_POSTION;
+	    					ReportStateChg("ElevatorAxis (State) [HOLD_TARGET_POSTION] ==> [GOTO_TARGET_POSTION]");
+						}
+						else
+						{
+							// set appropriate gain slot to use	    	
+							SetPidSlotToUse("Hold", HOLDING_PID_SLOT_INDEX);
+							_elevatorMasterMotor.set(ControlMode.MotionMagic, _targetElevatorPosition, 0);
+						}
+						
 						break;
 							
 					case JOG_AXIS:
@@ -336,31 +364,31 @@ public class Elevator implements Subsystem {
 		switch(presetPosition) {
 			case HOME:
 				_targetElevatorPosition = HOME_POSITION;
-				_elevatorState = ELEVATOR_STATE.GOTO_AND_HOLD_TARGET_POSTION;
+				_elevatorState = ELEVATOR_STATE.GOTO_TARGET_POSTION;
 				ReportStateChg("ElevatorAxis (State) [" + _elevatorState.toString() + "] ==> [GOTO_AND_HOLD_TARGET_POSTION:HOME]");
 				break;
 				
 			case CUBE_ON_FLOOR:
 				_targetElevatorPosition = CUBE_ON_FLOOR_POSITION;
-				_elevatorState = ELEVATOR_STATE.GOTO_AND_HOLD_TARGET_POSTION;
+				_elevatorState = ELEVATOR_STATE.GOTO_TARGET_POSTION;
 				ReportStateChg("ElevatorAxis (State) [" + _elevatorState.toString() + "] ==> [GOTO_AND_HOLD_TARGET_POSTION:CUBE_ON_FLOOR]");
 				break;
 				
 			case CUBE_ON_PYRAMID_LEVEL_1:
 				_targetElevatorPosition = CUBE_ON_PYRAMID_LEVEL_1_POSITION;
-				_elevatorState = ELEVATOR_STATE.GOTO_AND_HOLD_TARGET_POSTION;
+				_elevatorState = ELEVATOR_STATE.GOTO_TARGET_POSTION;
 				ReportStateChg("ElevatorAxis (State) [" + _elevatorState.toString() + "] ==> [GOTO_AND_HOLD_TARGET_POSTION:PYR1]");
 				break;
 				
 			case SWITCH_HEIGHT:
 				_targetElevatorPosition = SWITCH_HEIGHT_POSITION;
-				_elevatorState = ELEVATOR_STATE.GOTO_AND_HOLD_TARGET_POSTION;
+				_elevatorState = ELEVATOR_STATE.GOTO_TARGET_POSTION;
 				ReportStateChg("ElevatorAxis (State) [" + _elevatorState.toString() + "] ==> [GOTO_AND_HOLD_TARGET_POSTION:SWITCH]");
 				break;
 				
 			case SCALE_HEIGHT:
 				_targetElevatorPosition = SCALE_HEIGHT_POSITION;
-				_elevatorState = ELEVATOR_STATE.GOTO_AND_HOLD_TARGET_POSTION;
+				_elevatorState = ELEVATOR_STATE.GOTO_TARGET_POSTION;
 				ReportStateChg("ElevatorAxis (State) [" + _elevatorState.toString() + "] ==> [GOTO_AND_HOLD_TARGET_POSTION:SCALE]");
 				break;
 				
@@ -371,16 +399,17 @@ public class Elevator implements Subsystem {
 		
 		// set appropriate gain slot to use
 		if(_targetElevatorPosition > _actualPositionNU) {
-			_elevatorMasterMotor.selectProfileSlot(MOVING_UP_PID_SLOT_INDEX, 0);
+			SetPidSlotToUse("BtnUp", MOVING_UP_PID_SLOT_INDEX);
 		}
 		else {
-			_elevatorMasterMotor.selectProfileSlot(MOVING_DOWN_PID_SLOT_INDEX, 0);
+			SetPidSlotToUse("BtnDown", MOVING_DOWN_PID_SLOT_INDEX);
 		}
 	}
 	
 	// support joystick like jogging but at a fixed velocity
 	public void JogAxis(double speedCmd) {
-		if(_elevatorState == ELEVATOR_STATE.GOTO_AND_HOLD_TARGET_POSTION 
+		if(_elevatorState == ELEVATOR_STATE.GOTO_TARGET_POSTION 
+				|| _elevatorState == ELEVATOR_STATE.HOLD_TARGET_POSTION 
 				|| _elevatorState == ELEVATOR_STATE.AT_HOME
 				|| _elevatorState == ELEVATOR_STATE.JOG_AXIS)
 		{
@@ -406,16 +435,17 @@ public class Elevator implements Subsystem {
 	// implemented as active hold in place for now (vs just turning motors off)
 	@Override
 	public void stop() {		
-		if(_elevatorState != ELEVATOR_STATE.GOTO_AND_HOLD_TARGET_POSTION
+		if(_elevatorState != ELEVATOR_STATE.GOTO_TARGET_POSTION
+				&& _elevatorState != ELEVATOR_STATE.HOLD_TARGET_POSTION
 				&& _elevatorState != ELEVATOR_STATE.NEED_TO_HOME
 				&& _elevatorState != ELEVATOR_STATE.MOVING_TO_HOME
 				&& _elevatorState != ELEVATOR_STATE.TIMEOUT) {
 			// set target to current location
-			//_targetElevatorPosition = _elevatorMasterMotor.getSelectedSensorPosition(0);
+			_targetElevatorPosition = _elevatorMasterMotor.getSelectedSensorPosition(0);
 			
 			// flip back to hold position mode using the current position
-			//_elevatorState = ELEVATOR_STATE.GOTO_AND_HOLD_TARGET_POSTION;
-			//ReportStateChg("ElevatorAxis (State) stop ==> [GOTO_AND_HOLD_TARGET_POSTION]");
+			_elevatorState = ELEVATOR_STATE.HOLD_TARGET_POSTION;
+			ReportStateChg("ElevatorAxis (State) stop ==> [GOTO_TARGET_POSTION]");
 			
 			_targetElevatorVelocity = 0.0;
 		}
@@ -460,7 +490,8 @@ public class Elevator implements Subsystem {
 
 	// this property indicates if the elevator is w/i the position deadband of the target position
 	public boolean IsAtTargetPosition() {
-        if (_elevatorState == ELEVATOR_STATE.GOTO_AND_HOLD_TARGET_POSTION) {
+        if (_elevatorState == ELEVATOR_STATE.GOTO_TARGET_POSTION
+        		|| _elevatorState == ELEVATOR_STATE.HOLD_TARGET_POSTION) {
         	int currentError = Math.abs(_elevatorMasterMotor.getSelectedSensorPosition(0) - _targetElevatorPosition);
             if ( currentError < ELEVATOR_POS_ALLOWABLE_ERROR_IN_NU) {
             	return true;
@@ -475,6 +506,27 @@ public class Elevator implements Subsystem {
         }
     }
 
+	private void SetPidSlotToUse(String ref, int pidSlot)
+	{
+		if(pidSlot != _pidSlotInUse)
+		{
+			ReportStateChg("Chg Pid Slot: Ref: [" + ref + "] [" + _pidSlotInUse + "] => [" + pidSlot + "]");
+			_pidSlotInUse = pidSlot;
+			_elevatorMasterMotor.selectProfileSlot(_pidSlotInUse, 0);
+			
+			if(pidSlot == MOVING_UP_PID_SLOT_INDEX)
+			{
+				_elevatorMasterMotor.configMotionCruiseVelocity(UP_CRUISE_VELOCITY, 0);
+				_elevatorMasterMotor.configMotionAcceleration(UP_ACCELERATION, 0);
+			}
+			else if(pidSlot == MOVING_DOWN_PID_SLOT_INDEX)
+			{
+				_elevatorMasterMotor.configMotionCruiseVelocity(DOWN_CRUISE_VELOCITY, 0);
+				_elevatorMasterMotor.configMotionAcceleration(DOWN_ACCELERATION, 0);
+			}
+		}
+	}
+	
 	private void EnableSoftLimits() {
 		_elevatorMasterMotor.configReverseSoftLimitThreshold(DOWN_SOFT_LIMIT, 0);
 		_elevatorMasterMotor.configForwardSoftLimitThreshold(UP_SOFT_LIMIT, 0);	

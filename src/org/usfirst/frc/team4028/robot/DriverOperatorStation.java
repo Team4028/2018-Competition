@@ -18,44 +18,44 @@ import edu.wpi.first.wpilibj.XboxController;
 		/* Table 1.1:
 		==== DRIVER ==========================================================
 		--- Driver Joysticks --------
-		DRIVER_LEFT_X_AXIS							Throttle Cmd
-		DRIVER_LEFT_Y_AXIS				
+		DRIVER_LEFT_X_AXIS							xxxxxxxxxxxx
+		DRIVER_LEFT_Y_AXIS							Throttle Cmd
 		DRIVER_LEFT_TRIGGER			
 		DRIVER_RIGHT_TRIGGER		
 		DRIVER_RIGHT_X_AXIS							Turn Cmd
-		DRIVER_RIGHT_Y_AXIS
+		DRIVER_RIGHT_Y_AXIS							xxxxxxxxxxxx
 		
 		--- Driver Buttons --------
-		DRIVER_GREEN_BUTTON_A		
-		DRIVER_RED_BUTTON_B			 
-		DRIVER_BLUE_BUTTON_X		
-		DRIVER_YELLOW_BUTTON_Y		
-		DRIVER_LEFT_BUMPER			
-		DRIVER_RIGHT_BUMPER			
-		DRIVER_BACK_BUTTON			
-		DRIVER_START_BUTTON							Switch Camera
+		DRIVER_GREEN_BUTTON_A						Store Arms
+		DRIVER_RED_BUTTON_B			 				Stagger Infeed
+		DRIVER_BLUE_BUTTON_X						Wide Infeed
+		DRIVER_YELLOW_BUTTON_Y						Squeeze Infeed
+		DRIVER_LEFT_BUMPER							Infeed Cube
+		DRIVER_RIGHT_BUMPER							Auto Acquire
+		DRIVER_BACK_BUTTON							ReZero Infeed
+		DRIVER_START_BUTTON							Shift Gear	
 		DRIVER_LEFT_THUMBSTICK
 		DRIVER_RIGHT_THUMBSTICK
 								
 		==== OPERATOR ==========================================================
 			
 		--- Operator Joysticks --------
-		OPERATOR_LEFT_X_AXIS			
-		OPERATOR_LEFT_Y_AXIS			
+		OPERATOR_LEFT_X_AXIS						*************
+		OPERATOR_LEFT_Y_AXIS						Elevator
 		OPERATOR_LEFT_TRIGGER			
 		OPERATOR_RIGHT_TRIGGER			
-		OPERATOR_RIGHT_X_AXIS
-		OPERATOR_RIGHT_Y_AXIS			
+		OPERATOR_RIGHT_X_AXIS						*************
+		OPERATOR_RIGHT_Y_AXIS						Carriage
 		
 		--- Operator Buttons --------
-		OPERATOR_GREEN_BUTTON_A			Elevator CUBE_ON_FLOOR
-		OPERATOR_RED_BUTTON_B			Elevator CUBE_ON_PYRAMID_LEVEL_1
-		OPERATOR_BLUE_BUTTON_X			Elevator SWITCH_HEIGHT
-		OPERATOR_YELLOW_BUTTON_Y		Elevator SCALE_HEIGHT
+		OPERATOR_GREEN_BUTTON_A						Elevator Floor
+		OPERATOR_RED_BUTTON_B						Elevator Prymd
+		OPERATOR_BLUE_BUTTON_X						Elevator Switch
+		OPERATOR_YELLOW_BUTTON_Y					Elevator Scale
 		OPERATOR_LEFT_BUMPER			
-		OPERATOR_RIGHT_BUMPER			
-		OPERATOR_BACK_BUTTON			Elevator HOME
-		OPERATOR_START_BUTTON			Switch Camera
+		OPERATOR_RIGHT_BUMPER						Elevator Home
+		OPERATOR_BACK_BUTTON			
+		OPERATOR_START_BUTTON						Switch Camera
 		OPERATOR_LEFT_THUMBSTICK		
 		OPERATOR_RIGHT_THUMBSTICK	
 													
@@ -122,27 +122,28 @@ public class DriverOperatorStation {
 		// === Driver Just Pressed buttons ===
 		// ===================================
 	
-		public boolean getIsDriver_StaggerInfeedManuver_BtnJustPressed() {
+
+		public boolean getIsDriver_ReZeroInfeed_BtnJustPressed() {
 			return _driverGamepad.getBackButtonPressed();
 		}
 	
-		public boolean getIsDriver_ReZeroInfeed_BtnJustPressed() {
+		public boolean getIsDriver_ShiftGear_BtnJustPressed() {
 			return _driverGamepad.getStartButtonPressed();
 		}
 		
-		public boolean getIsDriver_MoveToWideInfeedPosition_BtnJustPressed() {
+		public boolean getIsDriver_MoveToSqueezeInfeedPosition_BtnJustPressed() {
 			return _driverGamepad.getYButtonPressed();
 		}
 		 
-		public boolean getIsDriver_StoreInfeedArms_BtnJustPressed() {
+		public boolean getIsDriver_StaggerInfeedManuver_BtnJustPressed() {
 			return _driverGamepad.getBButtonPressed();
 		}
 	
-		public boolean getIsDriver_MoveToThinInfeedPosition_BtnJustPressed() {
+		public boolean getIsDriver_StoreInfeedArms_BtnJustPressed() {
 			return _driverGamepad.getAButtonPressed();
 		}	
 
-		public boolean getIsDriver_MoveToSqueezeInfeedPosition_BtnJustPressed() {
+		public boolean getIsDriver_MoveToWideInfeedPosition_BtnJustPressed() {
 			return _driverGamepad.getXButtonPressed();
 		}
 		
@@ -170,9 +171,9 @@ public class DriverOperatorStation {
 //			return _driverGamepad.getBackButtonReleased();
 //		}
 	
-		public boolean getIsShiftGearJustPressed() {
-			return _driverGamepad.getStartButtonReleased();
-		}
+//		public boolean getIsDriver_Start_BtnJustReleased() {
+//			return _driverGamepad.getStartButtonReleased();
+//		}
 		
 //		public boolean getIsDriver_YellowY_BtnJustReleased() {
 //			return _driverGamepad.getYButtonReleased();
@@ -290,9 +291,8 @@ public class DriverOperatorStation {
 		// ===================================
 		// == Operator Just Pressed buttons ==
 		// ===================================
-	
 		public boolean getIsOperator_ElevatorHome_BtnJustPressed() {
-			return _operatorGamepad.getBackButtonPressed();
+			return _engineeringGamepad.getBackButtonPressed();
 		}
 	
 		public boolean getIsOperator_SwitchCamera_BtnJustPressed() {
@@ -333,8 +333,7 @@ public class DriverOperatorStation {
 		
 		// ====================================
 		// == Operator Just Released buttons ==
-		// ====================================
-	
+		// ====================================		
 //		public boolean getIsOperator_Back_BtnJustReleased() {
 //			return _operatorGamepad.getBackButtonReleased();
 //		}
@@ -436,9 +435,9 @@ public class DriverOperatorStation {
 //			return _operatorGamepad.getX(Hand.kLeft);
 //		}
 		
-//		public double getOperator_RightY_JoystickCmd() {
-//			return _operatorGamepad.getY(Hand.kRight);
-//		}
+		public double getOperator_Carriage_JoystickCmd() {
+			return _operatorGamepad.getY(Hand.kRight);
+		}
 		
 //		public double getOperator_RightX_JoystickCmd() {
 //			return _operatorGamepad.getX(Hand.kRight);
@@ -459,7 +458,7 @@ public class DriverOperatorStation {
 		// ======================================
 		// == Engineering Just Pressed buttons ==
 		// ======================================
-	
+
 //		public boolean getIsEngineering_Back_BtnJustPressed() {
 //			return _engineeringGamepad.getBackButtonPressed();
 //		}
@@ -592,7 +591,7 @@ public class DriverOperatorStation {
 		// ====== Engineering Joysticks ======
 		// ===================================
 	
-//		public double getEngineering_LeftY_JoystickCmd() {
+//		public double getEngineering_Elevator_JoystickCmd() {
 //			return _engineeringGamepad.getY(Hand.kLeft);
 //		}
 		

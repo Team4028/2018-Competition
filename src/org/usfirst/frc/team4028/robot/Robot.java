@@ -28,6 +28,7 @@ public class Robot extends IterativeRobot {
 	private Chassis _chassis = Chassis.getInstance();
 	private Infeed _infeed = Infeed.getInstance();
 	private Elevator _elevator = Elevator.getInstance();
+	private Carriage _carriage = Carriage.getInstance();
 	
 	// Sensors
 	private UltrasonicSensor _ultrasonic = UltrasonicSensor.getInstance();
@@ -61,6 +62,7 @@ public class Robot extends IterativeRobot {
 		_enabledLooper.register(_chassis.getLoop());
 		_enabledLooper.register(_infeed.getLoop());
 		_enabledLooper.register(_elevator.getLoop());
+		_enabledLooper.register(_carriage.getLoop());
 		_enabledLooper.register(RobotStateEstimator.getInstance().getLoop());
 		
 		_dashboard.printStartupMessage();
@@ -185,40 +187,30 @@ public class Robot extends IterativeRobot {
 			_chassis.stop();
 		}
 		
-		if (_dos.getIsShiftGearJustPressed()) {
+		if (_dos.getIsDriver_ShiftGear_BtnJustPressed()) {
 			_chassis.toggleShifter();
 		}
 	
 		//=============  INFEED ============= 
 		if (_dos.getIsDriver_ReZeroInfeed_BtnJustPressed()) {
 			_infeed.reZeroArms();
-		}
-		
-		if (_dos.getIsDriver_MoveToThinInfeedPosition_BtnJustPressed()) {
-			_infeed.moveArmsToThinSideInfeedPosition();
-		}
-		
-		if (_dos.getIsDriver_MoveToWideInfeedPosition_BtnJustPressed()) {
+		}		
+		else if (_dos.getIsDriver_MoveToWideInfeedPosition_BtnJustPressed()) {
 			_infeed.moveArmsToWideInfeedPosition();
 		}
-		
-		if (_dos.getIsDriver_MoveToSqueezeInfeedPosition_BtnJustPressed()) {
+		else if (_dos.getIsDriver_MoveToSqueezeInfeedPosition_BtnJustPressed()) {
 			_infeed.moveArmsToSqueezeInfeedPosition();
 		}
-		
-		if (_dos.getIsDriver_StoreInfeedArms_BtnJustPressed()) {
+		else if (_dos.getIsDriver_StoreInfeedArms_BtnJustPressed()) {
 			_infeed.storeArms();
 		}
-		
-		if (_dos.getIsDriver_StaggerInfeedManuver_BtnJustPressed()) {
+		else if (_dos.getIsDriver_StaggerInfeedManuver_BtnJustPressed()) {
 			_infeed.staggerInfeedManuver();
 		}
-
-		if (_dos.getIsDriver_AutoAcquire_BtnJustPressed()) {
+		else if (_dos.getIsDriver_AutoAcquire_BtnJustPressed()) {
 			_infeed.autoInfeedManuver();
 		}
-			
-		if (_dos.getIsDriver_InfeedCube_BtnPressed()) {
+		else if (_dos.getIsDriver_InfeedCube_BtnPressed()) {
 			_infeed.driveInfeedWheels( );
 		}
 		else {
@@ -247,6 +239,9 @@ public class Robot extends IterativeRobot {
 			_elevator.stop();
 		} 
 		
+		// =============  Carriage ============= 
+		_carriage.RunCarriageMotors(_dos.getOperator_Carriage_JoystickCmd());
+		
 		// ============= Camera Switch ============= 
 		if (_dos.getIsOperator_SwitchCamera_BtnJustPressed() == true) {
 			_switchableCameraServer.SwitchCamera();
@@ -266,6 +261,7 @@ public class Robot extends IterativeRobot {
 		_chassis.stop();
 		_elevator.stop();
 		_infeed.stop();
+		_carriage.stop();
 	}
 	
 	//=====================================================================================
@@ -284,6 +280,7 @@ public class Robot extends IterativeRobot {
     		_chassis.outputToShuffleboard(); 
     		_elevator.outputToShuffleboard();
     		_infeed.outputToShuffleboard();
+    		_carriage.outputToShuffleboard();
     		_ultrasonic.outputToShuffleboard();
 	    	
     		// write the overall robot dashboard info
@@ -315,6 +312,7 @@ public class Robot extends IterativeRobot {
 	    	_chassis.updateLogData(logData);
 	    	_elevator.updateLogData(logData);
 	    	_infeed.updateLogData(logData);
+	    	_carriage.updateLogData(logData);
 	    	_ultrasonic.updateLogData(logData);
 	    	
 	    	_dataLogger.WriteDataLine(logData);

@@ -24,8 +24,8 @@ public class Constants {
 	public static final int LEFT_SWITCHBLADE_MOTOR_CAN_ADDRESS = 5;
 	public static final int RIGHT_SWITCHBLADE_MOTOR_CAN_ADDRESS = 6;
 	public static final int ELEVATOR_LIFT_MASTER_CAN_ADDRESS = 7;
-	public static final int ELEVATOR_LIFT_SLAVE_CAN_ADDRESS = 8;
-	public static final int CARRIAGE_DRIVE_CAN_ADDRESS = 9; // this is a VictorSPX
+	public static final int CARRIAGE_LEFT_CAN_ADDRESS = 8;
+	public static final int CARRIAGE_RIGHT_CAN_ADDRESS = 9; // this is a VictorSPX
 	
 	//Victor SP PWM Address
 	public static final int LEFT_INFEED_DRIVE_PWM_ADDRESS = 0;
