@@ -97,7 +97,7 @@ public class AdaptedPaths extends Paths {
 	
 	public static ArrayList<Waypoint> adaptLSwitchtoFrontOfPyramid() {
 		ArrayList<Waypoint> sWaypoints= new ArrayList<Waypoint>();
-		sWaypoints=PathBuilder.flipPath(Paths.getRightSwitchtoFrontofPyramidWaypoints());
+		sWaypoints=PathBuilder.flipPath(Paths.getLeftSwitchtoFrontofPyramidWaypoints());
 		for(int point=0;point<sWaypoints.size();point++) {
 			sWaypoints.get(point).adjustWaypoint(Constants.LEFT_SWITCH_FRONT_X_DELTA, Constants.LEFT_SWITCH_FRONT_Y_DELTA);
 		}
@@ -169,7 +169,7 @@ public class AdaptedPaths extends Paths {
 	
 	public static ArrayList<Waypoint> adaptRSwitchtoFrontofPyramid() {
 		ArrayList<Waypoint> sWaypoints= new ArrayList<Waypoint>();
-		sWaypoints=Paths.getRightSwitchtoFrontofPyramidWaypoints();
+		sWaypoints=Paths.getLeftSwitchtoFrontofPyramidWaypoints();
 		for(int point=0;point<sWaypoints.size();point++) {
 			sWaypoints.get(point).adjustWaypoint(Constants.RIGHT_SWITCH_FRONT_X_DELTA, Constants.RIGHT_SWITCH_FRONT_Y_DELTA);
 		}

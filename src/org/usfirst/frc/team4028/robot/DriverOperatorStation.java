@@ -436,9 +436,9 @@ public class DriverOperatorStation {
 //			return _operatorGamepad.getX(Hand.kLeft);
 //		}
 		
-//		public double getOperator_RightY_JoystickCmd() {
-//			return _operatorGamepad.getY(Hand.kRight);
-//		}
+		public double getOperator_DriveCarraige_JoystickCmd() {
+			return _operatorGamepad.getY(Hand.kRight);
+		}
 		
 //		public double getOperator_RightX_JoystickCmd() {
 //			return _operatorGamepad.getX(Hand.kRight);

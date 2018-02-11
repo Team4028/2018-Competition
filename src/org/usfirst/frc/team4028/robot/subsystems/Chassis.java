@@ -107,8 +107,8 @@ public class Chassis implements Subsystem {
         _leftMaster.configOpenloopRamp(0.5, 10);
         _rightMaster.configOpenloopRamp(0.5, 10);
         
-        _leftMaster.configClosedloopRamp(0.05, 0);
-        _rightMaster.configClosedloopRamp(0.05, 0);
+        _leftMaster.configClosedloopRamp(0.0, 0);
+        _rightMaster.configClosedloopRamp(0.0, 0);
 		
 		_shifter = new DoubleSolenoid(Constants.PCM_CAN_BUS_ADDR, Constants.SHIFTER_SOLENOID_EXTEND_PCM_PORT, 
 												Constants.SHIFTER_SOLENOID_RETRACT_PCM_PORT);
@@ -245,6 +245,7 @@ public class Chassis implements Subsystem {
     /** Update PathFollower with latest pose estimate to get new target velocity */
     private void updatePathFollower(double timestamp) {
 		RigidTransform _robotPose = _robotState.getLatestFieldToVehicle().getValue();
+		SmartDashboard.putString("Robot Pose: ", _robotPose.toString());
 		Twist command = _pathFollower.update(timestamp, _robotPose, RobotState.getInstance().getDistanceDriven(), RobotState.getInstance().getPredictedVelocity().dx);
 		if (!_pathFollower.isFinished()) {
 			Kinematics.DriveVelocity setpoint = Kinematics.inverseKinematics(command);

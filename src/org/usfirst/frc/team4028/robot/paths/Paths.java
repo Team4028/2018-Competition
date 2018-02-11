@@ -82,11 +82,11 @@ public class Paths {
 				return path;
 				
 			case L_SWITCH_TO_FRONT_OF_PYRAMID:
-				path = buildPathFromWaypoints(flipPath(getRightSwitchtoFrontofPyramidWaypoints()), maxAccel, maxDecel,inertiaSteeringGain);
+				path = buildPathFromWaypoints(getLeftSwitchtoFrontofPyramidWaypoints(), maxAccel, maxDecel,inertiaSteeringGain);
 				path.setIsReversed(true);
 				return path;
 			case R_SWITCH_TO_FRONT_OF_PYRAMID:
-				path = buildPathFromWaypoints(getRightSwitchtoFrontofPyramidWaypoints(), maxAccel, maxDecel,inertiaSteeringGain);
+				path = buildPathFromWaypoints(flipPath(getLeftSwitchtoFrontofPyramidWaypoints()), maxAccel, maxDecel,inertiaSteeringGain);
 				path.setIsReversed(true);
 				return path;
 				
@@ -213,18 +213,18 @@ public class Paths {
 	protected static ArrayList<Waypoint> getLeftSwitchWaypoints() {
 		ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
 		sWaypoints.add(new Waypoint(20,162,0,0));
-        sWaypoints.add(new Waypoint(45,162,20,60));
-        sWaypoints.add(new Waypoint(75,120,25,70));
-        sWaypoints.add(new Waypoint(126,120,0,50));
+        sWaypoints.add(new Waypoint(50,162,25,60));
+        sWaypoints.add(new Waypoint(90,115,25,70));
+        sWaypoints.add(new Waypoint(124,115,0,50));
         return sWaypoints;
 	}
 	
 	// Switch (Second Cube)
-	protected static ArrayList<Waypoint> getRightSwitchtoFrontofPyramidWaypoints() {
+	protected static ArrayList<Waypoint> getLeftSwitchtoFrontofPyramidWaypoints() {
 		ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
-        sWaypoints.add(new Waypoint(120,224,0,0));
-        sWaypoints.add(new Waypoint(95,224,23,60));
-        sWaypoints.add(new Waypoint(80,162,20,50));
+        sWaypoints.add(new Waypoint(124,115,0,0));
+        sWaypoints.add(new Waypoint(95,115,22,60));
+        sWaypoints.add(new Waypoint(75,162,25,50));
         sWaypoints.add(new Waypoint(45,162,0,30));
         return sWaypoints;
 	}
@@ -232,27 +232,29 @@ public class Paths {
 	protected static ArrayList<Waypoint> getToPyramidWaypoints() {
         ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
         sWaypoints.add(new Waypoint(45,162,0,0));
-        sWaypoints.add(new Waypoint(91,162,0,70));
+        sWaypoints.add(new Waypoint(82,162,0,70));
         return sWaypoints;
 	}
-	
-	// Switch (Third Cube)
+
 	protected static ArrayList<Waypoint> getSTurnFromPyramidtoLeftWaypoints() {
         ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
-        sWaypoints.add(new Waypoint(91,162,0,0));
-        sWaypoints.add(new Waypoint(70,162,20,60));
-        sWaypoints.add(new Waypoint(65,121,20,50));
-        sWaypoints.add(new Waypoint(40,121,0,30));
+        sWaypoints.add(new Waypoint(82,162,0,0));
+        sWaypoints.add(new Waypoint(65,162,15,40));
+        sWaypoints.add(new Waypoint(60,130,15,40));
+        sWaypoints.add(new Waypoint(40,130,0,40));
         return sWaypoints;
 	}
 	
 	protected static ArrayList<Waypoint> gettoLeftSwitchAfterSTurn() {
         ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
-        sWaypoints.add(new Waypoint(40,121,0,0));
-        sWaypoints.add(new Waypoint(120,121,0,80));
+        sWaypoints.add(new Waypoint(40,130,0,0));
+        sWaypoints.add(new Waypoint(62,130,18,60));
+        sWaypoints.add(new Waypoint(102,115,18,60));
+        sWaypoints.add(new Waypoint(122,115,0,60));
         return sWaypoints;
 	}
 	
+	// Switch (Third Cube)
 	protected static ArrayList<Waypoint> getAwayFromLeftSwitchForThirdCubeWaypoints() {
 		ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
         sWaypoints.add(new Waypoint(122,121,0,0));
