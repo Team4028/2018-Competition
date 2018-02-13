@@ -30,7 +30,7 @@ public class Infeed {
 		TIMEOUT,
 	} 
 	
-	private enum INFEED_TARGET_POSITION {
+	public enum INFEED_TARGET_POSITION {
 		HOME,
 		INFEED,
 		WIDE,
@@ -462,8 +462,8 @@ public class Infeed {
 	//=====================================================================================
 	public void driveInfeedWheels() {
 		if(areArmsInPosition() || _infeedState == INFEED_STATE.STAGGER_INFEED_MANUVER) {
-			_leftInfeedDriveMotor.setSpeed(INFEED_DRIVE_WHEELS_VBUS_COMMAND);
-			_rightInfeedDriveMotor.setSpeed(-1*INFEED_DRIVE_WHEELS_VBUS_COMMAND);
+			_leftInfeedDriveMotor.setSpeed(-1*INFEED_DRIVE_WHEELS_VBUS_COMMAND);
+			_rightInfeedDriveMotor.setSpeed(-1*-1*INFEED_DRIVE_WHEELS_VBUS_COMMAND);
 		}
 	}
 	

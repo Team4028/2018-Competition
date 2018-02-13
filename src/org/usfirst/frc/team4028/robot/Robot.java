@@ -25,9 +25,9 @@ public class Robot extends IterativeRobot {
 	private static final String ROBOT_NAME = "2018 COMPETITION";
 	
 	// Subsystems
-	//private Chassis _chassis = Chassis.getInstance();
+	private Chassis _chassis = Chassis.getInstance();
 	private Infeed _infeed = Infeed.getInstance();
-	private Elevator _elevator = Elevator.getInstance();
+	//private Elevator _elevator = Elevator.getInstance();
 	private Carriage _carriage = Carriage.getInstance();
 	
 	// Sensors
@@ -59,9 +59,9 @@ public class Robot extends IterativeRobot {
 	public void robotInit() {
 		_buildMsg = GeneralUtilities.WriteBuildInfoToDashboard(ROBOT_NAME);
 		
-		//_enabledLooper.register(_chassis.getLoop());
+		_enabledLooper.register(_chassis.getLoop());
 		_enabledLooper.register(_infeed.getLoop());
-		_enabledLooper.register(_elevator.getLoop());
+		//_enabledLooper.register(_elevator.getLoop());
 		_enabledLooper.register(RobotStateEstimator.getInstance().getLoop());
 		
 		_dashboard.printStartupMessage();
@@ -91,7 +91,7 @@ public class Robot extends IterativeRobot {
 			_dataLogger = null;
 		}
 		
-		//_chassis.setBrakeMode(false);
+		_chassis.setBrakeMode(false);
 		stopAll();
 	}
 
@@ -119,7 +119,7 @@ public class Robot extends IterativeRobot {
 		
 		_dashboard.getGameData();
 		
-		//_chassis.zeroGyro();
+		_chassis.zeroGyro();
 		
 		_autonExecuter = new AutonExecuter();
 		_autonExecuter.setAutoMode(_dashboard.getSelectedAuton());
@@ -141,7 +141,7 @@ public class Robot extends IterativeRobot {
 		// Refresh Dashboard
 		outputAllToDashboard();
 		
-		//_chassis.setBrakeMode(true);
+		_chassis.setBrakeMode(true);
 		
 		// Optionally Log Data
 		logAllData();
@@ -161,10 +161,10 @@ public class Robot extends IterativeRobot {
 		
 		stopAll();
 		
-		/*
+		
 		_chassis.zeroSensors();
 		_chassis.setHighGear(false);
-		_chassis.setBrakeMode(false); */
+		_chassis.setBrakeMode(false); 
 		
 		// init data logging
 		_dataLogger = GeneralUtilities.setupLogging("auton");
@@ -180,7 +180,7 @@ public class Robot extends IterativeRobot {
 		_ultrasonic.refreshUltrasonicValues();
 		
 		// =============  CHASSIS ============= 
-		/*
+		
 		if ((Math.abs(_dos.getThrottleCmd()) > 0.05) || (Math.abs(_dos.getTurnCmd()) > 0.05)) {
 			_chassis.arcadeDrive(-1.0 * _dos.getThrottleCmd(), _dos.getTurnCmd());
 		} else {
@@ -189,7 +189,7 @@ public class Robot extends IterativeRobot {
 		
 		if (_dos.getIsShiftGearJustPressed()) {
 			_chassis.toggleShifter();
-		} */
+		} 
 	
 		//=============  INFEED ============= 
 		
@@ -228,7 +228,7 @@ public class Robot extends IterativeRobot {
 		} 
 
 		// =============  ELEVATOR ============= 
-		
+		/*
 		if (Math.abs(_dos.getOperator_Elevator_JoystickCmd()) > 0.05) {
 			_elevator.JogAxis(_dos.getOperator_Elevator_JoystickCmd());
 		}
@@ -248,10 +248,10 @@ public class Robot extends IterativeRobot {
 			_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.HOME);
 		} else {
 			_elevator.stop();
-		} 
+		} */
 		
 		// ============= CARRIAGE =============
-		_carriage.driveCarriage(_dos.getOperator_DriveCarraige_JoystickCmd());
+		//_carriage.driveCarriage(_dos.getOperator_DriveCarraige_JoystickCmd());
 		
 		// ============= Camera Switch ============= 
 		if (_dos.getIsOperator_SwitchCamera_BtnJustPressed() == true) {
@@ -269,8 +269,8 @@ public class Robot extends IterativeRobot {
 	//Methods for Stopping All Motors on Every Subsystem (Every Subsystem w/ Motors needs a method here)
 	//=====================================================================================
 	private void stopAll() {
-		//_chassis.stop();
-		_elevator.stop();
+		_chassis.stop();
+		//_elevator.stop();
 		_infeed.stop();
 		_carriage.stop();
 	}
@@ -288,8 +288,8 @@ public class Robot extends IterativeRobot {
     		// each subsystem should add a call to a outputToSmartDashboard method
     		// to push its data out to the dashboard
 
-    		//_chassis.outputToShuffleboard(); 
-    		_elevator.outputToShuffleboard();
+    		_chassis.outputToShuffleboard(); 
+    		//_elevator.outputToShuffleboard();
     		_infeed.outputToShuffleboard();
     		_ultrasonic.outputToShuffleboard();
 	    	
@@ -319,8 +319,8 @@ public class Robot extends IterativeRobot {
         	LogDataBE logData = new LogDataBE();
 	    	
 	    	// ask each subsystem that exists to add its data
-	    	//_chassis.updateLogData(logData);
-	    	_elevator.updateLogData(logData);
+	    	_chassis.updateLogData(logData);
+	    	//_elevator.updateLogData(logData);
 	    	_infeed.updateLogData(logData);
 	    	_ultrasonic.updateLogData(logData);
 	    	

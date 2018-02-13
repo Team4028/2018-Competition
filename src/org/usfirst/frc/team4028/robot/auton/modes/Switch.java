@@ -18,9 +18,9 @@ public class Switch extends AutonBase {
 	
 	public Switch(boolean isSwitchLeft) {
 		if (isSwitchLeft) {
-			toSwitch = Paths.getPath(PATHS.L_SWITCH, 90.0, 90.0, 0.0065);
+			toSwitch = Paths.getPath(PATHS.L_SWITCH, 100.0, 120.0, 0.004); 
 		} else {
-			toSwitch = Paths.getPath(PATHS.R_SWITCH, 90.0, 90.0, 0.004);
+			toSwitch = Paths.getPath(PATHS.R_SWITCH, 100.0, 120.0, 0.0065);
 		}
 	}
 	

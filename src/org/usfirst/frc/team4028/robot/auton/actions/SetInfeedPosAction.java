@@ -7,9 +7,10 @@ public class SetInfeedPosAction implements Action{
 	Infeed _infeed = Infeed.getInstance();
 	INFEED_TARGET_POSITION _infeedTargetPos;
 	
+	
 	public SetInfeedPosAction(INFEED_TARGET_POSITION infeedTargetPos) {
 		_infeedTargetPos = infeedTargetPos;
-	}
+	} 
 
 	@Override
 	public void start() {}
