@@ -151,9 +151,9 @@ public class DriverOperatorStation {
 //			return _driverGamepad.getBumperPressed(Hand.kLeft);
 //		}
 		
-		public boolean getIsDriver_AutoAcquire_BtnJustPressed() {
-			return _driverGamepad.getBumperPressed(Hand.kRight);
-		}
+//		public boolean getIsDriver_AutoAcquire_BtnJustPressed() {
+//			return _driverGamepad.getBumperPressed(Hand.kRight);
+//		}
 		
 //		public boolean getIsDriver_LeftStick_BtnJustPressed() {
 //			return _driverGamepad.getStickButtonPressed(Hand.kLeft);
@@ -239,14 +239,10 @@ public class DriverOperatorStation {
 			return _driverGamepad.getBumper(Hand.kLeft);
 		}
 		
-		/*public boolean getIsDriver_InfeedCube_BtnPressed() {
+		public boolean getIsDriver_EjectCube_BtnPressed() {
 			return _driverGamepad.getBumper(Hand.kRight);
-		} */
-		
-//		public boolean getIsDriver_InfeedCube_BtnPressed() {
-//			return _driverGamepad.getBumper(Hand.kRight);
-//		}
-		
+		} 
+				
 //		public boolean getIsDriver_LeftStick_BtnPressed() {
 //			return _driverGamepad.getStickButton(Hand.kLeft);
 //		}
@@ -276,11 +272,11 @@ public class DriverOperatorStation {
 			return _driverGamepad.getX(Hand.kRight);
 		}
 
-//		public double getDriver_LeftTrigger_JoystickCmd() {
-//			return _driverGamepad.getTriggerAxis(Hand.kLeft);
+//		public double getDriver_InfeedCube_JoystickCmd() {
+//			return  _driverGamepad.getTriggerAxis(Hand.kLeft);
 //		}
 		
-//		public double getDriver_RightTrigger_JoystickCmd() {
+//		public double getDriver_EjectCube_JoystickCmd() {
 //			return _driverGamepad.getTriggerAxis(Hand.kRight);
 //		}
 		
@@ -435,21 +431,26 @@ public class DriverOperatorStation {
 //			return _operatorGamepad.getX(Hand.kLeft);
 //		}
 		
-		public double getOperator_Carriage_JoystickCmd() {
+		public double getOperator_InfeedPositionY_JoystickCmd() {
 			return _operatorGamepad.getY(Hand.kRight);
 		}
 		
-//		public double getOperator_RightX_JoystickCmd() {
-//			return _operatorGamepad.getX(Hand.kRight);
-//		}
+		public double getOperator_InfeedPositionX_JoystickCmd() {
+			return _operatorGamepad.getX(Hand.kRight);
+		}
 
-//		public double getOperator_LeftTrigger_JoystickCmd() {
-//			return _operatorGamepad.getTriggerAxis(Hand.kLeft);
-//		}
+		public double getOperator_InfeedCube_JoystickCmd() {
+			return  _operatorGamepad.getTriggerAxis(Hand.kLeft);
+		}
 		
-//		public double getOperator_RightTrigger_JoystickCmd() {
-//			return _operatorGamepad.getTriggerAxis(Hand.kRight);
-//		}
+		public double getOperator_EjectCube_JoystickCmd() {
+			return _operatorGamepad.getTriggerAxis(Hand.kRight);
+		}
+		
+		
+		public double getOperator_DPad_AxisCmd() {
+			return _operatorGamepad.getPOV(0);
+		}
 		
 		// =========================================================================================================
 		// ENGINEER		ENGINEER	ENGINEER	ENGINEER	ENGINEER	ENGINEER	ENGINEER	ENGINEER	ENGINEER

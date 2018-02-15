@@ -13,15 +13,15 @@ import com.ctre.phoenix.motorcontrol.RemoteLimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
-import edu.wpi.first.wpilibj.DriverStation;
-
 public class Carriage implements Subsystem {
 	
 	// define class level working variables
 	private TalonSRX _carriageLeftMotor; 
 	private VictorSPX _carriageRightMotor;
 	
-	private double _carriageVBusCmd;
+	private double _carriageDriveCmd;
+	
+	private static final double CARRIAGE_WHEELS_INFEED_COMMAND = 0.5;
 	
 	//=====================================================================================
 	//Define Singleton Pattern
@@ -103,8 +103,8 @@ public class Carriage implements Subsystem {
 		public void onLoop(double timestamp) {
 			synchronized (Carriage.this) {	
 				// joystick mode
-				_carriageLeftMotor.set(ControlMode.PercentOutput, _carriageVBusCmd, 0);
-				_carriageRightMotor.set(ControlMode.PercentOutput, _carriageVBusCmd, 0);
+				_carriageLeftMotor.set(ControlMode.PercentOutput, _carriageDriveCmd, 0);
+				_carriageRightMotor.set(ControlMode.PercentOutput, _carriageDriveCmd, 0);
 			}
 		}
 		
@@ -122,15 +122,27 @@ public class Carriage implements Subsystem {
 	
 	@Override
 	public void stop() {
-		_carriageVBusCmd = 0.0;
-		_carriageLeftMotor.set(ControlMode.PercentOutput, _carriageVBusCmd, 0);
-		_carriageRightMotor.set(ControlMode.PercentOutput, _carriageVBusCmd, 0);
+		_carriageDriveCmd = 0.0;
+		_carriageLeftMotor.set(ControlMode.PercentOutput, _carriageDriveCmd, 0);
+		_carriageRightMotor.set(ControlMode.PercentOutput, _carriageDriveCmd, 0);
 	}
 
-	public void RunCarriageMotors(double vbusCmd)
+	public void infeedCarriageMotorsVBus(double vbusCmd)
 	{
 		// scale cmd
-		_carriageVBusCmd = vbusCmd * 0.75;
+		_carriageDriveCmd = vbusCmd * 0.5;
+	}
+	
+	public void runCarriageMotors() {
+		_carriageDriveCmd = CARRIAGE_WHEELS_INFEED_COMMAND;
+	}
+	
+	public void ejectCube() {
+		_carriageDriveCmd = -1  * CARRIAGE_WHEELS_INFEED_COMMAND;
+	}
+	
+	public void ejectCubeVBus(double joystickCommand) {
+		_carriageDriveCmd = -1 * joystickCommand;
 	}
 	
 	@Override

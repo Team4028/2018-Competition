@@ -27,6 +27,7 @@ public class Infeed {
 		MOVE_TO_POSITION_AND_HOLD,
 		AUTO_ACQUIRE_MANUVER,
 		STAGGER_INFEED_MANUVER,
+		JOYSTICK_POSITION_CONTROL,
 		TIMEOUT,
 	} 
 	
@@ -106,7 +107,7 @@ public class Infeed {
 	private static final double HOME_POSITION_ANGLE = 0; //Is Home
     private static final double INFEED_POSITION_ANGLE = 160;	
 	private static final double WIDE_INFEED_POSITION_ANGLE = 140;
-	private static final double SQUEEZE_INFEED_POSITION_ANGLE = 180;
+	private static final double SQUEEZE_INFEED_POSITION_ANGLE = 195;
 	private static final double STORE_POSITION_ANGLE = 10;
 	private static final double THIN_SIDE_POSITION_ANGLE = 200;
 	private static final double STAGGER_POSITION_ANGLE = 185;
@@ -115,6 +116,7 @@ public class Infeed {
 	
 	// Infeed Drive Wheel Constant
 	public static final double INFEED_DRIVE_WHEELS_VBUS_COMMAND = 0.75;
+	public static final double INFEED_SPIN_CUBE_WHEELS_VBUS_COMMAND = 0.2;
 	
 	//Conversion Constant
 	public static final double DEGREES_TO_NATIVE_UNITS_CONVERSION = (4096/360);
@@ -145,7 +147,7 @@ public class Infeed {
 		
 		_leftSwitchbladeMotor.configForwardSoftLimitEnable(false, 0);
 		_leftSwitchbladeMotor.configReverseSoftLimitEnable(false, 0);
-		//_leftArmMotor.configForwardSoftLimitThreshold(2048, 20);
+		_leftSwitchbladeMotor.configForwardSoftLimitThreshold(2400, 20);
 		
 		_leftSwitchbladeMotor.setInverted(false);
 		
@@ -184,7 +186,7 @@ public class Infeed {
 		
 		_rightSwitchbladeMotor.configForwardSoftLimitEnable(false, 0);
 		_rightSwitchbladeMotor.configReverseSoftLimitEnable(false, 0);
-		//_rightArmMotor.configForwardSoftLimitThreshold(2048, 20);
+		_rightSwitchbladeMotor.configForwardSoftLimitThreshold(2400, 20);
 		
 		_rightSwitchbladeMotor.setInverted(true);
 		
@@ -256,6 +258,10 @@ public class Infeed {
 						_isLeftArmHomed = false;
 						_isRightArmHomed = false;
 						
+						_leftSwitchbladeMotor.configForwardSoftLimitEnable(false, 20);
+						_rightSwitchbladeMotor.configForwardSoftLimitEnable(false, 20);
+
+						
 						DriverStation.reportWarning("InfeedAxis (State) [NEED_TO_HOME] ==> [MOVING_TO_HOME]", false);
 						break;
 						
@@ -307,6 +313,9 @@ public class Infeed {
 							_infeedState = INFEED_STATE.MOVE_TO_POSITION_AND_HOLD;
 						}
 					
+						break;
+						
+					case JOYSTICK_POSITION_CONTROL:
 						break;
 						
 					case TIMEOUT:
@@ -385,6 +394,9 @@ public class Infeed {
 		}
 		
 		if (_isRightArmHomed && _isLeftArmHomed) {
+			_leftSwitchbladeMotor.configForwardSoftLimitEnable(true, 20);
+			_rightSwitchbladeMotor.configForwardSoftLimitEnable(true, 20);
+			
 			_areArmsHomed = true;
 			MoveToPresetPosition(INFEED_TARGET_POSITION.HOME);
 			_infeedState = INFEED_STATE.MOVE_TO_POSITION_AND_HOLD;
@@ -453,6 +465,28 @@ public class Infeed {
 		}
 	}
 	
+	public void infeedJoystickCommandedPosition(double joystickYAxis, double joystickXAxis) {
+		if (_areArmsHomed) {
+			double newJoystickYAxis = 0;
+			double newJoystickXAxis = 0;
+			if (joystickYAxis > 0 && joystickXAxis < 0) {
+				newJoystickYAxis = -1 * joystickYAxis;
+				newJoystickXAxis = -1 * joystickXAxis;
+			}
+			else {
+				newJoystickYAxis = joystickYAxis;
+				newJoystickXAxis = joystickXAxis;
+			}
+			_infeedState = INFEED_STATE.JOYSTICK_POSITION_CONTROL;
+			
+			double commandedAngle = (Math.atan(newJoystickYAxis)/(newJoystickXAxis));
+			double commandedPosition = (degreesToNativeUnits(Math.toDegrees(commandedAngle)));
+			
+			_leftSwitchbladeMotor.set(ControlMode.MotionMagic, commandedPosition);
+			_rightSwitchbladeMotor.set(ControlMode.MotionMagic, commandedPosition);
+		}
+	}
+	
 	public void reZeroArms() {
 		_infeedState = INFEED_STATE.NEED_TO_HOME;
 	}
@@ -464,6 +498,20 @@ public class Infeed {
 		if(areArmsInPosition() || _infeedState == INFEED_STATE.STAGGER_INFEED_MANUVER) {
 			_leftInfeedDriveMotor.setSpeed(INFEED_DRIVE_WHEELS_VBUS_COMMAND);
 			_rightInfeedDriveMotor.setSpeed(-1*INFEED_DRIVE_WHEELS_VBUS_COMMAND);
+		}
+	}
+	
+	public void driveInfeedWheelsVBus(double joystickCommand) {
+		if(areArmsInPosition()) {
+			_leftInfeedDriveMotor.setSpeed(joystickCommand);
+			_rightInfeedDriveMotor.setSpeed(-1 * joystickCommand);
+		}
+	}
+	
+	public void spinManuverInfeedWheels() {
+		if(areArmsInPosition() || _infeedState == INFEED_STATE.STAGGER_INFEED_MANUVER) {
+			_leftInfeedDriveMotor.setSpeed(INFEED_SPIN_CUBE_WHEELS_VBUS_COMMAND);
+			_rightInfeedDriveMotor.setSpeed(INFEED_SPIN_CUBE_WHEELS_VBUS_COMMAND);
 		}
 	}
 	
@@ -499,8 +547,10 @@ public class Infeed {
 		
 	public boolean areArmsInPosition() {
 		double currentError = Math.abs(nativeUnitsToDegrees(_leftSwitchbladeMotor.getSelectedSensorPosition(0)) - _targetInfeedPosition);
-		if(currentError < INFEED_ALLOWED_ERROR_ANGLE && _targetInfeedPosition != HOME_POSITION_ANGLE 
+		if(currentError < INFEED_ALLOWED_ERROR_ANGLE && _targetInfeedPosition != HOME_POSITION_ANGLE
 				&& _targetInfeedPosition != STORE_POSITION_ANGLE) {
+			return true;
+		} else if(_targetInfeedPosition == SQUEEZE_INFEED_POSITION_ANGLE) { 
 			return true;
 		} else {
 			return false;
@@ -520,6 +570,10 @@ public class Infeed {
 		_leftSwitchbladeMotor.set(ControlMode.MotionMagic, 0);
 		stopDriveMotors();
 	}
+	
+	//=====================================================================================
+	//Methods for Exposing Properties of Infeed Motors
+	//=====================================================================================
 	
 	//=====================================================================================
 	//Methods for Conversions between Native Units and Degrees

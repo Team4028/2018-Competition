@@ -29,6 +29,7 @@ public class Robot extends IterativeRobot {
 	private Infeed _infeed = Infeed.getInstance();
 	private Elevator _elevator = Elevator.getInstance();
 	private Carriage _carriage = Carriage.getInstance();
+	private CubeHandler _cubeHandler = CubeHandler.getInstance();
 	
 	// Sensors
 	private UltrasonicSensor _ultrasonic = UltrasonicSensor.getInstance();
@@ -93,6 +94,7 @@ public class Robot extends IterativeRobot {
 		}
 		
 		_chassis.setBrakeMode(false);
+		_elevator.resetElevatorPosition();
 		stopAll();
 	}
 
@@ -179,6 +181,7 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopPeriodic() {		
 		_ultrasonic.refreshUltrasonicValues();
+		_elevator.IsAtTargetPosition();
 		
 		// =============  CHASSIS ============= 
 		if ((Math.abs(_dos.getThrottleCmd()) > 0.05) || (Math.abs(_dos.getTurnCmd()) > 0.05)) {
@@ -195,31 +198,33 @@ public class Robot extends IterativeRobot {
 		if (_dos.getIsDriver_ReZeroInfeed_BtnJustPressed()) {
 			_infeed.reZeroArms();
 		}		
-		else if (_dos.getIsDriver_MoveToWideInfeedPosition_BtnJustPressed()) {
+		else if (_dos.getOperator_DPad_AxisCmd() == 270) {
 			_infeed.moveArmsToWideInfeedPosition();
 		}
-		else if (_dos.getIsDriver_MoveToSqueezeInfeedPosition_BtnJustPressed()) {
+		else if (_dos.getOperator_DPad_AxisCmd() == 0) {
 			_infeed.moveArmsToSqueezeInfeedPosition();
 		}
-		else if (_dos.getIsDriver_StoreInfeedArms_BtnJustPressed()) {
+		else if (_dos.getOperator_DPad_AxisCmd() == 180) {
 			_infeed.storeArms();
 		}
-		else if (_dos.getIsDriver_StaggerInfeedManuver_BtnJustPressed()) {
+		else if (_dos.getOperator_DPad_AxisCmd() == 90) {
 			_infeed.staggerInfeedManuver();
 		}
-		else if (_dos.getIsDriver_AutoAcquire_BtnJustPressed()) {
-			_infeed.autoInfeedManuver();
+		else if (_dos.getOperator_InfeedPositionX_JoystickCmd() > 0.5 
+				|| _dos.getOperator_InfeedPositionY_JoystickCmd() > 0.5) {
+			_infeed.infeedJoystickCommandedPosition(_dos.getOperator_InfeedPositionY_JoystickCmd(), 
+					_dos.getOperator_InfeedPositionX_JoystickCmd());
 		}
-		else if (_dos.getIsDriver_InfeedCube_BtnPressed()) {
-			_infeed.driveInfeedWheels( );
-		}
-		else {
-			_infeed.stopDriveMotors();
-		}
+//		else if (_dos.getIsDriver_AutoAcquire_BtnJustPressed()) {
+//			_infeed.autoInfeedManuver();
+//		}
 
 		// =============  ELEVATOR ============= 
 		if (Math.abs(_dos.getOperator_Elevator_JoystickCmd()) > 0.05) {
 			_elevator.JogAxis(_dos.getOperator_Elevator_JoystickCmd());
+		}
+		else if (_dos.getIsOperator_ElevatorCubeOnFloorHgt_BtnJustPressed()) {
+			_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.CUBE_ON_FLOOR);
 		}
 		else if (_dos.getIsOperator_ElevatorScaleHgt_BtnJustPressed()) {
 			_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.SCALE_HEIGHT);
@@ -230,9 +235,6 @@ public class Robot extends IterativeRobot {
 		else if (_dos.getIsOperator_ElevatorPyrmdLvl1Hgt_BtnJustPressed()) {
 			_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.CUBE_ON_PYRAMID_LEVEL_1);
 		}
-		else if (_dos.getIsOperator_ElevatorCubeOnFloorHgt_BtnJustPressed()) {
-			_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.CUBE_ON_FLOOR);
-		}
 		else if (_dos.getIsOperator_ElevatorHome_BtnJustPressed()) {
 			_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.HOME);
 		} else {
@@ -240,7 +242,15 @@ public class Robot extends IterativeRobot {
 		} 
 		
 		// =============  Carriage ============= 
-		_carriage.RunCarriageMotors(_dos.getOperator_Carriage_JoystickCmd());
+		//_carriage.RunCarriageMotorsVBus(_dos.getOperator_Carriage_JoystickCmd());
+		if (Math.abs(_dos.getOperator_InfeedCube_JoystickCmd()) > 0.05) {
+			_cubeHandler.runInfeedCubePlusCarriage(_dos.getOperator_InfeedCube_JoystickCmd());
+		}
+		else if (Math.abs(_dos.getOperator_EjectCube_JoystickCmd()) > 0.05) {
+			_cubeHandler.ejectCube(_dos.getOperator_EjectCube_JoystickCmd());
+		} else {
+			_cubeHandler.stop();			
+		}
 		
 		// ============= Camera Switch ============= 
 		if (_dos.getIsOperator_SwitchCamera_BtnJustPressed() == true) {

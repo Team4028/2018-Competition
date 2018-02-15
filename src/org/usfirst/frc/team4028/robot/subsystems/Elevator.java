@@ -56,6 +56,10 @@ public class Elevator implements Subsystem {
 	private int _targetElevatorPosition;
 	private double _targetElevatorVelocity;
 	
+	private double _currentTestInitiatedTime = 0;
+	private double _currentTestEndingTime = 0;
+	private double _currentTestDeltaTime = 0;
+	
 	private double _actualPositionNU = 0;
 	private double _actualVelocityNU_100mS = 0;
 	private double _actualAccelerationNU_100mS_mS = 0;
@@ -73,7 +77,7 @@ public class Elevator implements Subsystem {
 	private static final double ELEVATOR_MOVE_TO_HOME_VELOCITY_CMD = -0.20;   
 	private static final long ELEVATOR_MAXIMUM_MOVE_TO_HOME_TIME_IN_MSEC = 5000;	// 5 sec
 	
-	private static final double ELEVATOR_POS_ALLOWABLE_ERROR_IN_INCHES = 0.25;	// +/- 0.25
+	private static final double ELEVATOR_POS_ALLOWABLE_ERROR_IN_INCHES = 1.5;	// +/- 0.25
 	private static final int ELEVATOR_POS_ALLOWABLE_ERROR_IN_NU = InchesToNativeUnits(ELEVATOR_POS_ALLOWABLE_ERROR_IN_INCHES);
 	
 	//Conversion Constant
@@ -83,12 +87,12 @@ public class Elevator implements Subsystem {
 	private static final int SCALE_HEIGHT_POSITION = InchesToNativeUnits(36);
 	private static final int SWITCH_HEIGHT_POSITION = InchesToNativeUnits(16);
 	private static final int CUBE_ON_PYRAMID_LEVEL_1_POSITION = InchesToNativeUnits(12);
-	private static final int CUBE_ON_FLOOR_POSITION = InchesToNativeUnits(3);
+	private static final int CUBE_ON_FLOOR_POSITION = InchesToNativeUnits(0.75);
 	private static final int HOME_POSITION = 0;
 
 //	private static final int ELEVATOR_MAX_TRAVEL = InchesToNativeUnits(41);
 	private static final int UP_SOFT_LIMIT = InchesToNativeUnits(40.0);
-	private static final int DOWN_SOFT_LIMIT = InchesToNativeUnits(1.0);
+	private static final int DOWN_SOFT_LIMIT = InchesToNativeUnits(0.5);
 	
 	/*
 	 * Moveable Slide Top to Bottom = 48.5 in
@@ -109,17 +113,17 @@ public class Elevator implements Subsystem {
 	private static final int MOVING_DOWN_PID_SLOT_INDEX = 0;
 	
 	// define PID Constants
-	public static final int UP_CRUISE_VELOCITY = 5061; // native units per 100 mSec 50% of max
-	public static final int UP_ACCELERATION = 4061; 	// native units per 100 mSec per sec
+	public static final int UP_CRUISE_VELOCITY = 25000; // native units per 100 mSec 50% of max
+	public static final int UP_ACCELERATION = 20000; 	// native units per 100 mSec per sec
 	
-	public static final int DOWN_CRUISE_VELOCITY = 3751; // native units per 100 mSec 50% of max
-	public static final int DOWN_ACCELERATION = 3000; 	// native units per 100 mSec per sec
+	public static final int DOWN_CRUISE_VELOCITY = 5000; // native units per 100 mSec 50% of max
+	public static final int DOWN_ACCELERATION = 4000; 	// native units per 100 mSec per sec
 	
 	public static final double FEED_FORWARD_GAIN_HOLD = 1.0; //1.5; //3.4074425;
 	public static final double PROPORTIONAL_GAIN_HOLD  = 0.4; //.4; //0.0731; //3.0;
 	public static final double INTEGRAL_GAIN_HOLD  = 0; //0.03; //0.0; 
 	public static final int INTEGRAL_ZONE_HOLD = 0; //0.0; 
-	public static final double DERIVATIVE_GAIN_HOLD  = 9.0; //4.0; //0.7;	
+	public static final double DERIVATIVE_GAIN_HOLD  = 9.0; //4.0; //0.7;
 	
 	public static final double FEED_FORWARD_GAIN_UP = 0.4; //3.4074425;
 	public static final double PROPORTIONAL_GAIN_UP = 0.6; //.4; //0.0731; //3.0;
@@ -276,6 +280,7 @@ public class Elevator implements Subsystem {
 						{
 							// change state
 	    					_elevatorState = ELEVATOR_STATE.HOLD_TARGET_POSTION;
+	    					_currentTestEndingTime = new Date().getTime();
 	    					ReportStateChg("ElevatorAxis (State) [GOTO_TARGET_POSTION] ==> [HOLD_TARGET_POSTION]");
 						}
 						else
@@ -312,6 +317,8 @@ public class Elevator implements Subsystem {
 							// set appropriate gain slot to use	    	
 							SetPidSlotToUse("Hold", HOLDING_PID_SLOT_INDEX);
 							_elevatorMasterMotor.set(ControlMode.MotionMagic, _targetElevatorPosition, 0);
+							
+							_currentTestDeltaTime = (_currentTestEndingTime - _currentTestInitiatedTime)/1000;
 						}
 						
 						break;
@@ -390,6 +397,7 @@ public class Elevator implements Subsystem {
 				_targetElevatorPosition = SCALE_HEIGHT_POSITION;
 				_elevatorState = ELEVATOR_STATE.GOTO_TARGET_POSTION;
 				ReportStateChg("ElevatorAxis (State) [" + _elevatorState.toString() + "] ==> [GOTO_AND_HOLD_TARGET_POSTION:SCALE]");
+				 _currentTestInitiatedTime = new Date().getTime();
 				break;
 				
 			case OTHER:
@@ -486,6 +494,9 @@ public class Elevator implements Subsystem {
 		SmartDashboard.putNumber("Elevator:Acceleration", GeneralUtilities.RoundDouble(actualAcceleration, 2));
 		SmartDashboard.putBoolean("Elevator:InPosition", IsAtTargetPosition());
 		SmartDashboard.putString("Elevator:State", _elevatorState.toString());
+		
+		SmartDashboard.putBoolean("Is Elevator at Position?", IsAtTargetPosition());
+		SmartDashboard.putNumber("Current Test Delta Time", _currentTestDeltaTime);
 	}
 
 	// this property indicates if the elevator is w/i the position deadband of the target position
@@ -493,7 +504,8 @@ public class Elevator implements Subsystem {
         if (_elevatorState == ELEVATOR_STATE.GOTO_TARGET_POSTION
         		|| _elevatorState == ELEVATOR_STATE.HOLD_TARGET_POSTION) {
         	int currentError = Math.abs(_elevatorMasterMotor.getSelectedSensorPosition(0) - _targetElevatorPosition);
-            if ( currentError < ELEVATOR_POS_ALLOWABLE_ERROR_IN_NU) {
+        	SmartDashboard.putNumber("Elevator Error", currentError);
+            if ( currentError <= ELEVATOR_POS_ALLOWABLE_ERROR_IN_NU) {
             	return true;
             } else {
             	return false;
@@ -542,6 +554,21 @@ public class Elevator implements Subsystem {
 		_elevatorMasterMotor.configForwardSoftLimitEnable(false, 0);
 		
 		_isSoftLimitsEnabled = false;
+	}
+	
+	//=====================================================================================
+	//Methods for Exposing Properties of Elevator
+	//=====================================================================================
+	public boolean isElevatorAtFloorPosition() {
+		if(IsAtTargetPosition() && _targetElevatorPosition == CUBE_ON_FLOOR_POSITION) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	public void resetElevatorPosition() {
+		_targetElevatorPosition = HOME_POSITION;
 	}
 	
 	private static int InchesToNativeUnits(double positionInInches) {
