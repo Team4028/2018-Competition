@@ -183,13 +183,21 @@ public class Robot extends IterativeRobot {
 		
 		if ((Math.abs(_dos.getThrottleCmd()) > 0.05) || (Math.abs(_dos.getTurnCmd()) > 0.05)) {
 			_chassis.arcadeDrive(-1.0 * _dos.getThrottleCmd(), _dos.getTurnCmd());
-		} else {
+		}
+		else if(_dos.getIsTurnto0ButtonPressed())
+		{
+			_chassis.setTargetAngle(0);
+		}
+		else if(_dos.getIsTurnto180ButtonPressed())
+		{
+			_chassis.setTargetAngle(180);
+		}
+		else 
+		{
 			_chassis.stop();
 		}
+
 		
-		if (_dos.getIsShiftGearJustPressed()) {
-			_chassis.toggleShifter();
-		} 
 	
 		//=============  INFEED ============= 
 		

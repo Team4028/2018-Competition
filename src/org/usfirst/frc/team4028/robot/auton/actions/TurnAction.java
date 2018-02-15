@@ -27,6 +27,6 @@ public class TurnAction implements Action{
 
 	@Override
 	public boolean isFinished() {
-		return _chassis.autoTurnOnTarget();		// Returns true when chassis is within angle deadband
+		return Math.abs(_targetAngle - _chassis.getHeading()) < 2.0;		// Returns true when chassis is within angle deadband
 	}
 }

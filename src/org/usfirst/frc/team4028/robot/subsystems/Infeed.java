@@ -111,7 +111,7 @@ public class Infeed {
 	private static final double THIN_SIDE_POSITION_ANGLE = 200;
 	private static final double STAGGER_POSITION_ANGLE = 185;
 	
-	private static final double INFEED_ALLOWED_ERROR_ANGLE = 15;
+	private static final double INFEED_ALLOWED_ERROR_ANGLE = 20;
 	
 	// Infeed Drive Wheel Constant
 	public static final double INFEED_DRIVE_WHEELS_VBUS_COMMAND = 0.75;
@@ -221,6 +221,11 @@ public class Infeed {
 		//=====================================================================================
 		//Set up Ultrasonic Sensor
 		_ultrasonic = UltrasonicSensor.getInstance();
+		
+		_leftSwitchbladeMotor.configPeakOutputForward(1, 0);
+		_leftSwitchbladeMotor.configPeakOutputReverse(-1, 0);
+		_rightSwitchbladeMotor.configPeakOutputForward(1, 0);
+		_rightSwitchbladeMotor.configPeakOutputReverse(-1, 0);
 		
 		//Initially Configure Booleans
 		_isLeftArmHomed = false;
@@ -461,10 +466,13 @@ public class Infeed {
 	//Method for Driving Infeed Wheels
 	//=====================================================================================
 	public void driveInfeedWheels() {
+		/*
 		if(areArmsInPosition() || _infeedState == INFEED_STATE.STAGGER_INFEED_MANUVER) {
 			_leftInfeedDriveMotor.setSpeed(-1*INFEED_DRIVE_WHEELS_VBUS_COMMAND);
 			_rightInfeedDriveMotor.setSpeed(-1*-1*INFEED_DRIVE_WHEELS_VBUS_COMMAND);
-		}
+		} */
+		_leftInfeedDriveMotor.setSpeed(-1*INFEED_DRIVE_WHEELS_VBUS_COMMAND);
+		_rightInfeedDriveMotor.setSpeed(-1*-1*INFEED_DRIVE_WHEELS_VBUS_COMMAND);
 	}
 	
 	//=====================================================================================

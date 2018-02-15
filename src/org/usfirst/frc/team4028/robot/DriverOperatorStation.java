@@ -556,13 +556,15 @@ public class DriverOperatorStation {
 //			return _engineeringGamepad.getStartButton();
 //		}
 		
-//		public boolean getIsEngineering_YellowY_BtnPressed() {
-//			return _engineeringGamepad.getYButton();
-//		}
+		public boolean getIsTurnto0ButtonPressed() 
+		{
+			return _engineeringGamepad.getYButton();
+		}
 		
-//		public boolean getIsEngineering_RedB_BtnPressed() {
-//			return _engineeringGamepad.getBButton();
-//		}
+		public boolean getIsTurnto180ButtonPressed() 
+		{
+			return _engineeringGamepad.getBButton();
+		}
 		
 //		public boolean getIsEngineering_GreenA_BtnPressed() {
 //			return _engineeringGamepad.getAButton();

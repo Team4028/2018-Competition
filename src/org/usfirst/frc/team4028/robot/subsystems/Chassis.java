@@ -60,7 +60,7 @@ public class Chassis implements Subsystem {
 	private static final double[] HIGH_GEAR_VELOCITY_PIDF_GAINS = {0.065, 0.0, 1.0, 0.04};
     
     private static final int[] MOTION_MAGIC_TURN_VEL_ACC = {80 * 150, 150 * 150};
-    private static final int[] MOTION_MAGIC_STRAIGHT_VEL_ACC = {80 * 150, 120 * 150};
+    private static final int[] MOTION_MAGIC_STRAIGHT_VEL_ACC = {80 * 150, 140 * 150};
 	
 	// Chassis various states
 	private enum ChassisState {
@@ -203,6 +203,7 @@ public class Chassis implements Subsystem {
 		
 		_leftMaster.set(ControlMode.MotionMagic, leftDriveTargetPosition);
 		_rightMaster.set(ControlMode.MotionMagic, rightDriveTargetPosition);
+
 	}
 	
 	/** Returns whether chassis has turned close enough to heading goal */
@@ -217,6 +218,10 @@ public class Chassis implements Subsystem {
 		setHighGear(false);
 		setMotionMagicStraightGains();
 		_chassisState = ChassisState.DRIVE_SET_DISTANCE;
+		System.out.println("LeftTargetPosinNU "+ _leftTargetPos);
+		System.out.println("RightTargetPosinNU "+_rightTargetPos);
+		System.out.println("LeftPosinInchesStart "+ getLeftPosInches());
+		System.out.println("RightPosinInchesStart "+ getRightPosInches());
 	}
 	
 	private synchronized void moveToTargetPos() {
@@ -225,7 +230,7 @@ public class Chassis implements Subsystem {
 	}
 	
 	public synchronized boolean atTargetPos() {
-		return (Math.abs(_leftTargetPos - getLeftPosInches()) < 1.5) && (Math.abs(_rightTargetPos - getRightPosInches()) < 1.5);
+		return (Math.abs(_leftTargetPos - inchesToNativeUnits(getLeftPosInches())) < 2500) && (Math.abs(_rightTargetPos - inchesToNativeUnits(getRightPosInches())) < 2500);
 	} 
 
 	/* Chassis State: FOLLOW PATH */
@@ -349,7 +354,7 @@ public class Chassis implements Subsystem {
     }
     
     private static double inchesToNativeUnits(double inches) {
-    	return (inches * CODES_PER_REV) / (Constants.DRIVE_WHEEL_DIAMETER_INCHES * Math.PI);
+    	return inches * 1540.95;
     }
 	
 	private static double inchesPerSecondToNativeUnits(double inches_per_second) {
@@ -399,6 +404,7 @@ public class Chassis implements Subsystem {
 		
 		SmartDashboard.putNumber("Left Velocity", getLeftVelocityInchesPerSec());
 		SmartDashboard.putNumber("Right Velocity", getRightVelocityInchesPerSec());
+		SmartDashboard.putNumber("Angle", getHeading());
 	}
 	
 	@Override
