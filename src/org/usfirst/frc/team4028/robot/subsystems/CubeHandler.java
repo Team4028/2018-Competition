@@ -29,14 +29,16 @@ public class CubeHandler {
 		}
 	}
 	
-	public void runInfeedSpinManuverPlusCarriage() {
-		
+	public void runInfeedSpinManuver() {
 		_infeed.spinManuverInfeedWheels();
-		
 	}
 	
 	public void ejectCube(double joystickCommand) {
 		_carriage.ejectCubeVBus(joystickCommand);
+	}
+	
+	public void moveElevatorDown() {
+		_infeed.moveArmsToWideInfeedPosition();
 	}
 	
 	public void stop() {

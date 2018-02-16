@@ -68,12 +68,12 @@ public class Infeed {
 	private static final int STAGGER_MANUVER_PID_SLOT_INDEX = 2;
 	
 	private static final double LEFT_SWITCHBLADE_INFEED_MOTION_MAGIC_F = 0.3354098361; //Since the two motors have different gear boxes 
-	private static final double LEFT_SWITCHBLADE_INFEED_MOTION_MAGIC_P = 1.35;			//for testing, the F-values are very different
+	private static final double LEFT_SWITCHBLADE_INFEED_MOTION_MAGIC_P = 1.5;			//for testing, the F-values are very different
     private static final double LEFT_SWITCHBLADE_INFEED_MOTION_MAGIC_I = 0;			// |
     private static final double LEFT_SWITCHBLADE_INFEED_MOTION_MAGIC_D = 0;			// |
     																			// |
     private static final double RIGHT_SWITCHBLADE_INFEED_MOTION_MAGIC_F = 0.3354098361;// V
-    private static final double RIGHT_SWITCHBLADE_INFEED_MOTION_MAGIC_P = 1.35;
+    private static final double RIGHT_SWITCHBLADE_INFEED_MOTION_MAGIC_P = 1.5;
     private static final double RIGHT_SWITCHBLADE_INFEED_MOTION_MAGIC_I = 0;
     private static final double RIGHT_SWITCHBLADE_INFEED_MOTION_MAGIC_D = 0;
     
@@ -83,7 +83,7 @@ public class Infeed {
     private static final double LEFT_SWITCHBLADE_STORE_MOTION_MAGIC_D = 0;			// |
     																			// |
     private static final double RIGHT_SWITCHBLADE_STORE_MOTION_MAGIC_F = 0.3354098361;// V
-    private static final double RIGHT_SWITCHBLADE_STORE_MOTION_MAGIC_P = 3.5; 
+    private static final double RIGHT_SWITCHBLADE_STORE_MOTION_MAGIC_P = 3.0; 
     private static final double RIGHT_SWITCHBLADE_STORE_MOTION_MAGIC_I = 0;
     private static final double RIGHT_SWITCHBLADE_STORE_MOTION_MAGIC_D = 0;
     
@@ -102,12 +102,14 @@ public class Infeed {
     
     private static final int INFEED_STAGGER_MOTION_MAGIC_MAX_VEL = 7000;
     private static final int INFEED_STAGGER_MOTION_MAGIC_MAX_ACC = 6000;
+    
+    private static final int INFEED_SWITCHBLADE_FORWARD_SOFT_LIMIT = 2000;
 	
 	// Infeed Position Constants [THESE ARE ANGLE MEASURES IN DEGREES]
 	private static final double HOME_POSITION_ANGLE = 0; //Is Home
     private static final double INFEED_POSITION_ANGLE = 160;	
 	private static final double WIDE_INFEED_POSITION_ANGLE = 140;
-	private static final double SQUEEZE_INFEED_POSITION_ANGLE = 195;
+	private static final double SQUEEZE_INFEED_POSITION_ANGLE = 180;
 	private static final double STORE_POSITION_ANGLE = 10;
 	private static final double THIN_SIDE_POSITION_ANGLE = 200;
 	private static final double STAGGER_POSITION_ANGLE = 185;
@@ -147,7 +149,7 @@ public class Infeed {
 		
 		_leftSwitchbladeMotor.configForwardSoftLimitEnable(false, 0);
 		_leftSwitchbladeMotor.configReverseSoftLimitEnable(false, 0);
-		_leftSwitchbladeMotor.configForwardSoftLimitThreshold(2400, 20);
+		_leftSwitchbladeMotor.configForwardSoftLimitThreshold(INFEED_SWITCHBLADE_FORWARD_SOFT_LIMIT, 20);
 		
 		_leftSwitchbladeMotor.setInverted(false);
 		
@@ -186,7 +188,7 @@ public class Infeed {
 		
 		_rightSwitchbladeMotor.configForwardSoftLimitEnable(false, 0);
 		_rightSwitchbladeMotor.configReverseSoftLimitEnable(false, 0);
-		_rightSwitchbladeMotor.configForwardSoftLimitThreshold(2400, 20);
+		_rightSwitchbladeMotor.configForwardSoftLimitThreshold(INFEED_SWITCHBLADE_FORWARD_SOFT_LIMIT, 20);
 		
 		_rightSwitchbladeMotor.setInverted(true);
 		
@@ -469,6 +471,7 @@ public class Infeed {
 		if (_areArmsHomed) {
 			double newJoystickYAxis = 0;
 			double newJoystickXAxis = 0;
+			
 			if (joystickYAxis > 0 && joystickXAxis < 0) {
 				newJoystickYAxis = -1 * joystickYAxis;
 				newJoystickXAxis = -1 * joystickXAxis;
@@ -477,13 +480,14 @@ public class Infeed {
 				newJoystickYAxis = joystickYAxis;
 				newJoystickXAxis = joystickXAxis;
 			}
-			_infeedState = INFEED_STATE.JOYSTICK_POSITION_CONTROL;
+			//_infeedState = INFEED_STATE.JOYSTICK_POSITION_CONTROL;
 			
 			double commandedAngle = (Math.atan(newJoystickYAxis)/(newJoystickXAxis));
 			double commandedPosition = (degreesToNativeUnits(Math.toDegrees(commandedAngle)));
 			
 			_leftSwitchbladeMotor.set(ControlMode.MotionMagic, commandedPosition);
 			_rightSwitchbladeMotor.set(ControlMode.MotionMagic, commandedPosition);
+			
 		}
 	}
 	
@@ -509,7 +513,7 @@ public class Infeed {
 	}
 	
 	public void spinManuverInfeedWheels() {
-		if(areArmsInPosition() || _infeedState == INFEED_STATE.STAGGER_INFEED_MANUVER) {
+		if(areArmsInPosition()) {
 			_leftInfeedDriveMotor.setSpeed(INFEED_SPIN_CUBE_WHEELS_VBUS_COMMAND);
 			_rightInfeedDriveMotor.setSpeed(INFEED_SPIN_CUBE_WHEELS_VBUS_COMMAND);
 		}

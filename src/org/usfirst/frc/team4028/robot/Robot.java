@@ -195,7 +195,7 @@ public class Robot extends IterativeRobot {
 		}
 	
 		//=============  INFEED ============= 
-		if (_dos.getIsDriver_ReZeroInfeed_BtnJustPressed()) {
+		if (_dos.getIsOperator_ReZeroInfeed_BtnJustPressed()) {
 			_infeed.reZeroArms();
 		}		
 		else if (_dos.getOperator_DPad_AxisCmd() == 270) {
@@ -210,11 +210,11 @@ public class Robot extends IterativeRobot {
 		else if (_dos.getOperator_DPad_AxisCmd() == 90) {
 			_infeed.staggerInfeedManuver();
 		}
-		else if (_dos.getOperator_InfeedPositionX_JoystickCmd() > 0.5 
-				|| _dos.getOperator_InfeedPositionY_JoystickCmd() > 0.5) {
-			_infeed.infeedJoystickCommandedPosition(_dos.getOperator_InfeedPositionY_JoystickCmd(), 
-					_dos.getOperator_InfeedPositionX_JoystickCmd());
-		}
+//		else if (_dos.getOperator_InfeedPositionX_JoystickCmd() > 0.5 
+//				|| _dos.getOperator_InfeedPositionY_JoystickCmd() > 0.5) {
+//			_infeed.infeedJoystickCommandedPosition(_dos.getOperator_InfeedPositionY_JoystickCmd(), 
+//					_dos.getOperator_InfeedPositionX_JoystickCmd());
+//		}
 //		else if (_dos.getIsDriver_AutoAcquire_BtnJustPressed()) {
 //			_infeed.autoInfeedManuver();
 //		}
@@ -224,6 +224,7 @@ public class Robot extends IterativeRobot {
 			_elevator.JogAxis(_dos.getOperator_Elevator_JoystickCmd());
 		}
 		else if (_dos.getIsOperator_ElevatorCubeOnFloorHgt_BtnJustPressed()) {
+			_cubeHandler.moveElevatorDown();
 			_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.CUBE_ON_FLOOR);
 		}
 		else if (_dos.getIsOperator_ElevatorScaleHgt_BtnJustPressed()) {
@@ -245,15 +246,26 @@ public class Robot extends IterativeRobot {
 		//_carriage.RunCarriageMotorsVBus(_dos.getOperator_Carriage_JoystickCmd());
 		if (Math.abs(_dos.getOperator_InfeedCube_JoystickCmd()) > 0.05) {
 			_cubeHandler.runInfeedCubePlusCarriage(_dos.getOperator_InfeedCube_JoystickCmd());
+			_carriage.infeedCarriageMotorsVBus(_dos.getOperator_InfeedCube_JoystickCmd());
 		}
 		else if (Math.abs(_dos.getOperator_EjectCube_JoystickCmd()) > 0.05) {
 			_cubeHandler.ejectCube(_dos.getOperator_EjectCube_JoystickCmd());
+		} 
+		else if (_dos.getIsOperator_SpinCubeManuver_BtnPressed()){
+			_cubeHandler.runInfeedSpinManuver();	
 		} else {
 			_cubeHandler.stop();			
 		}
 		
+		if(_dos.getIsDriver_MoveCarriageCloser_BtnJustPressed()) {
+			_carriage.moveCarriageServosCloser();
+		}
+		else if(_dos.getIsDriver_MoveCarriageWider_BtnJustPressed()) {
+			_carriage.moveCarriageServosWider();
+		}
+				
 		// ============= Camera Switch ============= 
-		if (_dos.getIsOperator_SwitchCamera_BtnJustPressed() == true) {
+		if (_dos.getIsDriver_SwitchCamera_BtnJustPressed() == true) {
 			_switchableCameraServer.SwitchCamera();
 		}
 		

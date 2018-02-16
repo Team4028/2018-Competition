@@ -13,13 +13,21 @@ import com.ctre.phoenix.motorcontrol.RemoteLimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
+import edu.wpi.first.wpilibj.Servo;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 public class Carriage implements Subsystem {
 	
 	// define class level working variables
 	private TalonSRX _carriageLeftMotor; 
 	private VictorSPX _carriageRightMotor;
 	
+	private Servo _carriageSqueezeServo;
+	
 	private double _carriageDriveCmd;
+	private double _servoTargetPosition = 0.1;
+	
+	private double _carriageCurrentCurrent = 0;
 	
 	private static final double CARRIAGE_WHEELS_INFEED_COMMAND = 0.5;
 	
@@ -83,6 +91,10 @@ public class Carriage implements Subsystem {
 		_carriageLeftMotor.configForwardSoftLimitEnable(false, 0);
 		_carriageRightMotor.configReverseSoftLimitEnable(false, 0);
 		_carriageRightMotor.configForwardSoftLimitEnable(false, 0);
+		
+		// Setup Carriage Servo Motors
+		_carriageSqueezeServo = new Servo(Constants.CARRIAGE_SERVO_PWM_ADDRESS);
+		_carriageSqueezeServo.set(0);
 	}
 
 	//=====================================================================================
@@ -105,6 +117,10 @@ public class Carriage implements Subsystem {
 				// joystick mode
 				_carriageLeftMotor.set(ControlMode.PercentOutput, _carriageDriveCmd, 0);
 				_carriageRightMotor.set(ControlMode.PercentOutput, _carriageDriveCmd, 0);
+				
+				_carriageCurrentCurrent = _carriageLeftMotor.getOutputCurrent();
+				
+				_carriageSqueezeServo.set(_servoTargetPosition);
 			}
 		}
 		
@@ -145,12 +161,25 @@ public class Carriage implements Subsystem {
 		_carriageDriveCmd = -1 * joystickCommand;
 	}
 	
+	public void moveCarriageServosWider() {
+		if(_servoTargetPosition != 1) {
+			_servoTargetPosition = _servoTargetPosition + 0.05;
+		}
+	}
+	
+	public void moveCarriageServosCloser() {
+		if(_servoTargetPosition != 0) {
+			_servoTargetPosition = _servoTargetPosition - 0.05;
+		}
+	}
+	
 	@Override
 	public void zeroSensors() {
 	}
 
 	@Override
 	public void outputToShuffleboard() {
+		SmartDashboard.putNumber("Carriage Current:", _carriageCurrentCurrent);
 	}
 
 	@Override

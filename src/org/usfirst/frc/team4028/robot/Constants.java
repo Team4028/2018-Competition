@@ -31,6 +31,9 @@ public class Constants {
 	public static final int LEFT_INFEED_DRIVE_PWM_ADDRESS = 0;
 	public static final int RIGHT_INFEED_DRIVE_PWM_ADDRESS = 1;
 	
+	// Servo for Jeff
+	public static final int CARRIAGE_SERVO_PWM_ADDRESS = 2;
+	
 	// NavX (on Roborio)
 	public static final SPI.Port NAVX_PORT = Port.kMXP;
 	public static final double MAX_PITCH_POSITIVE = 7.0;
