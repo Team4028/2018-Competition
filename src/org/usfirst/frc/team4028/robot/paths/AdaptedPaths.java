@@ -30,8 +30,8 @@ public class AdaptedPaths extends Paths {
 			case R_SWITCH_TO_FRONT_OF_PYRAMID:
 				return getPath(PATHS.R_SWITCH_TO_FRONT_OF_PYRAMID);
 				
-			case TO_PYRAMID:
-				return getPath(PATHS.TO_PYRAMID);
+			case TO_PYRAMID_R:
+				return getPath(PATHS.TO_PYRAMID_R);
 			
 			case AWAY_FROM_LEFT_SWITCH:
 				return getPath(PATHS.AWAY_FROM_LEFT_SWITCH);
@@ -106,16 +106,7 @@ public class AdaptedPaths extends Paths {
 	
 	public static ArrayList<Waypoint> adaptSTurnFromPyramidtoLeft() {
 		ArrayList<Waypoint> sWaypoints= new ArrayList<Waypoint>();
-		sWaypoints= Paths.getAutoRunWaypoints();//TODO fix
-		for(int point=0;point<sWaypoints.size();point++) {
-			sWaypoints.get(point).adjustWaypoint(Constants.LEFT_SWITCH_FRONT_X_DELTA, Constants.LEFT_SWITCH_FRONT_Y_DELTA);
-		}
-		return sWaypoints;
-	}
-	
-	public static ArrayList<Waypoint> adaptToLSwitchAfterSTurn() {
-		ArrayList<Waypoint> sWaypoints= new ArrayList<Waypoint>();
-		sWaypoints=Paths.getAutoRunWaypoints();//TODO fix
+		sWaypoints= reversePath(getLeftSwitchtoFrontofPyramidWaypoints());
 		for(int point=0;point<sWaypoints.size();point++) {
 			sWaypoints.get(point).adjustWaypoint(Constants.LEFT_SWITCH_FRONT_X_DELTA, Constants.LEFT_SWITCH_FRONT_Y_DELTA);
 		}

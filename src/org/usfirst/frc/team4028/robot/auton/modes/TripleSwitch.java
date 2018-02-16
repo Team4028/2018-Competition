@@ -32,7 +32,7 @@ public class TripleSwitch extends AutonBase {
 			awayFromPyramid = Paths.getPath(PATHS.AWAY_FROM_R_PYRAMID);
 			fromFrontofSwitchtoSwitch = Paths.getPath(PATHS.TO_R_SWITCH_WITH_CUBE_3);
 		}
-		toThePyramid = Paths.getPath(PATHS.TO_PYRAMID);
+		toThePyramid = Paths.getPath(PATHS.TO_PYRAMID_R);
 	}
 	
 	@Override

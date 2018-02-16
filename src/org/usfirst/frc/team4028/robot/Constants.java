@@ -66,7 +66,7 @@ public class Constants {
 	// Wheels
 	public static final double DRIVE_WHEEL_DIAMETER_INCHES = 6.35;
 	public static final double TRACK_WIDTH_INCHES = 24.25;
-	public static final double TRACK_SCRUBBING_FACTOR = 0.95;
+	public static final double TRACK_SCRUBBING_FACTOR = 0.9;
 	
 	// Geometry
 	public static final double CENTER_TO_FRONT_BUMPER_DISTANCE = 16.33;

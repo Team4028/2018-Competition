@@ -21,18 +21,24 @@ import org.usfirst.frc.team4028.util.control.Path;
 public class DoubleScale extends AutonBase {
 	Path toScale;
 	Path fromScaleToSwitch, fromSwitchToScale;
-	double targetTurnAngle;
+	double targetTurnAngle,endTargetTurnAngle;
 	
 	public DoubleScale(boolean isLeftScale) {
 		if (isLeftScale) {
 			toScale = Paths.getPath(PATHS.L_SCALE, 100.0, 120.0, 0); // 0.0065
 			targetTurnAngle = 151.1;
+			endTargetTurnAngle = 30;
+			fromScaleToSwitch = Paths.getPath(PATHS.L_SCALE_TO_L_SWITCH, 100.0, 120.0, 0.001);
+			fromSwitchToScale = Paths.getPath(PATHS.L_SWITCH_TO_L_SCALE, 100.0, 120.0);
 		} else {
-			toScale = Paths.getPath(PATHS.R_SCALE, 100.0, 120.0, 0.0065);
-			targetTurnAngle = -160;
+			toScale = Paths.getPath(PATHS.R_SCALE, 100.0, 120.0, 0.007);
+			targetTurnAngle = -170;
+			endTargetTurnAngle = -30;
+			fromScaleToSwitch = Paths.getPath(PATHS.R_SCALE_TO_R_SWITCH, 100.0, 120.0);
+			fromSwitchToScale = Paths.getPath(PATHS.R_SWITCH_TO_R_SCALE, 100.0, 120.0);
 		}
-		fromScaleToSwitch = Paths.getPath(PATHS.L_SCALE_TO_L_SWITCH, 100.0, 120.0, 0.001);
-		fromSwitchToScale = Paths.getPath(PATHS.L_SWITCH_TO_L_SCALE, 100.0, 120.0);
+		 
+
 	}
 	
 	@Override
@@ -41,23 +47,31 @@ public class DoubleScale extends AutonBase {
 					new RunMotionProfileAction(toScale),
 					new SetInfeedPosAction(Infeed.INFEED_TARGET_POSITION.STORE)
 		})));
-		runAction(new TurnAction(targetTurnAngle));		
+		runAction(new TurnAction(targetTurnAngle));	
 		runAction(new ParallelAction(Arrays.asList(new Action[] {
-					new RunMotionProfileAction(fromScaleToSwitch),
+				new DriveSetDistanceAction(27),
+				new SetInfeedPosAction(Infeed.INFEED_TARGET_POSITION.WIDE)
+		}))); 
+		
+		/*runAction(new ParallelAction(Arrays.asList(new Action[] {
+					//new RunMotionProfileAction(fromScaleToSwitch),
 					new SeriesAction(Arrays.asList(new Action[] {
 							new WaitAction(0.65),
 							new SetInfeedPosAction(Infeed.INFEED_TARGET_POSITION.WIDE)
 					}))
-		})));
+		})));*/
+		
 		runAction(new ParallelAction(Arrays.asList(new Action[] {
 					new SeriesAction(Arrays.asList(new Action[] {
 							new WaitAction(0.5),
-							new RunMotionProfileAction(fromSwitchToScale)
+							new TurnAction(0),
+							new DriveSetDistanceAction(37)
+							//new RunMotionProfileAction(fromSwitchToScale)
 					})),
 					new SetInfeedPosAction(Infeed.INFEED_TARGET_POSITION.SQUEEZE),
 					new DriveInfeedWheelsAction()
 		}))); 
-		runAction(new TurnAction(0.0));
+		//runAction(new TurnAction(endTargetTurnAngle));
 		runAction(new PrintTimeFromStart(_startTime));
 	}
 }

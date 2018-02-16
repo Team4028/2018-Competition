@@ -23,16 +23,18 @@ public class DoubleSwitch extends AutonBase {
 	public DoubleSwitch(boolean isLeftSwitch) {
 		if (isLeftSwitch) {
 			toSwitch = Paths.getPath(PATHS.L_SWITCH, 100.0, 120.0, 0.004);
-			fromSwitchToFrontOfPyramidPath = Paths.getPath(PATHS.L_SWITCH_TO_FRONT_OF_PYRAMID, 100.0, 120.0,0.006);
+			fromSwitchToFrontOfPyramidPath = Paths.getPath(PATHS.L_SWITCH_TO_FRONT_OF_PYRAMID, 100.0, 120.0, 0.00);
+			toThePyramid = Paths.getPath(PATHS.TO_PYRAMID_L, 100.0, 120.0);
 			sTurnAwayFromPyramid = Paths.getPath(PATHS.S_TURN_FROM_PYRAMID_TO_LEFT, 100.0, 120.0);
-			toSwitchAfterSTurn = Paths.getPath(PATHS.TO_L_SWITCH_AFTER_S_TURN, 100.0, 120.0);
+			toSwitchAfterSTurn = Paths.getPath(PATHS.TO_L_SWITCH_AFTER_S_TURN, 100.0, 120.0, 0.005);
 		} else {
 			toSwitch = Paths.getPath(PATHS.R_SWITCH, 100.0, 120.0, 0.0065);
 			fromSwitchToFrontOfPyramidPath = Paths.getPath(PATHS.R_SWITCH_TO_FRONT_OF_PYRAMID, 100.0, 120.0, 0.008);
+			toThePyramid = Paths.getPath(PATHS.TO_PYRAMID_R, 100.0, 120.0);
 			sTurnAwayFromPyramid = Paths.getPath(PATHS.S_TURN_FROM_PYRAMID_TO_RIGHT, 100.0, 120.0);
 			toSwitchAfterSTurn = Paths.getPath(PATHS.TO_R_SWITCH_AFTER_S_TURN, 100.0, 120.0,0.009);
 		}
-		toThePyramid = Paths.getPath(PATHS.TO_PYRAMID, 100.0, 120.0);
+		
 	}
 	
 	@Override
@@ -42,10 +44,14 @@ public class DoubleSwitch extends AutonBase {
 					new SetInfeedPosAction(Infeed.INFEED_TARGET_POSITION.STORE)
 			}
 		)));
-		runAction(new RunMotionProfileAction(fromSwitchToFrontOfPyramidPath));
-		
-	
-		/*runAction(new ParallelAction(Arrays.asList(new Action[] {
+		runAction(new ParallelAction(Arrays.asList(new Action[] {
+					new RunMotionProfileAction(fromSwitchToFrontOfPyramidPath),
+					new SeriesAction(Arrays.asList(new Action[] {
+							new WaitAction(1.2),
+							new SetInfeedPosAction(Infeed.INFEED_TARGET_POSITION.WIDE)
+					}))
+		})));
+		runAction(new ParallelAction(Arrays.asList(new Action[] {
 					new RunMotionProfileAction(toThePyramid),
 					new SetInfeedPosAction(Infeed.INFEED_TARGET_POSITION.WIDE),
 					new DriveInfeedWheelsAction()
@@ -64,7 +70,7 @@ public class DoubleSwitch extends AutonBase {
 					new RunMotionProfileAction(toSwitchAfterSTurn),
 					new SetInfeedPosAction(Infeed.INFEED_TARGET_POSITION.STORE)
 			}
-		))); */
-		runAction(new PrintTimeFromStart(_startTime)); 
+		))); 
+		runAction(new PrintTimeFromStart(_startTime));  
 	}
 }

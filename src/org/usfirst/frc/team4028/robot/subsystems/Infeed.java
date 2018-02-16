@@ -244,6 +244,7 @@ public class Infeed {
 		@Override
 		public void onStart(double timestamp) {
 			synchronized (Infeed.this) {
+				
 			}
 		}
 		

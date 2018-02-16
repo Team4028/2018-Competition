@@ -125,6 +125,7 @@ public class Robot extends IterativeRobot {
 		_autonExecuter.setAutoMode(_dashboard.getSelectedAuton());
 		_autonExecuter.start();
 		
+		_infeed.storeArms();
 		// init data logging
 		_dataLogger = GeneralUtilities.setupLogging("auton");
 		// snapshot time to control spamming
@@ -161,6 +162,7 @@ public class Robot extends IterativeRobot {
 		
 		stopAll();
 		
+		_infeed.storeArms();
 		
 		_chassis.zeroSensors();
 		_chassis.setHighGear(false);
