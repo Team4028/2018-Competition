@@ -31,7 +31,9 @@ public class Dashboard {
 		TRIPLE_SWITCH,
 		SCALE,
 		DOUBLE_SCALE,
-		SCALE_THEN_SWITCH
+		TRIPLE_SCALE,
+		SCALE_THEN_SWITCH,
+		DOUBLE_SCALE_THEN_SWITCH
 	}
 	
 	private SendableChooser<AUTON_MODE> _autonModeChooser = new SendableChooser<>();
@@ -46,7 +48,9 @@ public class Dashboard {
 		_autonModeChooser.addObject("Triple Switch", AUTON_MODE.TRIPLE_SWITCH);
 		_autonModeChooser.addObject("Scale", AUTON_MODE.SCALE);
 		_autonModeChooser.addObject("Double Scale", AUTON_MODE.DOUBLE_SCALE);
+		_autonModeChooser.addObject("Triple Scale", AUTON_MODE.TRIPLE_SCALE);
 		_autonModeChooser.addObject("Scale then Switch", AUTON_MODE.SCALE_THEN_SWITCH);
+		_autonModeChooser.addObject("Double Scale Then Switch", AUTON_MODE.DOUBLE_SCALE_THEN_SWITCH);
 		SmartDashboard.putData("Auton Mode Chooser", _autonModeChooser);
 	}
 	
@@ -80,9 +84,24 @@ public class Dashboard {
 			case SCALE:
 				return new Scale(_isScaleLeft);
 			case DOUBLE_SCALE:
-				return new DoubleScale(_isScaleLeft);
+				if (_isScaleLeft) {
+					return new LeftDoubleScale();
+				} else {
+					return new RightDoubleScale();
+				}
 			case SCALE_THEN_SWITCH:
-				return new ScaleThenSwitch(_isSwitchLeft, _isScaleLeft);
+				if(_isScaleLeft==_isSwitchLeft)
+				{
+					return new ScaleThenSwitchSameSide(_isScaleLeft);
+				}
+				else
+				{
+					return new ScaleThenSwitchOppositeSide(_isScaleLeft);
+				}
+			
+			case TRIPLE_SCALE:
+				return new TripleScale();
+				
 			default:
 				return new DoNothing();
 		}

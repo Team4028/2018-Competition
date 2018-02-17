@@ -188,17 +188,20 @@ public class Robot extends IterativeRobot {
 		}
 		else if(_dos.getIsTurnto0ButtonPressed())
 		{
-			_chassis.setTargetAngle(0);
+			_chassis.setTargetAngle(0, true);
 		}
 		else if(_dos.getIsTurnto180ButtonPressed())
 		{
-			_chassis.setTargetAngle(180);
+			_chassis.setTargetAngle(180, true);
 		}
 		else 
 		{
 			_chassis.stop();
 		}
-
+		/*if (_dos.getIsShiftGearJustPressed())
+		{
+			_chassis.toggleShifter();
+		}*/
 		
 	
 		//=============  INFEED ============= 

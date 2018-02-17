@@ -114,7 +114,7 @@ public class Infeed {
 	private static final double INFEED_ALLOWED_ERROR_ANGLE = 20;
 	
 	// Infeed Drive Wheel Constant
-	public static final double INFEED_DRIVE_WHEELS_VBUS_COMMAND = 0.75;
+	public static final double INFEED_DRIVE_WHEELS_VBUS_COMMAND = 1.0;
 	
 	//Conversion Constant
 	public static final double DEGREES_TO_NATIVE_UNITS_CONVERSION = (4096/360);

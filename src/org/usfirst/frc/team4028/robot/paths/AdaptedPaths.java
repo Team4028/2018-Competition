@@ -5,12 +5,13 @@ import static org.usfirst.frc.team4028.robot.paths.PathBuilder.flipPath;
 import static org.usfirst.frc.team4028.robot.paths.PathBuilder.reversePath;
 
 import java.util.*;
+import java.awt.datatransfer.FlavorMap;
 
 import org.usfirst.frc.team4028.robot.Constants;
 import org.usfirst.frc.team4028.robot.paths.PathBuilder.Waypoint;
 import org.usfirst.frc.team4028.util.control.Path;
 
-public class AdaptedPaths extends Paths {
+public class AdaptedPaths extends Paths {/*
 	public static Path getAdaptedPath(PATHS pathName) {
 		return getPath(pathName, Constants.PATH_FOLLOWING_STANDARD_ACCEL, Constants.PATH_FOLLOWING_STANDARD_DECEL);
 	}
@@ -30,8 +31,8 @@ public class AdaptedPaths extends Paths {
 			case R_SWITCH_TO_FRONT_OF_PYRAMID:
 				return getPath(PATHS.R_SWITCH_TO_FRONT_OF_PYRAMID);
 				
-			case TO_PYRAMID_R:
-				return getPath(PATHS.TO_PYRAMID_R);
+			case TO_PYRAMID:
+				return getPath(PATHS.TO_PYRAMID);
 			
 			case AWAY_FROM_LEFT_SWITCH:
 				return getPath(PATHS.AWAY_FROM_LEFT_SWITCH);
@@ -294,5 +295,5 @@ public class AdaptedPaths extends Paths {
 			sWaypoints.get(point).adjustWaypoint(Constants.RIGHT_SWITCH_BACK_X_DELTA, Constants.RIGHT_SWITCH_BACK_DELTA_Y);
 		}
 		return sWaypoints;
-	}
+	}*/
 }

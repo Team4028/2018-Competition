@@ -48,6 +48,7 @@ public class Chassis implements Subsystem {
 	
 	private double _targetAngle = 0;
 	private double _angleError = 180;
+	private boolean _isTurnRight;
 	private double _leftTargetPos, _rightTargetPos;
 	private double _leftTargetVelocity, _rightTargetVelocity;
 
@@ -185,8 +186,9 @@ public class Chassis implements Subsystem {
 	
 	/* Chassis State: AUTO TURN */
 	/** Set the target gyro angle for the robot to turn to. */
-	public synchronized void setTargetAngle(double targetAngle) {
+	public synchronized void setTargetAngle(double targetAngle, boolean isTurnRight) {
 		_targetAngle = targetAngle;
+		_isTurnRight = isTurnRight;
 		setHighGear(false);
 		setMotionMagicTurnGains();
 		_chassisState = ChassisState.AUTO_TURN;
@@ -194,10 +196,30 @@ public class Chassis implements Subsystem {
 	
 	/** Updates target position every cycle while using MotionMagic to turn to heading goal */
 	private synchronized void moveToTargetAngle() {
-		_angleError = _navX.getYaw() > 0 ? _targetAngle - _navX.getYaw() : _targetAngle - _navX.getYaw();
+		if((_navX.getYaw()>=0 && _targetAngle>=0 && _isTurnRight&&_navX.getYaw()>_targetAngle)||
+			(_navX.getYaw()>=0 && _targetAngle<0&& _isTurnRight)||
+			(_navX.getYaw()<0 && _targetAngle<0 && _isTurnRight&&Math.abs(_navX.getYaw())<Math.abs(_targetAngle)))
+		{
+			_angleError=360-_navX.getYaw()+_targetAngle;
+		}
+		else if((_navX.getYaw()>=0 && _targetAngle>=0 && _isTurnRight&&_navX.getYaw()<_targetAngle)||
+				(_navX.getYaw()>=0 && _targetAngle>=0 &&!_isTurnRight&&_navX.getYaw()>_targetAngle)||
+				(_navX.getYaw()>=0 && _targetAngle<0 && !_isTurnRight)||
+				(_navX.getYaw()<0 && _targetAngle>=0 && _isTurnRight)||
+				(_navX.getYaw()<0 && _targetAngle<0 && _isTurnRight&&Math.abs(_navX.getYaw())>Math.abs(_targetAngle))||
+				(_navX.getYaw()<0 && _targetAngle<0 && !_isTurnRight&&Math.abs(_navX.getYaw())<Math.abs(_targetAngle)))
+		{
+			_angleError=_targetAngle-_navX.getYaw();
+		}		
+		else if((_navX.getYaw()>=0 && _targetAngle>=0 &&!_isTurnRight&&_navX.getYaw()<_targetAngle)||
+				(_navX.getYaw()<0 && _targetAngle<0 && !_isTurnRight&&Math.abs(_navX.getYaw())>Math.abs(_targetAngle))||
+				(_navX.getYaw()<0 && _targetAngle>=0 && !_isTurnRight))
+		{
+			_angleError=_targetAngle-_navX.getYaw()-360;
+		}			
 		
-		double encoderError = ENCODER_ROTATIONS_PER_DEGREE * _angleError;
 		
+		double encoderError = ENCODER_ROTATIONS_PER_DEGREE * _angleError;		
 		double leftDriveTargetPosition = (getLeftPosInRot() + encoderError) * CODES_PER_REV;
 		double rightDriveTargetPosition = (getRightPosInRot() - encoderError) * CODES_PER_REV;
 		
