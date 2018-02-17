@@ -68,6 +68,11 @@ public class Carriage implements Subsystem {
 		_carriageLeftMotor.setNeutralMode(NeutralMode.Coast);
 		_carriageRightMotor.setNeutralMode(NeutralMode.Coast);
 		
+		//Enable Current Limiting
+		_carriageLeftMotor.enableCurrentLimit(true);
+		_carriageLeftMotor.configPeakCurrentDuration(200, 0);
+		_carriageLeftMotor.configPeakCurrentLimit(17, 0);
+		
 		// config quad encoder & phase (invert = true)
 		_carriageLeftMotor.configSelectedFeedbackSensor(FeedbackDevice.None, 0, 0);
 		

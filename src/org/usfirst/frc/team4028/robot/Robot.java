@@ -246,7 +246,6 @@ public class Robot extends IterativeRobot {
 		//_carriage.RunCarriageMotorsVBus(_dos.getOperator_Carriage_JoystickCmd());
 		if (Math.abs(_dos.getOperator_InfeedCube_JoystickCmd()) > 0.05) {
 			_cubeHandler.runInfeedCubePlusCarriage(_dos.getOperator_InfeedCube_JoystickCmd());
-			_carriage.infeedCarriageMotorsVBus(_dos.getOperator_InfeedCube_JoystickCmd());
 		}
 		else if (Math.abs(_dos.getOperator_EjectCube_JoystickCmd()) > 0.05) {
 			_cubeHandler.ejectCube(_dos.getOperator_EjectCube_JoystickCmd());
