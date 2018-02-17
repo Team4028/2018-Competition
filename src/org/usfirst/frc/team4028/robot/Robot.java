@@ -27,8 +27,9 @@ public class Robot extends IterativeRobot {
 	// Subsystems
 	private Chassis _chassis = Chassis.getInstance();
 	private Infeed _infeed = Infeed.getInstance();
-	//private Elevator _elevator = Elevator.getInstance();
+	private Elevator _elevator = Elevator.getInstance();
 	private Carriage _carriage = Carriage.getInstance();
+	private CubeHandler _cubeHandler = CubeHandler.getInstance();
 	
 	// Sensors
 	private UltrasonicSensor _ultrasonic = UltrasonicSensor.getInstance();
@@ -61,7 +62,8 @@ public class Robot extends IterativeRobot {
 		
 		_enabledLooper.register(_chassis.getLoop());
 		_enabledLooper.register(_infeed.getLoop());
-		//_enabledLooper.register(_elevator.getLoop());
+		_enabledLooper.register(_elevator.getLoop());
+		_enabledLooper.register(_carriage.getLoop());
 		_enabledLooper.register(RobotStateEstimator.getInstance().getLoop());
 		
 		_dashboard.printStartupMessage();
@@ -92,6 +94,7 @@ public class Robot extends IterativeRobot {
 		}
 		
 		_chassis.setBrakeMode(false);
+		_elevator.resetElevatorPosition();
 		stopAll();
 	}
 
@@ -180,6 +183,7 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopPeriodic() {		
 		_ultrasonic.refreshUltrasonicValues();
+		_elevator.IsAtTargetPosition();
 		
 		// =============  CHASSIS ============= 
 		
@@ -198,52 +202,44 @@ public class Robot extends IterativeRobot {
 		{
 			_chassis.stop();
 		}
-		/*if (_dos.getIsShiftGearJustPressed())
-		{
+
+		if (_dos.getIsDriver_ShiftGear_BtnJustPressed()) {
 			_chassis.toggleShifter();
-		}*/
-		
+		}
 	
 		//=============  INFEED ============= 
-		
-		if (_dos.getIsDriver_ReZeroInfeed_BtnJustPressed()) {
+		if (_dos.getIsOperator_ReZeroInfeed_BtnJustPressed()) {
 			_infeed.reZeroArms();
-		}
-		
-		if (_dos.getIsDriver_MoveToThinInfeedPosition_BtnJustPressed()) {
-			_infeed.moveArmsToThinSideInfeedPosition();
-		}
-		
-		if (_dos.getIsDriver_MoveToWideInfeedPosition_BtnJustPressed()) {
+		}		
+		else if (_dos.getOperator_DPad_AxisCmd() == 270) {
 			_infeed.moveArmsToWideInfeedPosition();
 		}
-		
-		if (_dos.getIsDriver_MoveToSqueezeInfeedPosition_BtnJustPressed()) {
+		else if (_dos.getOperator_DPad_AxisCmd() == 0) {
 			_infeed.moveArmsToSqueezeInfeedPosition();
 		}
-		
-		if (_dos.getIsDriver_StoreInfeedArms_BtnJustPressed()) {
+		else if (_dos.getOperator_DPad_AxisCmd() == 180) {
 			_infeed.storeArms();
 		}
-		
-		if (_dos.getIsDriver_StaggerInfeedManuver_BtnJustPressed()) {
+		else if (_dos.getOperator_DPad_AxisCmd() == 90) {
 			_infeed.staggerInfeedManuver();
 		}
-
-		if (_dos.getIsDriver_AutoAcquire_BtnJustPressed()) {
-			_infeed.autoInfeedManuver();
-		}
-			
-		if (_dos.getIsDriver_InfeedCube_BtnPressed()) {
-			_infeed.driveInfeedWheels();
-		} else {
-			_infeed.stopDriveMotors();
-		} 
+//		else if (_dos.getOperator_InfeedPositionX_JoystickCmd() > 0.5 
+//				|| _dos.getOperator_InfeedPositionY_JoystickCmd() > 0.5) {
+//			_infeed.infeedJoystickCommandedPosition(_dos.getOperator_InfeedPositionY_JoystickCmd(), 
+//					_dos.getOperator_InfeedPositionX_JoystickCmd());
+//		}
+//		else if (_dos.getIsDriver_AutoAcquire_BtnJustPressed()) {
+//			_infeed.autoInfeedManuver();
+//		}
 
 		// =============  ELEVATOR ============= 
 		/*
 		if (Math.abs(_dos.getOperator_Elevator_JoystickCmd()) > 0.05) {
 			_elevator.JogAxis(_dos.getOperator_Elevator_JoystickCmd());
+		}
+		else if (_dos.getIsOperator_ElevatorCubeOnFloorHgt_BtnJustPressed()) {
+			_cubeHandler.moveElevatorDown();
+			_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.CUBE_ON_FLOOR);
 		}
 		else if (_dos.getIsOperator_ElevatorScaleHgt_BtnJustPressed()) {
 			_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.SCALE_HEIGHT);
@@ -254,9 +250,6 @@ public class Robot extends IterativeRobot {
 		else if (_dos.getIsOperator_ElevatorPyrmdLvl1Hgt_BtnJustPressed()) {
 			_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.CUBE_ON_PYRAMID_LEVEL_1);
 		}
-		else if (_dos.getIsOperator_ElevatorCubeOnFloorHgt_BtnJustPressed()) {
-			_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.CUBE_ON_FLOOR);
-		}
 		else if (_dos.getIsOperator_ElevatorHome_BtnJustPressed()) {
 			_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.HOME);
 		} else {
@@ -266,8 +259,29 @@ public class Robot extends IterativeRobot {
 		// ============= CARRIAGE =============
 		//_carriage.driveCarriage(_dos.getOperator_DriveCarraige_JoystickCmd());
 		
+		// =============  Carriage ============= 
+		//_carriage.RunCarriageMotorsVBus(_dos.getOperator_Carriage_JoystickCmd());
+		if (Math.abs(_dos.getOperator_InfeedCube_JoystickCmd()) > 0.05) {
+			_cubeHandler.runInfeedCubePlusCarriage(_dos.getOperator_InfeedCube_JoystickCmd());
+		}
+		else if (Math.abs(_dos.getOperator_EjectCube_JoystickCmd()) > 0.05) {
+			_cubeHandler.ejectCube(_dos.getOperator_EjectCube_JoystickCmd());
+		} 
+		else if (_dos.getIsOperator_SpinCubeManuver_BtnPressed()){
+			_cubeHandler.runInfeedSpinManuver();	
+		} else {
+			_cubeHandler.stop();			
+		}
+		
+		if(_dos.getIsDriver_MoveCarriageCloser_BtnJustPressed()) {
+			_carriage.moveCarriageServosCloser();
+		}
+		else if(_dos.getIsDriver_MoveCarriageWider_BtnJustPressed()) {
+			_carriage.moveCarriageServosWider();
+		}
+				
 		// ============= Camera Switch ============= 
-		if (_dos.getIsOperator_SwitchCamera_BtnJustPressed() == true) {
+		if (_dos.getIsDriver_SwitchCamera_BtnJustPressed() == true) {
 			_switchableCameraServer.SwitchCamera();
 		}
 		
@@ -304,6 +318,7 @@ public class Robot extends IterativeRobot {
     		_chassis.outputToShuffleboard(); 
     		//_elevator.outputToShuffleboard();
     		_infeed.outputToShuffleboard();
+    		_carriage.outputToShuffleboard();
     		_ultrasonic.outputToShuffleboard();
 	    	
     		// write the overall robot dashboard info
@@ -335,6 +350,7 @@ public class Robot extends IterativeRobot {
 	    	_chassis.updateLogData(logData);
 	    	//_elevator.updateLogData(logData);
 	    	_infeed.updateLogData(logData);
+	    	_carriage.updateLogData(logData);
 	    	_ultrasonic.updateLogData(logData);
 	    	
 	    	_dataLogger.WriteDataLine(logData);

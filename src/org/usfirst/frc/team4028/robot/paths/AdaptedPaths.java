@@ -1,6 +1,5 @@
 package org.usfirst.frc.team4028.robot.paths;
 
-//import static org.usfirst.frc.team4028.robot.paths.PathBuilder.buildPathFromWaypoints;
 import static org.usfirst.frc.team4028.robot.paths.PathBuilder.flipPath;
 import static org.usfirst.frc.team4028.robot.paths.PathBuilder.reversePath;
 
