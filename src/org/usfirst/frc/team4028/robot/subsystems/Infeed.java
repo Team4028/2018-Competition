@@ -56,8 +56,8 @@ public class Infeed {
 	
 	TalonSRX _leftSwitchbladeMotor; 
 	TalonSRX _rightSwitchbladeMotor;
-	VictorSP _leftInfeedDriveMotor;
-	VictorSP _rightInfeedDriveMotor;
+	TalonSRX _leftInfeedDriveMotor;
+	TalonSRX _rightInfeedDriveMotor;
 	
 	//====================================================================================
 	//	Closed Loop Gains for Infeed Motors
@@ -214,12 +214,12 @@ public class Infeed {
 		
 		//=====================================================================================
 		//Left Arm Drive Motor
-		_leftInfeedDriveMotor = new VictorSP(Constants.LEFT_INFEED_DRIVE_PWM_ADDRESS);
+		_leftInfeedDriveMotor = new TalonSRX(Constants.LEFT_INFEED_DRIVE_CAN_ADDRESS);
 		_leftInfeedDriveMotor.setInverted(false);
 			
 		//=====================================================================================
 		//Right Arm Drive Motor
-		_rightInfeedDriveMotor = new VictorSP(Constants.RIGHT_INFEED_DRIVE_PWM_ADDRESS);
+		_rightInfeedDriveMotor = new TalonSRX(Constants.RIGHT_INFEED_DRIVE_CAN_ADDRESS);
 		_rightInfeedDriveMotor.setInverted(true);
 				
 		//=====================================================================================
@@ -510,21 +510,21 @@ public class Infeed {
 			_leftInfeedDriveMotor.setSpeed(-1*INFEED_DRIVE_WHEELS_VBUS_COMMAND);
 			_rightInfeedDriveMotor.setSpeed(-1*-1*INFEED_DRIVE_WHEELS_VBUS_COMMAND);
 		} */
-		_leftInfeedDriveMotor.setSpeed(-1*INFEED_DRIVE_WHEELS_VBUS_COMMAND);
-		_rightInfeedDriveMotor.setSpeed(-1*-1*INFEED_DRIVE_WHEELS_VBUS_COMMAND);
+		_leftInfeedDriveMotor.set(ControlMode.PercentOutput, -1*INFEED_DRIVE_WHEELS_VBUS_COMMAND);
+		_rightInfeedDriveMotor.set(ControlMode.PercentOutput,-1*-1*INFEED_DRIVE_WHEELS_VBUS_COMMAND);
 	}
 	
 	public void driveInfeedWheelsVBus(double joystickCommand) {
 		if(areArmsInPosition()) {
-			_leftInfeedDriveMotor.setSpeed(joystickCommand);
-			_rightInfeedDriveMotor.setSpeed(-1 * joystickCommand);
+			_leftInfeedDriveMotor.set(ControlMode.PercentOutput, joystickCommand);
+			_rightInfeedDriveMotor.set(ControlMode.PercentOutput, -1 * joystickCommand);
 		}
 	}
 	
 	public void spinManuverInfeedWheels() {
 		if(areArmsInPosition()) {
-			_leftInfeedDriveMotor.setSpeed(INFEED_SPIN_CUBE_WHEELS_VBUS_COMMAND);
-			_rightInfeedDriveMotor.setSpeed(INFEED_SPIN_CUBE_WHEELS_VBUS_COMMAND);
+			_leftInfeedDriveMotor.set(ControlMode.PercentOutput,INFEED_SPIN_CUBE_WHEELS_VBUS_COMMAND);
+			_rightInfeedDriveMotor.set(ControlMode.PercentOutput, INFEED_SPIN_CUBE_WHEELS_VBUS_COMMAND);
 		}
 	}
 	
@@ -574,8 +574,8 @@ public class Infeed {
 	//Methods for Commanding the Motors to Stop
 	//=====================================================================================
 	public void stopDriveMotors() {
-		_leftInfeedDriveMotor.setSpeed(0);
-		_rightInfeedDriveMotor.setSpeed(0);
+		_leftInfeedDriveMotor.set(ControlMode.PercentOutput,0);
+		_rightInfeedDriveMotor.set(ControlMode.PercentOutput,0);
 	}
 	
 	public void stop() {

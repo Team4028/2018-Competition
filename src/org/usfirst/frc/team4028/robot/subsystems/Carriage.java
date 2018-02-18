@@ -20,7 +20,7 @@ public class Carriage implements Subsystem {
 	
 	// define class level working variables
 	private TalonSRX _carriageLeftMotor; 
-	private VictorSPX _carriageRightMotor;
+	private TalonSRX _carriageRightMotor;
 	
 	private Servo _carriageSqueezeServo;
 	
@@ -46,7 +46,7 @@ public class Carriage implements Subsystem {
 		//	config master & slave talon objects
 		//====================================================================================
 		_carriageLeftMotor = new TalonSRX(Constants.CARRIAGE_LEFT_CAN_ADDRESS);
-		_carriageRightMotor = new VictorSPX(Constants.CARRIAGE_RIGHT_CAN_ADDRESS);
+		_carriageRightMotor = new TalonSRX(Constants.CARRIAGE_RIGHT_CAN_ADDRESS);
 		
 		// set motor phasing
 		_carriageLeftMotor.setInverted(false);
