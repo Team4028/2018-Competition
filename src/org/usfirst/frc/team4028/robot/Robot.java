@@ -233,7 +233,7 @@ public class Robot extends IterativeRobot {
 //		}
 
 		// =============  ELEVATOR ============= 
-		/*
+		
 		if (Math.abs(_dos.getOperator_Elevator_JoystickCmd()) > 0.05) {
 			_elevator.JogAxis(_dos.getOperator_Elevator_JoystickCmd());
 		}
@@ -254,13 +254,9 @@ public class Robot extends IterativeRobot {
 			_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.HOME);
 		} else {
 			_elevator.stop();
-		} */
+		} 
 		
 		// ============= CARRIAGE =============
-		//_carriage.driveCarriage(_dos.getOperator_DriveCarraige_JoystickCmd());
-		
-		// =============  Carriage ============= 
-		//_carriage.RunCarriageMotorsVBus(_dos.getOperator_Carriage_JoystickCmd());
 		if (Math.abs(_dos.getOperator_InfeedCube_JoystickCmd()) > 0.05) {
 			_cubeHandler.runInfeedCubePlusCarriage(_dos.getOperator_InfeedCube_JoystickCmd());
 		}
@@ -273,12 +269,12 @@ public class Robot extends IterativeRobot {
 			_cubeHandler.stop();			
 		}
 		
-		if(_dos.getIsDriver_MoveCarriageCloser_BtnJustPressed()) {
-			_carriage.moveCarriageServosCloser();
-		}
-		else if(_dos.getIsDriver_MoveCarriageWider_BtnJustPressed()) {
-			_carriage.moveCarriageServosWider();
-		}
+		//if(_dos.getIsDriver_MoveCarriageCloser_BtnJustPressed()) {
+		//	_carriage.moveCarriageServosCloser();
+		//}
+		//else if(_dos.getIsDriver_MoveCarriageWider_BtnJustPressed()) {
+		//	_carriage.moveCarriageServosWider();
+		//}
 				
 		// ============= Camera Switch ============= 
 		if (_dos.getIsDriver_SwitchCamera_BtnJustPressed() == true) {

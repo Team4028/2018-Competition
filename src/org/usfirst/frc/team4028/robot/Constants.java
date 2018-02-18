@@ -31,11 +31,11 @@ public class Constants {
 	public static final int CLIMBER_CAN_ADDRESS = 12;
 	
 	//Victor SP PWM Address
-	public static final int LEFT_INFEED_DRIVE_PWM_ADDRESS = 0;
-	public static final int RIGHT_INFEED_DRIVE_PWM_ADDRESS = 1;
+	//public static final int LEFT_INFEED_DRIVE_PWM_ADDRESS = 0;
+	//public static final int RIGHT_INFEED_DRIVE_PWM_ADDRESS = 1;
 	
 	// Servo for Jeff
-	public static final int CARRIAGE_SERVO_PWM_ADDRESS = 2;
+	//public static final int CARRIAGE_SERVO_PWM_ADDRESS = 2;
 	
 	// NavX (on Roborio)
 	public static final SPI.Port NAVX_PORT = Port.kMXP;
