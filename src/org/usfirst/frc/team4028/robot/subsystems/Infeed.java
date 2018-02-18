@@ -31,7 +31,7 @@ public class Infeed {
 		TIMEOUT,
 	} 
 	
-	private enum INFEED_TARGET_POSITION {
+	public enum INFEED_TARGET_POSITION {
 		HOME,
 		INFEED,
 		WIDE,
@@ -56,8 +56,8 @@ public class Infeed {
 	
 	TalonSRX _leftSwitchbladeMotor; 
 	TalonSRX _rightSwitchbladeMotor;
-	VictorSP _leftInfeedDriveMotor;
-	VictorSP _rightInfeedDriveMotor;
+	TalonSRX _leftInfeedDriveMotor;
+	TalonSRX _rightInfeedDriveMotor;
 	
 	//====================================================================================
 	//	Closed Loop Gains for Infeed Motors
@@ -114,10 +114,10 @@ public class Infeed {
 	private static final double THIN_SIDE_POSITION_ANGLE = 200;
 	private static final double STAGGER_POSITION_ANGLE = 185;
 	
-	private static final double INFEED_ALLOWED_ERROR_ANGLE = 15;
+	private static final double INFEED_ALLOWED_ERROR_ANGLE = 20;
 	
 	// Infeed Drive Wheel Constant
-	public static final double INFEED_DRIVE_WHEELS_VBUS_COMMAND = 0.75;
+	public static final double INFEED_DRIVE_WHEELS_VBUS_COMMAND = 1.0;
 	public static final double INFEED_SPIN_CUBE_WHEELS_VBUS_COMMAND = 0.2;
 	
 	//Conversion Constant
@@ -214,17 +214,22 @@ public class Infeed {
 		
 		//=====================================================================================
 		//Left Arm Drive Motor
-		_leftInfeedDriveMotor = new VictorSP(Constants.LEFT_INFEED_DRIVE_PWM_ADDRESS);
+		_leftInfeedDriveMotor = new TalonSRX(Constants.LEFT_INFEED_DRIVE_CAN_ADDRESS);
 		_leftInfeedDriveMotor.setInverted(false);
 			
 		//=====================================================================================
 		//Right Arm Drive Motor
-		_rightInfeedDriveMotor = new VictorSP(Constants.RIGHT_INFEED_DRIVE_PWM_ADDRESS);
+		_rightInfeedDriveMotor = new TalonSRX(Constants.RIGHT_INFEED_DRIVE_CAN_ADDRESS);
 		_rightInfeedDriveMotor.setInverted(true);
 				
 		//=====================================================================================
 		//Set up Ultrasonic Sensor
 		_ultrasonic = UltrasonicSensor.getInstance();
+		
+		_leftSwitchbladeMotor.configPeakOutputForward(1, 0);
+		_leftSwitchbladeMotor.configPeakOutputReverse(-1, 0);
+		_rightSwitchbladeMotor.configPeakOutputForward(1, 0);
+		_rightSwitchbladeMotor.configPeakOutputReverse(-1, 0);
 		
 		//Initially Configure Booleans
 		_isLeftArmHomed = false;
@@ -243,6 +248,7 @@ public class Infeed {
 		@Override
 		public void onStart(double timestamp) {
 			synchronized (Infeed.this) {
+				
 			}
 		}
 		
@@ -499,23 +505,26 @@ public class Infeed {
 	//Method for Driving Infeed Wheels
 	//=====================================================================================
 	public void driveInfeedWheels() {
+		/*
 		if(areArmsInPosition() || _infeedState == INFEED_STATE.STAGGER_INFEED_MANUVER) {
-			_leftInfeedDriveMotor.setSpeed(INFEED_DRIVE_WHEELS_VBUS_COMMAND);
-			_rightInfeedDriveMotor.setSpeed(-1*INFEED_DRIVE_WHEELS_VBUS_COMMAND);
-		}
+			_leftInfeedDriveMotor.setSpeed(-1*INFEED_DRIVE_WHEELS_VBUS_COMMAND);
+			_rightInfeedDriveMotor.setSpeed(-1*-1*INFEED_DRIVE_WHEELS_VBUS_COMMAND);
+		} */
+		_leftInfeedDriveMotor.set(ControlMode.PercentOutput, -1*INFEED_DRIVE_WHEELS_VBUS_COMMAND);
+		_rightInfeedDriveMotor.set(ControlMode.PercentOutput,-1*-1*INFEED_DRIVE_WHEELS_VBUS_COMMAND);
 	}
 	
 	public void driveInfeedWheelsVBus(double joystickCommand) {
 		if(areArmsInPosition()) {
-			_leftInfeedDriveMotor.setSpeed(joystickCommand);
-			_rightInfeedDriveMotor.setSpeed(-1 * joystickCommand);
+			_leftInfeedDriveMotor.set(ControlMode.PercentOutput, joystickCommand);
+			_rightInfeedDriveMotor.set(ControlMode.PercentOutput, -1 * joystickCommand);
 		}
 	}
 	
 	public void spinManuverInfeedWheels() {
 		if(areArmsInPosition()) {
-			_leftInfeedDriveMotor.setSpeed(INFEED_SPIN_CUBE_WHEELS_VBUS_COMMAND);
-			_rightInfeedDriveMotor.setSpeed(INFEED_SPIN_CUBE_WHEELS_VBUS_COMMAND);
+			_leftInfeedDriveMotor.set(ControlMode.PercentOutput,INFEED_SPIN_CUBE_WHEELS_VBUS_COMMAND);
+			_rightInfeedDriveMotor.set(ControlMode.PercentOutput, INFEED_SPIN_CUBE_WHEELS_VBUS_COMMAND);
 		}
 	}
 	
@@ -565,8 +574,8 @@ public class Infeed {
 	//Methods for Commanding the Motors to Stop
 	//=====================================================================================
 	public void stopDriveMotors() {
-		_leftInfeedDriveMotor.setSpeed(0);
-		_rightInfeedDriveMotor.setSpeed(0);
+		_leftInfeedDriveMotor.set(ControlMode.PercentOutput,0);
+		_rightInfeedDriveMotor.set(ControlMode.PercentOutput,0);
 	}
 	
 	public void stop() {

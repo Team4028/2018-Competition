@@ -13,7 +13,7 @@ import java.util.Optional;
  */
 public class SetpointGenerator {
 	/**
-     * A Setpoint is just a MotionState and an additional flag indicating whether this is setpoint achieves the goal
+     * A Setpoint is just a MotionState and an additional flag indicating whether this setpoint achieves the goal
      * (useful for higher-level logic to know that it is now time to do something else).
      */
     public static class Setpoint {
@@ -32,7 +32,7 @@ public class SetpointGenerator {
 
     public SetpointGenerator() {}
 
-    /**Force a reset of the profile. */
+    /** Force a reset of the profile. */
     public void reset() {
         mProfile = null;
         mGoal = null;
@@ -53,8 +53,7 @@ public class SetpointGenerator {
      * @return The new Setpoint at time t.
      */
     public synchronized Setpoint getSetpoint(MotionProfileConstraints constraints, MotionProfileGoal goal,
-            MotionState prev_state,
-            double t) {
+            MotionState prev_state, double t) {
         boolean regenerate = mConstraints == null || !mConstraints.equals(constraints) || mGoal == null
                 || !mGoal.equals(goal) || mProfile == null;
         if (!regenerate && !mProfile.isEmpty()) {
@@ -97,14 +96,5 @@ public class SetpointGenerator {
         }
 
         return rv;
-    }
-
-    /**
-     * Get the full profile from the latest call to getSetpoint(). Useful to check estimated time or distance to goal.
-     * 
-     * @return The profile from the latest call to getSetpoint(), or null if there is not yet a profile.
-     */
-    public MotionProfile getProfile() {
-        return mProfile;
     }
 }

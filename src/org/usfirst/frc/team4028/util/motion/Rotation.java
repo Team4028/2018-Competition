@@ -2,6 +2,8 @@ package org.usfirst.frc.team4028.util.motion;
 
 import static org.usfirst.frc.team4028.util.GeneralUtilities.epsilonEquals;
 
+import org.usfirst.frc.team4028.robot.Constants;
+
 public class Rotation {
 	protected static final Rotation kIdentity = new Rotation();
 
@@ -9,10 +11,7 @@ public class Rotation {
         return kIdentity;
     }
 
-    protected static final double kEpsilon = 1E-9;
-
-    protected double cosAngle;
-    protected double sinAngle;
+    protected double cosAngle, sinAngle;
 
     public Rotation() {
         this(1, 0, false);
@@ -49,7 +48,7 @@ public class Rotation {
      */
     public void normalize() {
         double magnitude = Math.hypot(cosAngle, sinAngle);
-        if (magnitude > kEpsilon) {
+        if (magnitude > Constants.EPSILON_NEGATIVE_9) {
             sinAngle /= magnitude;
             cosAngle /= magnitude;
         } else {
@@ -67,7 +66,7 @@ public class Rotation {
     }
 
     public double tan() {
-        if (Math.abs(cosAngle) < kEpsilon) {
+        if (Math.abs(cosAngle) < Constants.EPSILON_NEGATIVE_9) {
             if (sinAngle >= 0.0) {
                 return Double.POSITIVE_INFINITY;
             } else {
@@ -111,7 +110,7 @@ public class Rotation {
     }
 
     public boolean isParallel(Rotation other) {
-        return epsilonEquals(Translation.cross(toTranslation(), other.toTranslation()), 0.0, kEpsilon);
+        return epsilonEquals(Translation.cross(toTranslation(), other.toTranslation()), 0.0, Constants.EPSILON_NEGATIVE_9);
     }
 
     public Translation toTranslation() {
