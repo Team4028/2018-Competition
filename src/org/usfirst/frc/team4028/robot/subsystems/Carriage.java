@@ -22,7 +22,7 @@ public class Carriage implements Subsystem {
 	private TalonSRX _carriageLeftMotor; 
 	private TalonSRX _carriageRightMotor;
 	
-	private Servo _carriageSqueezeServo;
+	//private Servo _carriageSqueezeServo;
 	
 	private double _carriageDriveCmd;
 	private double _servoTargetPosition = 0.1;
@@ -98,8 +98,8 @@ public class Carriage implements Subsystem {
 		_carriageRightMotor.configForwardSoftLimitEnable(false, 0);
 		
 		// Setup Carriage Servo Motors
-		_carriageSqueezeServo = new Servo(Constants.CARRIAGE_SERVO_PWM_ADDRESS);
-		_carriageSqueezeServo.set(0);
+		//_carriageSqueezeServo = new Servo(Constants.CARRIAGE_SERVO_PWM_ADDRESS);
+		//_carriageSqueezeServo.set(0);
 	}
 
 	//=====================================================================================
@@ -125,7 +125,7 @@ public class Carriage implements Subsystem {
 				
 				_carriageCurrentCurrent = _carriageLeftMotor.getOutputCurrent();
 				
-				_carriageSqueezeServo.set(_servoTargetPosition);
+				//_carriageSqueezeServo.set(_servoTargetPosition);
 			}
 		}
 		
