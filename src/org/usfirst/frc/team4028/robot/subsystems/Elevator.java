@@ -38,6 +38,7 @@ public class Elevator implements Subsystem {
 		GOTO_TARGET_POSTION,
 		HOLD_TARGET_POSTION,
 		JOG_AXIS,
+		DO_NOTHING
 	}
 	
 	public enum ELEVATOR_PRESET_POSITION {
@@ -84,15 +85,15 @@ public class Elevator implements Subsystem {
 	public static final double NATIVE_UNITS_PER_INCH_CONVERSION = (29638 / 41);
 	
 	// hardcoded preset positions (in native units, 0 = home position)
-	private static final int SCALE_HEIGHT_POSITION = InchesToNativeUnits(36);
+	private static final int SCALE_HEIGHT_POSITION = InchesToNativeUnits(40);
 	private static final int SWITCH_HEIGHT_POSITION = InchesToNativeUnits(16);
 	private static final int CUBE_ON_PYRAMID_LEVEL_1_POSITION = InchesToNativeUnits(12);
-	private static final int CUBE_ON_FLOOR_POSITION = InchesToNativeUnits(.75);
+	private static final int CUBE_ON_FLOOR_POSITION = InchesToNativeUnits(0);
 	private static final int HOME_POSITION = 0;
 
 //	private static final int ELEVATOR_MAX_TRAVEL = InchesToNativeUnits(41);
-	private static final int UP_SOFT_LIMIT = InchesToNativeUnits(40.0);
-	private static final int DOWN_SOFT_LIMIT = InchesToNativeUnits(0.5);
+	private static final int UP_SOFT_LIMIT = InchesToNativeUnits(45.0);
+	private static final int DOWN_SOFT_LIMIT = InchesToNativeUnits(0);
 	
 	/*
 	 * Moveable Slide Top to Bottom = 48.5 in
@@ -113,11 +114,11 @@ public class Elevator implements Subsystem {
 	private static final int MOVING_DOWN_PID_SLOT_INDEX = 0;
 	
 	// define PID Constants
-	public static final int UP_CRUISE_VELOCITY = 4061; // native units per 100 mSec 50% of max
-	public static final int UP_ACCELERATION = 6061; 	// native units per 100 mSec per sec
+	public static final int UP_CRUISE_VELOCITY = 2061; // native units per 100 mSec 50% of max
+	public static final int UP_ACCELERATION = 3061; 	// native units per 100 mSec per sec
 	
-	public static final int DOWN_CRUISE_VELOCITY = 2000; // native units per 100 mSec 50% of max
-	public static final int DOWN_ACCELERATION = 1500; 	// native units per 100 mSec per sec
+	public static final int DOWN_CRUISE_VELOCITY = 1000; // native units per 100 mSec 50% of max
+	public static final int DOWN_ACCELERATION = 750; 	// native units per 100 mSec per sec
 	
 	public static final double FEED_FORWARD_GAIN_HOLD = 1.0; //1.5; //3.4074425;
 	public static final double PROPORTIONAL_GAIN_HOLD  = 0.65; //.4; //0.0731; //3.0;
@@ -341,6 +342,9 @@ public class Elevator implements Subsystem {
 						else if (_isSoftLimitsEnabled && (_actualPositionNU <= DOWN_SOFT_LIMIT)) {
 							ReportStateChg("Elevator At Down Soft Limit!");
 						}
+						break;
+						
+					case DO_NOTHING:
 						break;
 						
 					case TIMEOUT:
@@ -567,8 +571,8 @@ public class Elevator implements Subsystem {
 		}
 	}
 	
-	public void resetElevatorPosition() {
-		_targetElevatorPosition = HOME_POSITION;
+	public void doNothing() {
+		_elevatorState = ELEVATOR_STATE.DO_NOTHING;
 	}
 	
 	private static int InchesToNativeUnits(double positionInInches) {

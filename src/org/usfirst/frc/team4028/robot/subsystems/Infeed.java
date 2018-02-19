@@ -28,6 +28,7 @@ public class Infeed {
 		AUTO_ACQUIRE_MANUVER,
 		STAGGER_INFEED_MANUVER,
 		JOYSTICK_POSITION_CONTROL,
+		DO_NOTHING,
 		TIMEOUT,
 	} 
 	
@@ -319,6 +320,9 @@ public class Infeed {
 						
 					case JOYSTICK_POSITION_CONTROL:
 						break;
+					
+					case DO_NOTHING:
+						break;
 						
 					case TIMEOUT:
 						DriverStation.reportWarning("InfeedAxis (State) [TIMEOUT] error homing axis", false);
@@ -578,7 +582,9 @@ public class Infeed {
 	//=====================================================================================
 	//Methods for Exposing Properties of Infeed Motors
 	//=====================================================================================
-	
+	public void doNothing() {
+		_infeedState = INFEED_STATE.DO_NOTHING;
+	}
 	//=====================================================================================
 	//Methods for Conversions between Native Units and Degrees
 	//=====================================================================================

@@ -41,6 +41,11 @@ public class CubeHandler {
 		_infeed.moveArmsToWideInfeedPosition();
 	}
 	
+	public void doNothing() {
+		_infeed.doNothing();
+		_elevator.doNothing();
+	}
+	
 	public void stop() {
 		_infeed.stopDriveMotors();
 		_carriage.stop();

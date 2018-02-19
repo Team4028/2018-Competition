@@ -94,7 +94,9 @@ public class Robot extends IterativeRobot {
 		}
 		
 		_chassis.setBrakeMode(false);
-		_elevator.resetElevatorPosition();
+		
+		_cubeHandler.doNothing(); // Prevent movement when robot is disabled then re-enabled
+		
 		stopAll();
 	}
 
@@ -128,6 +130,8 @@ public class Robot extends IterativeRobot {
 		
 		_chassis.zeroGyro();
 		_chassis.setBrakeMode(true);
+		
+		_cubeHandler.doNothing();
 		
 		// init data logging
 		_dataLogger = GeneralUtilities.setupLogging("auton");
@@ -168,6 +172,8 @@ public class Robot extends IterativeRobot {
 		_chassis.zeroSensors();
 		_chassis.setHighGear(false);
 		_chassis.setBrakeMode(false);
+		
+		_cubeHandler.doNothing();
 		
 		// init data logging
 		_dataLogger = GeneralUtilities.setupLogging("auton");
