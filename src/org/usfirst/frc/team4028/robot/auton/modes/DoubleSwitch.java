@@ -20,12 +20,15 @@ public class DoubleSwitch extends AutonBase {
 			fromSwitchToFrontOfPyramidPath = Paths.getPath(PATHS.L_SWITCH_TO_FRONT_OF_PYRAMID, 100.0, 120.0, 0.002);
 			sTurnAwayFromPyramid = Paths.getPath(PATHS.S_TURN_FROM_PYRAMID_TO_LEFT, 100.0, 120.0);
 			toSwitchAfterSTurn = Paths.getPath(PATHS.TO_L_SWITCH_AFTER_S_TURN, 100.0, 120.0, 0.009);
-			elevatorWaitTime1=1.75;
+			elevatorWaitTime1 = 1.75;
+			elevatorWaitTime2 = 1.75;
 		} else {
 			toSwitch = Paths.getPath(PATHS.R_SWITCH, 100.0, 120.0, 0.0065);
 			fromSwitchToFrontOfPyramidPath = Paths.getPath(PATHS.R_SWITCH_TO_FRONT_OF_PYRAMID, 100.0, 120.0, 0.008);
 			sTurnAwayFromPyramid = Paths.getPath(PATHS.S_TURN_FROM_PYRAMID_TO_RIGHT, 100.0, 120.0);
 			toSwitchAfterSTurn = Paths.getPath(PATHS.TO_R_SWITCH_AFTER_S_TURN, 100.0, 120.0,0.009);
+			elevatorWaitTime1 = 1.75;
+			elevatorWaitTime2 = 1.75;
 		}
 		toThePyramid = Paths.getPath(PATHS.TO_PYRAMID, 100.0, 120.0);
 	}
@@ -91,6 +94,10 @@ public class DoubleSwitch extends AutonBase {
 					}))
 			}
 		))); 
+		runAction(new ParallelAction(Arrays.asList(new Action[] {
+					new DriveSetDistanceAction(-30.0),
+					new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SWITCH_HEIGHT)
+		})));
 		runAction(new PrintTimeFromStart(_startTime));  
 	}
 }

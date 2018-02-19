@@ -16,6 +16,7 @@ import org.usfirst.frc.team4028.util.LogDataBE;
 import org.usfirst.frc.team4028.util.MovingAverage;
 import org.usfirst.frc.team4028.util.loops.Looper;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -120,7 +121,20 @@ public class Robot extends IterativeRobot {
 		
 		_enabledLooper.start();
 		
-		_dashboard.getGameData();
+		int retries = 100;
+		
+		while(!_dashboard.isGameDataReceived() && retries > 0) {
+			retries--;
+			try { 
+				Thread.sleep(5);
+			} catch (InterruptedException ie) {
+				// Ignore InterruptedException
+			}
+		}
+		
+		if (retries == 0) {
+			DriverStation.reportError("Failed To Receive Game Data", false);
+		}
 		
 		_chassis.zeroGyro();
 		
@@ -128,7 +142,6 @@ public class Robot extends IterativeRobot {
 		_autonExecuter.setAutoMode(_dashboard.getSelectedAuton());
 		_autonExecuter.start();
 		
-		_infeed.storeArms();
 		// init data logging
 		_dataLogger = GeneralUtilities.setupLogging("auton");
 		// snapshot time to control spamming
@@ -190,16 +203,12 @@ public class Robot extends IterativeRobot {
 		if ((Math.abs(_dos.getThrottleCmd()) > 0.05) || (Math.abs(_dos.getTurnCmd()) > 0.05)) {
 			_chassis.arcadeDrive(-1.0 * _dos.getThrottleCmd(), _dos.getTurnCmd());
 		}
-		else if(_dos.getIsTurnto0ButtonPressed())
-		{
+		else if(_dos.getIsTurnto0ButtonPressed()) {
 			_chassis.setTargetAngle(0, true);
 		}
-		else if(_dos.getIsTurnto180ButtonPressed())
-		{
+		else if(_dos.getIsTurnto180ButtonPressed()) {
 			_chassis.setTargetAngle(180, true);
-		}
-		else 
-		{
+		} else {
 			_chassis.stop();
 		}
 
@@ -293,7 +302,7 @@ public class Robot extends IterativeRobot {
 	//=====================================================================================
 	private void stopAll() {
 		_chassis.stop();
-		//_elevator.stop();
+		_elevator.stop();
 		_infeed.stop();
 		_carriage.stop();
 	}
@@ -312,7 +321,7 @@ public class Robot extends IterativeRobot {
     		// to push its data out to the dashboard
 
     		_chassis.outputToShuffleboard(); 
-    		//_elevator.outputToShuffleboard();
+    		_elevator.outputToShuffleboard();
     		_infeed.outputToShuffleboard();
     		_carriage.outputToShuffleboard();
     		_ultrasonic.outputToShuffleboard();
@@ -344,7 +353,7 @@ public class Robot extends IterativeRobot {
 	    	
 	    	// ask each subsystem that exists to add its data
 	    	_chassis.updateLogData(logData);
-	    	//_elevator.updateLogData(logData);
+	    	_elevator.updateLogData(logData);
 	    	_infeed.updateLogData(logData);
 	    	_carriage.updateLogData(logData);
 	    	_ultrasonic.updateLogData(logData);

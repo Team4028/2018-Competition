@@ -13,13 +13,14 @@ import org.usfirst.frc.team4028.util.control.Path;
 public class Switch extends AutonBase {
 	Path toSwitch;
 	double elevatorWaitTime;
+	
 	public Switch(boolean isSwitchLeft) {
 		if (isSwitchLeft) {
 			toSwitch = Paths.getPath(PATHS.L_SWITCH, 100.0, 120.0, 0.004);
-			elevatorWaitTime=1.75;
+			elevatorWaitTime = 1.75;
 		} else {
 			toSwitch = Paths.getPath(PATHS.R_SWITCH, 100.0, 120.0, 0.0065);
-			elevatorWaitTime=1.75;
+			elevatorWaitTime = 1.75;
 		}
 	}
 	
@@ -32,10 +33,14 @@ public class Switch extends AutonBase {
 							new WaitAction(elevatorWaitTime),
 							new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SWITCH_HEIGHT)
 					}))
-					})));
+		})));
 		runAction(new ParallelAction(Arrays.asList(new Action[] {
 				new WaitAction(0.5),
 				new RunCarriageWheelsAction(false)
+		})));
+		runAction(new ParallelAction(Arrays.asList(new Action[] {
+				new DriveSetDistanceAction(-20.0),
+				new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.CUBE_ON_FLOOR)
 		})));
 		runAction(new PrintTimeFromStart(_startTime));
 	}

@@ -505,25 +505,22 @@ public class Infeed {
 	//Method for Driving Infeed Wheels
 	//=====================================================================================
 	public void driveInfeedWheels() {
-		/*
 		if(areArmsInPosition() || _infeedState == INFEED_STATE.STAGGER_INFEED_MANUVER) {
-			_leftInfeedDriveMotor.setSpeed(-1*INFEED_DRIVE_WHEELS_VBUS_COMMAND);
-			_rightInfeedDriveMotor.setSpeed(-1*-1*INFEED_DRIVE_WHEELS_VBUS_COMMAND);
-		} */
-		_leftInfeedDriveMotor.set(ControlMode.PercentOutput, -1*INFEED_DRIVE_WHEELS_VBUS_COMMAND);
-		_rightInfeedDriveMotor.set(ControlMode.PercentOutput,-1*-1*INFEED_DRIVE_WHEELS_VBUS_COMMAND);
+			_leftInfeedDriveMotor.set(ControlMode.PercentOutput, INFEED_DRIVE_WHEELS_VBUS_COMMAND);
+			_rightInfeedDriveMotor.set(ControlMode.PercentOutput, INFEED_DRIVE_WHEELS_VBUS_COMMAND);
+		} 
 	}
 	
 	public void driveInfeedWheelsVBus(double joystickCommand) {
 		if(areArmsInPosition()) {
-			_leftInfeedDriveMotor.set(ControlMode.PercentOutput, joystickCommand);
+			_leftInfeedDriveMotor.set(ControlMode.PercentOutput, -1 * joystickCommand);
 			_rightInfeedDriveMotor.set(ControlMode.PercentOutput, -1 * joystickCommand);
 		}
 	}
 	
 	public void spinManuverInfeedWheels() {
 		if(areArmsInPosition()) {
-			_leftInfeedDriveMotor.set(ControlMode.PercentOutput,INFEED_SPIN_CUBE_WHEELS_VBUS_COMMAND);
+			_leftInfeedDriveMotor.set(ControlMode.PercentOutput, -INFEED_SPIN_CUBE_WHEELS_VBUS_COMMAND);
 			_rightInfeedDriveMotor.set(ControlMode.PercentOutput, INFEED_SPIN_CUBE_WHEELS_VBUS_COMMAND);
 		}
 	}

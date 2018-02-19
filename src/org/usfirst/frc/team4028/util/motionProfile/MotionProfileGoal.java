@@ -32,87 +32,69 @@ public class MotionProfileGoal {
     }
 	
 	protected double pos;
-	protected double max_abs_vel;
-	protected CompletionBehavior completion_behavior = CompletionBehavior.OVERSHOOT;
-	protected double pos_tolerance = 1E-3;
-	protected double vel_tolerance = 1E-2;
-	
-	public MotionProfileGoal() {
-	}
-	
-	public MotionProfileGoal(double pos) {
-		this.pos = pos;
-		this.max_abs_vel = 0.0;
-		sanityCheck();
-	}
+	protected double maxAbsVel;
+	protected CompletionBehavior completionBehavior = CompletionBehavior.OVERSHOOT;
+	protected double posTolerance = 1E-3;
+	protected double velTolerance = 1E-2;
 	
 	public MotionProfileGoal(double pos, double max_abs_vel) {
         this.pos = pos;
-        this.max_abs_vel = max_abs_vel;
+        this.maxAbsVel = max_abs_vel;
         sanityCheck();
-    }
-
-    public MotionProfileGoal(double pos, double max_abs_vel, CompletionBehavior completion_behavior) {
-        this.pos = pos;
-        this.max_abs_vel = max_abs_vel;
-        this.completion_behavior = completion_behavior;
-        sanityCheck();
-    }
+	}
 
     public MotionProfileGoal(double pos, double max_abs_vel, CompletionBehavior completion_behavior,
             double pos_tolerance, double vel_tolerance) {
         this.pos = pos;
-        this.max_abs_vel = max_abs_vel;
-        this.completion_behavior = completion_behavior;
-        this.pos_tolerance = pos_tolerance;
-        this.vel_tolerance = vel_tolerance;
+        this.maxAbsVel = max_abs_vel;
+        this.completionBehavior = completion_behavior;
+        this.posTolerance = pos_tolerance;
+        this.velTolerance = vel_tolerance;
         sanityCheck();
     }
     
     public MotionProfileGoal(MotionProfileGoal other) {
-        this(other.pos, other.max_abs_vel, other.completion_behavior, other.pos_tolerance, other.vel_tolerance);
+        this(other.pos, other.maxAbsVel, other.completionBehavior, other.posTolerance, other.velTolerance);
     }
     
     /** @return A flipped MotionProfileGoal (where the position is negated, but all other attributes remain the same) */
     public MotionProfileGoal flipped() {
-        return new MotionProfileGoal(-pos, max_abs_vel, completion_behavior, pos_tolerance, vel_tolerance);
+        return new MotionProfileGoal(-pos, maxAbsVel, completionBehavior, posTolerance, velTolerance);
     }
     
     public double pos() {
     	return pos;
     }
     
-    public double max_abs_vel() {
-    	return max_abs_vel;
+    public double getMaxAbsVel() {
+    	return maxAbsVel;
     }
     
-    public double pos_tolerance() {
-    	return pos_tolerance;
+    public double getPosTolerance() {
+    	return posTolerance;
     }
     
-    public double vel_tolerance() {
-    	return vel_tolerance;
+    public double getVelTolerance() {
+    	return velTolerance;
     }
     
-    public CompletionBehavior completion_behavior() {
-    	return completion_behavior;
+    public CompletionBehavior getCompletionBehavior() {
+    	return completionBehavior;
     }
     
     public boolean atGoalState(MotionState state) {
-    	return atGoalPos(state.pos()) && (Math.abs(state.vel()) < (max_abs_vel + vel_tolerance)
-                || completion_behavior == CompletionBehavior.VIOLATE_MAX_ABS_VEL);
+    	return atGoalPos(state.pos()) && (Math.abs(state.vel()) < (maxAbsVel + velTolerance)
+                || completionBehavior == CompletionBehavior.VIOLATE_MAX_ABS_VEL);
     }
     
     public boolean atGoalPos(double pos) {
-        return epsilonEquals(pos, this.pos, pos_tolerance);
+        return epsilonEquals(pos, this.pos, posTolerance);
     }
     
-    /**
-     * This method makes sure that the completion behavior is compatible with the max goal velocity.
-     */
+    /** This method makes sure that the completion behavior is compatible with the max goal velocity. */
     protected void sanityCheck() {
-        if (max_abs_vel > vel_tolerance && completion_behavior == CompletionBehavior.OVERSHOOT) {
-            completion_behavior = CompletionBehavior.VIOLATE_MAX_ACCEL;
+        if (maxAbsVel > velTolerance && completionBehavior == CompletionBehavior.OVERSHOOT) {
+            completionBehavior = CompletionBehavior.VIOLATE_MAX_ACCEL;
         }
     }
 }

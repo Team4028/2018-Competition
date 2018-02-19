@@ -6,8 +6,7 @@ public class RunCarriageWheelsAction implements Action{
 	Carriage _carriage = Carriage.getInstance();
 	private boolean _isInfeed;
 	
-	public RunCarriageWheelsAction(boolean isInfeed) 
-	{
+	public RunCarriageWheelsAction(boolean isInfeed) {
 		isInfeed=_isInfeed;
 	} 
 
@@ -18,11 +17,9 @@ public class RunCarriageWheelsAction implements Action{
 	public void update() {
 		if(_isInfeed) {
 			_carriage.runCarriageMotors();
-		}
-		else {
+		} else {
 			_carriage.ejectCube();
 		}
-		
 	}
 
 	@Override

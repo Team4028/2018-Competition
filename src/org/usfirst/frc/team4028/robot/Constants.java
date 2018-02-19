@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj.SPI.Port;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 
 // This class contains id values for the physical elements of the robot so we can use names 
-//	in the code instead of hardcoded constants
+// in the code instead of hardcoded constants
 public class Constants {
 	// Drivers Station Gamepad USB Ports
 	public static final int DRIVER_GAMEPAD_USB_PORT = 0;
@@ -29,13 +29,6 @@ public class Constants {
 	public static final int RIGHT_INFEED_DRIVE_CAN_ADDRESS = 10;
 	public static final int LEFT_INFEED_DRIVE_CAN_ADDRESS = 11;
 	public static final int CLIMBER_CAN_ADDRESS = 12;
-	
-	//Victor SP PWM Address
-	//public static final int LEFT_INFEED_DRIVE_PWM_ADDRESS = 0;
-	//public static final int RIGHT_INFEED_DRIVE_PWM_ADDRESS = 1;
-	
-	// Servo for Jeff
-	//public static final int CARRIAGE_SERVO_PWM_ADDRESS = 2;
 	
 	// NavX (on Roborio)
 	public static final SPI.Port NAVX_PORT = Port.kMXP;
@@ -73,12 +66,6 @@ public class Constants {
 	public static final double DRIVE_WHEEL_DIAMETER_INCHES = 6.35;
 	public static final double TRACK_WIDTH_INCHES = 24.25;
 	public static final double TRACK_SCRUBBING_FACTOR = 0.9;
-	
-	// Geometry
-	public static final double CENTER_TO_FRONT_BUMPER_DISTANCE = 16.33;
-    public static final double CENTER_TO_INTAKE_DISTANCE = 26.33;
-    public static final double CENTER_TO_REAR_BUMPER_DISTANCE = 16.33;
-    public static final double CENTER_TO_SIDE_BUMPER_DISTANCE = 20.0;
     
     // Path Following Constants
     public static final double MIN_LOOKAHEAD = 12.0; // inches

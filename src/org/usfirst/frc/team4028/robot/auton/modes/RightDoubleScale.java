@@ -58,7 +58,7 @@ public class RightDoubleScale extends AutonBase {
 											new WaitAction(elevatorWaitTime2),
 											new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SCALE_HEIGHT)
 									}))
-							})),
+							}))
 					})),
 					new SetInfeedPosAction(Infeed.INFEED_TARGET_POSITION.SQUEEZE),
 					new DriveInfeedWheelsAction(),
@@ -68,7 +68,15 @@ public class RightDoubleScale extends AutonBase {
 				new TurnAction(endTargetTurnAngle, false),
 				new SetInfeedPosAction(Infeed.INFEED_TARGET_POSITION.STORE)
 		})));
+		runAction(new ParallelAction(Arrays.asList(new Action[] {
+				new RunCarriageWheelsAction(false),
+				new WaitAction(0.5)
+		})));
 		runAction(new RunCarriageWheelsAction(false));
+		runAction(new ParallelAction(Arrays.asList(new Action[] {
+					new DriveSetDistanceAction(-30.0),
+					new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SWITCH_HEIGHT)
+		})));
 		runAction(new PrintTimeFromStart(_startTime));
 	}
 }

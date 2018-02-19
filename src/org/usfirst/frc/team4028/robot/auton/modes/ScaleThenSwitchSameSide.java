@@ -46,7 +46,10 @@ public class ScaleThenSwitchSameSide extends AutonBase {
 				new RunCarriageWheelsAction(false),
 				new WaitAction(0.5)
 		})));
-	runAction(new TurnAction(targetTurnAngle, true));
+	runAction(new ParallelAction(Arrays.asList(new Action[] {
+			new TurnAction(targetTurnAngle, true),
+			new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.CUBE_ON_FLOOR)
+	})));
 	runAction(new ParallelAction(Arrays.asList(new Action[] {
 				new RunMotionProfileAction(fromScaleToSwitch),
 				new SeriesAction(Arrays.asList(new Action[] {
@@ -57,11 +60,17 @@ public class ScaleThenSwitchSameSide extends AutonBase {
 	runAction(new ParallelAction(Arrays.asList(new Action[] {
 				new WaitAction(0.65),
 				new SetInfeedPosAction(Infeed.INFEED_TARGET_POSITION.SQUEEZE),
-				new DriveInfeedWheelsAction()
+				new DriveInfeedWheelsAction(),
+				new RunCarriageWheelsAction(true)
 	})));
 		runAction(new ParallelAction(Arrays.asList(new Action[] {
 				new DriveSetDistanceAction(8),
-				new SetInfeedPosAction(Infeed.INFEED_TARGET_POSITION.STORE)
+				new SetInfeedPosAction(Infeed.INFEED_TARGET_POSITION.STORE),
+				new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SWITCH_HEIGHT)
+		})));
+		runAction(new ParallelAction(Arrays.asList(new Action[ ] {
+				new WaitAction(0.5),
+				new RunCarriageWheelsAction(false)
 		})));
 		runAction(new PrintTimeFromStart(_startTime));
 	}

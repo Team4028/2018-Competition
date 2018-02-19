@@ -176,15 +176,15 @@ public class Chassis implements Subsystem {
 			_rightMaster.set(ControlMode.PercentOutput, 0.0);
 			DriverStation.reportError("Tipping Threshold", false);
 		} else if (Math.abs(getLeftVelocityInchesPerSec() - getRightVelocityInchesPerSec()) < 5.0) {
-			_leftMaster.set(ControlMode.PercentOutput, -1.0 * throttle + 0.7 * turn);
-			_rightMaster.set(ControlMode.PercentOutput, -1.0 * throttle - 0.7 * turn);
+			_leftMaster.set(ControlMode.PercentOutput, -throttle + 0.7 * turn);
+			_rightMaster.set(ControlMode.PercentOutput, -throttle - 0.7 * turn);
 		} else {
-			_leftMaster.set(ControlMode.PercentOutput, -1.0 * throttle + 0.5 * turn);
-			_rightMaster.set(ControlMode.PercentOutput, -1.0 * throttle - 0.5 * turn);
+			_leftMaster.set(ControlMode.PercentOutput, -throttle + 0.5 * turn);
+			_rightMaster.set(ControlMode.PercentOutput, -throttle - 0.5 * turn);
 		} 
 	}
 	
-	/* Chassis State: AUTO TURN */
+	/* ===== Chassis State: AUTO TURN ===== */
 	/** Set the target gyro angle for the robot to turn to. */
 	public synchronized void setTargetAngle(double targetAngle, boolean isTurnRight) {
 		_targetAngle = targetAngle;
@@ -196,28 +196,24 @@ public class Chassis implements Subsystem {
 	
 	/** Updates target position every cycle while using MotionMagic to turn to heading goal */
 	private synchronized void moveToTargetAngle() {
-		if((_navX.getYaw()>=0 && _targetAngle>=0 && _isTurnRight&&_navX.getYaw()>_targetAngle)||
-			(_navX.getYaw()>=0 && _targetAngle<0&& _isTurnRight)||
-			(_navX.getYaw()<0 && _targetAngle<0 && _isTurnRight&&Math.abs(_navX.getYaw())<Math.abs(_targetAngle)))
-		{
-			_angleError=360-_navX.getYaw()+_targetAngle;
+		if((_navX.getYaw() >= 0 && _targetAngle >= 0 && _isTurnRight && _navX.getYaw() > _targetAngle) ||
+			(_navX.getYaw() >= 0 && _targetAngle < 0 && _isTurnRight) ||
+			(_navX.getYaw() < 0 && _targetAngle < 0 && _isTurnRight && Math.abs(_navX.getYaw()) < Math.abs(_targetAngle))) {
+			_angleError = 360 - _navX.getYaw() + _targetAngle;
 		}
-		else if((_navX.getYaw()>=0 && _targetAngle>=0 && _isTurnRight&&_navX.getYaw()<_targetAngle)||
-				(_navX.getYaw()>=0 && _targetAngle>=0 &&!_isTurnRight&&_navX.getYaw()>_targetAngle)||
-				(_navX.getYaw()>=0 && _targetAngle<0 && !_isTurnRight)||
-				(_navX.getYaw()<0 && _targetAngle>=0 && _isTurnRight)||
-				(_navX.getYaw()<0 && _targetAngle<0 && _isTurnRight&&Math.abs(_navX.getYaw())>Math.abs(_targetAngle))||
-				(_navX.getYaw()<0 && _targetAngle<0 && !_isTurnRight&&Math.abs(_navX.getYaw())<Math.abs(_targetAngle)))
-		{
-			_angleError=_targetAngle-_navX.getYaw();
+		else if((_navX.getYaw() >= 0 && _targetAngle >= 0 && _isTurnRight && _navX.getYaw() < _targetAngle)||
+				(_navX.getYaw() >= 0 && _targetAngle >= 0 && !_isTurnRight && _navX.getYaw() > _targetAngle)||
+				(_navX.getYaw() >= 0 && _targetAngle < 0 && !_isTurnRight) ||
+				(_navX.getYaw() < 0 && _targetAngle >= 0 && _isTurnRight) ||
+				(_navX.getYaw() < 0 && _targetAngle < 0 && _isTurnRight && Math.abs(_navX.getYaw()) > Math.abs(_targetAngle)) ||
+				(_navX.getYaw() < 0 && _targetAngle < 0 && !_isTurnRight && Math.abs(_navX.getYaw()) < Math.abs(_targetAngle))) {
+			_angleError = _targetAngle - _navX.getYaw();
 		}		
-		else if((_navX.getYaw()>=0 && _targetAngle>=0 &&!_isTurnRight&&_navX.getYaw()<_targetAngle)||
-				(_navX.getYaw()<0 && _targetAngle<0 && !_isTurnRight&&Math.abs(_navX.getYaw())>Math.abs(_targetAngle))||
-				(_navX.getYaw()<0 && _targetAngle>=0 && !_isTurnRight))
-		{
-			_angleError=_targetAngle-_navX.getYaw()-360;
+		else if((_navX.getYaw() >= 0 && _targetAngle >= 0 && !_isTurnRight && _navX.getYaw() < _targetAngle)||
+				(_navX.getYaw() < 0 && _targetAngle < 0 && !_isTurnRight && Math.abs(_navX.getYaw()) > Math.abs(_targetAngle))||
+				(_navX.getYaw() < 0 && _targetAngle >= 0 && !_isTurnRight)) {
+			_angleError = _targetAngle - _navX.getYaw()-360;
 		}			
-		
 		
 		double encoderError = ENCODER_ROTATIONS_PER_DEGREE * _angleError;		
 		double leftDriveTargetPosition = (getLeftPosInRot() + encoderError) * CODES_PER_REV;
@@ -225,7 +221,6 @@ public class Chassis implements Subsystem {
 		
 		_leftMaster.set(ControlMode.MotionMagic, leftDriveTargetPosition);
 		_rightMaster.set(ControlMode.MotionMagic, rightDriveTargetPosition);
-
 	}
 	
 	/** Returns whether chassis has turned close enough to heading goal */
@@ -233,17 +228,13 @@ public class Chassis implements Subsystem {
 		return Math.abs(_angleError) < 2.0;
 	}
 	
-	/* Chassis State: DRIVE SET DISTANCE */
+	/* ===== Chassis State: DRIVE SET DISTANCE ===== */
 	public synchronized void setTargetPos(double targetPos) {
 		_leftTargetPos = inchesToNativeUnits(getLeftPosInches() + targetPos);
 		_rightTargetPos = inchesToNativeUnits(getRightPosInches() + targetPos);
 		setHighGear(false);
 		setMotionMagicStraightGains();
 		_chassisState = ChassisState.DRIVE_SET_DISTANCE;
-		System.out.println("LeftTargetPosinNU "+ _leftTargetPos);
-		System.out.println("RightTargetPosinNU "+_rightTargetPos);
-		System.out.println("LeftPosinInchesStart "+ getLeftPosInches());
-		System.out.println("RightPosinInchesStart "+ getRightPosInches());
 	}
 	
 	private synchronized void moveToTargetPos() {
@@ -255,7 +246,7 @@ public class Chassis implements Subsystem {
 		return (Math.abs(_leftTargetPos - inchesToNativeUnits(getLeftPosInches())) < 2500) && (Math.abs(_rightTargetPos - inchesToNativeUnits(getRightPosInches())) < 2500);
 	} 
 
-	/* Chassis State: FOLLOW PATH */
+	/* ===== Chassis State: FOLLOW PATH ===== */
 	/** Set path for PathFollower controller to follow */
     public synchronized void setWantDrivePath(Path path, boolean reversed) {
         if (_currentPath != path || _chassisState != ChassisState.FOLLOW_PATH) {

@@ -151,7 +151,7 @@ public class Carriage implements Subsystem {
 	public void infeedCarriageMotorsVBus(double vbusCmd)
 	{
 		// scale cmd
-		_carriageDriveCmd = vbusCmd * 0.5;
+		_carriageDriveCmd = vbusCmd * 0.35;
 	}
 	
 	public void runCarriageMotors() {

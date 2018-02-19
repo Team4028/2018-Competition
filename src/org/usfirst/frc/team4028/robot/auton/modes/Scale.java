@@ -20,7 +20,7 @@ public class Scale extends AutonBase{
 			elevatorWaitTime = 3.0;
 		} else {
 			toScale = Paths.getPath(PATHS.R_SCALE, 100.0, 120.0, 0.005);
-			elevatorWaitTime=5.0;
+			elevatorWaitTime = 5.0;
 		}
 	}
 	
@@ -37,6 +37,10 @@ public class Scale extends AutonBase{
 		runAction(new ParallelAction(Arrays.asList(new Action[] {
 				new WaitAction(0.5),
 				new RunCarriageWheelsAction(false)
+		})));
+		runAction(new ParallelAction(Arrays.asList(new Action[] {
+				new DriveSetDistanceAction(-30.0),
+				new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.CUBE_ON_FLOOR)
 		})));
 		runAction(new PrintTimeFromStart(_startTime));
 	}

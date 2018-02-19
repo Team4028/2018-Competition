@@ -13,8 +13,8 @@ import org.usfirst.frc.team4028.util.control.Path;
 public class LeftDoubleScale extends AutonBase{
 	Path toScale;
 	Path fromScaleToSwitch, fromSwitchToScale;
-	double targetTurnAngle,endTargetTurnAngle, elevatorWaitTime1, elevatorWaitTime2;
-	
+	double targetTurnAngle,endTargetTurnAngle;
+	double elevatorWaitTime1, elevatorWaitTime2;
 	
 	public LeftDoubleScale() {
 		toScale = Paths.getPath(PATHS.L_SCALE, 100.0, 120.0, 0);
@@ -44,7 +44,6 @@ public class LeftDoubleScale extends AutonBase{
 				new TurnAction(targetTurnAngle, true),
 				new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.CUBE_ON_FLOOR)
 		})));
-		//runAction(new DriveSetDistanceAction(30));
 		runAction(new ParallelAction(Arrays.asList(new Action[] {
 					new RunMotionProfileAction(fromScaleToSwitch),
 					new SeriesAction(Arrays.asList(new Action[] {
@@ -71,6 +70,10 @@ public class LeftDoubleScale extends AutonBase{
 		runAction(new ParallelAction(Arrays.asList(new Action[] {
 				new RunCarriageWheelsAction(false),
 				new WaitAction(0.5)
+		})));
+		runAction(new ParallelAction(Arrays.asList(new Action[] {
+				new DriveSetDistanceAction(-30.0),
+				new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SWITCH_HEIGHT)
 		})));
 		runAction(new PrintTimeFromStart(_startTime));
 	}
