@@ -13,8 +13,6 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.VictorSP;
-
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Infeed {	
