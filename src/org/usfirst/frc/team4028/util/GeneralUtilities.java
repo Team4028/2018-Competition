@@ -15,10 +15,12 @@ import java.util.TimeZone;
 import org.usfirst.frc.team4028.robot.Constants;
 import org.usfirst.frc.team4028.robot.Robot;
 
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+
 import edu.wpi.first.wpilibj.DriverStation;
 
 public class GeneralUtilities {		
-    // This method writes general info about the build to the Operator's Console
+    /** Writes general info about the build to the Operator's Console */
 	public static String WriteBuildInfoToDashboard(String robotName) {
 		String buildMsg = "?";
 		try {
@@ -51,10 +53,7 @@ public class GeneralUtilities {
 		return buildMsg;
 	}
 	
-    /**
-    / This method optionally sets up logging
-    /	if return object is null, logger is disabled
-	**/
+    /** Optionally sets up logging if return object is null, logger is disabled */
 	public static DataLogger setupLogging(String mode) {
 		DataLogger dataLogger;
 				
@@ -66,8 +65,7 @@ public class GeneralUtilities {
 				dataLogger = new DataLogger(Constants.PRIMARY_LOG_FILE_PATH, mode);
 					    		
 	    		System.out.println("..Logging enabled to: " + dataLogger.getLogFilePathName());
-			} 
-    		catch (IOException e) {
+			} catch (IOException e) {
 				e.printStackTrace();
 				
 	    		dataLogger = null;
@@ -80,16 +78,14 @@ public class GeneralUtilities {
 				dataLogger = new DataLogger(Constants.ALTERNATE_LOG_FILE_PATH, mode);
 					    		
 	    		System.out.println("..Logging enabled to: " + dataLogger.getLogFilePathName());
-			} 
-    		catch (IOException e) {
+			} catch (IOException e) {
 				e.printStackTrace();
 				
 	    		dataLogger = null;
 	    		
 	    		System.out.println("..Error configuring Logging to: " + Constants.ALTERNATE_LOG_FILE_PATH);
     		}
-    	} 
-    	else {
+    	} else {
     		dataLogger = null;
     		
     		System.out.println("..Logging Disabled!");
@@ -104,26 +100,20 @@ public class GeneralUtilities {
 		
 		return bd.doubleValue();
 	}
-	
-    // This method makes sure a value is between a max & min value
-	public static double ClampValue(double originalValue, double minValue, double maxValue) {
-		double clampedValue = originalValue;
-		
-		if (clampedValue > maxValue) {
-			clampedValue = maxValue;
-		}
-		else if (clampedValue < minValue) {
-			clampedValue = minValue;
-		}
-		
-		return clampedValue;
-	}
-	
-	public static double arctan(double heading) {
-		return Math.toDegrees(Math.atan(heading));
-    }
     
     public static boolean epsilonEquals(double a, double b, double epsilon) {
         return (a - epsilon <= b) && (a + epsilon >= b);
+    }
+    
+    public static void setPIDFGains(TalonSRX talon, double[] gains) {
+    	talon.config_kP(0, gains[0], 0);
+		talon.config_kI(0, gains[1], 0);
+		talon.config_kD(0, gains[2], 0);
+		talon.config_kF(0, gains[3], 0);
+    }
+    
+    public static void setMotionMagicConstants(TalonSRX talon, int[] constants) {
+    	talon.configMotionCruiseVelocity(constants[0], 0);
+    	talon.configMotionAcceleration(constants[1], 0);
     }
 }

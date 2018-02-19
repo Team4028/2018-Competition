@@ -11,18 +11,4 @@ public class MotionProfileConstraints {
 		this.maxAbsVel = Math.abs(max_vel);
 		this.maxDecel = max_decel;
 	}
-	
-	/** @return The (positive) maximum allowed velocity */
-    public double maxAbsVel() {
-        return maxAbsVel;
-    }
-
-    /** @return The (positive) maximum allowed acceleration */
-    public double maxAcc() {
-        return maxAcc;
-    }
-    
-    public double maxDecel() {
-    	return maxDecel;
-    }
 }

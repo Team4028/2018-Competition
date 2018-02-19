@@ -149,7 +149,7 @@ public class Elevator implements Subsystem {
 	private Elevator() {
 		// config master & slave talon objects
 		_elevatorMasterMotor = new TalonSRX(Constants.ELEVATOR_LIFT_MASTER_CAN_ADDRESS);
-	
+
 		// set motor phasing
 		_elevatorMasterMotor.setInverted(false);
 		

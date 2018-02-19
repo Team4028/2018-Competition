@@ -25,14 +25,17 @@ public class Constants {
 	public static final int RIGHT_SWITCHBLADE_MOTOR_CAN_ADDRESS = 6;
 	public static final int ELEVATOR_LIFT_MASTER_CAN_ADDRESS = 7;
 	public static final int CARRIAGE_LEFT_CAN_ADDRESS = 8;
-	public static final int CARRIAGE_RIGHT_CAN_ADDRESS = 9; // this is a VictorSPX
+	public static final int CARRIAGE_RIGHT_CAN_ADDRESS = 9;
+	public static final int RIGHT_INFEED_DRIVE_CAN_ADDRESS = 10;
+	public static final int LEFT_INFEED_DRIVE_CAN_ADDRESS = 11;
+	public static final int CLIMBER_CAN_ADDRESS = 12;
 	
 	//Victor SP PWM Address
-	public static final int LEFT_INFEED_DRIVE_PWM_ADDRESS = 0;
-	public static final int RIGHT_INFEED_DRIVE_PWM_ADDRESS = 1;
+	//public static final int LEFT_INFEED_DRIVE_PWM_ADDRESS = 0;
+	//public static final int RIGHT_INFEED_DRIVE_PWM_ADDRESS = 1;
 	
 	// Servo for Jeff
-	public static final int CARRIAGE_SERVO_PWM_ADDRESS = 2;
+	//public static final int CARRIAGE_SERVO_PWM_ADDRESS = 2;
 	
 	// NavX (on Roborio)
 	public static final SPI.Port NAVX_PORT = Port.kMXP;
@@ -65,13 +68,11 @@ public class Constants {
     public static final double DRIVE_VELOCITY_NOMINAL_OUTPUT = 0.05;
     public static final double DRIVE_VELOCITY_MAX_SETPOINT = 15 * 12.0; // 15 fps
     
-    public static final double DRIVE_VOLTAGE_COMPENSATION_RAMPRATE = 0.0;
-    
 	/* Robot Physical Constants */
 	// Wheels
 	public static final double DRIVE_WHEEL_DIAMETER_INCHES = 6.35;
 	public static final double TRACK_WIDTH_INCHES = 24.25;
-	public static final double TRACK_SCRUBBING_FACTOR = 1.0;
+	public static final double TRACK_SCRUBBING_FACTOR = 0.9;
 	
 	// Geometry
 	public static final double CENTER_TO_FRONT_BUMPER_DISTANCE = 16.33;
@@ -90,7 +91,7 @@ public class Constants {
     public static final double INERTIA_STEERING_GAIN = 0; //-0.01; // angular velocity command is multiplied by this gain *
                             
     public static final double SEGMENT_COMPLETION_TOLERANCE = 0.1; // inches
-    public static final double PATH_FOLLOWING_STANDARD_ACCEL = 120.0; // inches per second^2
+    public static final double PATH_FOLLOWING_STANDARD_ACCEL = 100.0; // inches per second^2
     public static final double PATH_FOLLOWING_STANDARD_DECEL = 120.0;
     public static final double PATH_FOLLOWING_MAX_VEL = 120.0; // inches per second
     public static final double PATH_FOLLOWING_PROFILE_KP = 6.0; 

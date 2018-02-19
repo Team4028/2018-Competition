@@ -435,6 +435,13 @@ public class DriverOperatorStation {
 			return _operatorGamepad.getY(Hand.kRight);
 		}
 		
+		public double getOperator_DriveCarraige_JoystickCmd() {
+			return _operatorGamepad.getY(Hand.kRight);
+		}
+		
+//		public double getOperator_RightX_JoystickCmd() {
+//			return _operatorGamepad.getX(Hand.kRight);
+//		}
 		public double getOperator_InfeedPositionX_JoystickCmd() {
 			return _operatorGamepad.getX(Hand.kRight);
 		}
@@ -556,13 +563,15 @@ public class DriverOperatorStation {
 //			return _engineeringGamepad.getStartButton();
 //		}
 		
-//		public boolean getIsEngineering_YellowY_BtnPressed() {
-//			return _engineeringGamepad.getYButton();
-//		}
+		public boolean getIsTurnto0ButtonPressed() 
+		{
+			return _engineeringGamepad.getYButton();
+		}
 		
-//		public boolean getIsEngineering_RedB_BtnPressed() {
-//			return _engineeringGamepad.getBButton();
-//		}
+		public boolean getIsTurnto180ButtonPressed() 
+		{
+			return _engineeringGamepad.getBButton();
+		}
 		
 //		public boolean getIsEngineering_GreenA_BtnPressed() {
 //			return _engineeringGamepad.getAButton();
@@ -615,4 +624,4 @@ public class DriverOperatorStation {
 //		public double getEngineering_RightTrigger_JoystickCmd() {
 //			return _engineeringGamepad.getTriggerAxis(Hand.kRight);
 //		}
-	}
+}

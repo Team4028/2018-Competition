@@ -49,9 +49,7 @@ public class RigidTransform implements Interpolable<RigidTransform>{
                 new Rotation(cos_theta, sin_theta, false));
     }
 
-    /**
-     * Logical inverse of the above.
-     */
+    /** Logical inverse of the above. */
     public static Twist log(RigidTransform transform) {
         final double dtheta = transform.getRotation().getRadians();
         final double half_dtheta = 0.5 * dtheta;
@@ -102,10 +100,7 @@ public class RigidTransform implements Interpolable<RigidTransform>{
         return new RigidTransform(_translation, _rotation.normal());
     }
 
-    /**
-     * Finds the point where the heading of this transform intersects the heading of another. Returns (+INF, +INF) if
-     * parallel.
-     */
+    /** Finds the point where the heading of this transform intersects the heading of another. Returns (+INF, +INF) if parallel. */
     public Translation intersection(RigidTransform other) {
         final Rotation other_rotation = other.getRotation();
         if (_rotation.isParallel(other_rotation)) {
@@ -119,9 +114,7 @@ public class RigidTransform implements Interpolable<RigidTransform>{
         }
     }
 
-    /**
-     * Return true if the heading of this transform is colinear with the heading of another.
-     */
+    /** Return true if the heading of this transform is colinear with the heading of another. */
     public boolean isColinear(RigidTransform other) {
         final Twist twist = log(inverse().transformBy(other));
         return (epsilonEquals(twist.dy, 0.0, Constants.EPSILON_NEGATIVE_9) && epsilonEquals(twist.dtheta, 0.0, Constants.EPSILON_NEGATIVE_9));
@@ -139,9 +132,7 @@ public class RigidTransform implements Interpolable<RigidTransform>{
         return a_t.translateBy(a_r.toTranslation().scale(t));
     }
 
-    /**
-     * Do twist interpolation of this transform assuming constant curvature.
-     */
+    /** Do twist interpolation of this transform assuming constant curvature. */
     @Override
     public RigidTransform interpolate(RigidTransform other, double x) {
         if (x <= 0) {

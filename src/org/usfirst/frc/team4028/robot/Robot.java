@@ -124,15 +124,19 @@ public class Robot extends IterativeRobot {
 		
 		_dashboard.getGameData();
 		
+		_chassis.zeroGyro();
+		
 		_autonExecuter = new AutonExecuter();
 		_autonExecuter.setAutoMode(_dashboard.getSelectedAuton());
 		_autonExecuter.start();
-		
+
 		_chassis.zeroGyro();
 		_chassis.setBrakeMode(true);
 		
 		_cubeHandler.doNothing();
-		
+
+		_infeed.storeArms();
+
 		// init data logging
 		_dataLogger = GeneralUtilities.setupLogging("auton");
 		// snapshot time to control spamming
@@ -169,9 +173,11 @@ public class Robot extends IterativeRobot {
 		
 		stopAll();
 		
+		_infeed.storeArms();
+		
 		_chassis.zeroSensors();
 		_chassis.setHighGear(false);
-		_chassis.setBrakeMode(false);
+		_chassis.setBrakeMode(false); 
 		
 		_cubeHandler.doNothing();
 		
@@ -190,12 +196,23 @@ public class Robot extends IterativeRobot {
 		_elevator.IsAtTargetPosition();
 		
 		// =============  CHASSIS ============= 
+		
 		if ((Math.abs(_dos.getThrottleCmd()) > 0.05) || (Math.abs(_dos.getTurnCmd()) > 0.05)) {
 			_chassis.arcadeDrive(-1.0 * _dos.getThrottleCmd(), _dos.getTurnCmd());
-		} else {
+		}
+		else if(_dos.getIsTurnto0ButtonPressed())
+		{
+			_chassis.setTargetAngle(0, true);
+		}
+		else if(_dos.getIsTurnto180ButtonPressed())
+		{
+			_chassis.setTargetAngle(180, true);
+		}
+		else 
+		{
 			_chassis.stop();
 		}
-		
+
 		if (_dos.getIsDriver_ShiftGear_BtnJustPressed()) {
 			_chassis.toggleShifter();
 		}
@@ -226,6 +243,7 @@ public class Robot extends IterativeRobot {
 //		}
 
 		// =============  ELEVATOR ============= 
+		
 		if (Math.abs(_dos.getOperator_Elevator_JoystickCmd()) > 0.05) {
 			_elevator.JogAxis(_dos.getOperator_Elevator_JoystickCmd());
 		}
@@ -248,8 +266,7 @@ public class Robot extends IterativeRobot {
 			_elevator.stop();
 		} 
 		
-		// =============  Carriage ============= 
-		//_carriage.RunCarriageMotorsVBus(_dos.getOperator_Carriage_JoystickCmd());
+		// ============= CARRIAGE =============
 		if (Math.abs(_dos.getOperator_InfeedCube_JoystickCmd()) > 0.05) {
 			_cubeHandler.runInfeedCubePlusCarriage(_dos.getOperator_InfeedCube_JoystickCmd());
 		}
@@ -262,12 +279,12 @@ public class Robot extends IterativeRobot {
 			_cubeHandler.stop();			
 		}
 		
-		if(_dos.getIsDriver_MoveCarriageCloser_BtnJustPressed()) {
-			_carriage.moveCarriageServosCloser();
-		}
-		else if(_dos.getIsDriver_MoveCarriageWider_BtnJustPressed()) {
-			_carriage.moveCarriageServosWider();
-		}
+		//if(_dos.getIsDriver_MoveCarriageCloser_BtnJustPressed()) {
+		//	_carriage.moveCarriageServosCloser();
+		//}
+		//else if(_dos.getIsDriver_MoveCarriageWider_BtnJustPressed()) {
+		//	_carriage.moveCarriageServosWider();
+		//}
 				
 		// ============= Camera Switch ============= 
 		if (_dos.getIsDriver_SwitchCamera_BtnJustPressed() == true) {
@@ -286,7 +303,7 @@ public class Robot extends IterativeRobot {
 	//=====================================================================================
 	private void stopAll() {
 		_chassis.stop();
-		_elevator.stop();
+		//_elevator.stop();
 		_infeed.stop();
 		_carriage.stop();
 	}
@@ -305,7 +322,7 @@ public class Robot extends IterativeRobot {
     		// to push its data out to the dashboard
 
     		_chassis.outputToShuffleboard(); 
-    		_elevator.outputToShuffleboard();
+    		//_elevator.outputToShuffleboard();
     		_infeed.outputToShuffleboard();
     		_carriage.outputToShuffleboard();
     		_ultrasonic.outputToShuffleboard();
@@ -337,7 +354,7 @@ public class Robot extends IterativeRobot {
 	    	
 	    	// ask each subsystem that exists to add its data
 	    	_chassis.updateLogData(logData);
-	    	_elevator.updateLogData(logData);
+	    	//_elevator.updateLogData(logData);
 	    	_infeed.updateLogData(logData);
 	    	_carriage.updateLogData(logData);
 	    	_ultrasonic.updateLogData(logData);

@@ -20,9 +20,9 @@ public class Carriage implements Subsystem {
 	
 	// define class level working variables
 	private TalonSRX _carriageLeftMotor; 
-	private VictorSPX _carriageRightMotor;
+	private TalonSRX _carriageRightMotor;
 	
-	private Servo _carriageSqueezeServo;
+	//private Servo _carriageSqueezeServo;
 	
 	private double _carriageDriveCmd;
 	private double _servoTargetPosition = 0.1;
@@ -46,7 +46,7 @@ public class Carriage implements Subsystem {
 		//	config master & slave talon objects
 		//====================================================================================
 		_carriageLeftMotor = new TalonSRX(Constants.CARRIAGE_LEFT_CAN_ADDRESS);
-		_carriageRightMotor = new VictorSPX(Constants.CARRIAGE_RIGHT_CAN_ADDRESS);
+		_carriageRightMotor = new TalonSRX(Constants.CARRIAGE_RIGHT_CAN_ADDRESS);
 		
 		// set motor phasing
 		_carriageLeftMotor.setInverted(false);
@@ -98,8 +98,8 @@ public class Carriage implements Subsystem {
 		_carriageRightMotor.configForwardSoftLimitEnable(false, 0);
 		
 		// Setup Carriage Servo Motors
-		_carriageSqueezeServo = new Servo(Constants.CARRIAGE_SERVO_PWM_ADDRESS);
-		_carriageSqueezeServo.set(0);
+		//_carriageSqueezeServo = new Servo(Constants.CARRIAGE_SERVO_PWM_ADDRESS);
+		//_carriageSqueezeServo.set(0);
 	}
 
 	//=====================================================================================
@@ -125,7 +125,7 @@ public class Carriage implements Subsystem {
 				
 				_carriageCurrentCurrent = _carriageLeftMotor.getOutputCurrent();
 				
-				_carriageSqueezeServo.set(_servoTargetPosition);
+				//_carriageSqueezeServo.set(_servoTargetPosition);
 			}
 		}
 		
