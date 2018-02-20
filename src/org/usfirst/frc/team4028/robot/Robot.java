@@ -53,18 +53,18 @@ public class Robot extends IterativeRobot {
  	MovingAverage _scanTimeSamples;
  	long _autonStartTime;
 	
- 	/**
- 	 *  Robot-wide initialization code should go here
- 	 *  called once, each time the robot powers up or the roborio is reset
- 	 */
+ 	// ================================================================
+ 	// Robot-wide initialization code should go here
+ 	// called once, each time the robot powers up or the roborio is reset
+ 	// ================================================================
 	@Override
 	public void robotInit() {
 		_buildMsg = GeneralUtilities.WriteBuildInfoToDashboard(ROBOT_NAME);
 		
 		_enabledLooper.register(_chassis.getLoop());
 		_enabledLooper.register(_infeed.getLoop());
-//		//_enabledLooper.register(_elevator.getLoop());
-		//_enabledLooper.register(_carriage.getLoop());
+		_enabledLooper.register(_elevator.getLoop());
+		_enabledLooper.register(_carriage.getLoop());
 		_enabledLooper.register(RobotStateEstimator.getInstance().getLoop());
 		
 		_dashboard.printStartupMessage();
@@ -95,21 +95,26 @@ public class Robot extends IterativeRobot {
 		}
 		
 		_chassis.setBrakeMode(false);
-		_elevator.resetElevatorPosition();
+		
+		
+		
 		stopAll();
 	}
 
-	/**
-	 * called each loop (approx every 20mS) in disabled mode
-	 * Note: outputs (ex: Motors, PWM, PCM etc are disabled
-	 *			but you can perform internal "reset state" actions
-	 */
+	// ================================================================
+	// called each loop (approx every 20mS) in disabled mode
+	// Note: outputs (ex: Motors, PWM, PCM etc are disabled
+	//			but you can perform internal "reset state" actions
+	// ================================================================
 	@Override
 	public void disabledPeriodic() {
+		_cubeHandler.doNothing(); // Prevent movement when robot is disabled then re-enabled
 		stopAll();
 	}
 	
-	/** Called once, each time the robot enters autonomous mode. */
+	// ================================================================
+	// called once, each time the robot enters autonomous mode.
+	// ================================================================
 	@Override
 	public void autonomousInit() {
 		if (_autonExecuter != null) {
@@ -139,7 +144,14 @@ public class Robot extends IterativeRobot {
 		_autonExecuter = new AutonExecuter();
 		_autonExecuter.setAutoMode(_dashboard.getSelectedAuton());
 		_autonExecuter.start();
+
+		_chassis.zeroGyro();
+		_chassis.setBrakeMode(true);
 		
+		_cubeHandler.doNothing();
+
+		_infeed.reZeroArms();
+
 		// init data logging
 		_dataLogger = GeneralUtilities.setupLogging("auton");
 		// snapshot time to control spamming
@@ -148,7 +160,9 @@ public class Robot extends IterativeRobot {
 		_autonStartTime = System.currentTimeMillis();
 	}
 
-	/** Called each loop (approx every 20mS) in autonomous mode */
+	// ================================================================
+	// called each loop (approx every 20mS) in autonomous mode
+	// ================================================================
 	@Override
 	public void autonomousPeriodic() {	
 		// Refresh Dashboard
@@ -160,7 +174,9 @@ public class Robot extends IterativeRobot {
 		logAllData();
 	}
 
-	/** Called once, each time the robot enters teleop mode. */
+	// ================================================================
+	// called once, each time the robot enters teleop mode.
+	// ================================================================
 	@Override
 	public void teleopInit() {
 		if (_autonExecuter != null) {
@@ -172,8 +188,14 @@ public class Robot extends IterativeRobot {
 		
 		stopAll();
 		
+		_chassis.zeroSensors();
 		_chassis.setHighGear(false);
-		_chassis.setBrakeMode(false); 
+		_chassis.setBrakeMode(false);  
+		
+		_infeed.zeroArms();
+				
+		_cubeHandler.doNothing();
+		System.out.print("Made It");
 		
 		// init data logging
 		_dataLogger = GeneralUtilities.setupLogging("auton");
@@ -181,7 +203,9 @@ public class Robot extends IterativeRobot {
 		_lastDashboardWriteTimeMSec = new Date().getTime();
 	}
 
-	/** Called each loop (approx every 20mS) in telop mode */
+	// ================================================================
+	// called each loop (approx every 20mS) in telop mode
+	// ================================================================
 	@Override
 	public void teleopPeriodic() {		
 		_ultrasonic.refreshUltrasonicValues();
@@ -192,12 +216,16 @@ public class Robot extends IterativeRobot {
 		if ((Math.abs(_dos.getThrottleCmd()) > 0.05) || (Math.abs(_dos.getTurnCmd()) > 0.05)) {
 			_chassis.arcadeDrive(-1.0 * _dos.getThrottleCmd(), _dos.getTurnCmd());
 		}
-		else if(_dos.getIsTurnto0ButtonPressed()) {
+		else if(_dos.getIsTurnto0ButtonPressed())
+		{
 			_chassis.setTargetAngle(0, true);
 		}
-		else if(_dos.getIsTurnto180ButtonPressed()) {
+		else if(_dos.getIsTurnto180ButtonPressed())
+		{
 			_chassis.setTargetAngle(180, true);
-		} else {
+		}
+		else 
+		{
 			_chassis.stop();
 		}
 
@@ -209,18 +237,26 @@ public class Robot extends IterativeRobot {
 		if (_dos.getIsOperator_ReZeroInfeed_BtnJustPressed()) {
 			_infeed.reZeroArms();
 		}		
-		else if (_dos.getOperator_DPad_AxisCmd() == 270) {
+		else if (_dos.getIsOperator_WideInfeed_BtnPressed()) {
 			_infeed.moveArmsToWideInfeedPosition();
 		}
-		else if (_dos.getOperator_DPad_AxisCmd() == 0) {
+		else if (_dos.getIsOperator_SqueezeInfeed_BtnPressed()) {
 			_infeed.moveArmsToSqueezeInfeedPosition();
 		}
-		else if (_dos.getOperator_DPad_AxisCmd() == 180) {
+		else if (_dos.getIsOperator_StoreInfeed_BtnPressed()) {
 			_infeed.storeArms();
 		}
-		else if (_dos.getOperator_DPad_AxisCmd() == 90) {
+		else if (_dos.getIsOperator_StaggerInfeed_BtnPressed()) {
 			_infeed.staggerInfeedManuver();
 		}
+//		else if (_dos.getOperator_InfeedPositionX_JoystickCmd() > 0.5 
+//				|| _dos.getOperator_InfeedPositionY_JoystickCmd() > 0.5) {
+//			_infeed.infeedJoystickCommandedPosition(_dos.getOperator_InfeedPositionY_JoystickCmd(), 
+//					_dos.getOperator_InfeedPositionX_JoystickCmd());
+//		}
+//		else if (_dos.getIsDriver_AutoAcquire_BtnJustPressed()) {
+//			_infeed.autoInfeedManuver();
+//		}
 
 		// =============  ELEVATOR ============= 
 		
@@ -228,18 +264,20 @@ public class Robot extends IterativeRobot {
 			_elevator.JogAxis(_dos.getOperator_Elevator_JoystickCmd());
 		}
 		else if (_dos.getIsOperator_ElevatorCubeOnFloorHgt_BtnJustPressed()) {
-			_cubeHandler.moveElevatorDown();
-			_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.CUBE_ON_FLOOR);
+			_cubeHandler.moveElevatorToFloorInfeed();
 		}
-		else if (_dos.getIsOperator_ElevatorScaleHgt_BtnJustPressed()) {
-			_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.SCALE_HEIGHT);
-		} 
-		else if (_dos.getIsOperator_ElevatorSwitchHgt_BtnJustPressed()) {
-			_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.SWITCH_HEIGHT);
+		else if (_cubeHandler.isSafeToMoveElevatorUp()) {
+			if (_dos.getIsOperator_ElevatorScaleHgt_BtnJustPressed()) {
+				_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.SCALE_HEIGHT);
+			} 
+			else if (_dos.getIsOperator_ElevatorSwitchHgt_BtnJustPressed()) {
+				_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.SWITCH_HEIGHT);
+			}
+			else if (_dos.getIsOperator_ElevatorPyrmdLvl1Hgt_BtnJustPressed()) {
+				_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.CUBE_ON_PYRAMID_LEVEL_1);
+			}
 		}
-		else if (_dos.getIsOperator_ElevatorPyrmdLvl1Hgt_BtnJustPressed()) {
-			_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.CUBE_ON_PYRAMID_LEVEL_1);
-		}
+		
 		else if (_dos.getIsOperator_ElevatorHome_BtnJustPressed()) {
 			_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.HOME);
 		} else {
@@ -258,6 +296,13 @@ public class Robot extends IterativeRobot {
 		} else {
 			_cubeHandler.stop();			
 		}
+		
+		//if(_dos.getIsDriver_MoveCarriageCloser_BtnJustPressed()) {
+		//	_carriage.moveCarriageServosCloser();
+		//}
+		//else if(_dos.getIsDriver_MoveCarriageWider_BtnJustPressed()) {
+		//	_carriage.moveCarriageServosWider();
+		//}
 				
 		// ============= Camera Switch ============= 
 		if (_dos.getIsDriver_SwitchCamera_BtnJustPressed() == true) {
@@ -276,12 +321,14 @@ public class Robot extends IterativeRobot {
 	//=====================================================================================
 	private void stopAll() {
 		_chassis.stop();
-		_elevator.stop();
+		//_elevator.stop();
 		_infeed.stop();
 		_carriage.stop();
 	}
 	
-	/** Method to Push Data to ShuffleBoard */
+	//=====================================================================================
+	//Method to Push Data to ShuffleBoard
+	//=====================================================================================
 	private void outputAllToDashboard() {
 		// limit spamming
     	long scanCycleDeltaInMSecs = new Date().getTime() - _lastScanEndTimeInMSec;
@@ -293,7 +340,7 @@ public class Robot extends IterativeRobot {
     		// to push its data out to the dashboard
 
     		_chassis.outputToShuffleboard(); 
-    		_elevator.outputToShuffleboard();
+    		//_elevator.outputToShuffleboard();
     		_infeed.outputToShuffleboard();
     		_carriage.outputToShuffleboard();
     		_ultrasonic.outputToShuffleboard();
@@ -305,7 +352,6 @@ public class Robot extends IterativeRobot {
 	    	BigDecimal movingAvg = _scanTimeSamples.getAverage();
 	    	DecimalFormat df = new DecimalFormat("####");
 	    	SmartDashboard.putString("Scan Time (2 sec roll avg)", df.format(movingAvg) + " mSec");
-	    	
     		// snapshot last time
     		_lastDashboardWriteTimeMSec = new Date().getTime();
     	}
@@ -314,7 +360,9 @@ public class Robot extends IterativeRobot {
     	_lastScanEndTimeInMSec = new Date().getTime();
 	}
 	
-	/** Method for Logging Data to the USB Stick plugged into the RoboRio */
+	//=====================================================================================
+	//Method for Logging Data to the USB Stick plugged into the RoboRio
+	//=====================================================================================
 	private void logAllData() { 
 		// always call this 1st to calc drive metrics
     	if(_dataLogger != null) {    	
@@ -323,7 +371,7 @@ public class Robot extends IterativeRobot {
 	    	
 	    	// ask each subsystem that exists to add its data
 	    	_chassis.updateLogData(logData);
-	    	_elevator.updateLogData(logData);
+	    	//_elevator.updateLogData(logData);
 	    	_infeed.updateLogData(logData);
 	    	_carriage.updateLogData(logData);
 	    	_ultrasonic.updateLogData(logData);

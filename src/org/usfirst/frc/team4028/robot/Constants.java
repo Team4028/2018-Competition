@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj.SPI.Port;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 
 // This class contains id values for the physical elements of the robot so we can use names 
-// in the code instead of hardcoded constants
+//	in the code instead of hardcoded constants
 public class Constants {
 	// Drivers Station Gamepad USB Ports
 	public static final int DRIVER_GAMEPAD_USB_PORT = 0;
@@ -30,6 +30,16 @@ public class Constants {
 	public static final int LEFT_INFEED_DRIVE_CAN_ADDRESS = 11;
 	public static final int CLIMBER_CAN_ADDRESS = 12;
 	
+	//Victor SP PWM Address
+	//public static final int LEFT_INFEED_DRIVE_PWM_ADDRESS = 0;
+	//public static final int RIGHT_INFEED_DRIVE_PWM_ADDRESS = 1;
+	
+	// Servo for Jeff
+	//public static final int CARRIAGE_SERVO_PWM_ADDRESS = 2;
+	
+	//Limit Switch for telling if Cube is in Robot
+	public static final int CARRIAGE_LIMIT_SWITCH_DIO_PORT = 0;
+	
 	// NavX (on Roborio)
 	public static final SPI.Port NAVX_PORT = Port.kMXP;
 	public static final double MAX_PITCH_POSITIVE = 7.0;
@@ -43,8 +53,8 @@ public class Constants {
 	public static final int SHIFTER_SOLENOID_EXTEND_PCM_PORT = 3;
 	
 	// Solenoid Positions
-	public static final Value SHIFTER_LOW_GEAR_POS = DoubleSolenoid.Value.kReverse;
-	public static final Value SHIFTER_HIGH_GEAR_POS = DoubleSolenoid.Value.kForward;
+	public static final Value SHIFTER_LOW_GEAR_POS = DoubleSolenoid.Value.kForward;
+	public static final Value SHIFTER_HIGH_GEAR_POS = DoubleSolenoid.Value.kReverse;
 	
 	// Infeed Position Constants
 	public static final double INFEED_POSITION = 2300;
@@ -66,6 +76,12 @@ public class Constants {
 	public static final double DRIVE_WHEEL_DIAMETER_INCHES = 6.35;
 	public static final double TRACK_WIDTH_INCHES = 24.25;
 	public static final double TRACK_SCRUBBING_FACTOR = 0.9;
+	
+	// Geometry
+	public static final double CENTER_TO_FRONT_BUMPER_DISTANCE = 16.33;
+    public static final double CENTER_TO_INTAKE_DISTANCE = 26.33;
+    public static final double CENTER_TO_REAR_BUMPER_DISTANCE = 16.33;
+    public static final double CENTER_TO_SIDE_BUMPER_DISTANCE = 20.0;
     
     // Path Following Constants
     public static final double MIN_LOOKAHEAD = 12.0; // inches
@@ -81,9 +97,9 @@ public class Constants {
     public static final double PATH_FOLLOWING_STANDARD_ACCEL = 100.0; // inches per second^2
     public static final double PATH_FOLLOWING_STANDARD_DECEL = 120.0;
     public static final double PATH_FOLLOWING_MAX_VEL = 120.0; // inches per second
-    public static final double PATH_FOLLOWING_PROFILE_KP = 6.0; //6.0; 
+    public static final double PATH_FOLLOWING_PROFILE_KP = 6.0; 
     public static final double PATH_FOLLOWING_PROFILE_KI = 0.0;	//0.03;
-    public static final double PATH_FOLLOWING_PROFILE_KV = 0.02; //0.02; //0.02;
+    public static final double PATH_FOLLOWING_PROFILE_KV = 0.02; //0.02;
     public static final double PATH_FOLLOWING_PROFILE_KFFV = 1.0;
     public static final double PATH_FOLLOWING_PROFILE_KFFA = 0.1;
     public static final double PATH_FOLLOWING_GOAL_POS_TOLERANCE = 0.75;
