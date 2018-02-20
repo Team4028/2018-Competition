@@ -37,11 +37,27 @@ public class MotionProfileGoal {
 	protected double posTolerance = 1E-3;
 	protected double velTolerance = 1E-2;
 	
+	public MotionProfileGoal() {
+	}
+	
+	public MotionProfileGoal(double pos) {
+		this.pos = pos;
+		this.maxAbsVel = 0.0;
+		sanityCheck();
+	}
+	
 	public MotionProfileGoal(double pos, double max_abs_vel) {
         this.pos = pos;
         this.maxAbsVel = max_abs_vel;
         sanityCheck();
 	}
+	
+	public MotionProfileGoal(double pos, double max_abs_vel, CompletionBehavior completion_behavior) {
+        this.pos = pos;
+        this.maxAbsVel = max_abs_vel;
+        this.completionBehavior = completion_behavior;
+        sanityCheck();
+    }
 
     public MotionProfileGoal(double pos, double max_abs_vel, CompletionBehavior completion_behavior,
             double pos_tolerance, double vel_tolerance) {

@@ -46,19 +46,19 @@ public class ScaleThenSwitchOppositeSide extends AutonBase
 				new RunMotionProfileAction(toScale),
 				new SeriesAction(Arrays.asList(new Action[] {
 						new WaitAction(ElevatorWaitTime),
-						new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SCALE_HEIGHT)
+					//	new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SCALE_HEIGHT)
 						
 				}))
 		})));
 		runAction(new ParallelAction(Arrays.asList(new Action[] {
-				new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.CUBE_ON_FLOOR),
+				//new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.CUBE_ON_FLOOR),
 				new TurnAction(turnTargetAngle,true)
 		})));
 		runAction(new ParallelAction(Arrays.asList(new Action[] {
 				new RunMotionProfileAction(fromScaleToSwitch),
 				new SeriesAction(Arrays.asList(new Action[] {
 						//new WaitAction(2),
-						new SetInfeedPosAction(Infeed.INFEED_TARGET_POSITION.STORE)
+					//	new SetInfeedPosAction(Infeed.INFEED_TARGET_POSITION.STORE)
 				}))
 		})));
 		runAction(new ParallelAction(Arrays.asList(new Action[] {
@@ -66,25 +66,25 @@ public class ScaleThenSwitchOppositeSide extends AutonBase
 				new TurnAction(180,isTurnRight),
 				new WaitAction(0.5)
 				})),
-				new DriveInfeedWheelsAction(),
+				//new DriveInfeedWheelsAction(),
 				new SeriesAction(Arrays.asList(new Action[] {
 						new WaitAction(0.5),
-						new SetInfeedPosAction(Infeed.INFEED_TARGET_POSITION.SQUEEZE)
+					//	new SetInfeedPosAction(Infeed.INFEED_TARGET_POSITION.SQUEEZE)
 				}))
 		})));
 		runAction(new ParallelAction(Arrays.asList(new Action[] {
 				new DriveSetDistanceAction(14),
-				new SetInfeedPosAction(Infeed.INFEED_TARGET_POSITION.STORE),
-				new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SWITCH_HEIGHT)
+			//	new SetInfeedPosAction(Infeed.INFEED_TARGET_POSITION.STORE),
+				//new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SWITCH_HEIGHT)
 		})));
 		runAction(new ParallelAction(Arrays.asList(new Action[] {
-				new RunCarriageWheelsAction(false),
+			//	new RunCarriageWheelsAction(false),
 				new WaitAction(0.5)
 		})));
 		runAction(new RunCarriageWheelsAction(false));
 		runAction(new ParallelAction(Arrays.asList(new Action[] {
 					new DriveSetDistanceAction(-30.0),
-					new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.CUBE_ON_FLOOR)
+				//	new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.CUBE_ON_FLOOR)
 		})));
 		runAction(new PrintTimeFromStart(_startTime));
 	}

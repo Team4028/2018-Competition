@@ -28,19 +28,19 @@ public class Switch extends AutonBase {
 	public void routine() {
 		runAction(new ParallelAction(Arrays.asList(new Action[] {
 					new RunMotionProfileAction(toSwitch),
-					new SetInfeedPosAction(Infeed.INFEED_TARGET_POSITION.STORE),
+				//	new SetInfeedPosAction(Infeed.INFEED_TARGET_POSITION.STORE),
 					new SeriesAction(Arrays.asList(new Action[] {
 							new WaitAction(elevatorWaitTime),
-							new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SWITCH_HEIGHT)
+			//				new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SWITCH_HEIGHT)
 					}))
 		})));
 		runAction(new ParallelAction(Arrays.asList(new Action[] {
 				new WaitAction(0.5),
-				new RunCarriageWheelsAction(false)
+			//	new RunCarriageWheelsAction(false)
 		})));
 		runAction(new ParallelAction(Arrays.asList(new Action[] {
 				new DriveSetDistanceAction(-20.0),
-				new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.CUBE_ON_FLOOR)
+				//new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.CUBE_ON_FLOOR)
 		})));
 		runAction(new PrintTimeFromStart(_startTime));
 	}

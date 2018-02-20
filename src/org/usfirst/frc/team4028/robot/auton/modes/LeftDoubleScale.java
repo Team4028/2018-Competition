@@ -30,25 +30,25 @@ public class LeftDoubleScale extends AutonBase{
 	public void routine() {
 		runAction(new ParallelAction(Arrays.asList(new Action[] {
 					new RunMotionProfileAction(toScale),
-					new SetInfeedPosAction(Infeed.INFEED_TARGET_POSITION.STORE),
+				//	new SetInfeedPosAction(Infeed.INFEED_TARGET_POSITION.STORE),
 					new SeriesAction(Arrays.asList(new Action[] {
 							new WaitAction(elevatorWaitTime1),
-							new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SCALE_HEIGHT),
+						//	new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SCALE_HEIGHT),
 							new ParallelAction(Arrays.asList(new Action[] {
-									new RunCarriageWheelsAction(false),
+							//		new RunCarriageWheelsAction(false),
 									new WaitAction(0.5)
 							}))
 					}))
 		})));
 		runAction(new ParallelAction(Arrays.asList(new Action[] {
 				new TurnAction(targetTurnAngle, true),
-				new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.CUBE_ON_FLOOR)
+				//new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.CUBE_ON_FLOOR)
 		})));
 		runAction(new ParallelAction(Arrays.asList(new Action[] {
 					new RunMotionProfileAction(fromScaleToSwitch),
 					new SeriesAction(Arrays.asList(new Action[] {
 							new WaitAction(0.65),
-							new SetInfeedPosAction(Infeed.INFEED_TARGET_POSITION.WIDE)
+						//	new SetInfeedPosAction(Infeed.INFEED_TARGET_POSITION.WIDE)
 					}))
 		})));
 		runAction(new ParallelAction(Arrays.asList(new Action[] {
@@ -58,22 +58,22 @@ public class LeftDoubleScale extends AutonBase{
 									new RunMotionProfileAction(fromSwitchToScale),
 									new SeriesAction(Arrays.asList(new Action[] {
 											new WaitAction(elevatorWaitTime2),
-											new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SCALE_HEIGHT)
+								//			new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SCALE_HEIGHT)
 									}))
 							}))
 					})),
-					new SetInfeedPosAction(Infeed.INFEED_TARGET_POSITION.SQUEEZE),
-					new DriveInfeedWheelsAction(),
-					new RunCarriageWheelsAction(true)
+				//	new SetInfeedPosAction(Infeed.INFEED_TARGET_POSITION.SQUEEZE),
+				//	new DriveInfeedWheelsAction(),
+				//	new RunCarriageWheelsAction(true)
 		}))); 
 		runAction(new TurnAction(endTargetTurnAngle, false));
 		runAction(new ParallelAction(Arrays.asList(new Action[] {
-				new RunCarriageWheelsAction(false),
+				//new RunCarriageWheelsAction(false),
 				new WaitAction(0.5)
 		})));
 		runAction(new ParallelAction(Arrays.asList(new Action[] {
 				new DriveSetDistanceAction(-30.0),
-				new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SWITCH_HEIGHT)
+				//new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SWITCH_HEIGHT)
 		})));
 		runAction(new PrintTimeFromStart(_startTime));
 	}

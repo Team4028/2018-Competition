@@ -57,8 +57,8 @@ public class Chassis implements Subsystem {
 	
 	private static final double[] MOTION_MAGIC_TURN_PIDF_GAINS = {0.25, 0.0, 35.0, 0.095};
 	private static final double[] MOTION_MAGIC_STRAIGHT_PIDF_GAINS = {0.0, 0.0, 0.0, 0.095};
-	private static final double[] LOW_GEAR_VELOCITY_PIDF_GAINS = {0.15, 0.0, 1.5, 0.085};
-	private static final double[] HIGH_GEAR_VELOCITY_PIDF_GAINS = {0.065, 0.0, 1.0, 0.04};
+	private static final double[] LOW_GEAR_VELOCITY_PIDF_GAINS = {0.0, 0.0, 0.0, 0.085}; //{0.15, 0.0, 1.5, 0.085};
+	private static final double[] HIGH_GEAR_VELOCITY_PIDF_GAINS = {0.065, 0.0, 1.0, 0.044}; //{0.065, 0.0, 1.0, 0.04};
     
     private static final int[] MOTION_MAGIC_TURN_VEL_ACC = {80 * 150, 150 * 150};
     private static final int[] MOTION_MAGIC_STRAIGHT_VEL_ACC = {80 * 150, 140 * 150};
@@ -417,6 +417,10 @@ public class Chassis implements Subsystem {
 		
 		SmartDashboard.putNumber("Left Velocity", getLeftVelocityInchesPerSec());
 		SmartDashboard.putNumber("Right Velocity", getRightVelocityInchesPerSec());
+
+		SmartDashboard.putNumber("Left Wheel Voltage", _leftMaster.getMotorOutputVoltage());
+		SmartDashboard.putNumber("Right Wheel Voltage", _rightMaster.getMotorOutputVoltage());
+		
 		SmartDashboard.putNumber("Angle", getHeading());
 	}
 	

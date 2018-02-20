@@ -43,8 +43,8 @@ public class Constants {
 	public static final int SHIFTER_SOLENOID_EXTEND_PCM_PORT = 3;
 	
 	// Solenoid Positions
-	public static final Value SHIFTER_LOW_GEAR_POS = DoubleSolenoid.Value.kForward;
-	public static final Value SHIFTER_HIGH_GEAR_POS = DoubleSolenoid.Value.kReverse;
+	public static final Value SHIFTER_LOW_GEAR_POS = DoubleSolenoid.Value.kReverse;
+	public static final Value SHIFTER_HIGH_GEAR_POS = DoubleSolenoid.Value.kForward;
 	
 	// Infeed Position Constants
 	public static final double INFEED_POSITION = 2300;
@@ -81,9 +81,9 @@ public class Constants {
     public static final double PATH_FOLLOWING_STANDARD_ACCEL = 100.0; // inches per second^2
     public static final double PATH_FOLLOWING_STANDARD_DECEL = 120.0;
     public static final double PATH_FOLLOWING_MAX_VEL = 120.0; // inches per second
-    public static final double PATH_FOLLOWING_PROFILE_KP = 6.0; 
+    public static final double PATH_FOLLOWING_PROFILE_KP = 6.0; //6.0; 
     public static final double PATH_FOLLOWING_PROFILE_KI = 0.0;	//0.03;
-    public static final double PATH_FOLLOWING_PROFILE_KV = 0.02; //0.02;
+    public static final double PATH_FOLLOWING_PROFILE_KV = 0.02; //0.02; //0.02;
     public static final double PATH_FOLLOWING_PROFILE_KFFV = 1.0;
     public static final double PATH_FOLLOWING_PROFILE_KFFA = 0.1;
     public static final double PATH_FOLLOWING_GOAL_POS_TOLERANCE = 0.75;
