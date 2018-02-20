@@ -95,7 +95,7 @@ public class Robot extends IterativeRobot {
 		
 		_chassis.setBrakeMode(false);
 		
-		_cubeHandler.doNothing(); // Prevent movement when robot is disabled then re-enabled
+		
 		
 		stopAll();
 	}
@@ -107,6 +107,7 @@ public class Robot extends IterativeRobot {
 	// ================================================================
 	@Override
 	public void disabledPeriodic() {
+		_cubeHandler.doNothing(); // Prevent movement when robot is disabled then re-enabled
 		stopAll();
 	}
 	
@@ -135,7 +136,7 @@ public class Robot extends IterativeRobot {
 		
 		_cubeHandler.doNothing();
 
-		_infeed.storeArms();
+		_infeed.reZeroArms();
 
 		// init data logging
 		_dataLogger = GeneralUtilities.setupLogging("auton");
@@ -173,13 +174,14 @@ public class Robot extends IterativeRobot {
 		
 		stopAll();
 		
-		_infeed.storeArms();
-		
 		_chassis.zeroSensors();
 		_chassis.setHighGear(false);
-		_chassis.setBrakeMode(false); 
+		_chassis.setBrakeMode(false);  
 		
+		_infeed.zeroArms();
+				
 		_cubeHandler.doNothing();
+		System.out.print("Made It");
 		
 		// init data logging
 		_dataLogger = GeneralUtilities.setupLogging("auton");
@@ -221,16 +223,16 @@ public class Robot extends IterativeRobot {
 		if (_dos.getIsOperator_ReZeroInfeed_BtnJustPressed()) {
 			_infeed.reZeroArms();
 		}		
-		else if (_dos.getOperator_DPad_AxisCmd() == 270) {
+		else if (_dos.getIsOperator_WideInfeed_BtnPressed()) {
 			_infeed.moveArmsToWideInfeedPosition();
 		}
-		else if (_dos.getOperator_DPad_AxisCmd() == 0) {
+		else if (_dos.getIsOperator_SqueezeInfeed_BtnPressed()) {
 			_infeed.moveArmsToSqueezeInfeedPosition();
 		}
-		else if (_dos.getOperator_DPad_AxisCmd() == 180) {
+		else if (_dos.getIsOperator_StoreInfeed_BtnPressed()) {
 			_infeed.storeArms();
 		}
-		else if (_dos.getOperator_DPad_AxisCmd() == 90) {
+		else if (_dos.getIsOperator_StaggerInfeed_BtnPressed()) {
 			_infeed.staggerInfeedManuver();
 		}
 //		else if (_dos.getOperator_InfeedPositionX_JoystickCmd() > 0.5 
@@ -248,18 +250,20 @@ public class Robot extends IterativeRobot {
 			_elevator.JogAxis(_dos.getOperator_Elevator_JoystickCmd());
 		}
 		else if (_dos.getIsOperator_ElevatorCubeOnFloorHgt_BtnJustPressed()) {
-			_cubeHandler.moveElevatorDown();
-			_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.CUBE_ON_FLOOR);
+			_cubeHandler.moveElevatorToFloorInfeed();
 		}
-		else if (_dos.getIsOperator_ElevatorScaleHgt_BtnJustPressed()) {
-			_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.SCALE_HEIGHT);
-		} 
-		else if (_dos.getIsOperator_ElevatorSwitchHgt_BtnJustPressed()) {
-			_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.SWITCH_HEIGHT);
+		else if (_cubeHandler.isSafeToMoveElevatorUp()) {
+			if (_dos.getIsOperator_ElevatorScaleHgt_BtnJustPressed()) {
+				_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.SCALE_HEIGHT);
+			} 
+			else if (_dos.getIsOperator_ElevatorSwitchHgt_BtnJustPressed()) {
+				_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.SWITCH_HEIGHT);
+			}
+			else if (_dos.getIsOperator_ElevatorPyrmdLvl1Hgt_BtnJustPressed()) {
+				_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.CUBE_ON_PYRAMID_LEVEL_1);
+			}
 		}
-		else if (_dos.getIsOperator_ElevatorPyrmdLvl1Hgt_BtnJustPressed()) {
-			_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.CUBE_ON_PYRAMID_LEVEL_1);
-		}
+		
 		else if (_dos.getIsOperator_ElevatorHome_BtnJustPressed()) {
 			_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.HOME);
 		} else {

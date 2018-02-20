@@ -37,6 +37,9 @@ public class Constants {
 	// Servo for Jeff
 	//public static final int CARRIAGE_SERVO_PWM_ADDRESS = 2;
 	
+	//Limit Switch for telling if Cube is in Robot
+	public static final int CARRIAGE_LIMIT_SWITCH_DIO_PORT = 0;
+	
 	// NavX (on Roborio)
 	public static final SPI.Port NAVX_PORT = Port.kMXP;
 	public static final double MAX_PITCH_POSITIVE = 7.0;
