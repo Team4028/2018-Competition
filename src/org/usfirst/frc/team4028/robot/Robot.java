@@ -31,6 +31,7 @@ public class Robot extends IterativeRobot {
 	private Elevator _elevator = Elevator.getInstance();
 	private Carriage _carriage = Carriage.getInstance();
 	private CubeHandler _cubeHandler = CubeHandler.getInstance();
+	private Climber _climber = Climber.getInstance();
 	
 	// Sensors
 	private UltrasonicSensor _ultrasonic = UltrasonicSensor.getInstance();
@@ -314,6 +315,10 @@ public class Robot extends IterativeRobot {
 		
 		// ============= Optionally Log Data =============
 		logAllData();
+		
+		//Climber Controls
+		_climber.ClimbOn(_dos.getOperator_Climber_JoystickCmd());
+	
 	}
 	
 	//=====================================================================================
