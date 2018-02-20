@@ -53,18 +53,18 @@ public class MotionProfileGenerator {
         final double minAbsVelAtGoalSqr = startState.vel2() - 2.0 * constraints.maxDecel * deltaPos;
         final double minAbsVelAtGoal = Math.sqrt(Math.abs(minAbsVelAtGoalSqr));
         final double maxAbsVelAtGoal = Math.sqrt(startState.vel2() + 2.0 * constraints.maxAcc * deltaPos);
-        double goalVel = goalState.max_abs_vel();
+        double goalVel = goalState.getMaxAbsVel();
         double maxAcc = constraints.maxAcc;
         double maxDecel = constraints.maxDecel;
         if (minAbsVelAtGoalSqr > 0.0
-                && minAbsVelAtGoal > (goalState.max_abs_vel() + goalState.vel_tolerance())) {
+                && minAbsVelAtGoal > (goalState.getMaxAbsVel() + goalState.getVelTolerance())) {
             // Overshoot is unavoidable with the current constraints. Look at completion_behavior to see what we should
             // do.
-            if (goalState.completion_behavior() == CompletionBehavior.VIOLATE_MAX_ABS_VEL) {
+            if (goalState.getCompletionBehavior() == CompletionBehavior.VIOLATE_MAX_ABS_VEL) {
                 // Adjust the goal velocity.
                 goalVel = minAbsVelAtGoal;
-            } else if (goalState.completion_behavior() == CompletionBehavior.VIOLATE_MAX_ACCEL) {
-                if (Math.abs(deltaPos) < goalState.pos_tolerance()) {
+            } else if (goalState.getCompletionBehavior() == CompletionBehavior.VIOLATE_MAX_ACCEL) {
+                if (Math.abs(deltaPos) < goalState.getPosTolerance()) {
                     // Special case: We are at the goal but moving too fast. This requires 'infinite' acceleration,
                     // which will result in NaNs below, so we can return the profile immediately.
                     profile.appendSegment(new MotionSegment(

@@ -91,7 +91,7 @@ public class SetpointGenerator {
         if (rv.final_setpoint) {
             // Ensure the final setpoint matches the goal exactly.
             rv.motion_state = new MotionState(rv.motion_state.t(), mGoal.pos(),
-                    Math.signum(rv.motion_state.vel()) * Math.max(mGoal.max_abs_vel(), Math.abs(rv.motion_state.vel())),
+                    Math.signum(rv.motion_state.vel()) * Math.max(mGoal.getMaxAbsVel(), Math.abs(rv.motion_state.vel())),
                     0.0);
         }
 

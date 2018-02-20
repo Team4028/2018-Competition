@@ -11,9 +11,8 @@ import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.RemoteLimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
-import edu.wpi.first.wpilibj.Servo;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Carriage implements Subsystem {
@@ -22,11 +21,12 @@ public class Carriage implements Subsystem {
 	private TalonSRX _carriageLeftMotor; 
 	private TalonSRX _carriageRightMotor;
 	
+	private DigitalInput _carriageLimitSwitch;
+	
 	//private Servo _carriageSqueezeServo;
 	
 	private double _carriageDriveCmd;
 	private double _servoTargetPosition = 0.1;
-	
 	private double _carriageCurrentCurrent = 0;
 	
 	private static final double CARRIAGE_WHEELS_INFEED_COMMAND = 0.5;
@@ -100,6 +100,9 @@ public class Carriage implements Subsystem {
 		// Setup Carriage Servo Motors
 		//_carriageSqueezeServo = new Servo(Constants.CARRIAGE_SERVO_PWM_ADDRESS);
 		//_carriageSqueezeServo.set(0);
+		
+		//Setup Limit Switch
+		_carriageLimitSwitch = new DigitalInput(Constants.CARRIAGE_LIMIT_SWITCH_DIO_PORT);
 	}
 
 	//=====================================================================================
@@ -150,12 +153,21 @@ public class Carriage implements Subsystem {
 
 	public void infeedCarriageMotorsVBus(double vbusCmd)
 	{
-		// scale cmd
-		_carriageDriveCmd = vbusCmd * 0.5;
+		if(!isCubeInCarriage()) {
+			// scale cmd
+			_carriageDriveCmd = vbusCmd * 0.5;
+		} else {
+			_carriageDriveCmd = 0;
+		}
 	}
 	
 	public void runCarriageMotors() {
-		_carriageDriveCmd = CARRIAGE_WHEELS_INFEED_COMMAND;
+		if(!isCubeInCarriage()) {
+			_carriageDriveCmd = CARRIAGE_WHEELS_INFEED_COMMAND;
+		} else {
+			_carriageDriveCmd = 0;
+		}
+		
 	}
 	
 	public void ejectCube() {
@@ -176,6 +188,10 @@ public class Carriage implements Subsystem {
 		if(_servoTargetPosition != 0) {
 			_servoTargetPosition = _servoTargetPosition - 0.05;
 		}
+	}
+	
+	public boolean isCubeInCarriage() {
+		return _carriageLimitSwitch.get();
 	}
 	
 	@Override

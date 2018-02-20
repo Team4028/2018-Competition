@@ -54,11 +54,16 @@ public class Dashboard {
 		SmartDashboard.putData("Auton Mode Chooser", _autonModeChooser);
 	}
 	
-	public void getGameData() {
+	public boolean isGameDataReceived() {
 		String gameData = DriverStation.getInstance().getGameSpecificMessage();
 		
-		_isSwitchLeft = (gameData.charAt(0) == 'L');
-		_isScaleLeft = (gameData.charAt(1) == 'L');
+		if (gameData.length() > 0) {
+			_isSwitchLeft = (gameData.charAt(0) == 'L');
+			_isScaleLeft = (gameData.charAt(1) == 'L');
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	/** This prints once during robotInit */
@@ -90,18 +95,14 @@ public class Dashboard {
 					return new RightDoubleScale();
 				}
 			case SCALE_THEN_SWITCH:
-				if(_isScaleLeft==_isSwitchLeft)
-				{
+				if(_isScaleLeft == _isSwitchLeft) {
 					return new ScaleThenSwitchSameSide(_isScaleLeft);
 				}
-				else
-				{
+				else {
 					return new ScaleThenSwitchOppositeSide(_isScaleLeft);
 				}
-			
 			case TRIPLE_SCALE:
 				return new TripleScale();
-				
 			default:
 				return new DoNothing();
 		}

@@ -37,7 +37,9 @@ public class Elevator implements Subsystem {
 		TIMEOUT,
 		GOTO_TARGET_POSTION,
 		HOLD_TARGET_POSTION,
+		MOVE_BELOW_SOFT_LIMIT,
 		JOG_AXIS,
+		DO_NOTHING
 	}
 	
 	public enum ELEVATOR_PRESET_POSITION {
@@ -77,22 +79,22 @@ public class Elevator implements Subsystem {
 	private static final double ELEVATOR_MOVE_TO_HOME_VELOCITY_CMD = -0.20;   
 	private static final long ELEVATOR_MAXIMUM_MOVE_TO_HOME_TIME_IN_MSEC = 5000;	// 5 sec
 	
-	private static final double ELEVATOR_POS_ALLOWABLE_ERROR_IN_INCHES = 1.5;	// +/- 0.25
+	private static final double ELEVATOR_POS_ALLOWABLE_ERROR_IN_INCHES = 0.5;	// +/- 0.25
 	private static final int ELEVATOR_POS_ALLOWABLE_ERROR_IN_NU = InchesToNativeUnits(ELEVATOR_POS_ALLOWABLE_ERROR_IN_INCHES);
 	
 	//Conversion Constant
 	public static final double NATIVE_UNITS_PER_INCH_CONVERSION = (29638 / 41);
 	
 	// hardcoded preset positions (in native units, 0 = home position)
-	private static final int SCALE_HEIGHT_POSITION = InchesToNativeUnits(36);
+	private static final int SCALE_HEIGHT_POSITION = InchesToNativeUnits(40);
 	private static final int SWITCH_HEIGHT_POSITION = InchesToNativeUnits(16);
 	private static final int CUBE_ON_PYRAMID_LEVEL_1_POSITION = InchesToNativeUnits(12);
-	private static final int CUBE_ON_FLOOR_POSITION = InchesToNativeUnits(.75);
+	private static final int CUBE_ON_FLOOR_POSITION = InchesToNativeUnits(0);
 	private static final int HOME_POSITION = 0;
 
 //	private static final int ELEVATOR_MAX_TRAVEL = InchesToNativeUnits(41);
-	private static final int UP_SOFT_LIMIT = InchesToNativeUnits(40.0);
-	private static final int DOWN_SOFT_LIMIT = InchesToNativeUnits(0.5);
+	private static final int UP_SOFT_LIMIT = InchesToNativeUnits(45.0);
+	private static final int DOWN_SOFT_LIMIT = InchesToNativeUnits(2);
 	
 	/*
 	 * Moveable Slide Top to Bottom = 48.5 in
@@ -113,8 +115,8 @@ public class Elevator implements Subsystem {
 	private static final int MOVING_DOWN_PID_SLOT_INDEX = 0;
 	
 	// define PID Constants
-	public static final int UP_CRUISE_VELOCITY = 4061; // native units per 100 mSec 50% of max
-	public static final int UP_ACCELERATION = 6061; 	// native units per 100 mSec per sec
+	public static final int UP_CRUISE_VELOCITY = 2061; // native units per 100 mSec 50% of max
+	public static final int UP_ACCELERATION = 3061; 	// native units per 100 mSec per sec
 	
 	public static final int DOWN_CRUISE_VELOCITY = 2000; // native units per 100 mSec 50% of max
 	public static final int DOWN_ACCELERATION = 1500; 	// native units per 100 mSec per sec
@@ -131,7 +133,7 @@ public class Elevator implements Subsystem {
 	public static final int INTEGRAL_ZONE_UP = 0; //0.0; 
 	public static final double DERIVATIVE_GAIN_UP = 75; //4.0; //0.7;
 	
-	public static final double FEED_FORWARD_GAIN_DOWN = 0.2 ;// 1.0; //3.4074425;
+	public static final double FEED_FORWARD_GAIN_DOWN = 0.2;// 1.0; //3.4074425;
 	public static final double PROPORTIONAL_GAIN_DOWN = 0.9; //.14; //2.0;
 	public static final double INTEGRAL_GAIN_DOWN = 0; //0.03; //0.0; 
 	public static final int INTEGRAL_ZONE_DOWN = 0; //200; //0.0; 
@@ -275,33 +277,28 @@ public class Elevator implements Subsystem {
 											
 					case GOTO_TARGET_POSTION:
 						deltatime = (new Date().getTime()) - _lastScanTimeStamp;
-						
-						if(IsAtTargetPosition())
-						{
+					
+						if(IsAtTargetPosition()) {
 							// change state
 	    					_elevatorState = ELEVATOR_STATE.HOLD_TARGET_POSTION;
 	    					_currentTestEndingTime = new Date().getTime();
 	    					ReportStateChg("ElevatorAxis (State) [GOTO_TARGET_POSTION] ==> [HOLD_TARGET_POSTION]");
-						}
-						else
-						{
+						} else {
 							_actualPositionNU = _elevatorMasterMotor.getSelectedSensorPosition(0);
 							_actualVelocityNU_100mS  = _elevatorMasterMotor.getSelectedSensorVelocity(0);
 							_actualAccelerationNU_100mS_mS = (_actualVelocityNU_100mS - _lastScanActualVelocityNU_100mS) / deltatime;
 		
 							// set appropriate gain slot to use
-							if(_targetElevatorPosition < _actualPositionNU) {
-									SetPidSlotToUse("GotoDown", MOVING_DOWN_PID_SLOT_INDEX);
-							}
-							else {
+							if(_targetElevatorPosition > _actualPositionNU) {
 								SetPidSlotToUse("GotoUp", MOVING_UP_PID_SLOT_INDEX);
 							}
-							
+							else {
+								SetPidSlotToUse("GotoDown", MOVING_DOWN_PID_SLOT_INDEX);
+							}					
 							_elevatorMasterMotor.set(ControlMode.MotionMagic, _targetElevatorPosition, 0);
 						}
-						
 						_lastScanTimeStamp = new Date().getTime();
-						_lastScanActualVelocityNU_100mS = _actualVelocityNU_100mS;
+						_lastScanActualVelocityNU_100mS = _actualVelocityNU_100mS;					
 						
 						break;
 						
@@ -311,6 +308,10 @@ public class Elevator implements Subsystem {
 							// change state
 	    					_elevatorState = ELEVATOR_STATE.GOTO_TARGET_POSTION;
 	    					ReportStateChg("ElevatorAxis (State) [HOLD_TARGET_POSTION] ==> [GOTO_TARGET_POSTION]");
+						}
+						else if (IsAtTargetPosition() && _targetElevatorPosition == DOWN_SOFT_LIMIT) {
+							_elevatorState = ELEVATOR_STATE.MOVE_BELOW_SOFT_LIMIT;
+							ReportStateChg("ElevatorAxis (State) [GOTO_TARGET_POSTION] ==> [MOVE_BELOW_SOFT_LIMIT]");
 						}
 						else
 						{
@@ -322,7 +323,12 @@ public class Elevator implements Subsystem {
 						}
 						
 						break;
-							
+						
+					case MOVE_BELOW_SOFT_LIMIT:
+						_elevatorMasterMotor.configReverseSoftLimitEnable(false, 20);
+						_elevatorMasterMotor.set(ControlMode.PercentOutput, -0.1);
+						break;
+					
 					case JOG_AXIS:
 						deltatime = (new Date().getTime()) - _lastScanTimeStamp;
 						
@@ -341,6 +347,10 @@ public class Elevator implements Subsystem {
 						else if (_isSoftLimitsEnabled && (_actualPositionNU <= DOWN_SOFT_LIMIT)) {
 							ReportStateChg("Elevator At Down Soft Limit!");
 						}
+						break;
+						
+					case DO_NOTHING:
+						_elevatorMasterMotor.set(ControlMode.PercentOutput, 0);
 						break;
 						
 					case TIMEOUT:
@@ -368,6 +378,7 @@ public class Elevator implements Subsystem {
 	
 	// Support Operators Gamepad Buttons mapped to discrete positions
 	public void MoveToPresetPosition(ELEVATOR_PRESET_POSITION presetPosition) {
+		_elevatorMasterMotor.configReverseSoftLimitEnable(true, 20);
 		switch(presetPosition) {
 			case HOME:
 				_targetElevatorPosition = HOME_POSITION;
@@ -376,8 +387,10 @@ public class Elevator implements Subsystem {
 				break;
 				
 			case CUBE_ON_FLOOR:
-				_targetElevatorPosition = CUBE_ON_FLOOR_POSITION;
-				_elevatorState = ELEVATOR_STATE.GOTO_TARGET_POSTION;
+				_targetElevatorPosition = DOWN_SOFT_LIMIT;
+				if(_elevatorState != ELEVATOR_STATE.MOVE_BELOW_SOFT_LIMIT) {
+					_elevatorState = ELEVATOR_STATE.GOTO_TARGET_POSTION;
+				}				
 				ReportStateChg("ElevatorAxis (State) [" + _elevatorState.toString() + "] ==> [GOTO_AND_HOLD_TARGET_POSTION:CUBE_ON_FLOOR]");
 				break;
 				
@@ -505,8 +518,8 @@ public class Elevator implements Subsystem {
         		|| _elevatorState == ELEVATOR_STATE.HOLD_TARGET_POSTION) {
         	int currentError = Math.abs(_elevatorMasterMotor.getSelectedSensorPosition(0) - _targetElevatorPosition);
         	SmartDashboard.putNumber("Elevator Error", currentError);
-            if ( currentError <= ELEVATOR_POS_ALLOWABLE_ERROR_IN_NU) {
-            	return true;
+            if (currentError <= ELEVATOR_POS_ALLOWABLE_ERROR_IN_NU) {
+               	return true;
             } else {
             	return false;
             }
@@ -560,15 +573,15 @@ public class Elevator implements Subsystem {
 	//Methods for Exposing Properties of Elevator
 	//=====================================================================================
 	public boolean isElevatorAtFloorPosition() {
-		if(IsAtTargetPosition() && _targetElevatorPosition == CUBE_ON_FLOOR_POSITION) {
+		if(_elevatorState == ELEVATOR_STATE.MOVE_BELOW_SOFT_LIMIT) {
 			return true;
 		} else {
 			return false;
 		}
 	}
 	
-	public void resetElevatorPosition() {
-		_targetElevatorPosition = HOME_POSITION;
+	public void doNothing() {
+		_elevatorState = ELEVATOR_STATE.DO_NOTHING;
 	}
 	
 	private static int InchesToNativeUnits(double positionInInches) {

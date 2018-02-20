@@ -20,12 +20,15 @@ public class DoubleSwitch extends AutonBase {
 			fromSwitchToFrontOfPyramidPath = Paths.getPath(PATHS.L_SWITCH_TO_FRONT_OF_PYRAMID, 100.0, 120.0, 0.002);
 			sTurnAwayFromPyramid = Paths.getPath(PATHS.S_TURN_FROM_PYRAMID_TO_LEFT, 100.0, 120.0);
 			toSwitchAfterSTurn = Paths.getPath(PATHS.TO_L_SWITCH_AFTER_S_TURN, 100.0, 120.0, 0.009);
-			elevatorWaitTime1=1.75;
+			elevatorWaitTime1 = 1.75;
+			elevatorWaitTime2 = 1.75;
 		} else {
 			toSwitch = Paths.getPath(PATHS.R_SWITCH, 100.0, 120.0, 0.0065);
 			fromSwitchToFrontOfPyramidPath = Paths.getPath(PATHS.R_SWITCH_TO_FRONT_OF_PYRAMID, 100.0, 120.0, 0.008);
 			sTurnAwayFromPyramid = Paths.getPath(PATHS.S_TURN_FROM_PYRAMID_TO_RIGHT, 100.0, 120.0);
 			toSwitchAfterSTurn = Paths.getPath(PATHS.TO_R_SWITCH_AFTER_S_TURN, 100.0, 120.0,0.009);
+			elevatorWaitTime1 = 1.75;
+			elevatorWaitTime2 = 1.75;
 		}
 		toThePyramid = Paths.getPath(PATHS.TO_PYRAMID, 100.0, 120.0);
 	}
@@ -34,35 +37,35 @@ public class DoubleSwitch extends AutonBase {
 	public void routine() {
 		runAction(new ParallelAction(Arrays.asList(new Action[] {
 					new RunMotionProfileAction(toSwitch),
-					new SetInfeedPosAction(Infeed.INFEED_TARGET_POSITION.STORE),
+					//new SetInfeedPosAction(Infeed.INFEED_TARGET_POSITION.STORE),
 					new SeriesAction(Arrays.asList(new Action[] {
 							new WaitAction(elevatorWaitTime1),
-							new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SWITCH_HEIGHT)
+							//new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SWITCH_HEIGHT)
 					}))
 			}
 		)));
 		runAction(new ParallelAction(Arrays.asList(new Action[] {
 				new WaitAction(0.5),
-				new RunCarriageWheelsAction(false)
+				//new RunCarriageWheelsAction(false)
 		})));
 		runAction(new ParallelAction(Arrays.asList(new Action[] {
 					new RunMotionProfileAction(fromSwitchToFrontOfPyramidPath),
-					new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.CUBE_ON_FLOOR),
+					//new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.CUBE_ON_FLOOR),
 					new SeriesAction(Arrays.asList(new Action[] {
 							new WaitAction(1.4),
-							new SetInfeedPosAction(Infeed.INFEED_TARGET_POSITION.WIDE)
+							//new SetInfeedPosAction(Infeed.INFEED_TARGET_POSITION.WIDE)
 					}))
 		})));
 		runAction(new ParallelAction(Arrays.asList(new Action[] {
 					new RunMotionProfileAction(toThePyramid),
-					new RunCarriageWheelsAction(true),
-					new DriveInfeedWheelsAction(),
+					//new RunCarriageWheelsAction(true),
+					//new DriveInfeedWheelsAction(),
 					new SeriesAction(Arrays.asList(new Action[] {
 							new ParallelAction(Arrays.asList(new Action[] {
 									new WaitAction(0.5),
-									new SetInfeedPosAction(Infeed.INFEED_TARGET_POSITION.WIDE),
+						//			new SetInfeedPosAction(Infeed.INFEED_TARGET_POSITION.WIDE),
 							})),
-							new SetInfeedPosAction(Infeed.INFEED_TARGET_POSITION.SQUEEZE)
+							//new SetInfeedPosAction(Infeed.INFEED_TARGET_POSITION.SQUEEZE)
 					}))
 			}
 		)));
@@ -71,26 +74,30 @@ public class DoubleSwitch extends AutonBase {
 							new WaitAction(0.2),
 							new RunMotionProfileAction(sTurnAwayFromPyramid)
 					})),
-					new SetInfeedPosAction(Infeed.INFEED_TARGET_POSITION.SQUEEZE),
-					new DriveInfeedWheelsAction(),
-					new RunCarriageWheelsAction(true)
+					//new SetInfeedPosAction(Infeed.INFEED_TARGET_POSITION.SQUEEZE),
+			//		new DriveInfeedWheelsAction(),
+				//	new RunCarriageWheelsAction(true)
 			}
 		)));
 		runAction(new ParallelAction(Arrays.asList(new Action[] {
 					new SeriesAction(Arrays.asList(new Action[] {
 							new RunMotionProfileAction(toSwitchAfterSTurn),
 							new ParallelAction(Arrays.asList(new Action[] {
-								new RunCarriageWheelsAction(false),
+					//			new RunCarriageWheelsAction(false),
 								new WaitAction(0.5)
 							}))
 					})),
-					new SetInfeedPosAction(Infeed.INFEED_TARGET_POSITION.STORE),
+				//	new SetInfeedPosAction(Infeed.INFEED_TARGET_POSITION.STORE),
 					new SeriesAction(Arrays.asList(new Action[] {
 							new WaitAction(elevatorWaitTime2),
-							new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SWITCH_HEIGHT),
+					//		new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SWITCH_HEIGHT),
 					}))
 			}
 		))); 
+		runAction(new ParallelAction(Arrays.asList(new Action[] {
+					new DriveSetDistanceAction(-30.0),
+					//new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SWITCH_HEIGHT)
+		})));
 		runAction(new PrintTimeFromStart(_startTime));  
 	}
 }

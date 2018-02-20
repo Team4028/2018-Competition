@@ -211,7 +211,7 @@ public class Paths {
 	protected static ArrayList<Waypoint> getAutoRunWaypoints() {
         ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
 		sWaypoints.add(new Waypoint(20,46,0,0));
-		sWaypoints.add(new Waypoint(140,46,0,Constants.KEEEEEEEEEEEEEEEEEEENS_SPEED));
+		sWaypoints.add(new Waypoint(140,46,0,120));
         return sWaypoints;
 	}
 	
@@ -311,8 +311,8 @@ public class Paths {
 	protected static ArrayList<Waypoint> getLeftScaleToLeftSwitchExperimentalWaypoints() {
 		ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
 		sWaypoints.add(new Waypoint(281,74,0,0));
-        sWaypoints.add(new Waypoint(258,96,15,60));
-        sWaypoints.add(new Waypoint(241,96,0,60));
+        sWaypoints.add(new Waypoint(258,94,15,60));
+        sWaypoints.add(new Waypoint(238,94,0,60));
         return sWaypoints;
 	}
 	

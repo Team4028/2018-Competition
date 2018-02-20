@@ -454,9 +454,36 @@ public class DriverOperatorStation {
 			return _operatorGamepad.getTriggerAxis(Hand.kRight);
 		}
 		
+		public boolean getIsOperator_SqueezeInfeed_BtnPressed() {
+			if(_operatorGamepad.getPOV(0) == 0) {
+				return true;
+			} else {
+				return false;
+			}
+		}
 		
-		public double getOperator_DPad_AxisCmd() {
-			return _operatorGamepad.getPOV(0);
+		public boolean getIsOperator_StaggerInfeed_BtnPressed() {
+			if(_operatorGamepad.getPOV(0) == 90) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+		
+		public boolean getIsOperator_StoreInfeed_BtnPressed() {
+			if(_operatorGamepad.getPOV(0) == 180) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+		
+		public boolean getIsOperator_WideInfeed_BtnPressed() {
+			if(_operatorGamepad.getPOV(0) == 270) {
+				return true;
+			} else {
+				return false;
+			}
 		}
 		
 		// =========================================================================================================

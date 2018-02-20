@@ -1,5 +1,7 @@
 package org.usfirst.frc.team4028.robot.subsystems;
 
+import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_PRESET_POSITION;
+
 public class CubeHandler {
 	private Infeed _infeed = Infeed.getInstance();
 	private Elevator _elevator = Elevator.getInstance();
@@ -37,8 +39,23 @@ public class CubeHandler {
 		_carriage.ejectCubeVBus(joystickCommand);
 	}
 	
-	public void moveElevatorDown() {
-		_infeed.moveArmsToWideInfeedPosition();
+	public void moveElevatorToFloorInfeed() {
+		if(_infeed.moveArmsToSafePosition()) {
+			_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.CUBE_ON_FLOOR);	
+		}
+	}
+	
+	public boolean isSafeToMoveElevatorUp() {
+		if(_infeed.moveArmsToSafePosition()) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	public void doNothing() {
+		_infeed.doNothing();
+		_elevator.doNothing();
 	}
 	
 	public void stop() {

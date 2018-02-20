@@ -13,8 +13,6 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.VictorSP;
-
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Infeed {	
@@ -28,6 +26,7 @@ public class Infeed {
 		AUTO_ACQUIRE_MANUVER,
 		STAGGER_INFEED_MANUVER,
 		JOYSTICK_POSITION_CONTROL,
+		DO_NOTHING,
 		TIMEOUT,
 	} 
 	
@@ -119,6 +118,9 @@ public class Infeed {
 	// Infeed Drive Wheel Constant
 	public static final double INFEED_DRIVE_WHEELS_VBUS_COMMAND = 1.0;
 	public static final double INFEED_SPIN_CUBE_WHEELS_VBUS_COMMAND = 0.2;
+	
+	//INfeed Homing Speed
+	public static final double INFEED_HOMING_VBUS_COMMAND = 0.2;
 	
 	//Conversion Constant
 	public static final double DEGREES_TO_NATIVE_UNITS_CONVERSION = (4096/360);
@@ -215,7 +217,7 @@ public class Infeed {
 		//=====================================================================================
 		//Left Arm Drive Motor
 		_leftInfeedDriveMotor = new TalonSRX(Constants.LEFT_INFEED_DRIVE_CAN_ADDRESS);
-		_leftInfeedDriveMotor.setInverted(false);
+		_leftInfeedDriveMotor.setInverted(true);
 			
 		//=====================================================================================
 		//Right Arm Drive Motor
@@ -259,17 +261,12 @@ public class Infeed {
 		public void onLoop(double timestamp) {
 			synchronized (Infeed.this) {	
 				switch(_infeedState) {
-					case NEED_TO_HOME:
-						_infeedState = INFEED_STATE.MOVING_TO_HOME;
-						
+					case NEED_TO_HOME:						
 						_areArmsHomed = false;
 						_isLeftArmHomed = false;
 						_isRightArmHomed = false;
 						
-						_leftSwitchbladeMotor.configForwardSoftLimitEnable(false, 20);
-						_rightSwitchbladeMotor.configForwardSoftLimitEnable(false, 20);
-
-						
+						_infeedState = INFEED_STATE.MOVING_TO_HOME;						
 						DriverStation.reportWarning("InfeedAxis (State) [NEED_TO_HOME] ==> [MOVING_TO_HOME]", false);
 						break;
 						
@@ -324,6 +321,11 @@ public class Infeed {
 						break;
 						
 					case JOYSTICK_POSITION_CONTROL:
+						break;
+					
+					case DO_NOTHING:
+						_leftSwitchbladeMotor.set(ControlMode.PercentOutput, 0);
+						_rightSwitchbladeMotor.set(ControlMode.PercentOutput, 0);
 						break;
 						
 					case TIMEOUT:
@@ -383,7 +385,7 @@ public class Infeed {
 			_isLeftArmHomed = true;
 		}
 		else if (_isLeftArmHomed == false) {
-			_leftSwitchbladeMotor.set(ControlMode.PercentOutput, -.1);
+			_leftSwitchbladeMotor.set(ControlMode.PercentOutput, -1 * INFEED_HOMING_VBUS_COMMAND);
 		}
 		else {
 			_leftSwitchbladeMotor.set(ControlMode.PercentOutput, 0);
@@ -395,7 +397,7 @@ public class Infeed {
 			_isRightArmHomed = true;
 		}
 		else if (_isRightArmHomed == false) {
-			_rightSwitchbladeMotor.set(ControlMode.PercentOutput, -.1);
+			_rightSwitchbladeMotor.set(ControlMode.PercentOutput, -1 * INFEED_HOMING_VBUS_COMMAND);
 		}
 		else {
 			_rightSwitchbladeMotor.set(ControlMode.PercentOutput, 0);
@@ -497,7 +499,22 @@ public class Infeed {
 		}
 	}
 	
+	public boolean moveArmsToSafePosition() {
+		if(_leftSwitchbladeActualPosition <= WIDE_INFEED_POSITION_ANGLE 
+				&& _rightSwitchbladeActualPosition <= WIDE_INFEED_POSITION_ANGLE) {
+			return true;
+		}
+		else {
+			MoveToPresetPosition(INFEED_TARGET_POSITION.WIDE);
+			return false;
+		}
+	}
+	
 	public void reZeroArms() {
+		_infeedState = INFEED_STATE.NEED_TO_HOME;
+	}
+	
+	public void zeroArms() {
 		_infeedState = INFEED_STATE.NEED_TO_HOME;
 	}
 	
@@ -510,8 +527,8 @@ public class Infeed {
 			_leftInfeedDriveMotor.setSpeed(-1*INFEED_DRIVE_WHEELS_VBUS_COMMAND);
 			_rightInfeedDriveMotor.setSpeed(-1*-1*INFEED_DRIVE_WHEELS_VBUS_COMMAND);
 		} */
-		_leftInfeedDriveMotor.set(ControlMode.PercentOutput, -1*INFEED_DRIVE_WHEELS_VBUS_COMMAND);
-		_rightInfeedDriveMotor.set(ControlMode.PercentOutput,-1*-1*INFEED_DRIVE_WHEELS_VBUS_COMMAND);
+		_leftInfeedDriveMotor.set(ControlMode.PercentOutput, INFEED_DRIVE_WHEELS_VBUS_COMMAND);
+		_rightInfeedDriveMotor.set(ControlMode.PercentOutput, INFEED_DRIVE_WHEELS_VBUS_COMMAND);
 	}
 	
 	public void driveInfeedWheelsVBus(double joystickCommand) {
@@ -587,7 +604,9 @@ public class Infeed {
 	//=====================================================================================
 	//Methods for Exposing Properties of Infeed Motors
 	//=====================================================================================
-	
+	public void doNothing() {
+		_infeedState = INFEED_STATE.DO_NOTHING;
+	}
 	//=====================================================================================
 	//Methods for Conversions between Native Units and Degrees
 	//=====================================================================================
