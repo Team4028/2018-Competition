@@ -16,6 +16,7 @@ import org.usfirst.frc.team4028.util.LogDataBE;
 import org.usfirst.frc.team4028.util.MovingAverage;
 import org.usfirst.frc.team4028.util.loops.Looper;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -123,7 +124,20 @@ public class Robot extends IterativeRobot {
 		
 		_enabledLooper.start();
 		
-		_dashboard.getGameData();
+		int retries = 100;
+		
+		while(!_dashboard.isGameDataReceived() && retries > 0) {
+			retries--;
+			try { 
+				Thread.sleep(5);
+			} catch (InterruptedException ie) {
+				// Ignore InterruptedException
+			}
+		}
+		
+		if (retries == 0) {
+			DriverStation.reportError("Failed To Receive Game Data", false);
+		}
 		
 		_chassis.zeroGyro();
 		
@@ -338,7 +352,6 @@ public class Robot extends IterativeRobot {
 	    	BigDecimal movingAvg = _scanTimeSamples.getAverage();
 	    	DecimalFormat df = new DecimalFormat("####");
 	    	SmartDashboard.putString("Scan Time (2 sec roll avg)", df.format(movingAvg) + " mSec");
-	    	
     		// snapshot last time
     		_lastDashboardWriteTimeMSec = new Date().getTime();
     	}

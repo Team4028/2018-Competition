@@ -8,6 +8,7 @@ import org.usfirst.frc.team4028.robot.paths.Paths;
 import org.usfirst.frc.team4028.robot.paths.Paths.PATHS;
 import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_PRESET_POSITION;
 import org.usfirst.frc.team4028.robot.subsystems.Infeed;
+import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_TARGET_POSITION;
 import org.usfirst.frc.team4028.util.control.Path;
 
 public class ScaleThenSwitchSameSide extends AutonBase {
@@ -18,8 +19,8 @@ public class ScaleThenSwitchSameSide extends AutonBase {
 	public ScaleThenSwitchSameSide(boolean isLeftScale) {
 		if (isLeftScale) {
 			toScale = Paths.getPath(PATHS.L_SCALE);
-			fromScaleToSwitch = Paths.getPath(PATHS.L_SCALE_TO_L_SWITCH, 100, 120);
-			targetTurnAngle = 136.27;
+			fromScaleToSwitch = Paths.getPath(PATHS.L_SCALE_TO_L_SWITCH, 100, 120, 0.005);
+			targetTurnAngle = 139;
 			elevatorWaitTime = 3.0;
 		
 		} 
@@ -34,34 +35,44 @@ public class ScaleThenSwitchSameSide extends AutonBase {
 	
 	@Override
 	public void routine() {
+		runAction(new SetInfeedPosAction(INFEED_TARGET_POSITION.STORE));
 		runAction(new ParallelAction(Arrays.asList(new Action[] {
 				new RunMotionProfileAction(toScale),
-				new SetInfeedPosAction(Infeed.INFEED_TARGET_POSITION.STORE),
+//				new SetInfeedPosAction(Infeed.INFEED_TARGET_POSITION.STORE),
 				new SeriesAction(Arrays.asList(new Action[] {
 						new WaitAction(elevatorWaitTime),
-						new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SCALE_HEIGHT)
+	//					new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SCALE_HEIGHT)
 				}))
 	})));
 		runAction(new ParallelAction(Arrays.asList(new Action[] {
-				new RunCarriageWheelsAction(false),
+		//		new RunCarriageWheelsAction(false),
 				new WaitAction(0.5)
 		})));
-	runAction(new TurnAction(targetTurnAngle, true));
+	runAction(new ParallelAction(Arrays.asList(new Action[] {
+			new TurnAction(targetTurnAngle, true),
+			//new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.CUBE_ON_FLOOR)
+	})));
 	runAction(new ParallelAction(Arrays.asList(new Action[] {
 				new RunMotionProfileAction(fromScaleToSwitch),
 				new SeriesAction(Arrays.asList(new Action[] {
 						new WaitAction(0.65),
-						new SetInfeedPosAction(Infeed.INFEED_TARGET_POSITION.WIDE)
+		//				new SetInfeedPosAction(Infeed.INFEED_TARGET_POSITION.WIDE)
 				}))
 	})));
 	runAction(new ParallelAction(Arrays.asList(new Action[] {
 				new WaitAction(0.65),
-				new SetInfeedPosAction(Infeed.INFEED_TARGET_POSITION.SQUEEZE),
-				new DriveInfeedWheelsAction()
+		//		new SetInfeedPosAction(Infeed.INFEED_TARGET_POSITION.SQUEEZE),
+			//	new DriveInfeedWheelsAction(),
+				//new RunCarriageWheelsAction(true)
 	})));
 		runAction(new ParallelAction(Arrays.asList(new Action[] {
-				new DriveSetDistanceAction(8),
-				new SetInfeedPosAction(Infeed.INFEED_TARGET_POSITION.STORE)
+				//new DriveSetDistanceAction(8),
+				//new SetInfeedPosAction(Infeed.INFEED_TARGET_POSITION.STORE),
+				//new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SWITCH_HEIGHT)
+		})));
+		runAction(new ParallelAction(Arrays.asList(new Action[ ] {
+				new WaitAction(0.5),
+				//new RunCarriageWheelsAction(false)
 		})));
 		runAction(new PrintTimeFromStart(_startTime));
 	}

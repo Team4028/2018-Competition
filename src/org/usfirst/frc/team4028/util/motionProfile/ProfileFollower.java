@@ -144,6 +144,6 @@ public class ProfileFollower {
         final double goal_to_actual = mGoal.pos() - mLatestActualState.pos();
         final boolean passed_goal_state = Math.signum(goal_to_start) * Math.signum(goal_to_actual) < 0.0;
         return mGoal.atGoalState(mLatestActualState)
-                || (mGoal.completion_behavior() != CompletionBehavior.OVERSHOOT && passed_goal_state);
+                || (mGoal.getCompletionBehavior() != CompletionBehavior.OVERSHOOT && passed_goal_state);
     }
 }

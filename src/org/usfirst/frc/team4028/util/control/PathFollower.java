@@ -28,7 +28,7 @@ public class PathFollower {
         mVelocityController = new ProfileFollower();
         this.maxAccel = maxAccel;
         this.maxDecel = maxDecel;
-        this.inertiaSteeringGain=inertiaSteeringGain;
+        this.inertiaSteeringGain = inertiaSteeringGain;
         mVelocityController.setConstraints(
                 new MotionProfileConstraints(Constants.PATH_FOLLOWING_MAX_VEL, maxAccel, maxDecel));
     }

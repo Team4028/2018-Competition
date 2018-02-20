@@ -52,17 +52,17 @@ public class RigidTransform implements Interpolable<RigidTransform>{
     /** Logical inverse of the above. */
     public static Twist log(RigidTransform transform) {
         final double dtheta = transform.getRotation().getRadians();
-        final double half_dtheta = 0.5 * dtheta;
-        final double cos_minus_one = transform.getRotation().cos() - 1.0;
-        double halftheta_by_tan_of_halfdtheta;
-        if (Math.abs(cos_minus_one) < Constants.EPSILON_NEGATIVE_9) {
-            halftheta_by_tan_of_halfdtheta = 1.0 - 1.0 / 12.0 * dtheta * dtheta;
+        final double halfDtheta = 0.5 * dtheta;
+        final double cosMinusOne = transform.getRotation().cos() - 1.0;
+        double halfthetaByTanOfHalfdtheta;
+        if (Math.abs(cosMinusOne) < Constants.EPSILON_NEGATIVE_9) {
+            halfthetaByTanOfHalfdtheta = 1.0 - 1.0 / 12.0 * dtheta * dtheta;
         } else {
-            halftheta_by_tan_of_halfdtheta = -(half_dtheta * transform.getRotation().sin()) / cos_minus_one;
+            halfthetaByTanOfHalfdtheta = -(halfDtheta * transform.getRotation().sin()) / cosMinusOne;
         }
-        final Translation translation_part = transform.getTranslation()
-                .rotateBy(new Rotation(halftheta_by_tan_of_halfdtheta, -half_dtheta, false));
-        return new Twist(translation_part.x(), translation_part.y(), dtheta);
+        final Translation translationPart = transform.getTranslation()
+                .rotateBy(new Rotation(halfthetaByTanOfHalfdtheta, -halfDtheta, false));
+        return new Twist(translationPart.x(), translationPart.y(), dtheta);
     }
 
     public Translation getTranslation() {
