@@ -108,7 +108,6 @@ public class Robot extends IterativeRobot {
 	// ================================================================
 	@Override
 	public void disabledPeriodic() {
-		_cubeHandler.doNothing(); // Prevent movement when robot is disabled then re-enabled
 		stopAll();
 	}
 	
@@ -178,25 +177,21 @@ public class Robot extends IterativeRobot {
 	// called once, each time the robot enters teleop mode.
 	// ================================================================
 	@Override
-	public void teleopInit() {
+	public void teleopInit() {		
 		if (_autonExecuter != null) {
 			_autonExecuter.stop();
 		}
 		_autonExecuter = null;
-		
-		_enabledLooper.start();
 		
 		stopAll();
 		
 		_chassis.zeroSensors();
 		_chassis.setHighGear(false);
 		_chassis.setBrakeMode(false);  
-		
-		_infeed.zeroArms();
 				
 		_cubeHandler.doNothing();
-		System.out.print("Made It");
 		
+		_enabledLooper.start();
 		// init data logging
 		_dataLogger = GeneralUtilities.setupLogging("auton");
 		// snapshot time to control spamming
@@ -209,23 +204,12 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopPeriodic() {		
 		_ultrasonic.refreshUltrasonicValues();
-		_elevator.IsAtTargetPosition();
 		
 		// =============  CHASSIS ============= 
 		
-		if ((Math.abs(_dos.getThrottleCmd()) > 0.05) || (Math.abs(_dos.getTurnCmd()) > 0.05)) {
-			_chassis.arcadeDrive(-1.0 * _dos.getThrottleCmd(), _dos.getTurnCmd());
-		}
-		else if(_dos.getIsTurnto0ButtonPressed())
-		{
-			_chassis.setTargetAngle(0, true);
-		}
-		else if(_dos.getIsTurnto180ButtonPressed())
-		{
-			_chassis.setTargetAngle(180, true);
-		}
-		else 
-		{
+		if ((Math.abs(_dos.getDriver_Throttle_JoystickCmd()) != 0) || (Math.abs(_dos.getDriver_Turn_JoystickCmd()) != 0)) {
+			_chassis.arcadeDrive(-1 * _dos.getDriver_Throttle_JoystickCmd(), -1 * _dos.getDriver_Turn_JoystickCmd());
+		} else {
 			_chassis.stop();
 		}
 
@@ -234,19 +218,19 @@ public class Robot extends IterativeRobot {
 		}
 	
 		//=============  INFEED ============= 
-		if (_dos.getIsOperator_ReZeroInfeed_BtnJustPressed()) {
+		if (_dos.getIsDriver_RezeroInfeed_BtnJustPressed() || _dos.getIsEngineering_ReZeroInfeed_BtnJustPressed()) {
 			_infeed.reZeroArms();
 		}		
-		else if (_dos.getIsOperator_WideInfeed_BtnPressed()) {
+		else if (_dos.getIsDriver_WideInfeed_BtnJustPressed() || _dos.getIsEngineering_WideInfeed_BtnPressed()) {
 			_infeed.moveArmsToWideInfeedPosition();
 		}
-		else if (_dos.getIsOperator_SqueezeInfeed_BtnPressed()) {
+		else if (_dos.getIsDriver_SqueezeInfeed_BtnJustPressed() || _dos.getIsEngineering_SqueezeInfeed_BtnPressed()) {
 			_infeed.moveArmsToSqueezeInfeedPosition();
 		}
-		else if (_dos.getIsOperator_StoreInfeed_BtnPressed()) {
+		else if (_dos.getIsDriver_StoreInfeed_BtnJustPressed() || _dos.getIsEngineering_StoreInfeed_BtnPressed()) {
 			_infeed.storeArms();
 		}
-		else if (_dos.getIsOperator_StaggerInfeed_BtnPressed()) {
+		else if (_dos.getIsEngineering_StaggerInfeed_BtnPressed()) {
 			_infeed.staggerInfeedManuver();
 		}
 //		else if (_dos.getOperator_InfeedPositionX_JoystickCmd() > 0.5 
@@ -260,38 +244,49 @@ public class Robot extends IterativeRobot {
 
 		// =============  ELEVATOR ============= 
 		
-		if (Math.abs(_dos.getOperator_Elevator_JoystickCmd()) > 0.05) {
+		if (_dos.getOperator_Elevator_JoystickCmd() != 0) {
 			_elevator.JogAxis(_dos.getOperator_Elevator_JoystickCmd());
 		}
-		else if (_dos.getIsOperator_ElevatorCubeOnFloorHgt_BtnJustPressed()) {
-			_cubeHandler.moveElevatorToFloorInfeed();
+		else if (_dos.getEngineering_Elevator_JoystickCmd() != 0) {
+			_elevator.JogAxis(_dos.getEngineering_Elevator_JoystickCmd());
 		}
-		else if (_cubeHandler.isSafeToMoveElevatorUp()) {
-			if (_dos.getIsOperator_ElevatorScaleHgt_BtnJustPressed()) {
-				_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.SCALE_HEIGHT);
-			} 
-			else if (_dos.getIsOperator_ElevatorSwitchHgt_BtnJustPressed()) {
-				_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.SWITCH_HEIGHT);
-			}
-			else if (_dos.getIsOperator_ElevatorPyrmdLvl1Hgt_BtnJustPressed()) {
-				_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.CUBE_ON_PYRAMID_LEVEL_1);
-			}
+		else if (_dos.getIsOperator_ElevatorCubeOnFloorHgt_BtnJustPressed() || _dos.getIsEngineering_ElevatorCubeOnFloorHgt_BtnJustPressed()) {
+			_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.CUBE_ON_FLOOR);
+		}	
+		else if (_dos.getIsOperator_ElevatorScaleHgt_BtnJustPressed() || _dos.getIsEngineering_ElevatorScaleHgt_BtnJustPressed()) {
+			_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.SCALE_HEIGHT);
+		} 
+		else if (_dos.getIsOperator_ElevatorSwitchHgt_BtnJustPressed() || _dos.getIsEngineering_ElevatorSwitchHgt_BtnJustPressed()) {
+			_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.SWITCH_HEIGHT);
 		}
-		
+		else if (_dos.getIsOperator_ElevatorPyrmdLvl1Hgt_BtnJustPressed() || _dos.getIsEngineering_ElevatorPyramidHgt_BtnJustPressed()) {
+			_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.CUBE_ON_PYRAMID_LEVEL_1);
+		}		
 		else if (_dos.getIsOperator_ElevatorHome_BtnJustPressed()) {
 			_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.HOME);
-		} else {
+		} 
+//		else if(_cubeHandler.isStateMachineCurrentlyRunning()) {
+//			System.out.println("State Machine Check");
+//			_cubeHandler.manageMoveElevatorToPresetPosition();
+//		}
+		else {
 			_elevator.stop();
 		} 
 		
 		// ============= CARRIAGE =============
-		if (Math.abs(_dos.getOperator_InfeedCube_JoystickCmd()) > 0.05) {
-			_cubeHandler.runInfeedCubePlusCarriage(_dos.getOperator_InfeedCube_JoystickCmd());
+		if (Math.abs(_dos.getDriver_InfeedCube_JoystickCmd()) != 0) {
+			_cubeHandler.runInfeedCubePlusCarriage(_dos.getDriver_InfeedCube_JoystickCmd());
 		}
-		else if (Math.abs(_dos.getOperator_EjectCube_JoystickCmd()) > 0.05) {
-			_cubeHandler.ejectCube(_dos.getOperator_EjectCube_JoystickCmd());
+		else if (Math.abs(_dos.getEngineering_InfeedCube_JoystickCmd()) != 0) {
+			_cubeHandler.runInfeedCubePlusCarriage(_dos.getEngineering_InfeedCube_JoystickCmd());
+		}			
+		else if (Math.abs(_dos.getDriver_EjectCube_JoystickCmd()) != 0) {
+			_cubeHandler.ejectCube(_dos.getDriver_EjectCube_JoystickCmd());
 		} 
-		else if (_dos.getIsOperator_SpinCubeManuver_BtnPressed()){
+		else if (Math.abs(_dos.getEngineering_EjectCube_JoystickCmd()) != 0) {
+			_cubeHandler.ejectCube(_dos.getEngineering_EjectCube_JoystickCmd());
+		} 
+		else if (_dos.getIsDriver_SpinCubeManuver_BtnPressed() || _dos.getIsEngineering_SpinCubeManuver_BtnPressed()){
 			_cubeHandler.runInfeedSpinManuver();	
 		} else {
 			_cubeHandler.stop();			
@@ -305,7 +300,7 @@ public class Robot extends IterativeRobot {
 		//}
 				
 		// ============= Camera Switch ============= 
-		if (_dos.getIsDriver_SwitchCamera_BtnJustPressed() == true) {
+		if (_dos.getIsOperator_SwitchCamera_BtnJustPressed() == true) {
 			_switchableCameraServer.SwitchCamera();
 		}
 		
@@ -340,7 +335,7 @@ public class Robot extends IterativeRobot {
     		// to push its data out to the dashboard
 
     		_chassis.outputToShuffleboard(); 
-    		//_elevator.outputToShuffleboard();
+    		_elevator.outputToShuffleboard();
     		_infeed.outputToShuffleboard();
     		_carriage.outputToShuffleboard();
     		_ultrasonic.outputToShuffleboard();

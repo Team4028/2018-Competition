@@ -123,29 +123,29 @@ public class DriverOperatorStation {
 		// ===================================
 	
 
-		public boolean getIsDriver_SwitchCamera_BtnJustPressed() {
-			return _driverGamepad.getBackButtonPressed();
-		}
+//		public boolean getIsDriver_Back_BtnJustPressed() {
+//			return _driverGamepad.getBackButtonPressed();
+//		}
 	
 		public boolean getIsDriver_ShiftGear_BtnJustPressed() {
 			return _driverGamepad.getStartButtonPressed();
 		}
 		
-		public boolean getIsDriver_MoveCarriageWider_BtnJustPressed() {
+		public boolean getIsDriver_RezeroInfeed_BtnJustPressed() {
 			return _driverGamepad.getYButtonPressed();
 		}
 		 
-//		public boolean getIsDriver_StaggerInfeedManuver_BtnJustPressed() {
-//			return _driverGamepad.getBButtonPressed();
-//		}
+		public boolean getIsDriver_WideInfeed_BtnJustPressed() {
+			return _driverGamepad.getBButtonPressed();
+		}
 	
-		public boolean getIsDriver_MoveCarriageCloser_BtnJustPressed() {
+		public boolean getIsDriver_SqueezeInfeed_BtnJustPressed() {
 			return _driverGamepad.getAButtonPressed();
 		}	
 
-//		public boolean getIsDriver_MoveToWideInfeedPosition_BtnJustPressed() {
-//			return _driverGamepad.getXButtonPressed();
-//		}
+		public boolean getIsDriver_StoreInfeed_BtnJustPressed() {
+			return _driverGamepad.getXButtonPressed();
+		}
 		
 //		public boolean getIsDriver_LeftBumper_BtnJustPressed() {
 //			return _driverGamepad.getBumperPressed(Hand.kLeft);
@@ -235,9 +235,9 @@ public class DriverOperatorStation {
 //			return _driverGamepad.getXButton();
 //		} 
 		
-//		public boolean getIsDriver_InfeedCube_BtnPressed() {
-//			return _driverGamepad.getBumper(Hand.kLeft);
-//		}
+		public boolean getIsDriver_SpinCubeManuver_BtnPressed() {
+			return _driverGamepad.getBumper(Hand.kLeft);
+		}
 		
 //		public boolean getIsDriver_EjectCube_BtnPressed() {
 //			return _driverGamepad.getBumper(Hand.kRight);
@@ -255,9 +255,13 @@ public class DriverOperatorStation {
 		// ======== Driver Joysticks =========
 		// ===================================
 	
-		public double getThrottleCmd() {
-			// invert command since we want up to be fwd
-			return (_driverGamepad.getY(Hand.kLeft) * -1.0);
+		public double getDriver_Throttle_JoystickCmd() {
+			if(Math.abs(_driverGamepad.getY(Hand.kLeft)) >= JOYSTICK_DEADBAND){
+				// flip the sign, pushing the joystick up is a # < 0
+				return _driverGamepad.getY(Hand.kLeft) * -1.0;
+			} else {
+				return 0.0;
+			}
 		}
 		
 //		public double getDriver_LeftX_JoystickCmd() {
@@ -268,17 +272,22 @@ public class DriverOperatorStation {
 //			return _driverGamepad.getY(Hand.kRight);
 //		}
 		
-		public double getTurnCmd() {
-			return _driverGamepad.getX(Hand.kRight);
+		public double getDriver_Turn_JoystickCmd() {
+			if(Math.abs(_driverGamepad.getX(Hand.kRight)) >= JOYSTICK_DEADBAND){
+				// flip the sign, pushing the joystick up is a # < 0
+				return _driverGamepad.getX(Hand.kRight) * -1.0;
+			} else {
+				return 0.0;
+			}
 		}
 
-//		public double getDriver_InfeedCube_JoystickCmd() {
-//			return  _driverGamepad.getTriggerAxis(Hand.kLeft);
-//		}
+		public double getDriver_InfeedCube_JoystickCmd() {
+			return  _driverGamepad.getTriggerAxis(Hand.kLeft);
+		}
 		
-//		public double getDriver_EjectCube_JoystickCmd() {
-//			return _driverGamepad.getTriggerAxis(Hand.kRight);
-//		}
+		public double getDriver_EjectCube_JoystickCmd() {
+			return _driverGamepad.getTriggerAxis(Hand.kRight);
+		}
 		
 		// =========================================================================================================
 		// OPERATOR		OPERATOR	OPERATOR	OPERATOR	OPERATOR	OPERATOR	OPERATOR	OPERATOR	
@@ -291,7 +300,7 @@ public class DriverOperatorStation {
 			return _engineeringGamepad.getBackButtonPressed();
 		}
 	
-		public boolean getIsOperator_ReZeroInfeed_BtnJustPressed() {
+		public boolean getIsOperator_SwitchCamera_BtnJustPressed() {
 			return _operatorGamepad.getStartButtonPressed();
 		}
 		
@@ -398,7 +407,7 @@ public class DriverOperatorStation {
 //			return _operatorGamepad.getXButton();
 //		}
 		
-		public boolean getIsOperator_SpinCubeManuver_BtnPressed() {
+		public boolean getIsOperator_ElevatorSafety_BtnPressed() {
 			return _operatorGamepad.getBumper(Hand.kLeft);
 		}
 		
@@ -430,61 +439,27 @@ public class DriverOperatorStation {
 //		public double getOperator_LeftX_JoystickCmd() {
 //			return _operatorGamepad.getX(Hand.kLeft);
 //		}
-//		
-		public double getOperator_InfeedPositionY_JoystickCmd() {
-			return _operatorGamepad.getY(Hand.kRight);
-		}
 		
-		public double getOperator_DriveCarraige_JoystickCmd() {
-			return _operatorGamepad.getY(Hand.kRight);
+		public double getOperator_Climb_JoystickCmd() {
+			if(Math.abs(_operatorGamepad.getY(Hand.kRight)) >= JOYSTICK_DEADBAND){
+				// flip the sign, pushing the joystick up is a # < 0
+				return _operatorGamepad.getY(Hand.kRight) * -1.0;
+			} else {
+				return 0.0;
+			}
 		}
 		
 //		public double getOperator_RightX_JoystickCmd() {
 //			return _operatorGamepad.getX(Hand.kRight);
 //		}
-		public double getOperator_InfeedPositionX_JoystickCmd() {
-			return _operatorGamepad.getX(Hand.kRight);
-		}
 
-		public double getOperator_InfeedCube_JoystickCmd() {
-			return  _operatorGamepad.getTriggerAxis(Hand.kLeft);
-		}
+//		public double getOperator_LeftTrigger_JoystickCmd() {
+//			return  _operatorGamepad.getTriggerAxis(Hand.kLeft);
+//		}
 		
-		public double getOperator_EjectCube_JoystickCmd() {
-			return _operatorGamepad.getTriggerAxis(Hand.kRight);
-		}
-		
-		public boolean getIsOperator_SqueezeInfeed_BtnPressed() {
-			if(_operatorGamepad.getPOV(0) == 0) {
-				return true;
-			} else {
-				return false;
-			}
-		}
-		
-		public boolean getIsOperator_StaggerInfeed_BtnPressed() {
-			if(_operatorGamepad.getPOV(0) == 90) {
-				return true;
-			} else {
-				return false;
-			}
-		}
-		
-		public boolean getIsOperator_StoreInfeed_BtnPressed() {
-			if(_operatorGamepad.getPOV(0) == 180) {
-				return true;
-			} else {
-				return false;
-			}
-		}
-		
-		public boolean getIsOperator_WideInfeed_BtnPressed() {
-			if(_operatorGamepad.getPOV(0) == 270) {
-				return true;
-			} else {
-				return false;
-			}
-		}
+//		public double getOperator_RightTrigger_JoystickCmd() {
+//			return _operatorGamepad.getTriggerAxis(Hand.kRight);
+//		}
 		
 		// =========================================================================================================
 		// ENGINEER		ENGINEER	ENGINEER	ENGINEER	ENGINEER	ENGINEER	ENGINEER	ENGINEER	ENGINEER
@@ -494,29 +469,29 @@ public class DriverOperatorStation {
 		// == Engineering Just Pressed buttons ==
 		// ======================================
 
-//		public boolean getIsEngineering_Back_BtnJustPressed() {
-//			return _engineeringGamepad.getBackButtonPressed();
-//		}
+		public boolean getIsEngineering_ReZeroInfeed_BtnJustPressed() {
+			return false; //_engineeringGamepad.getBackButtonPressed();
+		}
 	
 //		public boolean getIsEngineering_Start_BtnJustPressed() {
 //			return _engineeringGamepad.getStartButtonPressed();
 //		}
 		
-//		public boolean getIsEngineering_YellowY_BtnJustPressed() {
-//			return _engineeringGamepad.getYButtonPressed();
-//		}
+		public boolean getIsEngineering_ElevatorScaleHgt_BtnJustPressed() {
+			return false; //_engineeringGamepad.getYButtonPressed();
+		}
 		 
-//		public boolean getIsEngineering_RedB_BtnJustPressed() {
-//			return _engineeringGamepad.getBButtonPressed();
-//		}
+		public boolean getIsEngineering_ElevatorPyramidHgt_BtnJustPressed() {
+			return false; //_engineeringGamepad.getBButtonPressed();
+		}
 		
-//		public boolean getIsEngineering_GreenA_BtnJustPressed() {
-//			return _engineeringGamepad.getAButtonPressed();
-//		}	
+		public boolean getIsEngineering_ElevatorCubeOnFloorHgt_BtnJustPressed() {
+			return false; //_engineeringGamepad.getAButtonPressed();
+		}	
 	
-//		public boolean getIsEngineering_BlueX_BtnJustPressed() {
-//			return _engineeringGamepad.getXButtonPressed();
-//		}
+		public boolean getIsEngineering_ElevatorSwitchHgt_BtnJustPressed() {
+			return false; //_engineeringGamepad.getXButtonPressed();
+		}
 		
 //		public boolean getIsEngineering_LeftBumper_BtnJustPressed() {
 //			return _engineeringGamepad.getBumperPressed(Hand.kLeft);
@@ -590,15 +565,13 @@ public class DriverOperatorStation {
 //			return _engineeringGamepad.getStartButton();
 //		}
 		
-		public boolean getIsTurnto0ButtonPressed() 
-		{
-			return _engineeringGamepad.getYButton();
-		}
+//		public boolean getIsEngineering_YellowY_BtnPressed() {
+//			return _engineeringGamepad.getYButton();
+//		}
 		
-		public boolean getIsTurnto180ButtonPressed() 
-		{
-			return _engineeringGamepad.getBButton();
-		}
+//		public boolean getIsEngineering_RedB_BtnPressed() {
+//			return _engineeringGamepad.getBButton();
+//		}
 		
 //		public boolean getIsEngineering_GreenA_BtnPressed() {
 //			return _engineeringGamepad.getAButton();
@@ -608,9 +581,9 @@ public class DriverOperatorStation {
 //			return _engineeringGamepad.getXButton();
 //		}
 		
-//		public boolean getIsEngineering_LeftBumper_BtnPressed() {
-//			return _engineeringGamepad.getBumper(Hand.kLeft);
-//		}
+		public boolean getIsEngineering_SpinCubeManuver_BtnPressed() {
+			return false; //_engineeringGamepad.getBumper(Hand.kLeft);
+		}
 		
 //		public boolean getIsEngineering_RightBumper_BtnPressed() {
 //			return _engineeringGamepad.getBumper(Hand.kRight);
@@ -628,27 +601,73 @@ public class DriverOperatorStation {
 		// ====== Engineering Joysticks ======
 		// ===================================
 	
-//		public double getEngineering_Elevator_JoystickCmd() {
-//			return _engineeringGamepad.getY(Hand.kLeft);
-//		}
-		
-//		public double getEngineering_LeftX_JoystickCmd() {
-//			return _engineeringGamepad.getX(Hand.kLeft);
-//		}
-		
-//		public double getEngineering_RightY_JoystickCmd() {
-//			return _engineeringGamepad.getY(Hand.kRight);
-//		}
-		
-//		public double getEngineering_RightX_JoystickCmd() {
-//			return _engineeringGamepad.getX(Hand.kRight);
+		public double getEngineering_Elevator_JoystickCmd() {
+/*			if(Math.abs(_engineeringGamepad.getY(Hand.kLeft)) >= JOYSTICK_DEADBAND){
+				// flip the sign, pushing the joystick up is a # < 0
+				return _engineeringGamepad.getY(Hand.kLeft) * -1.0;
+			} else {
+				return 0.0;
+			}*/
+			return 0;
+		}
+	
+//		public double getOperator_LeftX_JoystickCmd() {
+//			return _operatorGamepad.getX(Hand.kLeft);
 //		}
 
-//		public double getEngineering_LeftTrigger_JoystickCmd() {
-//			return _engineeringGamepad.getTriggerAxis(Hand.kLeft);
+//		public double getEngineering_InfeedPositionY_JoystickCmd() {
+//			return _operatorGamepad.getY(Hand.kRight);
+//		}
+				
+//		public double getOperator_RightX_JoystickCmd() {
+//			return _operatorGamepad.getX(Hand.kRight);
 //		}
 		
-//		public double getEngineering_RightTrigger_JoystickCmd() {
-//			return _engineeringGamepad.getTriggerAxis(Hand.kRight);
-//		}
+		public double getEngineering_InfeedPositionX_JoystickCmd() {
+			return 0; //_engineeringGamepad.getX(Hand.kRight);
+		}
+	
+		public double getEngineering_InfeedCube_JoystickCmd() {
+			return  0; //_engineeringGamepad.getTriggerAxis(Hand.kLeft);
+		}
+		
+		public double getEngineering_EjectCube_JoystickCmd() {
+			return 0; //_engineeringGamepad.getTriggerAxis(Hand.kRight);
+		}
+		
+		public boolean getIsEngineering_SqueezeInfeed_BtnPressed() {
+/*			if(_engineeringGamepad.getPOV(0) == 0) {
+				return true;
+			} else {
+				return false;
+			}*/
+			return false;
+		}
+		
+		public boolean getIsEngineering_StaggerInfeed_BtnPressed() {
+/*			if(_engineeringGamepad.getPOV(0) == 90) {
+				return true;
+			} else {
+				return false;
+			}*/
+			return false;
+		}
+		
+		public boolean getIsEngineering_StoreInfeed_BtnPressed() {
+/*			if(_engineeringGamepad.getPOV(0) == 180) {
+				return true;
+			} else {
+				return false;
+			}*/
+			return false;
+		}
+		
+		public boolean getIsEngineering_WideInfeed_BtnPressed() {
+/*			if(_engineeringGamepad.getPOV(0) == 270) {
+				return true;
+			} else {
+				return false;
+			}*/
+			return false;
+		}
 }
