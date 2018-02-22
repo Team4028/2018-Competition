@@ -68,8 +68,8 @@ public class Infeed {
 	private double _targetInfeedPosition;
 	
 	// use default value
-	public double _currentInFeedWheelsVBusCmd = INFEED_DRIVE_WHEELS_VBUS_COMMAND;
-	public double _currentInfeedArmTargetAngle = SQUEEZE_INFEED_POSITION_ANGLE;
+	private double _currentInFeedWheelsVBusCmd = INFEED_DRIVE_WHEELS_VBUS_COMMAND;
+	private double _currentInfeedArmTargetAngle = SQUEEZE_INFEED_POSITION_ANGLE;
 	
 	TalonSRX _leftSwitchbladeMotor; 
 	TalonSRX _rightSwitchbladeMotor;
@@ -136,16 +136,16 @@ public class Infeed {
 	private static final double INFEED_ALLOWED_ERROR_ANGLE = 5;
 	
 	// Infeed Drive Wheel Constant
-	public static final double INFEED_DRIVE_WHEELS_VBUS_COMMAND = 1.0;
-	public static final double INFEED_DRIVE_WHEELS_VBUS_COMMAND_BUMP = 0.05;
+	private static final double INFEED_DRIVE_WHEELS_VBUS_COMMAND = 1.0;
+	private static final double INFEED_DRIVE_WHEELS_VBUS_COMMAND_BUMP = 0.05;
 	
-	public static final double INFEED_SPIN_CUBE_WHEELS_VBUS_COMMAND = 0.2;
+	private static final double INFEED_SPIN_CUBE_WHEELS_VBUS_COMMAND = 0.2;
 	
 	//INfeed Homing Speed
-	public static final double INFEED_HOMING_VBUS_COMMAND = 0.2;
+	private static final double INFEED_HOMING_VBUS_COMMAND = 0.2;
 	
 	//Conversion Constant
-	public static final double DEGREES_TO_NATIVE_UNITS_CONVERSION = (4096/360);
+	private static final double DEGREES_TO_NATIVE_UNITS_CONVERSION = (4096/360);
 	
 	private static final boolean IS_VERBOSE_LOGGING_ENABLED = true;
 	

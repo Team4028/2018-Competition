@@ -226,18 +226,15 @@ public class Robot extends IterativeRobot {
 				_infeed.reZeroArms();
 			}		
 			else if (_dos.getIsDriver_WideInfeed_BtnJustPressed() 
-					|| _dos.getIsEngineering_WideInfeed_BtnPressed()
-					|| _dos.getIsEngrB_WideInfeed_BtnJustPressed()) {
+					|| _dos.getIsEngineering_WideInfeed_BtnPressed()) {
 				_infeed.moveArmsToWideInfeedPosition();
 			}
 			else if (_dos.getIsDriver_SqueezeInfeed_BtnJustPressed() 
-					|| _dos.getIsEngineering_SqueezeInfeed_BtnPressed()
-					|| _dos.getIsEngrB_SqueezeInfeed_BtnJustPressed()) {
+					|| _dos.getIsEngineering_SqueezeInfeed_BtnPressed()) {
 				_infeed.moveArmsToSqueezeInfeedPosition();
 			}
 			else if (_dos.getIsDriver_StoreInfeed_BtnJustPressed() 
-					|| _dos.getIsEngineering_StoreInfeed_BtnPressed()
-					|| _dos.getIsEngrB_StoreInfeed_BtnJustPressed()) {
+					|| _dos.getIsEngineering_StoreInfeed_BtnPressed()) {
 				_infeed.storeArms();
 			}
 			//else if (_dos.getIsEngineering_StaggerInfeed_BtnPressed()) {
@@ -295,13 +292,16 @@ public class Robot extends IterativeRobot {
 			}
 			else if (_dos.getEngrB_InfeedAndCarriage_JoystickCmd() == 1.0) {
 				_infeed.engrGamepadB_FeedOut();
+				_carriage.ejectCube();
 			}
 			else if (_dos.getEngrB_InfeedAndCarriage_JoystickCmd() == -1.0) {
 				_infeed.engrGamepadB_FeedIn();
+				_carriage.runCarriageMotors();
 			}
 			else if (_dos.getEngrB_InfeedSpin_JoystickCmd() == 0.0
 					&& _dos.getEngrB_InfeedSpin_JoystickCmd() == 0.0) {
 				_infeed.stop();
+				_carriage.stop();
 			}
 		}
 		
