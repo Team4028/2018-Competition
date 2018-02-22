@@ -255,6 +255,7 @@ public class Robot extends IterativeRobot {
 			// adjust Infeed Arm Width
 			if(_dos.getIsEngrB_SqueezeBumpWider_BtnJustPressed())
 			{
+				System.out.println("Bumper Pressed");
 				_infeed.engrGamepadB_SqueezeAngle_BumpWider();
 			}
 			else if(_dos.getIsEngrB_SqueezeBumpNarrower_BtnJustPressed())
