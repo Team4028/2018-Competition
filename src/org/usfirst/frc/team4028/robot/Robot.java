@@ -218,30 +218,93 @@ public class Robot extends IterativeRobot {
 		}
 	
 		//=============  INFEED ============= 
-		if (_dos.getIsDriver_RezeroInfeed_BtnJustPressed() || _dos.getIsEngineering_ReZeroInfeed_BtnJustPressed()) {
-			_infeed.reZeroArms();
-		}		
-		else if (_dos.getIsDriver_WideInfeed_BtnJustPressed() || _dos.getIsEngineering_WideInfeed_BtnPressed()) {
-			_infeed.moveArmsToWideInfeedPosition();
+		if(!_dos.IsEngineeringGamepadBAvailable()) {
+			
+			// ignore Driver Gamepad if Engineering B is plugged in
+			if (_dos.getIsDriver_RezeroInfeed_BtnJustPressed() 
+					|| _dos.getIsEngineering_ReZeroInfeed_BtnJustPressed()) {
+				_infeed.reZeroArms();
+			}		
+			else if (_dos.getIsDriver_WideInfeed_BtnJustPressed() 
+					|| _dos.getIsEngineering_WideInfeed_BtnPressed()
+					|| _dos.getIsEngrB_WideInfeed_BtnJustPressed()) {
+				_infeed.moveArmsToWideInfeedPosition();
+			}
+			else if (_dos.getIsDriver_SqueezeInfeed_BtnJustPressed() 
+					|| _dos.getIsEngineering_SqueezeInfeed_BtnPressed()
+					|| _dos.getIsEngrB_SqueezeInfeed_BtnJustPressed()) {
+				_infeed.moveArmsToSqueezeInfeedPosition();
+			}
+			else if (_dos.getIsDriver_StoreInfeed_BtnJustPressed() 
+					|| _dos.getIsEngineering_StoreInfeed_BtnPressed()
+					|| _dos.getIsEngrB_StoreInfeed_BtnJustPressed()) {
+				_infeed.storeArms();
+			}
+			//else if (_dos.getIsEngineering_StaggerInfeed_BtnPressed()) {
+			//	_infeed.staggerInfeedManuver();
+			//}
+	//		else if (_dos.getOperator_InfeedPositionX_JoystickCmd() > 0.5 
+	//				|| _dos.getOperator_InfeedPositionY_JoystickCmd() > 0.5) {
+	//			_infeed.infeedJoystickCommandedPosition(_dos.getOperator_InfeedPositionY_JoystickCmd(), 
+	//					_dos.getOperator_InfeedPositionX_JoystickCmd());
+	//		}
+	//		else if (_dos.getIsDriver_AutoAcquire_BtnJustPressed()) {
+	//			_infeed.autoInfeedManuver();
+	//		}
 		}
-		else if (_dos.getIsDriver_SqueezeInfeed_BtnJustPressed() || _dos.getIsEngineering_SqueezeInfeed_BtnPressed()) {
-			_infeed.moveArmsToSqueezeInfeedPosition();
+		else {
+			// ENGR GamePad B is plugged In
+			
+			// adjust Infeed Arm Width
+			if(_dos.getIsEngrB_SqueezeBumpWider_BtnJustPressed())
+			{
+				_infeed.engrGamepadB_SqueezeAngle_BumpWider();
+			}
+			else if(_dos.getIsEngrB_SqueezeBumpNarrower_BtnJustPressed())
+			{
+				_infeed.engrGamepadB_SqueezeAngle_BumpNarrower();
+			}
+			
+			// adjust Infeed Wheel speeds
+			if(_dos.getIsEngrB_InfeedVBusBumpDown_BtnJustPressed())
+			{
+				_infeed.engrGamepadB_InfeedVBUS_BumpDown();
+			}
+			else if(_dos.getIsEngrB_InfeedVBusBumpUp_BtnJustPressed())
+			{
+				_infeed.engrGamepadB_InfeedVBUS_BumpUp();
+			}
+			
+			// infeed arm positions
+			if (_dos.getIsEngrB_WideInfeed_BtnJustPressed()) {
+				_infeed.moveArmsToWideInfeedPosition();
+			}
+			else if (_dos.getIsEngrB_SqueezeInfeed_BtnJustPressed()) {
+				_infeed.moveArmsToSqueezeInfeedPosition();
+			}
+			else if (_dos.getIsEngrB_StoreInfeed_BtnJustPressed()) {
+				_infeed.storeArms();
+			}
+			
+			// infeed wheel control
+			if (_dos.getEngrB_InfeedSpin_JoystickCmd() == 1.0) {
+				_infeed.engrGamepadB_SpinLeft();
+			}
+			else if (_dos.getEngrB_InfeedSpin_JoystickCmd() == -1.0) {
+				_infeed.engrGamepadB_SpinRight();
+			}
+			else if (_dos.getEngrB_InfeedAndCarriage_JoystickCmd() == 1.0) {
+				_infeed.engrGamepadB_FeedOut();
+			}
+			else if (_dos.getEngrB_InfeedAndCarriage_JoystickCmd() == -1.0) {
+				_infeed.engrGamepadB_FeedIn();
+			}
+			else if (_dos.getEngrB_InfeedSpin_JoystickCmd() == 0.0
+					&& _dos.getEngrB_InfeedSpin_JoystickCmd() == 0.0) {
+				_infeed.stop();
+			}
 		}
-		else if (_dos.getIsDriver_StoreInfeed_BtnJustPressed() || _dos.getIsEngineering_StoreInfeed_BtnPressed()) {
-			_infeed.storeArms();
-		}
-		else if (_dos.getIsEngineering_StaggerInfeed_BtnPressed()) {
-			_infeed.staggerInfeedManuver();
-		}
-//		else if (_dos.getOperator_InfeedPositionX_JoystickCmd() > 0.5 
-//				|| _dos.getOperator_InfeedPositionY_JoystickCmd() > 0.5) {
-//			_infeed.infeedJoystickCommandedPosition(_dos.getOperator_InfeedPositionY_JoystickCmd(), 
-//					_dos.getOperator_InfeedPositionX_JoystickCmd());
-//		}
-//		else if (_dos.getIsDriver_AutoAcquire_BtnJustPressed()) {
-//			_infeed.autoInfeedManuver();
-//		}
-
+		
 		// =============  ELEVATOR ============= 
 		
 		if (_dos.getOperator_Elevator_JoystickCmd() != 0) {
