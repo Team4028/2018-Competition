@@ -5,14 +5,16 @@ import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_PRESET_POSITI
 public class CubeHandler {
 	private enum CUBE_HANDLER_STATE {
 		NEED_TO_MOVE_ARMS,
-		ARMS_ARE_SAFE,
 		ELEVATOR_MOVING_TO_POSITION,
+		ELEVATOR_IN_POSITION,
 		UNDEFINED
 	}
 	
 	private CUBE_HANDLER_STATE _cubeHandlerState;
 	
 	private ELEVATOR_PRESET_POSITION _targetElevatorPosition;
+	
+	private boolean _isCubeHandlerStateMachineRunning = false;
 	
 	private Infeed _infeed = Infeed.getInstance();
 	private Elevator _elevator = Elevator.getInstance();
@@ -43,19 +45,23 @@ public class CubeHandler {
 			case NEED_TO_MOVE_ARMS:
 				System.out.print("t");
 				if(_infeed.areArmsInSafePosition()) {
-					_cubeHandlerState = CUBE_HANDLER_STATE.ARMS_ARE_SAFE;
-					System.out.println("CUBE_HANDLER_STATE_MACHINE: NEED_TO_MOVE_ARMS ==> ARMS_ARE_SAFE");
+					_cubeHandlerState = CUBE_HANDLER_STATE.ELEVATOR_MOVING_TO_POSITION;
+					System.out.println("CUBE_HANDLER_STATE_MACHINE: NEED_TO_MOVE_ARMS ==> ELEVATOR_MOVING_TO_POSITION");
 				} else {
 					_infeed.moveArmsToSafePosition();
 				}
 				break;
-			case ARMS_ARE_SAFE:
-				System.out.println("j");
+			case ELEVATOR_MOVING_TO_POSITION:
 				_elevator.MoveToPresetPosition(_targetElevatorPosition);
+				if(_elevator.IsAtTargetPosition() || _targetElevatorPosition == ELEVATOR_PRESET_POSITION.CUBE_ON_FLOOR) {
+					_cubeHandlerState = CUBE_HANDLER_STATE.ELEVATOR_IN_POSITION;
+					System.out.println("CUBE_HANDLER_STATE_MACHINE: ELEVATOR_MOVING_TO_POSITION ==> ELEVATOR_IN_POSITION");
+				}
+				break;
+			case ELEVATOR_IN_POSITION:
+				_isCubeHandlerStateMachineRunning = false;
 				break;
 			case UNDEFINED:
-			default:
-				System.out.println("o");
 				break;
 		}
 		System.out.println("y");
@@ -64,12 +70,12 @@ public class CubeHandler {
 	public void moveElevatorToPresetPosition(ELEVATOR_PRESET_POSITION commandedPosition) {
 		_targetElevatorPosition = commandedPosition;
 		_cubeHandlerState = CUBE_HANDLER_STATE.NEED_TO_MOVE_ARMS;
-		manageMoveElevatorToPresetPosition();
-		System.out.println("CUBE_HANDLER_STATE_MACHINE: ARMS_ARE_SAFE ==> NEED_TO_MOVE_ARMS");
+		_isCubeHandlerStateMachineRunning = true;
+		System.out.println("CUBE_HANDLER_STATE_MACHINE: ????? ==> NEED_TO_MOVE_ARMS");
 	}
 	
 	public boolean isStateMachineCurrentlyRunning() {
-		if (_cubeHandlerState == CUBE_HANDLER_STATE.NEED_TO_MOVE_ARMS || !_elevator.IsAtTargetPosition()) {
+		if (_isCubeHandlerStateMachineRunning) {
 			return true;
 		} else {
 			return false;

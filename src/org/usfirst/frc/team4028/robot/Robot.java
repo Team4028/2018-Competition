@@ -251,19 +251,19 @@ public class Robot extends IterativeRobot {
 			_elevator.JogAxis(_dos.getEngineering_Elevator_JoystickCmd());
 		}
 		else if (_dos.getIsOperator_ElevatorCubeOnFloorHgt_BtnJustPressed() || _dos.getIsEngineering_ElevatorCubeOnFloorHgt_BtnJustPressed()) {
-			_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.CUBE_ON_FLOOR);
+			_cubeHandler.moveElevatorToPresetPosition(ELEVATOR_PRESET_POSITION.CUBE_ON_FLOOR);
 		}	
 		else if (_dos.getIsOperator_ElevatorScaleHgt_BtnJustPressed() || _dos.getIsEngineering_ElevatorScaleHgt_BtnJustPressed()) {
-			_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.SCALE_HEIGHT);
+			_cubeHandler.moveElevatorToPresetPosition(ELEVATOR_PRESET_POSITION.SCALE_HEIGHT);
 		} 
 		else if (_dos.getIsOperator_ElevatorSwitchHgt_BtnJustPressed() || _dos.getIsEngineering_ElevatorSwitchHgt_BtnJustPressed()) {
-			_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.SWITCH_HEIGHT);
+			_cubeHandler.moveElevatorToPresetPosition(ELEVATOR_PRESET_POSITION.SWITCH_HEIGHT);
 		}
 		else if (_dos.getIsOperator_ElevatorPyrmdLvl1Hgt_BtnJustPressed() || _dos.getIsEngineering_ElevatorPyramidHgt_BtnJustPressed()) {
-			_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.CUBE_ON_PYRAMID_LEVEL_1);
+			_cubeHandler.moveElevatorToPresetPosition(ELEVATOR_PRESET_POSITION.CUBE_ON_PYRAMID_LEVEL_1);
 		}		
 		else if (_dos.getIsOperator_ElevatorHome_BtnJustPressed()) {
-			_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.HOME);
+			_cubeHandler.moveElevatorToPresetPosition(ELEVATOR_PRESET_POSITION.HOME);
 		} 
 //		else if(_cubeHandler.isStateMachineCurrentlyRunning()) {
 //			System.out.println("State Machine Check");
