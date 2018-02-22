@@ -50,8 +50,6 @@ public class Infeed {
 	private boolean _isStaggerAtInitialPosition;
 	
 	private double _targetInfeedPosition;
-	private double _leftSwitchbladeActualPosition;
-	private double _rightSwitchbladeActualPosition;
 	
 	TalonSRX _leftSwitchbladeMotor; 
 	TalonSRX _rightSwitchbladeMotor;
@@ -102,18 +100,18 @@ public class Infeed {
     private static final int INFEED_STAGGER_MOTION_MAGIC_MAX_VEL = 7000;
     private static final int INFEED_STAGGER_MOTION_MAGIC_MAX_ACC = 6000;
     
-    private static final int INFEED_SWITCHBLADE_FORWARD_SOFT_LIMIT = 2000;
+    private static final int INFEED_SWITCHBLADE_FORWARD_SOFT_LIMIT = 3000;
 	
 	// Infeed Position Constants [THESE ARE ANGLE MEASURES IN DEGREES]
 	private static final double HOME_POSITION_ANGLE = 0; //Is Home
     private static final double INFEED_POSITION_ANGLE = 160;	
 	private static final double WIDE_INFEED_POSITION_ANGLE = 140;
-	private static final double SQUEEZE_INFEED_POSITION_ANGLE = 180;
+	private static final double SQUEEZE_INFEED_POSITION_ANGLE = 190;
 	private static final double STORE_POSITION_ANGLE = 10;
-	private static final double THIN_SIDE_POSITION_ANGLE = 200;
+	private static final double THIN_SIDE_POSITION_ANGLE = 230;
 	private static final double STAGGER_POSITION_ANGLE = 185;
 	
-	private static final double INFEED_ALLOWED_ERROR_ANGLE = 20;
+	private static final double INFEED_ALLOWED_ERROR_ANGLE = 5;
 	
 	// Infeed Drive Wheel Constant
 	public static final double INFEED_DRIVE_WHEELS_VBUS_COMMAND = 1.0;
@@ -267,7 +265,7 @@ public class Infeed {
 						_isRightArmHomed = false;
 						
 						_infeedState = INFEED_STATE.MOVING_TO_HOME;						
-						DriverStation.reportWarning("InfeedAxis (State) [NEED_TO_HOME] ==> [MOVING_TO_HOME]", false);
+						System.out.println("InfeedAxis (State) [NEED_TO_HOME] ==> [MOVING_TO_HOME]");
 						break;
 						
 					case MOVING_TO_HOME:
@@ -324,8 +322,13 @@ public class Infeed {
 						break;
 					
 					case DO_NOTHING:
-						_leftSwitchbladeMotor.set(ControlMode.PercentOutput, 0);
-						_rightSwitchbladeMotor.set(ControlMode.PercentOutput, 0);
+						if(_areArmsHomed) {
+							_leftSwitchbladeMotor.set(ControlMode.PercentOutput, 0);
+							_rightSwitchbladeMotor.set(ControlMode.PercentOutput, 0);
+						}
+						else {
+							_infeedState = INFEED_STATE.NEED_TO_HOME;
+						}
 						break;
 						
 					case TIMEOUT:
@@ -499,13 +502,15 @@ public class Infeed {
 		}
 	}
 	
-	public boolean moveArmsToSafePosition() {
-		if(_leftSwitchbladeActualPosition <= WIDE_INFEED_POSITION_ANGLE 
-				&& _rightSwitchbladeActualPosition <= WIDE_INFEED_POSITION_ANGLE) {
+	public void moveArmsToSafePosition() {
+		MoveToPresetPosition(INFEED_TARGET_POSITION.WIDE);
+	}
+	
+	public boolean areArmsInSafePosition() {
+		if (getCurrentLeftInfeedPosition() <= (degreesToNativeUnits(WIDE_INFEED_POSITION_ANGLE) + 100) 
+				&& getCurrentLeftInfeedPosition() <= (degreesToNativeUnits(WIDE_INFEED_POSITION_ANGLE) + 100)) {
 			return true;
-		}
-		else {
-			MoveToPresetPosition(INFEED_TARGET_POSITION.WIDE);
+		} else {
 			return false;
 		}
 	}
@@ -576,8 +581,10 @@ public class Infeed {
 	}
 		
 	public boolean areArmsInPosition() {
-		double currentError = Math.abs(nativeUnitsToDegrees(_leftSwitchbladeMotor.getSelectedSensorPosition(0)) - _targetInfeedPosition);
-		if(currentError < INFEED_ALLOWED_ERROR_ANGLE && _targetInfeedPosition != HOME_POSITION_ANGLE
+		double currentErrorL = Math.abs(nativeUnitsToDegrees(getCurrentLeftInfeedPosition()) - _targetInfeedPosition);
+		double currentErrorR = Math.abs(nativeUnitsToDegrees(getCurrentRightInfeedPosition()) - _targetInfeedPosition);
+		if(currentErrorL < INFEED_ALLOWED_ERROR_ANGLE && currentErrorR < INFEED_ALLOWED_ERROR_ANGLE
+				&& _targetInfeedPosition != HOME_POSITION_ANGLE
 				&& _targetInfeedPosition != STORE_POSITION_ANGLE) {
 			return true;
 		} else if(_targetInfeedPosition == SQUEEZE_INFEED_POSITION_ANGLE) { 
@@ -607,6 +614,14 @@ public class Infeed {
 	public void doNothing() {
 		_infeedState = INFEED_STATE.DO_NOTHING;
 	}
+	
+	public double getCurrentLeftInfeedPosition() {
+		return _leftSwitchbladeMotor.getSelectedSensorPosition(0);
+	}
+	
+	public double getCurrentRightInfeedPosition() {
+		return _rightSwitchbladeMotor.getSelectedSensorPosition(0);
+	}
 	//=====================================================================================
 	//Methods for Conversions between Native Units and Degrees
 	//=====================================================================================
@@ -625,14 +640,15 @@ public class Infeed {
 	//=====================================================================================	
 	public void outputToShuffleboard() {
 		SmartDashboard.putBoolean("Is the Infeed in Position?", areArmsInPosition());
+		SmartDashboard.putNumber("RP:", getCurrentRightInfeedPosition());
+		SmartDashboard.putNumber("LP:", getCurrentLeftInfeedPosition());
+		SmartDashboard.putNumber("Wide Infeed Position:", degreesToNativeUnits(WIDE_INFEED_POSITION_ANGLE));
+		SmartDashboard.putBoolean("Are Arms Safe?", areArmsInSafePosition());
 	}
 	
 	// add data elements to be logged  to the input param (which is passed by ref)
-	public void updateLogData(LogDataBE logData) {	
-		_leftSwitchbladeActualPosition = _leftSwitchbladeMotor.getSelectedSensorPosition(0);
-		_rightSwitchbladeActualPosition = _rightSwitchbladeMotor.getSelectedSensorPosition(0);
-		
-		logData.AddData("Left Infeed Position:", String.valueOf(_leftSwitchbladeActualPosition));
-		logData.AddData("Left Infeed Position:", String.valueOf(_rightSwitchbladeActualPosition));
+	public void updateLogData(LogDataBE logData) {			
+		logData.AddData("Left Infeed Position:", String.valueOf(getCurrentLeftInfeedPosition()));
+		logData.AddData("Right Infeed Position:", String.valueOf(getCurrentRightInfeedPosition()));
 	} 
 }
