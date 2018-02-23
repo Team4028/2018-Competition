@@ -1,14 +1,14 @@
 package org.usfirst.frc.team4028.robot.auton.actions;
 
 import org.usfirst.frc.team4028.robot.subsystems.Infeed;
-import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_TARGET_POSITION;
+import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_ARM_TARGET_POSITION;
 
 public class SetInfeedPosAction implements Action{
 	Infeed _infeed = Infeed.getInstance();
-	INFEED_TARGET_POSITION _infeedTargetPos;
+	INFEED_ARM_TARGET_POSITION _infeedTargetPos;
 	
 	
-	public SetInfeedPosAction(INFEED_TARGET_POSITION infeedTargetPos) {
+	public SetInfeedPosAction(INFEED_ARM_TARGET_POSITION infeedTargetPos) {
 		_infeedTargetPos = infeedTargetPos;
 	} 
 

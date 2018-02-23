@@ -1,7 +1,7 @@
 package org.usfirst.frc.team4028.robot.subsystems;
 
 import org.usfirst.frc.team4028.robot.Constants;
-import org.usfirst.frc.team4028.robot.sensors.UltrasonicSensor;
+//import org.usfirst.frc.team4028.robot.sensors.UltrasonicSensor;
 import org.usfirst.frc.team4028.util.LogDataBE;
 import org.usfirst.frc.team4028.util.loops.Loop;
 
@@ -19,39 +19,53 @@ public class Infeed {
 	//=====================================================================================
 	//Define the Class Level Variables/Enums
 	//=====================================================================================
-	private enum INFEED_STATE {
+	private enum INFEED_ARM_STATE {
+		STOPPED,
 		NEED_TO_HOME,
 		MOVING_TO_HOME,
+		AT_HOME,
 		MOVE_TO_POSITION_AND_HOLD,
-		AUTO_ACQUIRE_MANUVER,
-		STAGGER_INFEED_MANUVER,
-		JOYSTICK_POSITION_CONTROL,
-		DO_NOTHING,
 		TIMEOUT,
 	} 
-	
-	public enum INFEED_TARGET_POSITION {
+
+	public enum INFEED_ARM_TARGET_POSITION {
 		HOME,
 		INFEED,
 		WIDE,
 		SQUEEZE,
-		THIN_SIDE,
 		STORE,
 	}
 		
+	private enum INFEED_WHEELS_STATE {
+		STOPPED,
+		FEED_IN,
+		FEED_OUT,
+		SPIN_COUNTER_CLOCKWISE,
+		SPIN_CLOCKWISE,
+	}
+		
+	public enum INFEED_DRIVE_DIRECTION{
+		UNDEFINED,
+		IN,
+		OUT
+	}
+	
 	// define class level working variables
-	private INFEED_STATE _infeedState;
+	private INFEED_ARM_STATE _infeedArmState;
+	private INFEED_WHEELS_STATE _infeedWheelsState;
+	private INFEED_ARM_TARGET_POSITION _infeedArmTargetPosition;
 	
-	private UltrasonicSensor _ultrasonic;
+	//private UltrasonicSensor _ultrasonic;
 	
-	private boolean _isLeftArmHomed;
-	private boolean _isRightArmHomed;
-	private boolean _areArmsHomed;
-	private boolean _isStaggerAtInitialPosition;
+	private boolean _hasLeftArmBeenHomed;
+	private boolean _hasRightArmBeenHomed;
+	//private boolean _isStaggerAtInitialPosition;
 	
-	private double _targetInfeedPosition;
-	private double _leftSwitchbladeActualPosition;
-	private double _rightSwitchbladeActualPosition;
+	private double _targetInfeedArmPosition;
+	private double _currentInFeedArmSqueezeTargetAngle = SQUEEZE_INFEED_POSITION_ANGLE;
+	
+	// use default value
+	private double _currentInFeedWheelsVBusCmd = INFEED_DRIVE_WHEELS_VBUS_COMMAND;
 	
 	TalonSRX _leftSwitchbladeMotor; 
 	TalonSRX _rightSwitchbladeMotor;
@@ -96,34 +110,40 @@ public class Infeed {
     private static final double RIGHT_SWITCHBLADE_STAGGER_MOTION_MAGIC_I = 0;
     private static final double RIGHT_SWITCHBLADE_STAGGER_MOTION_MAGIC_D = 0;
             
-    private static final int INFEED_MOTION_MAGIC_MAX_VEL = 3000;
-    private static final int INFEED_MOTION_MAGIC_MAX_ACC = 2000;
+    private static final int INFEED_ARM_MOTION_MAGIC_MAX_VEL = 3000;
+    private static final int INFEED_ARM_MOTION_MAGIC_MAX_ACC = 2000;
     
-    private static final int INFEED_STAGGER_MOTION_MAGIC_MAX_VEL = 7000;
-    private static final int INFEED_STAGGER_MOTION_MAGIC_MAX_ACC = 6000;
+    //private static final int INFEED_STAGGER_MOTION_MAGIC_MAX_VEL = 7000;
+    //private static final int INFEED_STAGGER_MOTION_MAGIC_MAX_ACC = 6000;
     
-    private static final int INFEED_SWITCHBLADE_FORWARD_SOFT_LIMIT = 2000;
+    private static final int INFEED_ARM_FORWARD_SOFT_LIMIT = 3000;
 	
 	// Infeed Position Constants [THESE ARE ANGLE MEASURES IN DEGREES]
 	private static final double HOME_POSITION_ANGLE = 0; //Is Home
     private static final double INFEED_POSITION_ANGLE = 160;	
 	private static final double WIDE_INFEED_POSITION_ANGLE = 140;
-	private static final double SQUEEZE_INFEED_POSITION_ANGLE = 180;
+	private static final double SQUEEZE_INFEED_POSITION_ANGLE = 190;
 	private static final double STORE_POSITION_ANGLE = 10;
-	private static final double THIN_SIDE_POSITION_ANGLE = 200;
-	private static final double STAGGER_POSITION_ANGLE = 185;
+//	private static final double THIN_SIDE_POSITION_ANGLE = 230;
+//	private static final double STAGGER_POSITION_ANGLE = 185;
 	
-	private static final double INFEED_ALLOWED_ERROR_ANGLE = 20;
+	private static final double SQUEEZE_INFEED_POSITION_TARGET_ANGLE_BUMP = 1.0;
+	
+	private static final double INFEED_ALLOWED_ERROR_ANGLE = 5;
 	
 	// Infeed Drive Wheel Constant
-	public static final double INFEED_DRIVE_WHEELS_VBUS_COMMAND = 1.0;
-	public static final double INFEED_SPIN_CUBE_WHEELS_VBUS_COMMAND = 0.2;
+	private static final double INFEED_DRIVE_WHEELS_VBUS_COMMAND = 0.5;
+	private static final double INFEED_DRIVE_WHEELS_VBUS_COMMAND_BUMP = 0.05;
+	
+	private static final double INFEED_SPIN_CUBE_WHEELS_VBUS_COMMAND = 0.2;
 	
 	//INfeed Homing Speed
-	public static final double INFEED_HOMING_VBUS_COMMAND = 0.2;
+	private static final double INFEED_HOMING_VBUS_COMMAND = 0.2;
 	
 	//Conversion Constant
-	public static final double DEGREES_TO_NATIVE_UNITS_CONVERSION = (4096/360);
+	private static final double DEGREES_TO_NATIVE_UNITS_CONVERSION = (4096/360);
+	
+	private static final boolean IS_VERBOSE_LOGGING_ENABLED = true;
 	
 	//=====================================================================================
 	//Define Singleton Pattern
@@ -151,7 +171,7 @@ public class Infeed {
 		
 		_leftSwitchbladeMotor.configForwardSoftLimitEnable(false, 0);
 		_leftSwitchbladeMotor.configReverseSoftLimitEnable(false, 0);
-		_leftSwitchbladeMotor.configForwardSoftLimitThreshold(INFEED_SWITCHBLADE_FORWARD_SOFT_LIMIT, 20);
+		_leftSwitchbladeMotor.configForwardSoftLimitThreshold(INFEED_ARM_FORWARD_SOFT_LIMIT, 20);
 		
 		_leftSwitchbladeMotor.setInverted(false);
 		
@@ -172,8 +192,8 @@ public class Infeed {
 		_leftSwitchbladeMotor.config_kI(STAGGER_MANUVER_PID_SLOT_INDEX, LEFT_SWITCHBLADE_STAGGER_MOTION_MAGIC_I, 0);
 		_leftSwitchbladeMotor.config_kD(STAGGER_MANUVER_PID_SLOT_INDEX, LEFT_SWITCHBLADE_STAGGER_MOTION_MAGIC_D, 0);
 		
-		_leftSwitchbladeMotor.configMotionCruiseVelocity(INFEED_MOTION_MAGIC_MAX_VEL, 0);
-		_leftSwitchbladeMotor.configMotionAcceleration(INFEED_MOTION_MAGIC_MAX_ACC, 0);
+		_leftSwitchbladeMotor.configMotionCruiseVelocity(INFEED_ARM_MOTION_MAGIC_MAX_VEL, 0);
+		_leftSwitchbladeMotor.configMotionAcceleration(INFEED_ARM_MOTION_MAGIC_MAX_ACC, 0);
 		
 		//=====================================================================================
 		//Right Arm Rotator Motor
@@ -190,7 +210,7 @@ public class Infeed {
 		
 		_rightSwitchbladeMotor.configForwardSoftLimitEnable(false, 0);
 		_rightSwitchbladeMotor.configReverseSoftLimitEnable(false, 0);
-		_rightSwitchbladeMotor.configForwardSoftLimitThreshold(INFEED_SWITCHBLADE_FORWARD_SOFT_LIMIT, 20);
+		_rightSwitchbladeMotor.configForwardSoftLimitThreshold(INFEED_ARM_FORWARD_SOFT_LIMIT, 20);
 		
 		_rightSwitchbladeMotor.setInverted(true);
 		
@@ -211,8 +231,8 @@ public class Infeed {
 		_rightSwitchbladeMotor.config_kI(STAGGER_MANUVER_PID_SLOT_INDEX, RIGHT_SWITCHBLADE_STAGGER_MOTION_MAGIC_I, 0);
 		_rightSwitchbladeMotor.config_kD(STAGGER_MANUVER_PID_SLOT_INDEX, RIGHT_SWITCHBLADE_STAGGER_MOTION_MAGIC_D, 0);
 		
-		_rightSwitchbladeMotor.configMotionCruiseVelocity(INFEED_MOTION_MAGIC_MAX_VEL, 0);
-		_rightSwitchbladeMotor.configMotionAcceleration(INFEED_MOTION_MAGIC_MAX_ACC, 0);
+		_rightSwitchbladeMotor.configMotionCruiseVelocity(INFEED_ARM_MOTION_MAGIC_MAX_VEL, 0);
+		_rightSwitchbladeMotor.configMotionAcceleration(INFEED_ARM_MOTION_MAGIC_MAX_ACC, 0);
 		
 		//=====================================================================================
 		//Left Arm Drive Motor
@@ -226,7 +246,7 @@ public class Infeed {
 				
 		//=====================================================================================
 		//Set up Ultrasonic Sensor
-		_ultrasonic = UltrasonicSensor.getInstance();
+		//_ultrasonic = UltrasonicSensor.getInstance();
 		
 		_leftSwitchbladeMotor.configPeakOutputForward(1, 0);
 		_leftSwitchbladeMotor.configPeakOutputReverse(-1, 0);
@@ -234,12 +254,12 @@ public class Infeed {
 		_rightSwitchbladeMotor.configPeakOutputReverse(-1, 0);
 		
 		//Initially Configure Booleans
-		_isLeftArmHomed = false;
-		_isRightArmHomed = false;
-		_areArmsHomed = false;
-		_isStaggerAtInitialPosition = false;
+		_hasLeftArmBeenHomed = false;
+		_hasRightArmBeenHomed = false;
+		//_isStaggerAtInitialPosition = false;
 		
-		_infeedState = INFEED_STATE.NEED_TO_HOME;
+		_infeedArmState = INFEED_ARM_STATE.NEED_TO_HOME;
+		_infeedWheelsState = INFEED_WHEELS_STATE.STOPPED;
 	}
 	
 	//=====================================================================================
@@ -250,7 +270,6 @@ public class Infeed {
 		@Override
 		public void onStart(double timestamp) {
 			synchronized (Infeed.this) {
-				
 			}
 		}
 		
@@ -260,76 +279,139 @@ public class Infeed {
 		@Override
 		public void onLoop(double timestamp) {
 			synchronized (Infeed.this) {	
-				switch(_infeedState) {
-					case NEED_TO_HOME:						
-						_areArmsHomed = false;
-						_isLeftArmHomed = false;
-						_isRightArmHomed = false;
+				switch(_infeedArmState) {
+					case STOPPED:
+						//_leftSwitchbladeMotor.set(ControlMode.MotionMagic, 0);
+						//_leftSwitchbladeMotor.set(ControlMode.MotionMagic, 0);
+						_leftSwitchbladeMotor.set(ControlMode.PercentOutput, 0);
+						_leftSwitchbladeMotor.set(ControlMode.PercentOutput, 0);
+						break;
 						
-						_infeedState = INFEED_STATE.MOVING_TO_HOME;						
-						DriverStation.reportWarning("InfeedAxis (State) [NEED_TO_HOME] ==> [MOVING_TO_HOME]", false);
+					case NEED_TO_HOME:						
+						_hasLeftArmBeenHomed = false;
+						_hasRightArmBeenHomed = false;
+						
+						ReportStateChg("Infeed Arm (State) [" + _infeedArmState.toString() + "] ==> [MOVING_TO_HOME]");
+						_infeedArmState = INFEED_ARM_STATE.MOVING_TO_HOME;						
 						break;
 						
 					case MOVING_TO_HOME:
-						homeArms();
+						// ==== left side ====
+						// are we on the home l/s?
+						if (_leftSwitchbladeMotor.getSensorCollection().isRevLimitSwitchClosed() == false) {
+							// zero encoder
+							_leftSwitchbladeMotor.setSelectedSensorPosition(0, 0, 0);
+							// stop motor
+							_leftSwitchbladeMotor.set(ControlMode.PercentOutput, 0);
+							
+							if(!_hasLeftArmBeenHomed)
+							{
+								ReportStateChg("Left Arm [AT_HOME]");
+							}
+							
+							_hasLeftArmBeenHomed = true;
+						}
+						// only run this side if home not reached, may still be running the other side
+						else if (_hasLeftArmBeenHomed == false) {	
+							// run motor "backwards"
+							_leftSwitchbladeMotor.set(ControlMode.PercentOutput, -1 * INFEED_HOMING_VBUS_COMMAND);
+						}
+						// ==== right side ====
+						// are we on the home l/s?
+						if (_rightSwitchbladeMotor.getSensorCollection().isRevLimitSwitchClosed() == false) {
+							// zero encoder
+							_rightSwitchbladeMotor.setSelectedSensorPosition(0, 0, 0);
+							// stop motor
+							_rightSwitchbladeMotor.set(ControlMode.PercentOutput, 0);
+							
+							if(!_hasRightArmBeenHomed)
+							{
+								ReportStateChg("Right Arm [AT_HOME]");
+							}
+							
+							_hasRightArmBeenHomed = true;
+						}
+						// only run this side if home not reached, may still be running the other side
+						else if (_hasRightArmBeenHomed == false) {
+							// run motor "backwards"
+							_rightSwitchbladeMotor.set(ControlMode.PercentOutput, -1 * INFEED_HOMING_VBUS_COMMAND);
+						}
+						
+						// only when both arms have been homed
+						if (_hasLeftArmBeenHomed && _hasRightArmBeenHomed) {
+							ReportStateChg("Infeed Arm (State) [" + _infeedArmState.toString() + "] ==> [AT_HOME]");
+							_infeedArmState = INFEED_ARM_STATE.AT_HOME;
+						}
+
+						break;
+						
+					case AT_HOME:
+						// enable fwd soft limits
+						_leftSwitchbladeMotor.configForwardSoftLimitEnable(true, 20);
+						_rightSwitchbladeMotor.configForwardSoftLimitEnable(true, 20);
+						
+						// hold arms at home
+						ReportStateChg("Infeed Arm (State) [" + _infeedArmState.toString() + "] ==> [MOVE_TO_POSITION_AND_HOLD]:[HOME]");
+						_infeedArmState = INFEED_ARM_STATE.MOVE_TO_POSITION_AND_HOLD;
+						MoveToPresetPosition(INFEED_ARM_TARGET_POSITION.HOME);
 						break;
 											
 					case MOVE_TO_POSITION_AND_HOLD:				
-						_leftSwitchbladeMotor.configMotionCruiseVelocity(INFEED_MOTION_MAGIC_MAX_VEL, 0);
-						_rightSwitchbladeMotor.configMotionCruiseVelocity(INFEED_MOTION_MAGIC_MAX_VEL, 0);
-						_leftSwitchbladeMotor.configMotionAcceleration(INFEED_MOTION_MAGIC_MAX_ACC, 0);
-						_rightSwitchbladeMotor.configMotionAcceleration(INFEED_MOTION_MAGIC_MAX_ACC, 0);
+						_leftSwitchbladeMotor.configMotionCruiseVelocity(INFEED_ARM_MOTION_MAGIC_MAX_VEL, 0);
+						_leftSwitchbladeMotor.configMotionAcceleration(INFEED_ARM_MOTION_MAGIC_MAX_ACC, 0);
+						
+						_rightSwitchbladeMotor.configMotionCruiseVelocity(INFEED_ARM_MOTION_MAGIC_MAX_VEL, 0);
+						_rightSwitchbladeMotor.configMotionAcceleration(INFEED_ARM_MOTION_MAGIC_MAX_ACC, 0);
 						
 						//set appropriate gain slot in use
-						if(_targetInfeedPosition == STORE_POSITION_ANGLE) {
+						if(_targetInfeedArmPosition == STORE_POSITION_ANGLE) {
 							_leftSwitchbladeMotor.selectProfileSlot(STORING_ARMS_PID_SLOT_INDEX, 0);
 							_rightSwitchbladeMotor.selectProfileSlot(STORING_ARMS_PID_SLOT_INDEX, 0);
-						}
-						else {
+						} else {
 							_leftSwitchbladeMotor.selectProfileSlot(INFEED_POSITIONS_PID_SLOT_INDEX, 0);
 							_rightSwitchbladeMotor.selectProfileSlot(INFEED_POSITIONS_PID_SLOT_INDEX, 0);
 						}
 						
-						_leftSwitchbladeMotor.set(ControlMode.MotionMagic, degreesToNativeUnits(_targetInfeedPosition));
-						_rightSwitchbladeMotor.set(ControlMode.MotionMagic, degreesToNativeUnits(_targetInfeedPosition));
+						// set target angle for both infeed arms
+						if(_infeedArmTargetPosition == INFEED_ARM_TARGET_POSITION.SQUEEZE)
+						{
+							// update _targetInfeedArmPosition since it might have been bumped
+							_targetInfeedArmPosition = _currentInFeedArmSqueezeTargetAngle;
+						}
+							
+						_leftSwitchbladeMotor.set(ControlMode.MotionMagic, degreesToNativeUnits(_targetInfeedArmPosition));
+						_rightSwitchbladeMotor.set(ControlMode.MotionMagic, degreesToNativeUnits(_targetInfeedArmPosition));
 					 	break;
-					 	
-					case AUTO_ACQUIRE_MANUVER:
-						if(_ultrasonic.getIsCubeInRange()) {
-							_infeedState = INFEED_STATE.STAGGER_INFEED_MANUVER;
-						}
-						break;
-					 	
-					case STAGGER_INFEED_MANUVER:						
-						_leftSwitchbladeMotor.set(ControlMode.MotionMagic, degreesToNativeUnits(STAGGER_POSITION_ANGLE));
-						double positionLeftError = Math.abs(nativeUnitsToDegrees(_leftSwitchbladeMotor.getSelectedSensorPosition(0)) - STAGGER_POSITION_ANGLE);
-						double positionRightError = Math.abs(nativeUnitsToDegrees(_rightSwitchbladeMotor.getSelectedSensorPosition(0)) - STAGGER_POSITION_ANGLE);
-						if(positionLeftError < INFEED_ALLOWED_ERROR_ANGLE) {
-							_rightSwitchbladeMotor.set(ControlMode.MotionMagic, degreesToNativeUnits(STAGGER_POSITION_ANGLE));
-						}
-						
-						if (positionLeftError < INFEED_ALLOWED_ERROR_ANGLE &&
-								positionRightError < INFEED_ALLOWED_ERROR_ANGLE) {
-							driveInfeedWheels();
-						}
-						
-						if (_ultrasonic.getIsCubeInRobot()) {
-							MoveToPresetPosition(INFEED_TARGET_POSITION.INFEED);
-							_infeedState = INFEED_STATE.MOVE_TO_POSITION_AND_HOLD;
-						}
-					
-						break;
-						
-					case JOYSTICK_POSITION_CONTROL:
-						break;
-					
-					case DO_NOTHING:
-						_leftSwitchbladeMotor.set(ControlMode.PercentOutput, 0);
-						_rightSwitchbladeMotor.set(ControlMode.PercentOutput, 0);
-						break;
 						
 					case TIMEOUT:
 						DriverStation.reportWarning("InfeedAxis (State) [TIMEOUT] error homing axis", false);
+						break;
+				}
+				
+				switch (_infeedWheelsState)	{
+					case STOPPED:
+						_leftInfeedDriveMotor.set(ControlMode.PercentOutput,0);
+						_rightInfeedDriveMotor.set(ControlMode.PercentOutput,0);
+						break;
+						
+					case FEED_IN:
+						_leftInfeedDriveMotor.set(ControlMode.PercentOutput, _currentInFeedWheelsVBusCmd);
+						_rightInfeedDriveMotor.set(ControlMode.PercentOutput, -1.0 * _currentInFeedWheelsVBusCmd);
+						break;
+						
+					case FEED_OUT:
+						_leftInfeedDriveMotor.set(ControlMode.PercentOutput, -1.0 * _currentInFeedWheelsVBusCmd);
+						_rightInfeedDriveMotor.set(ControlMode.PercentOutput, _currentInFeedWheelsVBusCmd);
+						break;
+						
+					case SPIN_COUNTER_CLOCKWISE:
+						_leftInfeedDriveMotor.set(ControlMode.PercentOutput, -1.0 * _currentInFeedWheelsVBusCmd);
+						_rightInfeedDriveMotor.set(ControlMode.PercentOutput, -1.0 * _currentInFeedWheelsVBusCmd);
+						break;
+						
+					case SPIN_CLOCKWISE:
+						_leftInfeedDriveMotor.set(ControlMode.PercentOutput, _currentInFeedWheelsVBusCmd);
+						_rightInfeedDriveMotor.set(ControlMode.PercentOutput, _currentInFeedWheelsVBusCmd);
 						break;
 				}
 			}
@@ -350,107 +432,65 @@ public class Infeed {
 	//=====================================================================================
 	//Supports Button Mapping to Pre-Set Positions while staying in Same State
 	//=====================================================================================
-	public void MoveToPresetPosition(INFEED_TARGET_POSITION presetPosition) {
-		_infeedState = INFEED_STATE.MOVE_TO_POSITION_AND_HOLD;
-		_isStaggerAtInitialPosition = false;
+	public void MoveToPresetPosition(INFEED_ARM_TARGET_POSITION presetPosition) {
+		ReportStateChg("Infeed Arm (State) " + _infeedArmState.toString() + " ==> [MOVE_TO_POSITION_AND_HOLD]:[" + presetPosition.toString() + "]");
+		
+		_infeedArmTargetPosition = presetPosition;
+		//_isStaggerAtInitialPosition = false;
 		switch(presetPosition) {
 			case HOME:
-				_targetInfeedPosition = HOME_POSITION_ANGLE;
+				_targetInfeedArmPosition = HOME_POSITION_ANGLE;
 				break;
 			case INFEED:
-				 _targetInfeedPosition = INFEED_POSITION_ANGLE;
+				 _targetInfeedArmPosition = INFEED_POSITION_ANGLE;
 				 break;
 			case WIDE:
-				 _targetInfeedPosition = WIDE_INFEED_POSITION_ANGLE;
+				 _targetInfeedArmPosition = WIDE_INFEED_POSITION_ANGLE;
 				 break;
 			case SQUEEZE:
-				 _targetInfeedPosition = SQUEEZE_INFEED_POSITION_ANGLE;
+				 _targetInfeedArmPosition = _currentInFeedArmSqueezeTargetAngle;
 				 break;
-			case THIN_SIDE:
-				_targetInfeedPosition = THIN_SIDE_POSITION_ANGLE;
-				break;
+			//case THIN_SIDE:
+			//	_targetInfeedPosition = THIN_SIDE_POSITION_ANGLE;
+			//	break;
 			case STORE:
-				 _targetInfeedPosition = STORE_POSITION_ANGLE;
+				 _targetInfeedArmPosition = STORE_POSITION_ANGLE;
 				 break;
-			}
-	}
-	
-	//=====================================================================================
-	//Method for Homing Arms
-	//=====================================================================================
-	private void homeArms() {
-		if (_leftSwitchbladeMotor.getSensorCollection().isRevLimitSwitchClosed() == false) {
-			_leftSwitchbladeMotor.setSelectedSensorPosition(0, 0, 0);
-			_leftSwitchbladeMotor.set(ControlMode.PercentOutput, 0);
-			_isLeftArmHomed = true;
-		}
-		else if (_isLeftArmHomed == false) {
-			_leftSwitchbladeMotor.set(ControlMode.PercentOutput, -1 * INFEED_HOMING_VBUS_COMMAND);
-		}
-		else {
-			_leftSwitchbladeMotor.set(ControlMode.PercentOutput, 0);
 		}
 		
-		if (_rightSwitchbladeMotor.getSensorCollection().isRevLimitSwitchClosed() == false) {
-			_rightSwitchbladeMotor.setSelectedSensorPosition(0, 0, 0);
-			_rightSwitchbladeMotor.set(ControlMode.PercentOutput, 0);
-			_isRightArmHomed = true;
-		}
-		else if (_isRightArmHomed == false) {
-			_rightSwitchbladeMotor.set(ControlMode.PercentOutput, -1 * INFEED_HOMING_VBUS_COMMAND);
-		}
-		else {
-			_rightSwitchbladeMotor.set(ControlMode.PercentOutput, 0);
-		}
-		
-		if (_isRightArmHomed && _isLeftArmHomed) {
-			_leftSwitchbladeMotor.configForwardSoftLimitEnable(true, 20);
-			_rightSwitchbladeMotor.configForwardSoftLimitEnable(true, 20);
-			
-			_areArmsHomed = true;
-			MoveToPresetPosition(INFEED_TARGET_POSITION.HOME);
-			_infeedState = INFEED_STATE.MOVE_TO_POSITION_AND_HOLD;
-		}
+		_infeedArmState = INFEED_ARM_STATE.MOVE_TO_POSITION_AND_HOLD;
 	}
 	
 	//=====================================================================================
 	//Methods for Calling Positions of Infeed Arms
 	//=====================================================================================
 	public void storeArms() {
-		if (_areArmsHomed) {
-			MoveToPresetPosition(INFEED_TARGET_POSITION.STORE);
-		}else {
+		if (_hasLeftArmBeenHomed && _hasRightArmBeenHomed) {
+			MoveToPresetPosition(INFEED_ARM_TARGET_POSITION.STORE);
+		} else {
 			DriverStation.reportWarning("Function Not Avaliable until Arms are Homed", false);
 		}
 	}
 	
 	public void moveArmsToInfeedPosition() {
-		if (_areArmsHomed) {
-			MoveToPresetPosition(INFEED_TARGET_POSITION.INFEED);
+		if (_hasLeftArmBeenHomed && _hasRightArmBeenHomed) {
+			MoveToPresetPosition(INFEED_ARM_TARGET_POSITION.INFEED);
 		} else {
 			DriverStation.reportWarning("Function Not Avaliable until Arms are Homed", false);
 		}
 	}
 	
 	public void moveArmsToWideInfeedPosition() {
-		if (_areArmsHomed) {
-			MoveToPresetPosition(INFEED_TARGET_POSITION.WIDE);
+		if (_hasLeftArmBeenHomed && _hasRightArmBeenHomed) {
+			MoveToPresetPosition(INFEED_ARM_TARGET_POSITION.WIDE);
 		} else {
 			DriverStation.reportWarning("Function Not Avaliable until Arms are Homed", false);
 		}
 	}
 	
 	public void moveArmsToSqueezeInfeedPosition() {
-		if (_areArmsHomed) {
-			MoveToPresetPosition(INFEED_TARGET_POSITION.SQUEEZE);
-		} else {
-			DriverStation.reportWarning("Function Not Avaliable until Arms are Homed", false);
-		}
-	}
-	
-	public void moveArmsToThinSideInfeedPosition() {
-		if (_areArmsHomed) {
-			MoveToPresetPosition(INFEED_TARGET_POSITION.THIN_SIDE);
+		if (_hasLeftArmBeenHomed && _hasRightArmBeenHomed) {
+			MoveToPresetPosition(INFEED_ARM_TARGET_POSITION.SQUEEZE);
 		} else {
 			DriverStation.reportWarning("Function Not Avaliable until Arms are Homed", false);
 		}
@@ -459,74 +499,29 @@ public class Infeed {
 	//=====================================================================================
 	//Methods for Handling Special Cases
 	//=====================================================================================	
-	public void staggerInfeedManuver() {
-		if(_areArmsHomed && isStaggerManuverSetup()) {
-			_infeedState = INFEED_STATE.STAGGER_INFEED_MANUVER;
-		} else {
-			DriverStation.reportWarning("Function Not Avaliable until Arms are Homed", false);
-		}
+	public void moveArmsToSafePosition() {
+		MoveToPresetPosition(INFEED_ARM_TARGET_POSITION.WIDE);
 	}
 	
-	public void autoInfeedManuver() {
-		if(_areArmsHomed && isStaggerManuverSetup()) {
-			_infeedState = INFEED_STATE.AUTO_ACQUIRE_MANUVER;
-		} else {
-			DriverStation.reportWarning("Function Not Avaliable until Arms are Homed", false);
-		}
-	}
-	
-	public void infeedJoystickCommandedPosition(double joystickYAxis, double joystickXAxis) {
-		if (_areArmsHomed) {
-			double newJoystickYAxis = 0;
-			double newJoystickXAxis = 0;
-			
-			if (joystickYAxis > 0 && joystickXAxis < 0) {
-				newJoystickYAxis = -1 * joystickYAxis;
-				newJoystickXAxis = -1 * joystickXAxis;
-			}
-			else {
-				newJoystickYAxis = joystickYAxis;
-				newJoystickXAxis = joystickXAxis;
-			}
-			//_infeedState = INFEED_STATE.JOYSTICK_POSITION_CONTROL;
-			
-			double commandedAngle = (Math.atan(newJoystickYAxis)/(newJoystickXAxis));
-			double commandedPosition = (degreesToNativeUnits(Math.toDegrees(commandedAngle)));
-			
-			_leftSwitchbladeMotor.set(ControlMode.MotionMagic, commandedPosition);
-			_rightSwitchbladeMotor.set(ControlMode.MotionMagic, commandedPosition);
-			
-		}
-	}
-	
-	public boolean moveArmsToSafePosition() {
-		if(_leftSwitchbladeActualPosition <= WIDE_INFEED_POSITION_ANGLE 
-				&& _rightSwitchbladeActualPosition <= WIDE_INFEED_POSITION_ANGLE) {
+	public boolean areArmsInSafePosition() {
+		if (getCurrentLeftInfeedPosition() <= (degreesToNativeUnits(WIDE_INFEED_POSITION_ANGLE) + 100) 
+				&& getCurrentLeftInfeedPosition() <= (degreesToNativeUnits(WIDE_INFEED_POSITION_ANGLE) + 100)) {
 			return true;
-		}
-		else {
-			MoveToPresetPosition(INFEED_TARGET_POSITION.WIDE);
+		} else {
 			return false;
 		}
 	}
 	
 	public void reZeroArms() {
-		_infeedState = INFEED_STATE.NEED_TO_HOME;
-	}
-	
-	public void zeroArms() {
-		_infeedState = INFEED_STATE.NEED_TO_HOME;
+		_hasLeftArmBeenHomed = false;
+		_hasRightArmBeenHomed = false;
+		_infeedArmState = INFEED_ARM_STATE.NEED_TO_HOME;
 	}
 	
 	//=====================================================================================
 	//Method for Driving Infeed Wheels
 	//=====================================================================================
 	public void driveInfeedWheels() {
-		/*
-		if(areArmsInPosition() || _infeedState == INFEED_STATE.STAGGER_INFEED_MANUVER) {
-			_leftInfeedDriveMotor.setSpeed(-1*INFEED_DRIVE_WHEELS_VBUS_COMMAND);
-			_rightInfeedDriveMotor.setSpeed(-1*-1*INFEED_DRIVE_WHEELS_VBUS_COMMAND);
-		} */
 		_leftInfeedDriveMotor.set(ControlMode.PercentOutput, INFEED_DRIVE_WHEELS_VBUS_COMMAND);
 		_rightInfeedDriveMotor.set(ControlMode.PercentOutput, INFEED_DRIVE_WHEELS_VBUS_COMMAND);
 	}
@@ -540,47 +535,91 @@ public class Infeed {
 	
 	public void spinManuverInfeedWheels() {
 		if(areArmsInPosition()) {
-			_leftInfeedDriveMotor.set(ControlMode.PercentOutput,INFEED_SPIN_CUBE_WHEELS_VBUS_COMMAND);
+			_leftInfeedDriveMotor.set(ControlMode.PercentOutput, INFEED_SPIN_CUBE_WHEELS_VBUS_COMMAND);
 			_rightInfeedDriveMotor.set(ControlMode.PercentOutput, INFEED_SPIN_CUBE_WHEELS_VBUS_COMMAND);
 		}
 	}
 	
 	//=====================================================================================
-	//Method for determining if Arms are In Position
+	//Method for Engr GamePad B
 	//=====================================================================================
-	private boolean isStaggerManuverSetup() {
-		if (_targetInfeedPosition != INFEED_POSITION_ANGLE) {
-			MoveToPresetPosition(INFEED_TARGET_POSITION.INFEED);
-			return false;
-		}
-		double errorLeftSwitchblade = Math.abs(nativeUnitsToDegrees(_leftSwitchbladeMotor.getSelectedSensorPosition(0)) - INFEED_POSITION_ANGLE);
-		double errorRightSwitchblade = Math.abs(nativeUnitsToDegrees(_rightSwitchbladeMotor.getSelectedSensorPosition(0)) - INFEED_POSITION_ANGLE);
-		
-		if(errorLeftSwitchblade < INFEED_ALLOWED_ERROR_ANGLE && errorRightSwitchblade< INFEED_ALLOWED_ERROR_ANGLE) {
-			_isStaggerAtInitialPosition = true;
-		}
-		
-		if (_isStaggerAtInitialPosition) {			
-			_leftSwitchbladeMotor.selectProfileSlot(STAGGER_MANUVER_PID_SLOT_INDEX, 0);
-			_rightSwitchbladeMotor.selectProfileSlot(STAGGER_MANUVER_PID_SLOT_INDEX, 0);
-			_leftSwitchbladeMotor.configMotionCruiseVelocity(INFEED_STAGGER_MOTION_MAGIC_MAX_VEL, 0);
-			_rightSwitchbladeMotor.configMotionCruiseVelocity(INFEED_STAGGER_MOTION_MAGIC_MAX_VEL, 0);
-			_leftSwitchbladeMotor.configMotionAcceleration(INFEED_STAGGER_MOTION_MAGIC_MAX_ACC, 0);
-			_rightSwitchbladeMotor.configMotionAcceleration(INFEED_STAGGER_MOTION_MAGIC_MAX_ACC, 0);
-			
-			_infeedState = INFEED_STATE.STAGGER_INFEED_MANUVER;
-			return true;
-		} else {
-			return false;
+	
+	public void engrGamepadB_FeedIn()
+	{
+		if(_infeedWheelsState != INFEED_WHEELS_STATE.FEED_IN) {
+			ReportStateChg("Infeed Arm (State) " + _infeedWheelsState.toString() + " ==> [ENGR_GAMEPAD_B_IN_MODE]");
+			_infeedWheelsState = INFEED_WHEELS_STATE.FEED_IN;
 		}
 	}
+	
+	public void engrGamepadB_FeedOut()
+	{
+		if(_infeedWheelsState != INFEED_WHEELS_STATE.FEED_OUT) {
+				ReportStateChg("Infeed Arm (State) " + _infeedWheelsState.toString() + " ==> [ENGR_GAMEPAD_B_OUT_MODE]");
+				_infeedWheelsState = INFEED_WHEELS_STATE.FEED_OUT;
+		}
+	}
+	
+	public void engrGamepadB_SpinCounterClockwise()
+	{
+		if(_infeedWheelsState != INFEED_WHEELS_STATE.SPIN_COUNTER_CLOCKWISE) {
+			ReportStateChg("Infeed Wheel (State) " + _infeedWheelsState.toString() + " ==> [ENGR_GAMEPAD_B_SPIN_LEFT_MODE]");
+		_infeedWheelsState = INFEED_WHEELS_STATE.SPIN_COUNTER_CLOCKWISE;
+		}
+	}
+	
+	public void engrGamepadB_SpinClockwise()
+	{
+		if(_infeedWheelsState != INFEED_WHEELS_STATE.SPIN_CLOCKWISE) {
+			ReportStateChg("Infeed Arm (State) " + _infeedWheelsState.toString() + " ==> [ENGR_GAMEPAD_B_SPIN_RIGHT_MODE]");
+			_infeedWheelsState = INFEED_WHEELS_STATE.SPIN_CLOCKWISE;
+		}
+	}
+	
+	public void engrGamepadB_InfeedVBUS_BumpUp()
+	{
+		double newCmd = _currentInFeedWheelsVBusCmd + INFEED_DRIVE_WHEELS_VBUS_COMMAND_BUMP;
 		
+		// only bump if new cmd is not over max
+		if(newCmd <= 1.0) {
+			_currentInFeedWheelsVBusCmd = newCmd;
+		}
+	}
+	
+	public void engrGamepadB_InfeedVBUS_BumpDown()
+	{		
+		double newCmd = _currentInFeedWheelsVBusCmd - INFEED_DRIVE_WHEELS_VBUS_COMMAND_BUMP;
+		
+		// only bump if new cmd is not under min
+		if(newCmd >= 0.0) {
+			_currentInFeedWheelsVBusCmd = newCmd;
+		}
+	}
+	
+	public void engrGamepadB_SqueezeAngle_BumpNarrower()
+	{
+		double newTarget = _currentInFeedArmSqueezeTargetAngle + SQUEEZE_INFEED_POSITION_TARGET_ANGLE_BUMP;
+		_currentInFeedArmSqueezeTargetAngle = newTarget;
+	}
+	
+	public void engrGamepadB_SqueezeAngle_BumpWider()
+	{
+		double newTarget = _currentInFeedArmSqueezeTargetAngle - SQUEEZE_INFEED_POSITION_TARGET_ANGLE_BUMP;
+		_currentInFeedArmSqueezeTargetAngle = newTarget;
+	}
+	
+	//=====================================================================================
+	//Method for determining if Arms are In Position
+	//=====================================================================================	
 	public boolean areArmsInPosition() {
-		double currentError = Math.abs(nativeUnitsToDegrees(_leftSwitchbladeMotor.getSelectedSensorPosition(0)) - _targetInfeedPosition);
-		if(currentError < INFEED_ALLOWED_ERROR_ANGLE && _targetInfeedPosition != HOME_POSITION_ANGLE
-				&& _targetInfeedPosition != STORE_POSITION_ANGLE) {
+		double currentErrorL = Math.abs(nativeUnitsToDegrees(getCurrentLeftInfeedPosition()) - _targetInfeedArmPosition);
+		double currentErrorR = Math.abs(nativeUnitsToDegrees(getCurrentRightInfeedPosition()) - _targetInfeedArmPosition);
+		
+		if(currentErrorL < INFEED_ALLOWED_ERROR_ANGLE && currentErrorR < INFEED_ALLOWED_ERROR_ANGLE
+				&& _targetInfeedArmPosition != HOME_POSITION_ANGLE
+				&& _targetInfeedArmPosition != STORE_POSITION_ANGLE) {
 			return true;
-		} else if(_targetInfeedPosition == SQUEEZE_INFEED_POSITION_ANGLE) { 
+		} else if(_targetInfeedArmPosition == _currentInFeedArmSqueezeTargetAngle) { 
 			return true;
 		} else {
 			return false;
@@ -591,13 +630,21 @@ public class Infeed {
 	//Methods for Commanding the Motors to Stop
 	//=====================================================================================
 	public void stopDriveMotors() {
-		_leftInfeedDriveMotor.set(ControlMode.PercentOutput,0);
-		_rightInfeedDriveMotor.set(ControlMode.PercentOutput,0);
+		if(_infeedWheelsState != INFEED_WHEELS_STATE.STOPPED) {
+			ReportStateChg("Infeed Wheels (State) " + _infeedWheelsState.toString() + " ==> [STOP]");
+			_infeedWheelsState = INFEED_WHEELS_STATE.STOPPED;
+		}
 	}
 	
 	public void stop() {
-		_leftSwitchbladeMotor.set(ControlMode.MotionMagic, 0);
-		_leftSwitchbladeMotor.set(ControlMode.MotionMagic, 0);
+		if(_infeedArmState != INFEED_ARM_STATE.STOPPED) {			
+			if(_hasLeftArmBeenHomed 
+					&& _hasRightArmBeenHomed
+					&& _infeedArmState != INFEED_ARM_STATE.MOVE_TO_POSITION_AND_HOLD) {
+				ReportStateChg("Infeed Arm (State) " + _infeedArmState.toString() + " ==> [STOP]");
+				_infeedArmState = INFEED_ARM_STATE.STOPPED;
+			}			
+		}
 		stopDriveMotors();
 	}
 	
@@ -605,7 +652,21 @@ public class Infeed {
 	//Methods for Exposing Properties of Infeed Motors
 	//=====================================================================================
 	public void doNothing() {
-		_infeedState = INFEED_STATE.DO_NOTHING;
+		if(_hasLeftArmBeenHomed && _hasRightArmBeenHomed) {
+			ReportStateChg("Infeed Arm (State) [" + _infeedArmState.toString() + "] ==> [STOPPED]");
+			_infeedArmState = INFEED_ARM_STATE.STOPPED;
+		} else {
+			ReportStateChg("Infeed Arm (State) [" + _infeedArmState.toString() + "] ==> [NEED_TO_HOME]");
+			_infeedArmState = INFEED_ARM_STATE.NEED_TO_HOME;
+		}
+	}
+	
+	public double getCurrentLeftInfeedPosition() {
+		return _leftSwitchbladeMotor.getSelectedSensorPosition(0);
+	}
+	
+	public double getCurrentRightInfeedPosition() {
+		return _rightSwitchbladeMotor.getSelectedSensorPosition(0);
 	}
 	//=====================================================================================
 	//Methods for Conversions between Native Units and Degrees
@@ -625,14 +686,26 @@ public class Infeed {
 	//=====================================================================================	
 	public void outputToShuffleboard() {
 		SmartDashboard.putBoolean("Is the Infeed in Position?", areArmsInPosition());
+		SmartDashboard.putNumber("RP:", getCurrentRightInfeedPosition());
+		SmartDashboard.putNumber("LP:", getCurrentLeftInfeedPosition());
+		SmartDashboard.putNumber("Wide Infeed Position:", degreesToNativeUnits(WIDE_INFEED_POSITION_ANGLE));
+		SmartDashboard.putBoolean("Are Arms Safe?", areArmsInSafePosition());
+		SmartDashboard.putString("Infeed Wheels State", _infeedWheelsState.toString());
+		SmartDashboard.putNumber("Infeed Wheels %VBus", _currentInFeedWheelsVBusCmd * 100);
+		SmartDashboard.putNumber("Infeed Arm Target Squeeze Angle", _currentInFeedArmSqueezeTargetAngle);
+		SmartDashboard.putString("Infeed Arm State", _infeedArmState.toString());
 	}
 	
 	// add data elements to be logged  to the input param (which is passed by ref)
-	public void updateLogData(LogDataBE logData) {	
-		_leftSwitchbladeActualPosition = _leftSwitchbladeMotor.getSelectedSensorPosition(0);
-		_rightSwitchbladeActualPosition = _rightSwitchbladeMotor.getSelectedSensorPosition(0);
-		
-		logData.AddData("Left Infeed Position:", String.valueOf(_leftSwitchbladeActualPosition));
-		logData.AddData("Left Infeed Position:", String.valueOf(_rightSwitchbladeActualPosition));
+	public void updateLogData(LogDataBE logData) {			
+		logData.AddData("Left Infeed Position:", String.valueOf(getCurrentLeftInfeedPosition()));
+		logData.AddData("Right Infeed Position:", String.valueOf(getCurrentRightInfeedPosition()));
 	} 
+	
+	// private helper method to control how we write to the drivers station
+	private void ReportStateChg(String message) {
+		if(IS_VERBOSE_LOGGING_ENABLED) {
+			System.out.println(message);
+		}
+	}
 }
