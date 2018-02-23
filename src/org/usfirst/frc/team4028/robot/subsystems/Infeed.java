@@ -53,6 +53,7 @@ public class Infeed {
 	// define class level working variables
 	private INFEED_ARM_STATE _infeedArmState;
 	private INFEED_WHEELS_STATE _infeedWheelsState;
+	private INFEED_ARM_TARGET_POSITION _infeedArmTargetPosition;
 	
 	//private UltrasonicSensor _ultrasonic;
 	
@@ -60,7 +61,8 @@ public class Infeed {
 	private boolean _hasRightArmBeenHomed;
 	//private boolean _isStaggerAtInitialPosition;
 	
-	private double _targetInfeedArmPosition = SQUEEZE_INFEED_POSITION_ANGLE;
+	private double _targetInfeedArmPosition;
+	private double _currentInFeedArmSqueezeTargetAngle = SQUEEZE_INFEED_POSITION_ANGLE;
 	
 	// use default value
 	private double _currentInFeedWheelsVBusCmd = INFEED_DRIVE_WHEELS_VBUS_COMMAND;
@@ -371,6 +373,12 @@ public class Infeed {
 						}
 						
 						// set target angle for both infeed arms
+						if(_infeedArmTargetPosition == INFEED_ARM_TARGET_POSITION.SQUEEZE)
+						{
+							// update _targetInfeedArmPosition since it might have been bumped
+							_targetInfeedArmPosition = _currentInFeedArmSqueezeTargetAngle;
+						}
+							
 						_leftSwitchbladeMotor.set(ControlMode.MotionMagic, degreesToNativeUnits(_targetInfeedArmPosition));
 						_rightSwitchbladeMotor.set(ControlMode.MotionMagic, degreesToNativeUnits(_targetInfeedArmPosition));
 					 	break;
@@ -427,6 +435,7 @@ public class Infeed {
 	public void MoveToPresetPosition(INFEED_ARM_TARGET_POSITION presetPosition) {
 		ReportStateChg("Infeed Arm (State) " + _infeedArmState.toString() + " ==> [MOVE_TO_POSITION_AND_HOLD]:[" + presetPosition.toString() + "]");
 		
+		_infeedArmTargetPosition = presetPosition;
 		//_isStaggerAtInitialPosition = false;
 		switch(presetPosition) {
 			case HOME:
@@ -439,8 +448,7 @@ public class Infeed {
 				 _targetInfeedArmPosition = WIDE_INFEED_POSITION_ANGLE;
 				 break;
 			case SQUEEZE:
-				 //_targetInfeedPosition = SQUEEZE_INFEED_POSITION_ANGLE;
-				 _targetInfeedArmPosition = SQUEEZE_INFEED_POSITION_ANGLE;
+				 _targetInfeedArmPosition = _currentInFeedArmSqueezeTargetAngle;
 				 break;
 			//case THIN_SIDE:
 			//	_targetInfeedPosition = THIN_SIDE_POSITION_ANGLE;
@@ -590,14 +598,14 @@ public class Infeed {
 	
 	public void engrGamepadB_SqueezeAngle_BumpNarrower()
 	{
-		double newTarget = _targetInfeedArmPosition + SQUEEZE_INFEED_POSITION_TARGET_ANGLE_BUMP;
-		_targetInfeedArmPosition = newTarget;
+		double newTarget = _currentInFeedArmSqueezeTargetAngle + SQUEEZE_INFEED_POSITION_TARGET_ANGLE_BUMP;
+		_currentInFeedArmSqueezeTargetAngle = newTarget;
 	}
 	
 	public void engrGamepadB_SqueezeAngle_BumpWider()
 	{
-		double newTarget = _targetInfeedArmPosition - SQUEEZE_INFEED_POSITION_TARGET_ANGLE_BUMP;
-		_targetInfeedArmPosition = newTarget;
+		double newTarget = _currentInFeedArmSqueezeTargetAngle - SQUEEZE_INFEED_POSITION_TARGET_ANGLE_BUMP;
+		_currentInFeedArmSqueezeTargetAngle = newTarget;
 	}
 	
 	//=====================================================================================
@@ -611,7 +619,7 @@ public class Infeed {
 				&& _targetInfeedArmPosition != HOME_POSITION_ANGLE
 				&& _targetInfeedArmPosition != STORE_POSITION_ANGLE) {
 			return true;
-		} else if(_targetInfeedArmPosition == SQUEEZE_INFEED_POSITION_ANGLE) { 
+		} else if(_targetInfeedArmPosition == _currentInFeedArmSqueezeTargetAngle) { 
 			return true;
 		} else {
 			return false;
@@ -684,7 +692,7 @@ public class Infeed {
 		SmartDashboard.putBoolean("Are Arms Safe?", areArmsInSafePosition());
 		SmartDashboard.putString("Infeed Wheels State", _infeedWheelsState.toString());
 		SmartDashboard.putNumber("Infeed Wheels %VBus", _currentInFeedWheelsVBusCmd * 100);
-		SmartDashboard.putNumber("Infeed Arm Target Angle", _targetInfeedArmPosition);
+		SmartDashboard.putNumber("Infeed Arm Target Squeeze Angle", _currentInFeedArmSqueezeTargetAngle);
 		SmartDashboard.putString("Infeed Arm State", _infeedArmState.toString());
 	}
 	
