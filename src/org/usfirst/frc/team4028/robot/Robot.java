@@ -237,25 +237,31 @@ public class Robot extends IterativeRobot {
 					|| _dos.getIsEngineering_StoreInfeed_BtnPressed()) {
 				_infeed.storeArms();
 			}
-			//else if (_dos.getIsEngineering_StaggerInfeed_BtnPressed()) {
-			//	_infeed.staggerInfeedManuver();
-			//}
-	//		else if (_dos.getOperator_InfeedPositionX_JoystickCmd() > 0.5 
-	//				|| _dos.getOperator_InfeedPositionY_JoystickCmd() > 0.5) {
-	//			_infeed.infeedJoystickCommandedPosition(_dos.getOperator_InfeedPositionY_JoystickCmd(), 
-	//					_dos.getOperator_InfeedPositionX_JoystickCmd());
-	//		}
-	//		else if (_dos.getIsDriver_AutoAcquire_BtnJustPressed()) {
-	//			_infeed.autoInfeedManuver();
-	//		}
-		}
-		else {
+			
+			// ============= CARRIAGE =============
+			if (Math.abs(_dos.getDriver_InfeedCube_JoystickCmd()) != 0) {
+				_cubeHandler.runInfeedCubePlusCarriage(_dos.getDriver_InfeedCube_JoystickCmd());
+			}
+			else if (Math.abs(_dos.getEngineering_InfeedCube_JoystickCmd()) != 0) {
+				_cubeHandler.runInfeedCubePlusCarriage(_dos.getEngineering_InfeedCube_JoystickCmd());
+			}			
+			else if (Math.abs(_dos.getDriver_EjectCube_JoystickCmd()) != 0) {
+				_cubeHandler.ejectCube(_dos.getDriver_EjectCube_JoystickCmd());
+			} 
+			else if (Math.abs(_dos.getEngineering_EjectCube_JoystickCmd()) != 0) {
+				_cubeHandler.ejectCube(_dos.getEngineering_EjectCube_JoystickCmd());
+			} 
+			else if (_dos.getIsDriver_SpinCubeManuver_BtnPressed() || _dos.getIsEngineering_SpinCubeManuver_BtnPressed()){
+				_cubeHandler.runInfeedSpinManuver();	
+			} else {
+				_cubeHandler.stop();			
+			}
+		} else {
 			// ENGR GamePad B is plugged In
 			
 			// adjust Infeed Arm Width
 			if(_dos.getIsEngrB_SqueezeBumpWider_BtnJustPressed())
 			{
-				System.out.println("Bumper Pressed");
 				_infeed.engrGamepadB_SqueezeAngle_BumpWider();
 			}
 			else if(_dos.getIsEngrB_SqueezeBumpNarrower_BtnJustPressed())
@@ -264,17 +270,26 @@ public class Robot extends IterativeRobot {
 			}
 			
 			// adjust Infeed Wheel speeds
-			if(_dos.getIsEngrB_InfeedVBusBumpDown_BtnJustPressed())
-			{
+			if(_dos.getIsEngrB_InfeedVBusBumpDown_BtnJustPressed())	{
 				_infeed.engrGamepadB_InfeedVBUS_BumpDown();
 			}
-			else if(_dos.getIsEngrB_InfeedVBusBumpUp_BtnJustPressed())
-			{
+			else if(_dos.getIsEngrB_InfeedVBusBumpUp_BtnJustPressed()) {
 				_infeed.engrGamepadB_InfeedVBUS_BumpUp();
 			}
 			
+			// adjust Carriage Wheel Speeds
+			if(_dos.getIsEngrB_CarriageVBusBumpDown_BtnJustPressed()) {
+				_carriage.engrGamepadB_CarriageVBUS_BumpDown();
+			}
+			else if(_dos.getIsEngrB_CarriageVBusBumpUp_BtnJustPressed()) {
+				_carriage.engrGamepadB_CarriageVBUS_BumpUp();
+			}
+			
 			// infeed arm positions
-			if (_dos.getIsEngrB_WideInfeed_BtnJustPressed()) {
+			if (_dos.getIsEngrB_RezeroInfeed_BtnJustPressed()) {
+				_infeed.reZeroArms();
+			}
+			else if (_dos.getIsEngrB_WideInfeed_BtnJustPressed()) {
 				_infeed.moveArmsToWideInfeedPosition();
 			}
 			else if (_dos.getIsEngrB_SqueezeInfeed_BtnJustPressed()) {
@@ -328,40 +343,9 @@ public class Robot extends IterativeRobot {
 		}		
 		else if (_dos.getIsOperator_ElevatorHome_BtnJustPressed()) {
 			_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.HOME);
-		} 
-//		else if(_cubeHandler.isStateMachineCurrentlyRunning()) {
-//			System.out.println("State Machine Check");
-//			_cubeHandler.manageMoveElevatorToPresetPosition();
-//		}
-		else {
+		} else {
 			_elevator.stop();
 		} 
-		
-		// ============= CARRIAGE =============
-		if (Math.abs(_dos.getDriver_InfeedCube_JoystickCmd()) != 0) {
-			_cubeHandler.runInfeedCubePlusCarriage(_dos.getDriver_InfeedCube_JoystickCmd());
-		}
-		else if (Math.abs(_dos.getEngineering_InfeedCube_JoystickCmd()) != 0) {
-			_cubeHandler.runInfeedCubePlusCarriage(_dos.getEngineering_InfeedCube_JoystickCmd());
-		}			
-		else if (Math.abs(_dos.getDriver_EjectCube_JoystickCmd()) != 0) {
-			_cubeHandler.ejectCube(_dos.getDriver_EjectCube_JoystickCmd());
-		} 
-		else if (Math.abs(_dos.getEngineering_EjectCube_JoystickCmd()) != 0) {
-			_cubeHandler.ejectCube(_dos.getEngineering_EjectCube_JoystickCmd());
-		} 
-		else if (_dos.getIsDriver_SpinCubeManuver_BtnPressed() || _dos.getIsEngineering_SpinCubeManuver_BtnPressed()){
-			_cubeHandler.runInfeedSpinManuver();	
-		} else {
-			_cubeHandler.stop();			
-		}
-		
-		//if(_dos.getIsDriver_MoveCarriageCloser_BtnJustPressed()) {
-		//	_carriage.moveCarriageServosCloser();
-		//}
-		//else if(_dos.getIsDriver_MoveCarriageWider_BtnJustPressed()) {
-		//	_carriage.moveCarriageServosWider();
-		//}
 				
 		// ============= Camera Switch ============= 
 		if (_dos.getIsOperator_SwitchCamera_BtnJustPressed() == true) {

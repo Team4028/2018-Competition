@@ -783,13 +783,13 @@ public class DriverOperatorStation {
 		}
 	}	
 
-//		public boolean getIsEngrB_StoreInfeed_BtnJustPressed() {
-//			if(_isEngineeringGamepadB_PluggedIn) {
-//				return _engineeringGamepadB.getXButtonPressed();
-//			} else {
-//				return false;
-//			}
-//		}
+		public boolean getIsEngrB_RezeroInfeed_BtnJustPressed() {
+			if(_isEngineeringGamepadB_PluggedIn) {
+				return _engineeringGamepadB.getXButtonPressed();
+			} else {
+				return false;
+			}
+		}
 	
 	public boolean getIsEngrB_CarriageVBusBumpDown_BtnJustPressed() {
 		if(_isEngineeringGamepadB_PluggedIn) {
@@ -922,7 +922,7 @@ public class DriverOperatorStation {
 	public double getEngrB_InfeedAndCarriage_JoystickCmd() {
 		if(_isEngineeringGamepadB_PluggedIn) {
 			if(Math.abs(_engineeringGamepadB.getY(Hand.kRight)) >= JOYSTICK_DEADBAND) {
-				if(_engineeringGamepadB.getY(Hand.kLeft) > 0){
+				if(_engineeringGamepadB.getY(Hand.kRight) > 0){
 					return -1.0;	// down
 				} 
 				else if(_engineeringGamepadB.getY(Hand.kRight) < 0){
@@ -941,6 +941,7 @@ public class DriverOperatorStation {
 	/*public Boolean getEngrB_InfeedIn_JoystickCmd() {
 		if(_isEngineeringGamepadB_PluggedIn)
 		{
+		
 			// flip the sign, pushing the joystick up is a # < 0
 			if(Math.abs(_engineeringGamepadB.getY(Hand.kRight)) >= JOYSTICK_DEADBAND
 					&& _engineeringGamepadB.getY(Hand.kRight) > 0){
