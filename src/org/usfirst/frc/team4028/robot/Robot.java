@@ -183,13 +183,14 @@ public class Robot extends IterativeRobot {
 		}
 		_autonExecuter = null;
 		
-		stopAll();
-		
 		_chassis.zeroSensors();
 		_chassis.setHighGear(false);
 		_chassis.setBrakeMode(false);  
-				
+		
+		_chassis.stop();
 		_cubeHandler.doNothing();
+		
+		_dos.resetGamepads();
 		
 		_enabledLooper.start();
 		// init data logging
@@ -221,8 +222,8 @@ public class Robot extends IterativeRobot {
 		if(!_dos.IsEngineeringGamepadBAvailable()) {
 			
 			// ignore Driver Gamepad if Engineering B is plugged in
-			if (_dos.getIsDriver_RezeroInfeed_BtnJustPressed() 
-					|| _dos.getIsEngineering_ReZeroInfeed_BtnJustPressed()) {
+			if (_dos.getIsDriver_RezeroInfeed_BtnJustPressed() ||
+					_dos.getIsEngineering_ReZeroInfeed_BtnJustPressed()) {
 				_infeed.reZeroArms();
 			}		
 			else if (_dos.getIsDriver_WideInfeed_BtnJustPressed() 
@@ -240,19 +241,25 @@ public class Robot extends IterativeRobot {
 			
 			// ============= CARRIAGE =============
 			if (Math.abs(_dos.getDriver_InfeedCube_JoystickCmd()) != 0) {
-				_cubeHandler.runInfeedCubePlusCarriage(_dos.getDriver_InfeedCube_JoystickCmd());
+				//_cubeHandler.runInfeedCubePlusCarriage(_dos.getDriver_InfeedCube_JoystickCmd());
+				_infeed.engrGamepadB_FeedIn();
+				_carriage.runCarriageMotors();
 			}
 			else if (Math.abs(_dos.getEngineering_InfeedCube_JoystickCmd()) != 0) {
 				_cubeHandler.runInfeedCubePlusCarriage(_dos.getEngineering_InfeedCube_JoystickCmd());
 			}			
 			else if (Math.abs(_dos.getDriver_EjectCube_JoystickCmd()) != 0) {
-				_cubeHandler.ejectCube(_dos.getDriver_EjectCube_JoystickCmd());
+				_infeed.engrGamepadB_FeedOut();
+				_carriage.ejectCube();
 			} 
 			else if (Math.abs(_dos.getEngineering_EjectCube_JoystickCmd()) != 0) {
 				_cubeHandler.ejectCube(_dos.getEngineering_EjectCube_JoystickCmd());
 			} 
-			else if (_dos.getIsDriver_SpinCubeManuver_BtnPressed() || _dos.getIsEngineering_SpinCubeManuver_BtnPressed()){
-				_cubeHandler.runInfeedSpinManuver();	
+			else if (_dos.getIsDriver_SpinCubeCounterClockwise_BtnPressed() || _dos.getIsEngineering_SpinCubeManuver_BtnPressed()){
+				_infeed.engrGamepadB_SpinCounterClockwise();
+			}
+			else if (_dos.getIsDriver_SpinCubeClockwise_BtnPressed()) {
+				_infeed.engrGamepadB_SpinClockwise();
 			} else {
 				_cubeHandler.stop();			
 			}
@@ -301,10 +308,10 @@ public class Robot extends IterativeRobot {
 			
 			// infeed wheel control
 			if (_dos.getEngrB_InfeedSpin_JoystickCmd() == 1.0) {
-				_infeed.engrGamepadB_SpinLeft();
+				_infeed.engrGamepadB_SpinCounterClockwise();
 			}
 			else if (_dos.getEngrB_InfeedSpin_JoystickCmd() == -1.0) {
-				_infeed.engrGamepadB_SpinRight();
+				_infeed.engrGamepadB_SpinClockwise();
 			}
 			else if (_dos.getEngrB_InfeedAndCarriage_JoystickCmd() == 1.0) {
 				_infeed.engrGamepadB_FeedOut();
@@ -364,7 +371,7 @@ public class Robot extends IterativeRobot {
 	//=====================================================================================
 	private void stopAll() {
 		_chassis.stop();
-		//_elevator.stop();
+		_elevator.stop();
 		_infeed.stop();
 		_carriage.stop();
 	}

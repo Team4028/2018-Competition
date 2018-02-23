@@ -105,6 +105,10 @@ public class DriverOperatorStation {
 	
 	// private constructor for singleton pattern
 	private DriverOperatorStation() {
+		resetGamepads();		
+	}
+	
+	public void resetGamepads() {
 		_driverGamepad = new XboxController(Constants.DRIVER_GAMEPAD_USB_PORT);					// std Logitech F310 Gamepad  
 		_operatorGamepad = new XboxController(Constants.OPERATOR_GAMEPAD_USB_PORT);				// std Logitech F310 Gamepad  
 		_engineeringGamepad = new XboxController(Constants.ENGINEERING_GAMEPAD_USB_PORT);	// std Logitech F310 Gamepad  
@@ -243,13 +247,13 @@ public class DriverOperatorStation {
 //			return _driverGamepad.getXButton();
 //		} 
 	
-	public boolean getIsDriver_SpinCubeManuver_BtnPressed() {
-		return _driverGamepad.getBumper(Hand.kLeft);
-	}
+		public boolean getIsDriver_SpinCubeCounterClockwise_BtnPressed() {
+			return _driverGamepad.getBumper(Hand.kLeft);
+		}
 	
-//		public boolean getIsDriver_EjectCube_BtnPressed() {
-//			return _driverGamepad.getBumper(Hand.kRight);
-//		} 
+		public boolean getIsDriver_SpinCubeClockwise_BtnPressed() {
+			return _driverGamepad.getBumper(Hand.kRight);
+		} 
 			
 //		public boolean getIsDriver_LeftStick_BtnPressed() {
 //			return _driverGamepad.getStickButton(Hand.kLeft);

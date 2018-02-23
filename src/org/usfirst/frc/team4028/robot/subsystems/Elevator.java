@@ -590,7 +590,7 @@ public class Elevator implements Subsystem {
 	//Methods for Exposing Properties of Elevator
 	//=====================================================================================
 	public boolean isElevatorAtFloorPosition() {
-		if(_elevatorState == ELEVATOR_STATE.MOVE_BELOW_SOFT_LIMIT) {
+		if(_elevatorState == ELEVATOR_STATE.MOVE_BELOW_SOFT_LIMIT || _targetElevatorPosition == CUBE_ON_FLOOR_POSITION) {
 			return true;
 		} else {
 			return false;

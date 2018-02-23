@@ -92,9 +92,9 @@ public class CubeHandler {
 	}
 		
 	public void doNothing() {
-		System.out.println("Do Nothing");
-		//_infeed.doNothing();
+		_infeed.doNothing();
 		_elevator.doNothing();
+		_carriage.stop();
 	}
 	
 	public void stop() {
