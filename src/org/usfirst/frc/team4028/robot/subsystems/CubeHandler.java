@@ -35,7 +35,7 @@ public class CubeHandler {
 	}
 	
 	//=====================================================================================
-	//Methods for Handling Interactions between multiple Subsystems
+	//Methods for Handling Interactions between infeed Subsystems
 	//=====================================================================================	
 	public void manageMoveElevatorToPresetPosition() {
 		System.out.println("p");
@@ -100,5 +100,9 @@ public class CubeHandler {
 	public void stop() {
 		_infeed.stopDriveMotors();
 		_carriage.stop();
+		_elevator.stop();
 	}
+	
+
+
 }

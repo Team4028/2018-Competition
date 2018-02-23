@@ -36,7 +36,7 @@ public class Infeed {
 		STORE,
 	}
 		
-	private enum INFEED_WHEELS_STATE {
+	public enum INFEED_WHEELS_STATE {
 		STOPPED,
 		FEED_IN,
 		FEED_OUT,
