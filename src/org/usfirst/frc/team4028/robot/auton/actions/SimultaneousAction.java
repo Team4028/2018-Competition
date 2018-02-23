@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /* Allows for multiple actions to run in parallel */
-public class ParallelAction implements Action{
+public class SimultaneousAction implements Action{
 	private final ArrayList<Action> _actionList;
 	
-	public ParallelAction(List<Action> actionList) {
+	public SimultaneousAction(List<Action> actionList) {
 		_actionList = new ArrayList<>(actionList.size());
 		for (Action action : actionList) {
 			_actionList.add(action);

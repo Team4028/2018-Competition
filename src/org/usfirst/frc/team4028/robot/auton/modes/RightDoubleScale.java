@@ -28,7 +28,7 @@ public class RightDoubleScale extends AutonBase {
 	
 	@Override
 	public void routine() {
-		runAction(new ParallelAction(Arrays.asList(new Action[] {
+		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 					new RunMotionProfileAction(toScale),
 					//new SetInfeedPosAction(Infeed.INFEED_TARGET_POSITION.STORE),
 					new SeriesAction(Arrays.asList(new Action[] {
@@ -36,11 +36,11 @@ public class RightDoubleScale extends AutonBase {
 	//						new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SCALE_HEIGHT)
 					}))
 		})));
-		runAction(new ParallelAction(Arrays.asList(new Action[] {
+		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 				new TurnAction(targetTurnAngle, true),
 	//			new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.CUBE_ON_FLOOR)
 		})));	
-		runAction(new ParallelAction(Arrays.asList(new Action[] {
+		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 				new RunMotionProfileAction(ScaletoSwitch),
 				new SeriesAction(Arrays.asList(new Action[] {
 		//			new SetInfeedPosAction(Infeed.INFEED_TARGET_POSITION.WIDE),
@@ -49,10 +49,10 @@ public class RightDoubleScale extends AutonBase {
 				}))
 				
 		}))); 	
-		runAction(new ParallelAction(Arrays.asList(new Action[] {
+		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 					new SeriesAction(Arrays.asList(new Action[] {
 							new WaitAction(0.5),
-							new ParallelAction(Arrays.asList(new Action[] {
+							new SimultaneousAction(Arrays.asList(new Action[] {
 									new RunMotionProfileAction(SwitchtoScale),
 									new SeriesAction(Arrays.asList(new Action[] {
 											new WaitAction(elevatorWaitTime2),
@@ -64,16 +64,16 @@ public class RightDoubleScale extends AutonBase {
 				//	new DriveInfeedWheelsAction(),
 					//new RunCarriageWheelsAction(true)
 		}))); 
-		runAction(new ParallelAction(Arrays.asList(new Action[] {
+		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 				new TurnAction(endTargetTurnAngle, false),
 				//new SetInfeedPosAction(Infeed.INFEED_TARGET_POSITION.STORE)
 		})));
-		runAction(new ParallelAction(Arrays.asList(new Action[] {
+		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 				//new RunCarriageWheelsAction(false),
 				new WaitAction(0.5)
 		})));
 		runAction(new RunCarriageWheelsAction(false));
-		runAction(new ParallelAction(Arrays.asList(new Action[] {
+		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 					//new DriveSetDistanceAction(-30.0),
 					//new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SWITCH_HEIGHT)
 		})));

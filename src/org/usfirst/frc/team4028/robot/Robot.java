@@ -5,11 +5,14 @@ import java.text.DecimalFormat;
 import java.util.Date;
 
 import org.usfirst.frc.team4028.robot.auton.AutonExecuter;
+import org.usfirst.frc.team4028.robot.paths.AdaptedPaths;
+import org.usfirst.frc.team4028.robot.sensors.RobotState;
 import org.usfirst.frc.team4028.robot.sensors.RobotStateEstimator;
 import org.usfirst.frc.team4028.robot.sensors.SwitchableCameraServer;
 import org.usfirst.frc.team4028.robot.sensors.UltrasonicSensor;
 import org.usfirst.frc.team4028.robot.subsystems.*;
 import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_PRESET_POSITION;
+import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_TARGET_POSITION;
 import org.usfirst.frc.team4028.util.DataLogger;
 import org.usfirst.frc.team4028.util.GeneralUtilities;
 import org.usfirst.frc.team4028.util.LogDataBE;
@@ -96,8 +99,6 @@ public class Robot extends IterativeRobot {
 		
 		_chassis.setBrakeMode(false);
 		
-		
-		
 		stopAll();
 	}
 
@@ -140,6 +141,8 @@ public class Robot extends IterativeRobot {
 		}
 		
 		_chassis.zeroGyro();
+		
+		AdaptedPaths.locateFlavorTownUSA();
 		
 		_autonExecuter = new AutonExecuter();
 		_autonExecuter.setAutoMode(_dashboard.getSelectedAuton());
@@ -187,7 +190,6 @@ public class Robot extends IterativeRobot {
 		_enabledLooper.start();
 		
 		stopAll();
-		
 		_chassis.zeroSensors();
 		_chassis.setHighGear(false);
 		_chassis.setBrakeMode(false);  
@@ -210,22 +212,13 @@ public class Robot extends IterativeRobot {
 	public void teleopPeriodic() {		
 		_ultrasonic.refreshUltrasonicValues();
 		_elevator.IsAtTargetPosition();
+		SmartDashboard.putString("Robot Pose", RobotState.getInstance().getLatestFieldToVehicle().toString());
 		
 		// =============  CHASSIS ============= 
 		
 		if ((Math.abs(_dos.getThrottleCmd()) > 0.05) || (Math.abs(_dos.getTurnCmd()) > 0.05)) {
 			_chassis.arcadeDrive(-1.0 * _dos.getThrottleCmd(), _dos.getTurnCmd());
-		}
-		else if(_dos.getIsTurnto0ButtonPressed())
-		{
-			_chassis.setTargetAngle(0, true);
-		}
-		else if(_dos.getIsTurnto180ButtonPressed())
-		{
-			_chassis.setTargetAngle(180, true);
-		}
-		else 
-		{
+		} else {
 			_chassis.stop();
 		}
 
@@ -259,14 +252,13 @@ public class Robot extends IterativeRobot {
 //		}
 
 		// =============  ELEVATOR ============= 
-		
 		if (Math.abs(_dos.getOperator_Elevator_JoystickCmd()) > 0.05) {
 			_elevator.JogAxis(_dos.getOperator_Elevator_JoystickCmd());
 		}
 		else if (_dos.getIsOperator_ElevatorCubeOnFloorHgt_BtnJustPressed()) {
 			_cubeHandler.moveElevatorToFloorInfeed();
 		}
-		else if (_cubeHandler.isSafeToMoveElevatorUp()) {
+		else if (2==2) {
 			if (_dos.getIsOperator_ElevatorScaleHgt_BtnJustPressed()) {
 				_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.SCALE_HEIGHT);
 			} 
@@ -274,10 +266,9 @@ public class Robot extends IterativeRobot {
 				_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.SWITCH_HEIGHT);
 			}
 			else if (_dos.getIsOperator_ElevatorPyrmdLvl1Hgt_BtnJustPressed()) {
-				_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.CUBE_ON_PYRAMID_LEVEL_1);
+				_infeed.MoveToPresetPosition(INFEED_TARGET_POSITION.WIDE);//_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.CUBE_ON_PYRAMID_LEVEL_1);
 			}
 		}
-		
 		else if (_dos.getIsOperator_ElevatorHome_BtnJustPressed()) {
 			_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.HOME);
 		} else {
@@ -297,6 +288,10 @@ public class Robot extends IterativeRobot {
 			_cubeHandler.stop();			
 		}
 		
+		if (_dos.getOperator_DriveCarraige_JoystickCmd()>0.05) {
+			_infeed.driveInfeedWheelsVBus(1.0);
+		}
+		
 		//if(_dos.getIsDriver_MoveCarriageCloser_BtnJustPressed()) {
 		//	_carriage.moveCarriageServosCloser();
 		//}
@@ -307,6 +302,10 @@ public class Robot extends IterativeRobot {
 		// ============= Camera Switch ============= 
 		if (_dos.getIsDriver_SwitchCamera_BtnJustPressed() == true) {
 			_switchableCameraServer.SwitchCamera();
+		}
+		
+		if(_dos.getIsOperator_Squeeze_BtnJustPressed()) {
+			_infeed.MoveToPresetPosition(INFEED_TARGET_POSITION.SQUEEZE);
 		}
 		
 		// ============= Refresh Dashboard =============
@@ -340,7 +339,7 @@ public class Robot extends IterativeRobot {
     		// to push its data out to the dashboard
 
     		_chassis.outputToShuffleboard(); 
-    		//_elevator.outputToShuffleboard();
+    		_elevator.outputToShuffleboard();
     		_infeed.outputToShuffleboard();
     		_carriage.outputToShuffleboard();
     		_ultrasonic.outputToShuffleboard();
@@ -371,7 +370,7 @@ public class Robot extends IterativeRobot {
 	    	
 	    	// ask each subsystem that exists to add its data
 	    	_chassis.updateLogData(logData);
-	    	//_elevator.updateLogData(logData);
+	    	_elevator.updateLogData(logData);
 	    	_infeed.updateLogData(logData);
 	    	_carriage.updateLogData(logData);
 	    	_ultrasonic.updateLogData(logData);

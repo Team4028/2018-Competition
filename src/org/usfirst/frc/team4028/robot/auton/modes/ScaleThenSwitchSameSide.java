@@ -36,7 +36,7 @@ public class ScaleThenSwitchSameSide extends AutonBase {
 	@Override
 	public void routine() {
 		runAction(new SetInfeedPosAction(INFEED_TARGET_POSITION.STORE));
-		runAction(new ParallelAction(Arrays.asList(new Action[] {
+		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 				new RunMotionProfileAction(toScale),
 //				new SetInfeedPosAction(Infeed.INFEED_TARGET_POSITION.STORE),
 				new SeriesAction(Arrays.asList(new Action[] {
@@ -44,33 +44,33 @@ public class ScaleThenSwitchSameSide extends AutonBase {
 	//					new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SCALE_HEIGHT)
 				}))
 	})));
-		runAction(new ParallelAction(Arrays.asList(new Action[] {
+		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 		//		new RunCarriageWheelsAction(false),
 				new WaitAction(0.5)
 		})));
-	runAction(new ParallelAction(Arrays.asList(new Action[] {
+	runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 			new TurnAction(targetTurnAngle, true),
 			//new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.CUBE_ON_FLOOR)
 	})));
-	runAction(new ParallelAction(Arrays.asList(new Action[] {
+	runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 				new RunMotionProfileAction(fromScaleToSwitch),
 				new SeriesAction(Arrays.asList(new Action[] {
 						new WaitAction(0.65),
 		//				new SetInfeedPosAction(Infeed.INFEED_TARGET_POSITION.WIDE)
 				}))
 	})));
-	runAction(new ParallelAction(Arrays.asList(new Action[] {
+	runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 				new WaitAction(0.65),
 		//		new SetInfeedPosAction(Infeed.INFEED_TARGET_POSITION.SQUEEZE),
 			//	new DriveInfeedWheelsAction(),
 				//new RunCarriageWheelsAction(true)
 	})));
-		runAction(new ParallelAction(Arrays.asList(new Action[] {
+		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 				//new DriveSetDistanceAction(8),
 				//new SetInfeedPosAction(Infeed.INFEED_TARGET_POSITION.STORE),
 				//new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SWITCH_HEIGHT)
 		})));
-		runAction(new ParallelAction(Arrays.asList(new Action[ ] {
+		runAction(new SimultaneousAction(Arrays.asList(new Action[ ] {
 				new WaitAction(0.5),
 				//new RunCarriageWheelsAction(false)
 		})));

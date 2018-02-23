@@ -14,13 +14,13 @@ public class Constants {
 	public static final int ENGINEERING_GAMEPAD_USB_PORT = 2;
 	
 	// PCM Can Bus Address
-	public static final int PCM_CAN_BUS_ADDR = 0;	
+	public static final int PCM_CAN_ADDR = 0;	
 	
 	// Talons Can Bus Address
-	public static final int LEFT_DRIVE_MASTER_CAN_BUS_ADDR = 1;
-	public static final int LEFT_DRIVE_SLAVE_CAN_BUS_ADDR = 2;
-	public static final int RIGHT_DRIVE_MASTER_CAN_BUS_ADDR = 3;
-	public static final int RIGHT_DRIVE_SLAVE_CAN_BUS_ADDR = 4;
+	public static final int LEFT_DRIVE_MASTER_CAN_ADDR = 1;
+	public static final int LEFT_DRIVE_SLAVE_CAN_ADDR = 2;
+	public static final int RIGHT_DRIVE_MASTER_CAN_ADDR = 3;
+	public static final int RIGHT_DRIVE_SLAVE_CAN_ADDR = 4;
 	public static final int LEFT_SWITCHBLADE_MOTOR_CAN_ADDRESS = 5;
 	public static final int RIGHT_SWITCHBLADE_MOTOR_CAN_ADDRESS = 6;
 	public static final int ELEVATOR_LIFT_MASTER_CAN_ADDRESS = 7;
@@ -29,13 +29,6 @@ public class Constants {
 	public static final int RIGHT_INFEED_DRIVE_CAN_ADDRESS = 10;
 	public static final int LEFT_INFEED_DRIVE_CAN_ADDRESS = 11;
 	public static final int CLIMBER_CAN_ADDRESS = 12;
-	
-	//Victor SP PWM Address
-	//public static final int LEFT_INFEED_DRIVE_PWM_ADDRESS = 0;
-	//public static final int RIGHT_INFEED_DRIVE_PWM_ADDRESS = 1;
-	
-	// Servo for Jeff
-	//public static final int CARRIAGE_SERVO_PWM_ADDRESS = 2;
 	
 	//Limit Switch for telling if Cube is in Robot
 	public static final int CARRIAGE_LIMIT_SWITCH_DIO_PORT = 0;
@@ -49,12 +42,12 @@ public class Constants {
 	public static final int ULTRASONIC_PORT = 0;
 	
 	// PCM Ports
-	public static final int SHIFTER_SOLENOID_RETRACT_PCM_PORT = 7;
-	public static final int SHIFTER_SOLENOID_EXTEND_PCM_PORT = 3;
+	public static final int SHIFTER_RETRACT_PCM_PORT = 7;
+	public static final int SHIFTER_EXTEND_PCM_PORT = 3;
 	
 	// Solenoid Positions
-	public static final Value SHIFTER_LOW_GEAR_POS = DoubleSolenoid.Value.kForward;
-	public static final Value SHIFTER_HIGH_GEAR_POS = DoubleSolenoid.Value.kReverse;
+	public static final Value SHIFTER_LOW_GEAR_POS = DoubleSolenoid.Value.kReverse;
+	public static final Value SHIFTER_HIGH_GEAR_POS = DoubleSolenoid.Value.kForward;
 	
 	// Infeed Position Constants
 	public static final double INFEED_POSITION = 2300;
@@ -91,7 +84,7 @@ public class Constants {
     public static final double DELTA_LOOKAHEAD = MAX_LOOKAHEAD - MIN_LOOKAHEAD;
     public static final double DELTA_LOOKAHEAD_SPEED = MAX_LOOKAHEAD_SPEED - MIN_LOOKAHEAD_SPEED;
 
-    public static final double INERTIA_STEERING_GAIN = 0; //-0.01; // angular velocity command is multiplied by this gain *
+    public static final double INERTIA_STEERING_GAIN = 0; // angular velocity command is multiplied by this gain *
                             
     public static final double SEGMENT_COMPLETION_TOLERANCE = 0.1; // inches
     public static final double PATH_FOLLOWING_STANDARD_ACCEL = 100.0; // inches per second^2
@@ -127,7 +120,7 @@ public class Constants {
     public static final double RIGHT_SCALE_Y_DELTA = 0;
     public static final double RIGHT_SWITCH_BACK_DELTA_Y = 0;
     
-    public static final double BIG_NUMBER = 1e6;
+    public static final int BIG_NUMBER = (int)1e6;
     public static final double EPSILON_NEGATIVE_6 = 1e-6;
     public static final double EPSILON_NEGATIVE_9 = 1e-9;
 }

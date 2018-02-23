@@ -28,20 +28,20 @@ public class TripleScale extends AutonBase{
 
 	@Override
 	public void routine() {
-		runAction(new ParallelAction(Arrays.asList(new Action[] {
+		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 				new RunMotionProfileAction(toScale),
 				new SetInfeedPosAction(Infeed.INFEED_TARGET_POSITION.STORE)
 	})));
 	runAction(new TurnAction(targetTurnAngle1, true));
 	//runAction(new DriveSetDistanceAction(30));
-	runAction(new ParallelAction(Arrays.asList(new Action[] {
+	runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 				new RunMotionProfileAction(fromScaleToSwitch),
 				new SeriesAction(Arrays.asList(new Action[] {
 						new WaitAction(0.15),
 						new SetInfeedPosAction(Infeed.INFEED_TARGET_POSITION.WIDE)
 				}))
 	})));
-	runAction(new ParallelAction(Arrays.asList(new Action[] {
+	runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 				new SeriesAction(Arrays.asList(new Action[] {
 						new WaitAction(0.50),
 						new RunMotionProfileAction(fromSwitchToScale)
@@ -50,7 +50,7 @@ public class TripleScale extends AutonBase{
 				new DriveInfeedWheelsAction()
 	}))); 
 	runAction(new TurnAction(endTargetTurnAngle, false));
-		runAction(new ParallelAction(Arrays.asList(new Action[] {
+		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 				new SetInfeedPosAction(Infeed.INFEED_TARGET_POSITION.STORE),
 				new WaitAction(0.5)
 		})));

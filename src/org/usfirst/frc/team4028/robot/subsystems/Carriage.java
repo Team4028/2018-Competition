@@ -29,7 +29,7 @@ public class Carriage implements Subsystem {
 	private double _servoTargetPosition = 0.1;
 	private double _carriageCurrentCurrent = 0;
 	
-	private static final double CARRIAGE_WHEELS_INFEED_COMMAND = 0.5;
+	private static final double CARRIAGE_WHEELS_INFEED_COMMAND = 0.7;
 	
 	//=====================================================================================
 	//Define Singleton Pattern
