@@ -6,7 +6,7 @@ import org.usfirst.frc.team4028.robot.auton.AutonBase;
 import org.usfirst.frc.team4028.robot.paths.Paths;
 import org.usfirst.frc.team4028.robot.paths.Paths.PATHS;
 import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_PRESET_POSITION;
-import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_TARGET_POSITION;
+import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_ARM_TARGET_POSITION;
 import org.usfirst.frc.team4028.util.control.Path;
 import org.usfirst.frc.team4028.robot.auton.actions.*;
 
@@ -36,7 +36,7 @@ public class LeftSwitchtoRightScaleExperimental extends AutonBase {
 		runAction(new TurnAction(180, true));
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 				new DriveSetDistanceAction(20.0),
-				new SetInfeedPosAction(INFEED_TARGET_POSITION.WIDE)
+				new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.WIDE)
 		})));
 	}
 }

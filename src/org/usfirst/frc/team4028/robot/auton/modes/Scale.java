@@ -7,8 +7,7 @@ import org.usfirst.frc.team4028.robot.auton.actions.*;
 import org.usfirst.frc.team4028.robot.paths.Paths;
 import org.usfirst.frc.team4028.robot.paths.Paths.PATHS;
 import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_PRESET_POSITION;
-import org.usfirst.frc.team4028.robot.subsystems.Infeed;
-import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_TARGET_POSITION;
+import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_ARM_TARGET_POSITION;
 import org.usfirst.frc.team4028.util.control.Path;
 
 public class Scale extends AutonBase{
@@ -27,10 +26,10 @@ public class Scale extends AutonBase{
 	
 	@Override
 	public void routine() {
-		runAction(new SetInfeedPosAction(INFEED_TARGET_POSITION.STORE));
+		runAction(new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.STORE));
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 					new RunMotionProfileAction(toScale),
-					new SetInfeedPosAction(Infeed.INFEED_TARGET_POSITION.STORE),
+					new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.STORE),
 					new SeriesAction(Arrays.asList(new Action[] {
 							new WaitAction(elevatorWaitTime),
 							new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SCALE_HEIGHT)

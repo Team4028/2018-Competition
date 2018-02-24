@@ -8,8 +8,7 @@ import org.usfirst.frc.team4028.robot.paths.Paths;
 import org.usfirst.frc.team4028.util.control.Path;
 import org.usfirst.frc.team4028.robot.paths.Paths.PATHS;
 import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_PRESET_POSITION;
-import org.usfirst.frc.team4028.robot.subsystems.Infeed;
-import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_TARGET_POSITION;
+import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_ARM_TARGET_POSITION;
 
 public class DoubleSwitch extends AutonBase {
 	Path toSwitch; // Cube 1
@@ -37,7 +36,7 @@ public class DoubleSwitch extends AutonBase {
 	public void routine() {
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 					new RunMotionProfileAction(toSwitch),
-					new SetInfeedPosAction(Infeed.INFEED_TARGET_POSITION.STORE),
+					new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.STORE),
 					new SeriesAction(Arrays.asList(new Action[] {
 							new WaitAction(elevatorWaitTimeFirstCube),
 							new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SWITCH_HEIGHT)
@@ -52,7 +51,7 @@ public class DoubleSwitch extends AutonBase {
 					new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.CUBE_ON_FLOOR),
 					new SeriesAction(Arrays.asList(new Action[] {
 							new WaitAction(1.4),
-							new SetInfeedPosAction(Infeed.INFEED_TARGET_POSITION.WIDE)
+							new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.WIDE)
 					}))
 		})));
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
@@ -61,7 +60,7 @@ public class DoubleSwitch extends AutonBase {
 							new DriveInfeedWheelsAction(),
 							new SeriesAction(Arrays.asList(new Action[] {
 									new WaitAction(1),
-									new SetInfeedPosAction(INFEED_TARGET_POSITION.SQUEEZE)
+									new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.SQUEEZE)
 							})),
 							new RunCarriageWheelsAction(true),
 							new WaitAction(2)
@@ -83,7 +82,7 @@ public class DoubleSwitch extends AutonBase {
 								new WaitAction(0.5)
 							}))
 					})),
-					new SetInfeedPosAction(Infeed.INFEED_TARGET_POSITION.STORE),
+					new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.STORE),
 					new SeriesAction(Arrays.asList(new Action[] {
 							new WaitAction(elevatorWaitTimeSecondCube),
 							new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SWITCH_HEIGHT),

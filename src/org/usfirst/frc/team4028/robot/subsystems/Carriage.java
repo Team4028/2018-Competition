@@ -15,7 +15,21 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+//This class implements all functionality for the carriage Subsystem
+//=====> For Changes see Patrick Bruns
+//-------------------------------------------------------------
+//	Rev		By			D/T				Description
+//	0		PatB		???			Initial Version
+//	1		TomB		18-Feb		Cleanup Looper
+//-------------------------------------------------------------
 public class Carriage implements Subsystem {
+	
+	private enum CARRIAGE_WHEELS_STATE {
+		STOPPED,
+		FEED_IN,
+		FEED_OUT,
+		JOYSTICK
+	}
 	
 	// define class level working variables
 	private TalonSRX _carriageLeftMotor; 
@@ -25,11 +39,17 @@ public class Carriage implements Subsystem {
 	
 	//private Servo _carriageSqueezeServo;
 	
-	private double _carriageDriveCmd;
-	private double _servoTargetPosition = 0.1;
-	private double _carriageCurrentCurrent = 0;
+	private CARRIAGE_WHEELS_STATE _carriageWheelsState;
 	
-	private static final double CARRIAGE_WHEELS_INFEED_COMMAND = 0.7;
+	private double _currentCarriageWheelsVBusCmd = CARRIAGE_WHEELS_INFEED_COMMAND;
+	//private double _servoTargetPosition = 0.1;
+	
+	// private double _currentInFeedWheelsVBusCmd = INFEED_DRIVE_WHEELS_VBUS_COMMAND;
+	
+	private static final double CARRIAGE_WHEELS_INFEED_COMMAND = 0.5;
+	private static final double CARRIAGE_WHEELS_VBUS_COMMAND_BUMP = 0.05;
+	
+	private static final boolean IS_VERBOSE_LOGGING_ENABLED = true;
 	
 	//=====================================================================================
 	//Define Singleton Pattern
@@ -103,16 +123,21 @@ public class Carriage implements Subsystem {
 		
 		//Setup Limit Switch
 		_carriageLimitSwitch = new DigitalInput(Constants.CARRIAGE_LIMIT_SWITCH_DIO_PORT);
+		
+		_carriageWheelsState = CARRIAGE_WHEELS_STATE.STOPPED;
 	}
 
 	//=====================================================================================
 	//Set Up Looper to run loop at 10ms interval (2x RoboRio Cycle Time)
 	//=====================================================================================
-	private final Loop _loop = new Loop() {
+	private final Loop _loop = new Loop() 
+	{
 		// called in Telop & Auton Init
 		@Override
-		public void onStart(double timestamp) {
-			synchronized (Carriage.this) {
+		public void onStart(double timestamp) 
+		{
+			synchronized (Carriage.this) 
+			{
 			}
 		}
 		
@@ -120,90 +145,179 @@ public class Carriage implements Subsystem {
 		//Looper and State Machine for Commanding Infeed Axis
 		//=====================================================================================
 		@Override
-		public void onLoop(double timestamp) {
-			synchronized (Carriage.this) {	
-				// joystick mode
-				_carriageLeftMotor.set(ControlMode.PercentOutput, _carriageDriveCmd, 0);
-				_carriageRightMotor.set(ControlMode.PercentOutput, _carriageDriveCmd, 0);
+		public void onLoop(double timestamp) 
+		{
+			synchronized (Carriage.this)
+			{	
 				
-				_carriageCurrentCurrent = _carriageLeftMotor.getOutputCurrent();
-				
-				//_carriageSqueezeServo.set(_servoTargetPosition);
+				switch(_carriageWheelsState)
+				{
+					case STOPPED:
+						_carriageLeftMotor.set(ControlMode.PercentOutput, 0, 0);
+						_carriageRightMotor.set(ControlMode.PercentOutput, 0, 0);
+						break;
+						
+					case FEED_IN:
+						_carriageLeftMotor.set(ControlMode.PercentOutput, _currentCarriageWheelsVBusCmd, 0);
+						_carriageRightMotor.set(ControlMode.PercentOutput, _currentCarriageWheelsVBusCmd, 0);
+						break;
+						
+					case FEED_OUT:
+						_carriageLeftMotor.set(ControlMode.PercentOutput, -1 * _currentCarriageWheelsVBusCmd, 0);
+						_carriageRightMotor.set(ControlMode.PercentOutput, -1 * _currentCarriageWheelsVBusCmd, 0);
+						break;
+						
+					case JOYSTICK:
+						_carriageLeftMotor.set(ControlMode.PercentOutput, _currentCarriageWheelsVBusCmd, 0);
+						_carriageRightMotor.set(ControlMode.PercentOutput, _currentCarriageWheelsVBusCmd, 0);
+						break;
+				}
 			}
 		}
 		
 		@Override
-		public void onStop(double timestamp) {
-			synchronized (Carriage.this) {
+		public void onStop(double timestamp) 
+		{
+			synchronized (Carriage.this) 
+			{
 				stop();
 			}
 		}
 	};
 	
-	public Loop getLoop() {
+	public Loop getLoop() 
+	{
 		return _loop;
 	}
 	
 	@Override
-	public void stop() {
-		_carriageDriveCmd = 0.0;
-		_carriageLeftMotor.set(ControlMode.PercentOutput, _carriageDriveCmd, 0);
-		_carriageRightMotor.set(ControlMode.PercentOutput, _carriageDriveCmd, 0);
+	public void stop() 
+	{
+		if(_carriageWheelsState != CARRIAGE_WHEELS_STATE.STOPPED) {
+			ReportStateChg("Carriage Wheels (State) " + _carriageWheelsState.toString() + " ==> [STOPPED]");
+			_carriageWheelsState = CARRIAGE_WHEELS_STATE.STOPPED;
+		}
 	}
 
-	public void infeedCarriageMotorsVBus(double vbusCmd)
+	public void infeedCarriageMotorsVBus(double vbusCmd) 
 	{
 		if(!isCubeInCarriage()) {
 			// scale cmd
-			_carriageDriveCmd = vbusCmd * 0.5;
-		} else {
-			_carriageDriveCmd = 0;
-		}
-	}
-	
-	public void runCarriageMotors() {
-		if(!isCubeInCarriage()) {
-			_carriageDriveCmd = CARRIAGE_WHEELS_INFEED_COMMAND;
-		} else {
-			_carriageDriveCmd = 0;
+			_currentCarriageWheelsVBusCmd = vbusCmd * 0.5;
+			FeedIn();
+		} 
+		else {
+			stop();
 		}
 		
+		ReportStateChg("Carriage Wheels (State) " + _carriageWheelsState.toString() + " ==> [JOYSTICK]");
+		_carriageWheelsState = CARRIAGE_WHEELS_STATE.JOYSTICK;
 	}
 	
-	public void ejectCube() {
-		_carriageDriveCmd = -1  * CARRIAGE_WHEELS_INFEED_COMMAND;
-	}
-	
-	public void ejectCubeVBus(double joystickCommand) {
-		_carriageDriveCmd = -1 * joystickCommand;
-	}
-	
-	public void moveCarriageServosWider() {
-		if(_servoTargetPosition != 1) {
-			_servoTargetPosition = _servoTargetPosition + 0.05;
+	public void FeedIn() 
+	{
+		if(!isCubeInCarriage()) {
+			//_carriageDriveCmd = CARRIAGE_WHEELS_INFEED_COMMAND;
+			if(_carriageWheelsState != CARRIAGE_WHEELS_STATE.FEED_IN) {
+				ReportStateChg("Carriage Wheels (State) " + _carriageWheelsState.toString() + " ==> [FEED_IN]");
+				_carriageWheelsState = CARRIAGE_WHEELS_STATE.FEED_IN;
+			}			
+		} 
+		else {
+			if(_carriageWheelsState != CARRIAGE_WHEELS_STATE.STOPPED) {
+				ReportStateChg("Carriage Wheels (State) " + _carriageWheelsState.toString() + " ==> [STOPPED]");
+				_carriageWheelsState = CARRIAGE_WHEELS_STATE.STOPPED;
+			}
 		}
 	}
 	
-	public void moveCarriageServosCloser() {
-		if(_servoTargetPosition != 0) {
-			_servoTargetPosition = _servoTargetPosition - 0.05;
+	public void FeedOut() 
+	{
+		//_carriageDriveCmd = -1  * CARRIAGE_WHEELS_INFEED_COMMAND;
+		if(_carriageWheelsState != CARRIAGE_WHEELS_STATE.FEED_OUT) {
+			ReportStateChg("Carriage Wheels (State) " + _carriageWheelsState.toString() + " ==> [FEED_OUT]");
+			_carriageWheelsState = CARRIAGE_WHEELS_STATE.FEED_OUT;
 		}
 	}
 	
-	public boolean isCubeInCarriage() {
+	public void ejectCubeVBus(double joystickCommand) 
+	{
+		_currentCarriageWheelsVBusCmd = -1 * joystickCommand;
+		
+		if(_carriageWheelsState != CARRIAGE_WHEELS_STATE.JOYSTICK) {
+			ReportStateChg("Carriage Wheels (State) " + _carriageWheelsState.toString() + " ==> [JOYSTICK]");
+			_carriageWheelsState = CARRIAGE_WHEELS_STATE.JOYSTICK;
+		}
+	}
+	
+	//public void moveCarriageServosWider() {
+	//	if(_servoTargetPosition != 1) {
+	//		_servoTargetPosition = _servoTargetPosition + 0.05;
+	//	}
+	//}
+	
+	//public void moveCarriageServosCloser() {
+	//	if(_servoTargetPosition != 0) {
+	//		_servoTargetPosition = _servoTargetPosition - 0.05;
+	//	}
+	//}
+	
+	public void carriageWheels_VBusCmd_BumpUp() 
+	{
+		double newCmd = _currentCarriageWheelsVBusCmd + CARRIAGE_WHEELS_VBUS_COMMAND_BUMP;
+		
+		// only bump if new cmd is not over max
+		if(newCmd <= 1.0) {
+			_currentCarriageWheelsVBusCmd = newCmd;
+		}
+	}
+	
+	public void carriageWheels_VBusCmd_BumpDown() 
+	{		
+		double newCmd = _currentCarriageWheelsVBusCmd - CARRIAGE_WHEELS_VBUS_COMMAND_BUMP;
+		
+		// only bump if new cmd is not under min
+		if(newCmd >= 0.0) {
+			_currentCarriageWheelsVBusCmd = newCmd;
+		}
+	}
+	
+	public boolean isCubeInCarriage() 
+	{
 		return _carriageLimitSwitch.get();
+	} 
+	
+	@Override
+	public void zeroSensors() 
+	{
+		// N/A on this subsystem
+	}
+
+	private double getCarriageMotorCurrent()
+	{
+		return _carriageLeftMotor.getOutputCurrent();
 	}
 	
 	@Override
-	public void zeroSensors() {
+	public void outputToShuffleboard() 
+	{
+		SmartDashboard.putNumber("Carriage Current:", getCarriageMotorCurrent());
+		SmartDashboard.putNumber("Carriage Wheels %VBus", _currentCarriageWheelsVBusCmd * 100);
+		SmartDashboard.putString("Carriage State", _carriageWheelsState.toString());
+		SmartDashboard.putBoolean("Carriage LimitSwitch", isCubeInCarriage());
 	}
 
 	@Override
-	public void outputToShuffleboard() {
-		SmartDashboard.putNumber("Carriage Current:", _carriageCurrentCurrent);
+	public void updateLogData(LogDataBE logData) 
+	{
+		logData.AddData("Carriage:LimitSwitch", String.valueOf(isCubeInCarriage()));
 	}
-
-	@Override
-	public void updateLogData(LogDataBE logData) {
+	
+	// private helper method to control how we write to the drivers station
+	private void ReportStateChg(String message) 
+	{
+		if(IS_VERBOSE_LOGGING_ENABLED) {
+			System.out.println(message);
+		}
 	}
 }

@@ -1,11 +1,11 @@
 package org.usfirst.frc.team4028.robot.auton.actions;
 
 import org.usfirst.frc.team4028.robot.subsystems.Carriage;
-import org.usfirst.frc.team4028.robot.subsystems.CubeHandler;
+import org.usfirst.frc.team4028.robot.subsystems.CubeHandler2;
 import org.usfirst.frc.team4028.robot.subsystems.Infeed;
 
 public class InfeedCubeAction implements Action {
-	CubeHandler _cubeHandler = CubeHandler.getInstance();
+	CubeHandler2 _cubeHandler = CubeHandler2.getInstance();
 	Infeed _infeed = Infeed.getInstance();
 	Carriage _carriage = Carriage.getInstance();
 	
@@ -15,8 +15,7 @@ public class InfeedCubeAction implements Action {
 
 	@Override
 	public void update() {
-		_cubeHandler.runInfeedCubePlusCarriage(0.5);
-		_infeed.moveArmsToSqueezeInfeedPosition();
+		_cubeHandler.acquireCube_InfeedPlusCarriage();
 	}
 
 	@Override
@@ -26,6 +25,6 @@ public class InfeedCubeAction implements Action {
 
 	@Override
 	public boolean isFinished() {
-		return _carriage.isCubeInCarriage();
+		return _cubeHandler.isCubeInCarriage();
 	}
 }

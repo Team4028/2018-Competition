@@ -12,6 +12,7 @@ public class Constants {
 	public static final int DRIVER_GAMEPAD_USB_PORT = 0;
 	public static final int OPERATOR_GAMEPAD_USB_PORT = 1;
 	public static final int ENGINEERING_GAMEPAD_USB_PORT = 2;
+	public static final int ENGINEERING_GAMEPAD_B_USB_PORT = 3;
 	
 	// PCM Can Bus Address
 	public static final int PCM_CAN_ADDR = 0;	
