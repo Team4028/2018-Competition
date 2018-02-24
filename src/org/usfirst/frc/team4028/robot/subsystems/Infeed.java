@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Infeed  implements Subsystem {	
 	// define the Class Level Enums
-	private enum INFEED_ARM_STATE {
+	public enum INFEED_ARM_STATE {
 		STOPPED,
 		NEED_TO_HOME,
 		MOVING_TO_HOME,
@@ -59,8 +59,8 @@ public class Infeed  implements Subsystem {
 	private double _targetInfeedArmPosition;
 	
 	// supports bumping
-	private double _currentInFeedArmSqueezeTargetAngle = SQUEEZE_INFEED_POSITION_ANGLE;
-	private double _currentInFeedWheelsVBusCmd = INFEED_DRIVE_WHEELS_VBUS_COMMAND;
+	private double _currentInFeedArmSqueezeTargetAngle = 198;
+	private double _currentInFeedWheelsVBusCmd = .45;
 	
 	// motor controllers
 	TalonSRX _leftSwitchbladeArmMotor; 
@@ -151,7 +151,7 @@ public class Infeed  implements Subsystem {
 	
 	// handles issue that arms on practice robot do not hit home limit switches
 	//	at the same place
-	private static final int LEFT_INFEED_ARM_ZERO_OFFSET = 75;  // 150 > 200 > 100 > 50 > 75
+	private static final int LEFT_INFEED_ARM_ZERO_OFFSET = 96; //75;  // 150 > 200 > 100 > 50 > 75
 	private static final int RIGHT_INFEED_ARM_ZERO_OFFSET = 0;
 	
 	//=====================================================================================
@@ -688,6 +688,12 @@ public class Infeed  implements Subsystem {
 	private double getCurrentRightInfeedPosition() {
 		return _rightSwitchbladeArmMotor.getSelectedSensorPosition(0);
 	}
+	
+	public INFEED_ARM_STATE getInfeedArmState()
+	{
+		return _infeedArmState;
+	}
+	
 	//=====================================================================================
 	//Methods for Conversions between Native Units and Degrees
 	//=====================================================================================
@@ -711,7 +717,7 @@ public class Infeed  implements Subsystem {
 		SmartDashboard.putNumber("Wide Infeed Position:", degreesToNativeUnits(WIDE_INFEED_POSITION_ANGLE));
 		SmartDashboard.putBoolean("Are Arms Safe?", areArmsInSafePosition());
 		SmartDashboard.putString("Infeed Wheels State", _infeedWheelsState.toString());
-		SmartDashboard.putNumber("Infeed Wheels %VBus", _currentInFeedWheelsVBusCmd * 100);
+		SmartDashboard.putNumber("Infeed Wheels %VBus", _currentInFeedWheelsVBusCmd);
 		SmartDashboard.putNumber("Infeed Arm Target Squeeze Angle", _currentInFeedArmSqueezeTargetAngle);
 		SmartDashboard.putString("Infeed Arm State", _infeedArmState.toString());
 		SmartDashboard.putBoolean("Left Arm: Homed?", _hasLeftArmBeenHomed);

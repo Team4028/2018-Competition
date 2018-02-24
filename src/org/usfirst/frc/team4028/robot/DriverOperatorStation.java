@@ -527,6 +527,10 @@ public class DriverOperatorStation {
 	// =========================================================================================================
 	// ENGINEER		ENGINEER	ENGINEER	ENGINEER	ENGINEER	ENGINEER	ENGINEER	ENGINEER	ENGINEER
 	// =========================================================================================================
+	public boolean IsEngineeringGamepadAAvailable()
+	{
+		return _isEngineeringGamepadA_PluggedIn;
+	}
 	
 	// ======================================
 	// == Engineering Just Pressed buttons ==
@@ -546,19 +550,19 @@ public class DriverOperatorStation {
 //		}
 	
 	public boolean getIsEngineering_ElevatorScaleHgt_BtnJustPressed() {
-		return false; //_engineeringGamepad.getYButtonPressed();
+		return _engineeringGamepadA.getYButtonPressed();
 	}
 	 
 	public boolean getIsEngineering_ElevatorPyramidHgt_BtnJustPressed() {
-		return false; //_engineeringGamepad.getBButtonPressed();
+		return _engineeringGamepadA.getBButtonPressed();
 	}
 	
 	public boolean getIsEngineering_ElevatorCubeOnFloorHgt_BtnJustPressed() {
-		return false; //_engineeringGamepad.getAButtonPressed();
+		return _engineeringGamepadA.getAButtonPressed();
 	}	
 
 	public boolean getIsEngineering_ElevatorSwitchHgt_BtnJustPressed() {
-		return false; //_engineeringGamepad.getXButtonPressed();
+		return _engineeringGamepadA.getXButtonPressed();
 	}
 	
 //		public boolean getIsEngineering_LeftBumper_BtnJustPressed() {
@@ -650,7 +654,7 @@ public class DriverOperatorStation {
 //		}
 	
 	public boolean getIsEngineering_SpinCubeManuver_BtnPressed() {
-		return false; //_engineeringGamepad.getBumper(Hand.kLeft);
+		return _engineeringGamepadA.getBumper(Hand.kLeft);
 	}
 	
 //		public boolean getIsEngineering_RightBumper_BtnPressed() {
