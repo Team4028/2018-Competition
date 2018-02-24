@@ -3,6 +3,7 @@ package org.usfirst.frc.team4028.robot.subsystems;
 import java.util.Date;
 
 import org.usfirst.frc.team4028.robot.Constants;
+import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_ARM_STATE;
 import org.usfirst.frc.team4028.util.GeneralUtilities;
 import org.usfirst.frc.team4028.util.LogDataBE;
 import org.usfirst.frc.team4028.util.loops.Loop;
@@ -30,7 +31,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //-------------------------------------------------------------
 public class Elevator implements Subsystem {
 	// define enums for the elevator axis
-	private enum ELEVATOR_STATE {
+	public enum ELEVATOR_STATE {
 		NEED_TO_HOME,
 		MOVING_TO_HOME,
 		AT_HOME,
@@ -109,7 +110,7 @@ public class Elevator implements Subsystem {
 	 * 		0			2						54.5					0
 	 */
 	
-	private static final boolean IS_VERBOSE_LOGGING_ENABLED = true;
+	private static final boolean IS_VERBOSE_LOGGING_ENABLED = false;
 	
 	private static final int HOLDING_PID_SLOT_INDEX = 2;
 	private static final int MOVING_UP_PID_SLOT_INDEX = 1;
@@ -495,6 +496,15 @@ public class Elevator implements Subsystem {
 		}
 	}
 
+	public ELEVATOR_STATE getElevatorState()
+	{
+		return _elevatorState;
+	}
+	
+	public void rezeroElevator() {
+		_elevatorState = ELEVATOR_STATE.NEED_TO_HOME;
+	}
+	
 	// reset (rzero) all sensors
 	@Override
 	public void zeroSensors() {
