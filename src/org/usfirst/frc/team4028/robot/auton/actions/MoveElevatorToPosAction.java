@@ -26,6 +26,6 @@ public class MoveElevatorToPosAction implements Action {
 
 	@Override
 	public boolean isFinished() {
-		return _elevator.isElevatorAtFloorPosition();
+		return _elevator.isElevatorAtInfeedPosition();
 	}
 }

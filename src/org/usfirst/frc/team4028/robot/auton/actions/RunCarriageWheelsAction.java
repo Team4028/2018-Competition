@@ -16,9 +16,9 @@ public class RunCarriageWheelsAction implements Action{
 	@Override
 	public void update() {
 		if(_isInfeed) {
-			_carriage.runCarriageMotors();
+			_carriage.FeedIn();
 		} else {
-			_carriage.ejectCube();
+			_carriage.FeedOut();
 		}
 	}
 

@@ -86,7 +86,7 @@ public class DriverOperatorStation {
 	// class level private variables
 	private XboxController _driverGamepad;
 	private XboxController _operatorGamepad;
-	private XboxController _engineeringGamepad;
+	private XboxController _engineeringGamepadA;
 	private XboxController _engineeringGamepadB;
 		
 	private DriverStation _driverStation;
@@ -100,32 +100,79 @@ public class DriverOperatorStation {
 		return _instance;
 	}
 	
-	private Boolean _isEngineeringGamePadA_PluggedIn = false;
+	private Boolean _isDriverGamepad_PluggedIn = false;
+	private Boolean _isOperatorGamepad_PluggedIn = false;
+	private Boolean _isEngineeringGamepadA_PluggedIn = false;
 	private Boolean _isEngineeringGamepadB_PluggedIn = false;
 	
 	// private constructor for singleton pattern
 	private DriverOperatorStation() {
-		resetGamepads();		
-	}
-	
-	public void resetGamepads() {
+		_driverStation = DriverStation.getInstance();
+		
+		_isDriverGamepad_PluggedIn = _driverStation.getJoystickIsXbox(Constants.DRIVER_GAMEPAD_USB_PORT);
 		_driverGamepad = new XboxController(Constants.DRIVER_GAMEPAD_USB_PORT);					// std Logitech F310 Gamepad  
+		
+		_isOperatorGamepad_PluggedIn = _driverStation.getJoystickIsXbox(Constants.OPERATOR_GAMEPAD_USB_PORT);
 		_operatorGamepad = new XboxController(Constants.OPERATOR_GAMEPAD_USB_PORT);				// std Logitech F310 Gamepad  
-		_engineeringGamepad = new XboxController(Constants.ENGINEERING_GAMEPAD_USB_PORT);	// std Logitech F310 Gamepad  
+		
+		_isEngineeringGamepadA_PluggedIn = _driverStation.getJoystickIsXbox(Constants.ENGINEERING_GAMEPAD_USB_PORT);
+		_engineeringGamepadA = new XboxController(Constants.ENGINEERING_GAMEPAD_USB_PORT);	// std Logitech F310 Gamepad  
+		
+		_isEngineeringGamepadB_PluggedIn = _driverStation.getJoystickIsXbox(Constants.ENGINEERING_GAMEPAD_B_USB_PORT);
 		_engineeringGamepadB = new XboxController(Constants.ENGINEERING_GAMEPAD_B_USB_PORT);
 		
-		_driverStation = DriverStation.getInstance();
-		_isEngineeringGamePadA_PluggedIn = _driverStation.getJoystickIsXbox(Constants.ENGINEERING_GAMEPAD_USB_PORT);
-		if(_isEngineeringGamePadA_PluggedIn) {
+		if(_isEngineeringGamepadA_PluggedIn) {
 			System.out.println("Enginnering GamePad A Plugged In");
 		}
 
-		_isEngineeringGamepadB_PluggedIn = _driverStation.getJoystickIsXbox(Constants.ENGINEERING_GAMEPAD_B_USB_PORT);
 		if(_isEngineeringGamepadB_PluggedIn) {
 			System.out.println("Enginnering GamePad B Plugged In");
+		}		
+	}
+	
+	public void clearGamepadsCachedBtnPresses() {
+		// Note: 2018 WPI code seems to have an issue that caches joystick button 
+		//			pressed while the robot is on but disabled
+		// 			so we eat cached button presses by reading them
+		if(_isDriverGamepad_PluggedIn)
+		{
+			// eat cached button presses
+			resetGamepad(_driverGamepad);
+		}
+		
+		if(_isOperatorGamepad_PluggedIn)
+		{
+			// eat cached button presses
+			resetGamepad(_operatorGamepad);
+		}
+		
+		if(_isEngineeringGamepadA_PluggedIn)
+		{
+			// eat cached button presses
+			resetGamepad(_engineeringGamepadA);
+		}
+		
+		if(_isEngineeringGamepadB_PluggedIn)
+		{
+			// eat cached button presses
+			resetGamepad(_engineeringGamepadB);
 		}
 	}
-			
+		
+	// eat cached button presses
+	private void resetGamepad(XboxController gamepad) {
+		gamepad.getBackButtonPressed();
+		gamepad.getStartButtonPressed();
+		gamepad.getYButtonPressed();
+		gamepad.getBButtonPressed();
+		gamepad.getAButtonPressed();
+		gamepad.getXButtonPressed();
+		gamepad.getBumperPressed(Hand.kLeft);
+		gamepad.getBumperPressed(Hand.kRight);
+		gamepad.getStickButtonPressed(Hand.kLeft);
+		gamepad.getStickButtonPressed(Hand.kRight);
+	}
+	
 	// =========================================================================================================
 	// DRIVER	DRIVER	DRIVER	DRIVER	DRIVER	DRIVER	DRIVER	DRIVER	DRIVER	DRIVER	DRIVER	DRIVER
 	// =========================================================================================================
@@ -311,7 +358,7 @@ public class DriverOperatorStation {
 	// == Operator Just Pressed buttons ==
 	// ===================================
 	public boolean getIsOperator_ElevatorHome_BtnJustPressed() {
-		return _engineeringGamepad.getBackButtonPressed();
+		return _operatorGamepad.getBackButtonPressed();
 	}
 
 	public boolean getIsOperator_SwitchCamera_BtnJustPressed() {
@@ -421,9 +468,9 @@ public class DriverOperatorStation {
 //			return _operatorGamepad.getXButton();
 //		}
 	
-	public boolean getIsOperator_ElevatorSafety_BtnPressed() {
-		return _operatorGamepad.getBumper(Hand.kLeft);
-	}
+//	public boolean getIsOperator_ElevatorSafety_BtnPressed() {
+//		return _operatorGamepad.getBumper(Hand.kLeft);
+//	}
 	
 //		public boolean getIsOperator_RightBumper_BtnPressed() {
 //			return _operatorGamepad.getBumper(Hand.kRight);
@@ -486,8 +533,8 @@ public class DriverOperatorStation {
 	// ======================================
 
 	public boolean getIsEngineering_ReZeroInfeed_BtnJustPressed() {
-		if(_isEngineeringGamePadA_PluggedIn) {
-			return _engineeringGamepad.getBackButtonPressed();
+		if(_isEngineeringGamepadA_PluggedIn) {
+			return _engineeringGamepadA.getBackButtonPressed();
 		}
 		else {
 			return false; 
@@ -623,10 +670,10 @@ public class DriverOperatorStation {
 	// ===================================
 
 	public double getEngineering_Elevator_JoystickCmd() {
-		if(_isEngineeringGamePadA_PluggedIn) {
-			if(Math.abs(_engineeringGamepad.getY(Hand.kLeft)) >= JOYSTICK_DEADBAND){
+		if(_isEngineeringGamepadA_PluggedIn) {
+			if(Math.abs(_engineeringGamepadA.getY(Hand.kLeft)) >= JOYSTICK_DEADBAND){
 				// flip the sign, pushing the joystick up is a # < 0
-				return _engineeringGamepad.getY(Hand.kLeft) * -1.0;
+				return _engineeringGamepadA.getY(Hand.kLeft) * -1.0;
 			} 
 			else {
 				return 0.0;
@@ -650,8 +697,8 @@ public class DriverOperatorStation {
 //		}
 	
 	public double getEngineering_InfeedPositionX_JoystickCmd() {
-		if(_isEngineeringGamePadA_PluggedIn) {
-			return _engineeringGamepad.getX(Hand.kRight);
+		if(_isEngineeringGamepadA_PluggedIn) {
+			return _engineeringGamepadA.getX(Hand.kRight);
 		} 
 		else {
 			return 0.0;
@@ -659,8 +706,8 @@ public class DriverOperatorStation {
 	}
 
 	public double getEngineering_InfeedCube_JoystickCmd() {
-		if(_isEngineeringGamePadA_PluggedIn) {
-			return _engineeringGamepad.getTriggerAxis(Hand.kLeft);
+		if(_isEngineeringGamepadA_PluggedIn) {
+			return _engineeringGamepadA.getTriggerAxis(Hand.kLeft);
 		} 
 		else {
 			return 0.0;
@@ -668,8 +715,8 @@ public class DriverOperatorStation {
 	}
 	
 	public double getEngineering_EjectCube_JoystickCmd() {
-		if(_isEngineeringGamePadA_PluggedIn) {
-			return _engineeringGamepad.getTriggerAxis(Hand.kRight);
+		if(_isEngineeringGamepadA_PluggedIn) {
+			return _engineeringGamepadA.getTriggerAxis(Hand.kRight);
 		} 
 		else {
 			return 0.0;
@@ -677,8 +724,8 @@ public class DriverOperatorStation {
 	}
 	
 	public boolean getIsEngineering_SqueezeInfeed_BtnPressed() {
-		if(_isEngineeringGamePadA_PluggedIn) {
-			if(_engineeringGamepad.getPOV(0) == 0) {
+		if(_isEngineeringGamepadA_PluggedIn) {
+			if(_engineeringGamepadA.getPOV(0) == 0) {
 				return true;
 			} 
 			else {
@@ -691,8 +738,8 @@ public class DriverOperatorStation {
 	}
 	
 	public boolean getIsEngineering_StaggerInfeed_BtnPressed() {
-		if(_isEngineeringGamePadA_PluggedIn) {
-			if(_engineeringGamepad.getPOV(0) == 90) {
+		if(_isEngineeringGamepadA_PluggedIn) {
+			if(_engineeringGamepadA.getPOV(0) == 90) {
 				return true;
 			} 
 			else {
@@ -705,8 +752,8 @@ public class DriverOperatorStation {
 	}
 	
 	public boolean getIsEngineering_StoreInfeed_BtnPressed() {
-		if(_isEngineeringGamePadA_PluggedIn) {
-			if(_engineeringGamepad.getPOV(0) == 180) {
+		if(_isEngineeringGamepadA_PluggedIn) {
+			if(_engineeringGamepadA.getPOV(0) == 180) {
 				return true;
 			} 
 			else {
@@ -719,8 +766,8 @@ public class DriverOperatorStation {
 	}
 	
 	public boolean getIsEngineering_WideInfeed_BtnPressed() {
-		if(_isEngineeringGamePadA_PluggedIn) {
-			if(_engineeringGamepad.getPOV(0) == 270) {
+		if(_isEngineeringGamepadA_PluggedIn) {
+			if(_engineeringGamepadA.getPOV(0) == 270) {
 				return true;
 			} else {
 				return false;
