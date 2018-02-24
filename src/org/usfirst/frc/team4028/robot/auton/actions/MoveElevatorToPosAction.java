@@ -1,10 +1,10 @@
 package org.usfirst.frc.team4028.robot.auton.actions;
 
-import org.usfirst.frc.team4028.robot.subsystems.Elevator;
+import org.usfirst.frc.team4028.robot.subsystems.CubeHandler2;
 import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_PRESET_POSITION;
 
 public class MoveElevatorToPosAction implements Action {
-	private Elevator _elevator = Elevator.getInstance();
+	private CubeHandler2 _cubeHandler = CubeHandler2.getInstance();
 	private ELEVATOR_PRESET_POSITION _targetPos;
 	
 	public MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION targetPos) {
@@ -12,20 +12,18 @@ public class MoveElevatorToPosAction implements Action {
 	}
 	
 	@Override
-	public void start() {
-	}
+	public void start() {}
 
 	@Override
 	public void update() {
-		_elevator.MoveToPresetPosition(_targetPos);
+		_cubeHandler.elevator_MoveToPresetPosition(_targetPos);
 	}
 
 	@Override
-	public void done() {
-	}
+	public void done() {}
 
 	@Override
 	public boolean isFinished() {
-		return _elevator.IsAtTargetPosition();
+		return _cubeHandler.isElevatorAtTargetPos();
 	}
 }

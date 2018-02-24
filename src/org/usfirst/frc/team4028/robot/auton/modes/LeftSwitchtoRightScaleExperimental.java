@@ -17,26 +17,53 @@ public class LeftSwitchtoRightScaleExperimental extends AutonBase {
 	
 	@Override
 	public void routine() {
+		// Drive to switch at an angle while storing infeed and raising elevator
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-				new SeriesAction(Arrays.asList(new Action [] {
-						new WaitAction(_firstWaitTime),
-						new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SWITCH_HEIGHT)
-				})),
-				new RunMotionProfileAction(_toleftSwitchonSide)
+					new SeriesAction(Arrays.asList(new Action [] {
+							new WaitAction(_firstWaitTime),
+							new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SWITCH_HEIGHT)
+					})),
+					new RunMotionProfileAction(_toleftSwitchonSide),
+					new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.STORE)
 		})));
+		// Outfeed cube for 0.2s
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-				new WaitAction(0.2),
-				new OutfeedCubeAction()
+					new WaitAction(0.2),
+					new OutfeedCubeAction()
 		})));
+		// Turn to 0 degrees to be parallel to switch
 		runAction(new TurnAction(0, false));
+		// Drive to 2nd cube while lowering cube to floor
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-				new RunMotionProfileAction(_toRightScalefromLeftSwitchside),
-				new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.CUBE_ON_FLOOR)
+					new RunMotionProfileAction(_toRightScalefromLeftSwitchside),
+					new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.CUBE_ON_FLOOR)
 		})));
-		runAction(new TurnAction(180, true));
+		// Turn to cube and set infeeds wide
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-				new DriveSetDistanceAction(20.0),
-				new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.WIDE)
+					new TurnAction(180, true),
+					new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.WIDE)
+		})));
+		// Drive to cube and infeed it
+		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
+					new DriveSetDistanceAction(20.0),
+					new SeriesAction(Arrays.asList(new Action[] {
+							new WaitAction(0.5),
+							new SimultaneousAction(Arrays.asList(new Action[] {
+									new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.SQUEEZE),
+									new InfeedCubeAction()
+							}))
+					}))
+		})));
+		// Drive to switch while raising elevator and storing infeed
+		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
+					new DriveSetDistanceAction(12),
+					new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SWITCH_HEIGHT),
+					new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.STORE)
+		})));
+		// Outfeed cube for 0.2s
+		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
+					new WaitAction(0.2),
+					new OutfeedCubeAction()
 		})));
 	}
 }

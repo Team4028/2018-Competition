@@ -25,6 +25,7 @@ public class Switch extends AutonBase {
 	
 	@Override
 	public void routine() {
+		// Drive to switch while storing infeed and raising elevator
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 					new RunMotionProfileAction(toSwitch),
 					new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.STORE),
@@ -33,10 +34,12 @@ public class Switch extends AutonBase {
 							new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SWITCH_HEIGHT)
 					}))
 		})));
+		// Outfeed cube for 0.2s
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 				new WaitAction(0.2),
 				new OutfeedCubeAction()
 		})));
+		// Move Elevator back to floor
 		runAction(new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.CUBE_ON_FLOOR));
 		runAction(new PrintTimeFromStart(_startTime));
 	}

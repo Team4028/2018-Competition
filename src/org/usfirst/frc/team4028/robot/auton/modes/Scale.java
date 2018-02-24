@@ -17,16 +17,16 @@ public class Scale extends AutonBase{
 	public Scale(boolean isScaleLeft) {
 		if (isScaleLeft) {
 			toScale = Paths.getPath(PATHS.L_SCALE, 100.0, 100.0, 0.0055);
-			elevatorWaitTime = 3.0;
+			elevatorWaitTime = 2.0;
 		} else {
 			toScale = Paths.getPath(PATHS.R_SCALE, 100.0, 100.0, 0.005);
-			elevatorWaitTime = 5.0;
+			elevatorWaitTime = 4.0;
 		}
 	}
 	
 	@Override
 	public void routine() {
-		runAction(new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.STORE));
+		// Drive to scale while storing infeed and raising elevator
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 					new RunMotionProfileAction(toScale),
 					new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.STORE),
@@ -35,12 +35,14 @@ public class Scale extends AutonBase{
 							new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SCALE_HEIGHT)
 					}))
 		})));
+		// Outfeed cube for 0.2s
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-				new WaitAction(0.5),
+				new WaitAction(0.2),
 				new OutfeedCubeAction()
 		})));
-		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-				new DriveSetDistanceAction(-30.0),
+		// Drive backwards 20in and move elevator to floor
+		runAction(new SimultaneousAction(Arrays.asList(new Action[] {	
+				new DriveSetDistanceAction(-20.0),
 				new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.CUBE_ON_FLOOR)
 		})));
 		runAction(new PrintTimeFromStart(_startTime));

@@ -1,20 +1,16 @@
 package org.usfirst.frc.team4028.robot.auton.actions;
 
-import org.usfirst.frc.team4028.robot.subsystems.Carriage;
-import org.usfirst.frc.team4028.robot.subsystems.CubeHandler;
-import org.usfirst.frc.team4028.robot.subsystems.Infeed;
+import org.usfirst.frc.team4028.robot.subsystems.CubeHandler2;
 
 public class OutfeedCubeAction implements Action {
-	CubeHandler _cubeHandler = CubeHandler.getInstance();
-	Carriage _carriage = Carriage.getInstance();
+	CubeHandler2 _cubeHandler = CubeHandler2.getInstance();
 	
 	@Override
-	public void start() {
-	}
+	public void start() {}
 
 	@Override
 	public void update() {
-		_carriage.ejectCubeVBus(1.0);
+		_cubeHandler.ejectCube_InfeedPlusCarriage();
 	}
 
 	@Override

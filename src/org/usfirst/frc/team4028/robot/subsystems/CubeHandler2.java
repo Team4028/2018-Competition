@@ -229,17 +229,19 @@ public class CubeHandler2 implements Subsystem {
 		_cubeHandlerState = CUBE_HANDLER_STATE.WANT_TO_MOVE_ELEVATOR_TO_PRESET;
 	}
 	
+	public boolean isElevatorAtTargetPos() {
+		return _elevator.IsAtTargetPosition();
+	}
+	
 	//=====================================================================================
 	//Methods for Handling Interactions with Multiple Subsystem
 	//=====================================================================================	
-	public void acquireCube_InfeedPlusCarriage() 
-	{
+	public void acquireCube_InfeedPlusCarriage() {
 		_infeed.infeedWheels_FeedIn();
 		_carriage.FeedIn();
 	}
 	
-	public void ejectCube_InfeedPlusCarriage() 
-	{
+	public void ejectCube_InfeedPlusCarriage() {
 		_infeed.infeedWheels_FeedOut();
 		_carriage.FeedOut();
 	}
