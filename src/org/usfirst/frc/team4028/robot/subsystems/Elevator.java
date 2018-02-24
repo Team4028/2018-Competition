@@ -110,7 +110,7 @@ public class Elevator implements Subsystem {
 	 * 		0			2						54.5					0
 	 */
 	
-	private static final boolean IS_VERBOSE_LOGGING_ENABLED = true;
+	private static final boolean IS_VERBOSE_LOGGING_ENABLED = false;
 	
 	private static final int HOLDING_PID_SLOT_INDEX = 2;
 	private static final int MOVING_UP_PID_SLOT_INDEX = 1;

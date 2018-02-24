@@ -7,7 +7,6 @@ import org.usfirst.frc.team4028.robot.auton.actions.*;
 import org.usfirst.frc.team4028.robot.paths.Paths;
 import org.usfirst.frc.team4028.robot.paths.Paths.PATHS;
 import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_PRESET_POSITION;
-import org.usfirst.frc.team4028.robot.subsystems.Infeed;
 import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_ARM_TARGET_POSITION;
 import org.usfirst.frc.team4028.util.control.Path;
 
@@ -17,32 +16,34 @@ public class Scale extends AutonBase{
 	
 	public Scale(boolean isScaleLeft) {
 		if (isScaleLeft) {
-			toScale = Paths.getPath(PATHS.L_SCALE, 100.0, 120.0, 0.0055);
-			elevatorWaitTime = 3.0;
+			toScale = Paths.getPath(PATHS.L_SCALE, 100.0, 100.0, 0.0055);
+			elevatorWaitTime = 2.0;
 		} else {
-			toScale = Paths.getPath(PATHS.R_SCALE, 100.0, 120.0, 0.005);
-			elevatorWaitTime = 5.0;
+			toScale = Paths.getPath(PATHS.R_SCALE, 100.0, 100.0, 0.005);
+			elevatorWaitTime = 4.0;
 		}
 	}
 	
 	@Override
 	public void routine() {
-		runAction(new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.STORE));
-		runAction(new ParallelAction(Arrays.asList(new Action[] {
+		// Drive to scale while storing infeed and raising elevator
+		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 					new RunMotionProfileAction(toScale),
-					//new SetInfeedPosAction(Infeed.INFEED_TARGET_POSITION.STORE),
+					new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.STORE),
 					new SeriesAction(Arrays.asList(new Action[] {
 							new WaitAction(elevatorWaitTime),
-						//	new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SCALE_HEIGHT)
+							new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SCALE_HEIGHT)
 					}))
 		})));
-		runAction(new ParallelAction(Arrays.asList(new Action[] {
-				new WaitAction(0.5),
-				//new RunCarriageWheelsAction(false)
+		// Outfeed cube for 0.2s
+		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
+				new WaitAction(0.2),
+				new OutfeedCubeAction()
 		})));
-		runAction(new ParallelAction(Arrays.asList(new Action[] {
-				//new DriveSetDistanceAction(-30.0),
-				//new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.CUBE_ON_FLOOR)
+		// Drive backwards 20in and move elevator to floor
+		runAction(new SimultaneousAction(Arrays.asList(new Action[] {	
+				new DriveSetDistanceAction(-20.0),
+				new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT)
 		})));
 		runAction(new PrintTimeFromStart(_startTime));
 	}

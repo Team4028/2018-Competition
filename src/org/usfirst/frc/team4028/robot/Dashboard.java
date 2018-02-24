@@ -97,8 +97,7 @@ public class Dashboard {
 			case SCALE_THEN_SWITCH:
 				if(_isScaleLeft == _isSwitchLeft) {
 					return new ScaleThenSwitchSameSide(_isScaleLeft);
-				}
-				else {
+				} else {
 					return new ScaleThenSwitchOppositeSide(_isScaleLeft);
 				}
 			case TRIPLE_SCALE:

@@ -39,7 +39,6 @@ public class Chassis implements Subsystem {
 	private DoubleSolenoid _shifter;
 	
 	private NavXGyro _navX = NavXGyro.getInstance();
-	private RobotState _robotState = RobotState.getInstance();
 	
 	private PathFollower _pathFollower;
 	private Path _currentPath = null;
@@ -56,14 +55,13 @@ public class Chassis implements Subsystem {
 	private static final double ENCODER_ROTATIONS_PER_DEGREE = 46.15/3600;
 	
 	private static final double[] MOTION_MAGIC_TURN_PIDF_GAINS = {0.25, 0.0, 35.0, 0.095};
-	private static final double[] MOTION_MAGIC_STRAIGHT_PIDF_GAINS = {0.0, 0.0, 0.0, 0.095};
-	private static final double[] LOW_GEAR_VELOCITY_PIDF_GAINS = {0.0, 0.0, 0.0, 0.085}; //{0.15, 0.0, 1.5, 0.085};
-	private static final double[] HIGH_GEAR_VELOCITY_PIDF_GAINS = {0.065, 0.0, 1.0, 0.044}; //{0.065, 0.0, 1.0, 0.04};
+	private static final double[] MOTION_MAGIC_STRAIGHT_PIDF_GAINS = {0.2, 0.0, 20.0, 0.095};
+	private static final double[] LOW_GEAR_VELOCITY_PIDF_GAINS = {0.15, 0.0, 1.5, 0.085}; 
+	private static final double[] HIGH_GEAR_VELOCITY_PIDF_GAINS = {0.065, 0.0, 1.0, 0.044}; 
     
     private static final int[] MOTION_MAGIC_TURN_VEL_ACC = {80 * 150, 150 * 150};
     private static final int[] MOTION_MAGIC_STRAIGHT_VEL_ACC = {80 * 150, 140 * 150};
 	
-	// Chassis various states
 	private enum ChassisState {
 		PERCENT_VBUS, 
 		AUTO_TURN, 
@@ -71,20 +69,19 @@ public class Chassis implements Subsystem {
 		DRIVE_SET_DISTANCE
 	}
 	
-	// private constructor for singleton pattern
 	private Chassis() {
-		_leftMaster = new TalonSRX(Constants.LEFT_DRIVE_MASTER_CAN_BUS_ADDR);
-		_leftSlave = new TalonSRX(Constants.LEFT_DRIVE_SLAVE_CAN_BUS_ADDR);
-		_rightMaster = new TalonSRX(Constants.RIGHT_DRIVE_MASTER_CAN_BUS_ADDR);
-		_rightSlave = new TalonSRX(Constants.RIGHT_DRIVE_SLAVE_CAN_BUS_ADDR);
+		_leftMaster = new TalonSRX(Constants.LEFT_DRIVE_MASTER_CAN_ADDR);
+		_leftSlave = new TalonSRX(Constants.LEFT_DRIVE_SLAVE_CAN_ADDR);
+		_rightMaster = new TalonSRX(Constants.RIGHT_DRIVE_MASTER_CAN_ADDR);
+		_rightSlave = new TalonSRX(Constants.RIGHT_DRIVE_SLAVE_CAN_ADDR);
 		
 		_leftMaster.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0);
 		_leftMaster.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 5, 0);
 		_rightMaster.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0);
 		_rightMaster.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 5, 0);
 		
-		_leftSlave.set(ControlMode.Follower, Constants.LEFT_DRIVE_MASTER_CAN_BUS_ADDR);
-		_rightSlave.set(ControlMode.Follower, Constants.RIGHT_DRIVE_MASTER_CAN_BUS_ADDR);
+		_leftSlave.set(ControlMode.Follower, Constants.LEFT_DRIVE_MASTER_CAN_ADDR);
+		_rightSlave.set(ControlMode.Follower, Constants.RIGHT_DRIVE_MASTER_CAN_ADDR);
 
 		_leftMaster.setInverted(true);
 		_leftSlave.setInverted(true);
@@ -105,14 +102,38 @@ public class Chassis implements Subsystem {
         _rightMaster.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_10Ms, 0);
         _rightMaster.configVelocityMeasurementWindow(32, 0);
         
+        _leftMaster.enableCurrentLimit(false);
+        _leftSlave.enableCurrentLimit(false);
+        _rightMaster.enableCurrentLimit(false);
+        _rightSlave.enableCurrentLimit(false);
+        
         _leftMaster.configOpenloopRamp(0.5, 10);
         _rightMaster.configOpenloopRamp(0.5, 10);
         
         _leftMaster.configClosedloopRamp(0.0, 0);
         _rightMaster.configClosedloopRamp(0.0, 0);
-		
-		_shifter = new DoubleSolenoid(Constants.PCM_CAN_BUS_ADDR, Constants.SHIFTER_SOLENOID_EXTEND_PCM_PORT, 
-												Constants.SHIFTER_SOLENOID_RETRACT_PCM_PORT);
+        
+        _leftMaster.configPeakOutputForward(1.0, 10);
+        _leftMaster.configPeakOutputReverse(-1.0, 10);
+        _leftSlave.configPeakOutputForward(1.0, 10);
+        _leftSlave.configPeakOutputReverse(-1.0, 10);
+        _rightMaster.configPeakOutputForward(1.0, 10);
+        _rightMaster.configPeakOutputReverse(-1.0, 10);
+        _rightSlave.configPeakOutputForward(1.0, 10);
+        _rightSlave.configPeakOutputReverse(-1.0, 10);
+        _leftMaster.configNominalOutputForward(0, 10);
+        _leftSlave.configNominalOutputForward(0, 10);
+        _rightMaster.configNominalOutputForward(0, 10);
+        _rightSlave.configNominalOutputForward(0, 10);
+        _leftMaster.configNominalOutputReverse(0, 10);
+        _leftSlave.configNominalOutputReverse(0, 10);
+        _rightMaster.configNominalOutputReverse(0, 10);
+        _leftMaster.configContinuousCurrentLimit(Constants.BIG_NUMBER, 10);
+        _leftSlave.configContinuousCurrentLimit(Constants.BIG_NUMBER, 10);
+        _rightMaster.configContinuousCurrentLimit(Constants.BIG_NUMBER, 10);
+        _rightSlave.configContinuousCurrentLimit(Constants.BIG_NUMBER, 10);
+
+		_shifter = new DoubleSolenoid(Constants.PCM_CAN_ADDR, Constants.SHIFTER_EXTEND_PCM_PORT, Constants.SHIFTER_RETRACT_PCM_PORT);
 	}
 	
 	private final Loop _loop = new Loop() {
@@ -186,7 +207,7 @@ public class Chassis implements Subsystem {
 	
 	/* ===== Chassis State: AUTO TURN ===== */
 	/** Set the target gyro angle for the robot to turn to. */
-	public synchronized void setTargetAngle(double targetAngle, boolean isTurnRight) {
+	public synchronized void setTargetAngleAndTurnDirection(double targetAngle, boolean isTurnRight) {
 		_targetAngle = targetAngle;
 		_isTurnRight = isTurnRight;
 		setHighGear(false);
@@ -212,7 +233,7 @@ public class Chassis implements Subsystem {
 		else if((_navX.getYaw() >= 0 && _targetAngle >= 0 && !_isTurnRight && _navX.getYaw() < _targetAngle)||
 				(_navX.getYaw() < 0 && _targetAngle < 0 && !_isTurnRight && Math.abs(_navX.getYaw()) > Math.abs(_targetAngle))||
 				(_navX.getYaw() < 0 && _targetAngle >= 0 && !_isTurnRight)) {
-			_angleError = _targetAngle - _navX.getYaw()-360;
+			_angleError = _targetAngle - _navX.getYaw() - 360;
 		}			
 		
 		double encoderError = ENCODER_ROTATIONS_PER_DEGREE * _angleError;		
@@ -221,11 +242,6 @@ public class Chassis implements Subsystem {
 		
 		_leftMaster.set(ControlMode.MotionMagic, leftDriveTargetPosition);
 		_rightMaster.set(ControlMode.MotionMagic, rightDriveTargetPosition);
-	}
-	
-	/** Returns whether chassis has turned close enough to heading goal */
-	public synchronized boolean autoTurnOnTarget() {
-		return Math.abs(_angleError) < 2.0;
 	}
 	
 	/* ===== Chassis State: DRIVE SET DISTANCE ===== */
@@ -262,7 +278,7 @@ public class Chassis implements Subsystem {
     
     /** Update PathFollower with latest pose estimate to get new target velocity */
     private void updatePathFollower(double timestamp) {
-		RigidTransform _robotPose = _robotState.getLatestFieldToVehicle().getValue();
+		RigidTransform _robotPose = RobotState.getInstance().getLatestFieldToVehicle().getValue();
 		SmartDashboard.putString("Robot Pose: ", _robotPose.toString());
 		Twist command = _pathFollower.update(timestamp, _robotPose, RobotState.getInstance().getDistanceDriven(), RobotState.getInstance().getPredictedVelocity().dx);
 		if (!_pathFollower.isFinished()) {
@@ -308,7 +324,7 @@ public class Chassis implements Subsystem {
 			_shifter.set(Constants.SHIFTER_LOW_GEAR_POS);
 	}
 	
-	public synchronized boolean isHighGear() {
+	private synchronized boolean isHighGear() {
 		return _shifter.get() == Constants.SHIFTER_HIGH_GEAR_POS;
 	}
 	
@@ -417,9 +433,9 @@ public class Chassis implements Subsystem {
 		
 		SmartDashboard.putNumber("Left Velocity", getLeftVelocityInchesPerSec());
 		SmartDashboard.putNumber("Right Velocity", getRightVelocityInchesPerSec());
-
-		SmartDashboard.putNumber("Left Wheel Voltage", _leftMaster.getMotorOutputVoltage());
-		SmartDashboard.putNumber("Right Wheel Voltage", _rightMaster.getMotorOutputVoltage());
+		
+		SmartDashboard.putNumber("Left Wheel Target Velocity", _leftTargetVelocity);
+		SmartDashboard.putNumber("Right Wheel Target Velocity", _rightTargetVelocity);
 		
 		SmartDashboard.putNumber("Angle", getHeading());
 	}
