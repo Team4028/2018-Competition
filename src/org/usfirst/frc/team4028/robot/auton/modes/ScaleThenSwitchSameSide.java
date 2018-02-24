@@ -50,7 +50,7 @@ public class ScaleThenSwitchSameSide extends AutonBase {
 		// Turn to switch while lowering elevator
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 				new TurnAction(targetTurnAngle, true),
-				new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.CUBE_ON_FLOOR)
+				new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT)
 		})));
 		// Drive to 2nd cube while setting infeed wide and continuing to lower elevator
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {

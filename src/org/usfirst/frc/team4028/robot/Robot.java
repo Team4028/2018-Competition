@@ -266,8 +266,9 @@ public class Robot extends IterativeRobot {
 			}
 			else if (Math.abs(_dos.getEngineering_EjectCube_JoystickCmd()) != 0) {
 				_cubeHandler.ejectCube(_dos.getEngineering_EjectCube_JoystickCmd());
-			} else {
-				_cubeHandler.stop();			
+			} 
+			else {
+				_cubeHandler.stopInfeedAndCarriage();
 			}
 		} else {
 			// ENGR GamePad B is plugged In
@@ -340,11 +341,11 @@ public class Robot extends IterativeRobot {
 		if (_dos.getOperator_Elevator_JoystickCmd() != 0) {
 			_cubeHandler.elevator_JogAxis(_dos.getOperator_Elevator_JoystickCmd());
 		}
-		else if (_dos.getEngineering_Elevator_JoystickCmd() != 0) {
-			_cubeHandler.elevator_JogAxis(_dos.getEngineering_Elevator_JoystickCmd());
-		}
-		else if (_dos.getIsOperator_ElevatorCubeOnFloorHgt_BtnJustPressed() || _dos.getIsEngineering_ElevatorCubeOnFloorHgt_BtnJustPressed()) {
-			_cubeHandler.elevator_MoveToPresetPosition(ELEVATOR_PRESET_POSITION.CUBE_ON_FLOOR);
+//		else if (_dos.getEngineering_Elevator_JoystickCmd() != 0) {
+//			_cubeHandler.elevator_JogAxis(_dos.getEngineering_Elevator_JoystickCmd());
+//		}
+		else if (_dos.getIsOperator_ElevatorInfeedHgt_BtnJustPressed() || _dos.getIsEngineering_ElevatorCubeOnFloorHgt_BtnJustPressed()) {
+			_cubeHandler.elevator_MoveToPresetPosition(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT);
 		}	
 		else if (_dos.getIsOperator_ElevatorScaleHgt_BtnJustPressed() || _dos.getIsEngineering_ElevatorScaleHgt_BtnJustPressed()) {
 			_cubeHandler.elevator_MoveToPresetPosition(ELEVATOR_PRESET_POSITION.SCALE_HEIGHT);
@@ -355,7 +356,7 @@ public class Robot extends IterativeRobot {
 		else if (_dos.getIsOperator_ElevatorPyrmdLvl1Hgt_BtnJustPressed() || _dos.getIsEngineering_ElevatorPyramidHgt_BtnJustPressed()) {
 			_cubeHandler.elevator_MoveToPresetPosition(ELEVATOR_PRESET_POSITION.CUBE_ON_PYRAMID_LEVEL_1);
 		}		
-		else if (_dos.getIsOperator_ElevatorHome_BtnJustPressed()) {
+		else if (_dos.getIsOperator_ElevatorReHome_BtnJustPressed()) {
 			_cubeHandler.elevator_MoveToPresetPosition(ELEVATOR_PRESET_POSITION.HOME);
 		} else {
 			_cubeHandler.stopElevator();

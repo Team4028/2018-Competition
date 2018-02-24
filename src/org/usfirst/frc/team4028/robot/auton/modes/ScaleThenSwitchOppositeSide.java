@@ -52,7 +52,7 @@ public class ScaleThenSwitchOppositeSide extends AutonBase {
 		// Turn to switch while lowering elevator
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 					new TurnAction(turnTargetAngle,true),
-					new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.CUBE_ON_FLOOR)
+					new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT)
 		})));
 		// Drive to 2nd cube while storing infeed and moving elevator to floor
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
@@ -82,7 +82,7 @@ public class ScaleThenSwitchOppositeSide extends AutonBase {
 					new OutfeedCubeAction()
 		})));
 		// Move elevator to floor
-		runAction(new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.CUBE_ON_FLOOR));
+		runAction(new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT));
 		runAction(new PrintTimeFromStart(_startTime));
 	}
 }

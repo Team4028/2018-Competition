@@ -353,7 +353,7 @@ public class DriverOperatorStation {
 	// ===================================
 	// == Operator Just Pressed buttons ==
 	// ===================================
-	public boolean getIsOperator_ElevatorHome_BtnJustPressed() {
+	public boolean getIsOperator_ElevatorReHome_BtnJustPressed() {
 		return _operatorGamepad.getBackButtonPressed();
 	}
 
@@ -369,7 +369,7 @@ public class DriverOperatorStation {
 		return _operatorGamepad.getBButtonPressed();
 	}
 	
-	public boolean getIsOperator_ElevatorCubeOnFloorHgt_BtnJustPressed() {
+	public boolean getIsOperator_ElevatorInfeedHgt_BtnJustPressed() {
 		return _operatorGamepad.getAButtonPressed();
 	}	
 

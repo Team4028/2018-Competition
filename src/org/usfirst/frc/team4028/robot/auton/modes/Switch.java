@@ -40,7 +40,7 @@ public class Switch extends AutonBase {
 				new OutfeedCubeAction()
 		})));
 		// Move Elevator back to floor
-		runAction(new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.CUBE_ON_FLOOR));
+		runAction(new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT));
 		runAction(new PrintTimeFromStart(_startTime));
 	}
 }

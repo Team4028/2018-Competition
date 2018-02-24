@@ -36,7 +36,7 @@ public class LeftSwitchtoRightScaleExperimental extends AutonBase {
 		// Drive to 2nd cube while lowering cube to floor
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 					new RunMotionProfileAction(_toRightScalefromLeftSwitchside),
-					new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.CUBE_ON_FLOOR)
+					new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT)
 		})));
 		// Turn to cube and set infeeds wide
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {

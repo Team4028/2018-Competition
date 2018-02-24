@@ -43,7 +43,7 @@ public class Scale extends AutonBase{
 		// Drive backwards 20in and move elevator to floor
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {	
 				new DriveSetDistanceAction(-20.0),
-				new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.CUBE_ON_FLOOR)
+				new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT)
 		})));
 		runAction(new PrintTimeFromStart(_startTime));
 	}

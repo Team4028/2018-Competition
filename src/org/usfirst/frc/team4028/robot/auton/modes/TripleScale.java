@@ -15,7 +15,7 @@ public class TripleScale extends AutonBase{
 	double targetTurnAngle1, targetTurnAngle2, endTargetTurnAngle;
 	
 	public TripleScale() {
-		toScale = Paths.getPath(PATHS.L_SCALE, 100.0, 120.0, 0);
+		toScale = Paths.getPath(PATHS.L_SCALE, 0.0055);
 		targetTurnAngle1 = 160;
 		targetTurnAngle2 = 145;
 		endTargetTurnAngle = 30;
@@ -27,7 +27,7 @@ public class TripleScale extends AutonBase{
 
 	@Override
 	public void routine() {
-		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
+	runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 				new RunMotionProfileAction(toScale),
 				new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.STORE)
 	})));
@@ -46,7 +46,6 @@ public class TripleScale extends AutonBase{
 						new RunMotionProfileAction(fromSwitchToScale)
 				})),
 				new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.SQUEEZE),
-				new DriveInfeedWheelsAction()
 	}))); 
 	runAction(new TurnAction(endTargetTurnAngle, false));
 	runAction(new SimultaneousAction(Arrays.asList(new Action[] {
