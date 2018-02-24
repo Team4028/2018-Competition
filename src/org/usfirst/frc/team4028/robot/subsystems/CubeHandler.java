@@ -3,7 +3,7 @@ package org.usfirst.frc.team4028.robot.subsystems;
 import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_PRESET_POSITION;
 
 public class CubeHandler {
-	private enum CUBE_HANDLER_STATE {
+	public enum CUBE_HANDLER_STATE {
 		NEED_TO_MOVE_ARMS,
 		ARMS_ARE_SAFE,
 		ELEVATOR_MOVING_TO_POSITION,
@@ -35,7 +35,7 @@ public class CubeHandler {
 	}
 	
 	//=====================================================================================
-	//Methods for Handling Interactions between multiple Subsystems
+	//Methods for Handling Interactions between infeed Subsystems
 	//=====================================================================================	
 	public void manageMoveElevatorToPresetPosition() {
 		System.out.println("p");
@@ -76,12 +76,12 @@ public class CubeHandler {
 		}
 	}
 	
-	public void runInfeedCubePlusCarriage(double joystickCommand) {
-		if(_elevator.isElevatorAtFloorPosition()) {
-			_infeed.driveInfeedWheelsVBus(joystickCommand);
-			_carriage.infeedCarriageMotorsVBus(joystickCommand);
-		}
-	}
+	//public void runInfeedCubePlusCarriage(double joystickCommand) {
+	//	if(_elevator.isElevatorAtFloorPosition()) {
+	//		_infeed.driveInfeedWheelsVBus(joystickCommand);
+	//		_carriage.infeedCarriageMotorsVBus(joystickCommand);
+	//	}
+	//}
 	
 	public void runInfeedSpinManuver() {
 		_infeed.spinManuverInfeedWheels();
@@ -100,5 +100,9 @@ public class CubeHandler {
 	public void stop() {
 		_infeed.stopDriveMotors();
 		_carriage.stop();
+		_elevator.stop();
 	}
+	
+
+
 }

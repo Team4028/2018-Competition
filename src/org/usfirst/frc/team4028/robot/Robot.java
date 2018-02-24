@@ -30,10 +30,10 @@ public class Robot extends IterativeRobot {
 	private Infeed _infeed = Infeed.getInstance();
 	private Elevator _elevator = Elevator.getInstance();
 	private Carriage _carriage = Carriage.getInstance();
-	private CubeHandler _cubeHandler = CubeHandler.getInstance();
+	private CubeHandler2 _cubeHandler = CubeHandler2.getInstance();
 	
 	// Sensors
-	private UltrasonicSensor _ultrasonic = UltrasonicSensor.getInstance();
+	//private UltrasonicSensor _ultrasonic = UltrasonicSensor.getInstance();
 	private SwitchableCameraServer _switchableCameraServer = SwitchableCameraServer.getInstance();
 	//private PDPMonitor _pdpm = PDPMonitor.getInstance();
 	
@@ -65,6 +65,7 @@ public class Robot extends IterativeRobot {
 		_enabledLooper.register(_infeed.getLoop());
 		_enabledLooper.register(_elevator.getLoop());
 		_enabledLooper.register(_carriage.getLoop());
+		_enabledLooper.register(_cubeHandler.getLoop());
 		_enabledLooper.register(RobotStateEstimator.getInstance().getLoop());
 		
 		_dashboard.printStartupMessage();
@@ -120,6 +121,7 @@ public class Robot extends IterativeRobot {
 			_autonExecuter.stop();
 		}
 		_autonExecuter = null;
+		_dos.clearGamepadsCachedBtnPresses();
 		
 		_enabledLooper.start();
 		
@@ -190,7 +192,7 @@ public class Robot extends IterativeRobot {
 		_chassis.stop();
 		_cubeHandler.doNothing();
 		
-		_dos.resetGamepads();
+		_dos.clearGamepadsCachedBtnPresses();
 		
 		_enabledLooper.start();
 		// init data logging
@@ -204,7 +206,7 @@ public class Robot extends IterativeRobot {
 	// ================================================================
 	@Override
 	public void teleopPeriodic() {		
-		_ultrasonic.refreshUltrasonicValues();
+		//_ultrasonic.refreshUltrasonicValues();
 		
 		// =============  CHASSIS ============= 
 		
@@ -221,137 +223,146 @@ public class Robot extends IterativeRobot {
 		//=============  INFEED ============= 
 		if(!_dos.IsEngineeringGamepadBAvailable()) {
 			
-			// ignore Driver Gamepad if Engineering B is plugged in
+
 			if (_dos.getIsDriver_RezeroInfeed_BtnJustPressed() ||
 					_dos.getIsEngineering_ReZeroInfeed_BtnJustPressed()) {
-				_infeed.reZeroArms();
+				_cubeHandler.infeedArms_Rezero();
 			}		
 			else if (_dos.getIsDriver_WideInfeed_BtnJustPressed() 
 					|| _dos.getIsEngineering_WideInfeed_BtnPressed()) {
-				_infeed.moveArmsToWideInfeedPosition();
+				_cubeHandler.infeedArms_moveToWidePosition();
 			}
 			else if (_dos.getIsDriver_SqueezeInfeed_BtnJustPressed() 
 					|| _dos.getIsEngineering_SqueezeInfeed_BtnPressed()) {
-				_infeed.moveArmsToSqueezeInfeedPosition();
+				_cubeHandler.infeedArms_moveToSqueezePosition();
 			}
 			else if (_dos.getIsDriver_StoreInfeed_BtnJustPressed() 
 					|| _dos.getIsEngineering_StoreInfeed_BtnPressed()) {
-				_infeed.storeArms();
+				_cubeHandler.infeedArms_moveToStorePosition();
 			}
 			
 			// ============= CARRIAGE =============
-			if (Math.abs(_dos.getDriver_InfeedCube_JoystickCmd()) != 0) {
-				//_cubeHandler.runInfeedCubePlusCarriage(_dos.getDriver_InfeedCube_JoystickCmd());
-				_infeed.engrGamepadB_FeedIn();
-				_carriage.runCarriageMotors();
+			if (_dos.getIsDriver_SpinCubeCounterClockwise_BtnPressed() 
+					|| _dos.getIsEngineering_SpinCubeManuver_BtnPressed()){
+				_cubeHandler.infeedArms_SpinCube_CCW();
 			}
-			else if (Math.abs(_dos.getEngineering_InfeedCube_JoystickCmd()) != 0) {
-				_cubeHandler.runInfeedCubePlusCarriage(_dos.getEngineering_InfeedCube_JoystickCmd());
+			else if (_dos.getIsDriver_SpinCubeClockwise_BtnPressed()) {
+				_cubeHandler.infeedArms_SpinCube_CW();
+			} 
+			else if (Math.abs(_dos.getDriver_InfeedCube_JoystickCmd()) != 0) {
+				//_cubeHandler.runInfeedCubePlusCarriage(_dos.getDriver_InfeedCube_JoystickCmd());
+				//_cubeHandler2.engrGamepadB_FeedIn();
+				//_carriage.runCarriageMotors();
+				_cubeHandler.acquireCube_InfeedPlusCarriage();
 			}			
 			else if (Math.abs(_dos.getDriver_EjectCube_JoystickCmd()) != 0) {
-				_infeed.engrGamepadB_FeedOut();
-				_carriage.ejectCube();
+				//_cubeHandler2.engrGamepadB_FeedOut();
+				//_carriage.ejectCube();
+				_cubeHandler.ejectCube_InfeedPlusCarriage();
 			} 
+			else if (Math.abs(_dos.getEngineering_InfeedCube_JoystickCmd()) != 0) {
+				_cubeHandler.runInfeedCubePlusCarriage(_dos.getEngineering_InfeedCube_JoystickCmd());
+			}
 			else if (Math.abs(_dos.getEngineering_EjectCube_JoystickCmd()) != 0) {
 				_cubeHandler.ejectCube(_dos.getEngineering_EjectCube_JoystickCmd());
 			} 
-			else if (_dos.getIsDriver_SpinCubeCounterClockwise_BtnPressed() || _dos.getIsEngineering_SpinCubeManuver_BtnPressed()){
-				_infeed.engrGamepadB_SpinCounterClockwise();
-			}
-			else if (_dos.getIsDriver_SpinCubeClockwise_BtnPressed()) {
-				_infeed.engrGamepadB_SpinClockwise();
-			} else {
+			else 
+			{
 				_cubeHandler.stop();			
 			}
 		} else {
 			// ENGR GamePad B is plugged In
-			
+			// ignore Driver Gamepad if Engineering B is plugged in
 			// adjust Infeed Arm Width
 			if(_dos.getIsEngrB_SqueezeBumpWider_BtnJustPressed())
 			{
-				_infeed.engrGamepadB_SqueezeAngle_BumpWider();
+				_cubeHandler.infeedArms_SqueezeAngle_BumpWider();
 			}
 			else if(_dos.getIsEngrB_SqueezeBumpNarrower_BtnJustPressed())
 			{
-				_infeed.engrGamepadB_SqueezeAngle_BumpNarrower();
+				_cubeHandler.infeedArms_SqueezeAngle_BumpNarrower();
 			}
 			
 			// adjust Infeed Wheel speeds
 			if(_dos.getIsEngrB_InfeedVBusBumpDown_BtnJustPressed())	{
-				_infeed.engrGamepadB_InfeedVBUS_BumpDown();
+				_cubeHandler.infeedWheels_VBusCmd_BumpDown();
 			}
 			else if(_dos.getIsEngrB_InfeedVBusBumpUp_BtnJustPressed()) {
-				_infeed.engrGamepadB_InfeedVBUS_BumpUp();
+				_cubeHandler.infeedWheels_VBusCmd_BumpUp();
 			}
 			
 			// adjust Carriage Wheel Speeds
 			if(_dos.getIsEngrB_CarriageVBusBumpDown_BtnJustPressed()) {
-				_carriage.engrGamepadB_CarriageVBUS_BumpDown();
+				//_carriage.engrGamepadB_CarriageVBUS_BumpDown();
+				_cubeHandler.carriage_VBusCmd_BumpDown();
 			}
 			else if(_dos.getIsEngrB_CarriageVBusBumpUp_BtnJustPressed()) {
-				_carriage.engrGamepadB_CarriageVBUS_BumpUp();
+				//_carriage.engrGamepadB_CarriageVBUS_BumpUp();
+				_cubeHandler.carriage_VBusCmd_BumpUp();
 			}
 			
 			// infeed arm positions
 			if (_dos.getIsEngrB_RezeroInfeed_BtnJustPressed()) {
-				_infeed.reZeroArms();
+				_cubeHandler.infeedArms_Rezero();
 			}
 			else if (_dos.getIsEngrB_WideInfeed_BtnJustPressed()) {
-				_infeed.moveArmsToWideInfeedPosition();
+				_cubeHandler.infeedArms_moveToWidePosition();
 			}
 			else if (_dos.getIsEngrB_SqueezeInfeed_BtnJustPressed()) {
-				_infeed.moveArmsToSqueezeInfeedPosition();
+				_cubeHandler.infeedArms_moveToSqueezePosition();
 			}
 			else if (_dos.getIsEngrB_StoreInfeed_BtnJustPressed()) {
-				_infeed.storeArms();
+				_cubeHandler.infeedArms_moveToStorePosition();
 			}
 			
 			// infeed wheel control
 			if (_dos.getEngrB_InfeedSpin_JoystickCmd() == 1.0) {
-				_infeed.engrGamepadB_SpinCounterClockwise();
+				_cubeHandler.infeedArms_SpinCube_CCW();
 			}
 			else if (_dos.getEngrB_InfeedSpin_JoystickCmd() == -1.0) {
-				_infeed.engrGamepadB_SpinClockwise();
+				_cubeHandler.infeedArms_SpinCube_CW();
 			}
 			else if (_dos.getEngrB_InfeedAndCarriage_JoystickCmd() == 1.0) {
-				_infeed.engrGamepadB_FeedOut();
-				_carriage.ejectCube();
+				// _cubeHandler2.engrGamepadB_FeedOut();
+				// _carriage.ejectCube();
+				_cubeHandler.ejectCube_InfeedPlusCarriage();
 			}
 			else if (_dos.getEngrB_InfeedAndCarriage_JoystickCmd() == -1.0) {
-				_infeed.engrGamepadB_FeedIn();
-				_carriage.runCarriageMotors();
+				// _cubeHandler2.engrGamepadB_FeedIn()
+				// _carriage.runCarriageMotors();
+				_cubeHandler.acquireCube_InfeedPlusCarriage();
 			}
-			else if (_dos.getEngrB_InfeedSpin_JoystickCmd() == 0.0
-					&& _dos.getEngrB_InfeedSpin_JoystickCmd() == 0.0) {
-				_infeed.stop();
-				_carriage.stop();
+			else {
+				//_cubeHandler2.stop();
+				//_carriage.stop();
+				_cubeHandler.stopInfeedAndCarriage();
 			}
 		}
 		
 		// =============  ELEVATOR ============= 
 		
 		if (_dos.getOperator_Elevator_JoystickCmd() != 0) {
-			_elevator.JogAxis(_dos.getOperator_Elevator_JoystickCmd());
+			_cubeHandler.elevator_JogAxis(_dos.getOperator_Elevator_JoystickCmd());
 		}
 		else if (_dos.getEngineering_Elevator_JoystickCmd() != 0) {
-			_elevator.JogAxis(_dos.getEngineering_Elevator_JoystickCmd());
+			_cubeHandler.elevator_JogAxis(_dos.getEngineering_Elevator_JoystickCmd());
 		}
 		else if (_dos.getIsOperator_ElevatorCubeOnFloorHgt_BtnJustPressed() || _dos.getIsEngineering_ElevatorCubeOnFloorHgt_BtnJustPressed()) {
-			_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.CUBE_ON_FLOOR);
+			_cubeHandler.elevator_MoveToPresetPosition(ELEVATOR_PRESET_POSITION.CUBE_ON_FLOOR);
 		}	
 		else if (_dos.getIsOperator_ElevatorScaleHgt_BtnJustPressed() || _dos.getIsEngineering_ElevatorScaleHgt_BtnJustPressed()) {
-			_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.SCALE_HEIGHT);
+			_cubeHandler.elevator_MoveToPresetPosition(ELEVATOR_PRESET_POSITION.SCALE_HEIGHT);
 		} 
 		else if (_dos.getIsOperator_ElevatorSwitchHgt_BtnJustPressed() || _dos.getIsEngineering_ElevatorSwitchHgt_BtnJustPressed()) {
-			_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.SWITCH_HEIGHT);
+			_cubeHandler.elevator_MoveToPresetPosition(ELEVATOR_PRESET_POSITION.SWITCH_HEIGHT);
 		}
 		else if (_dos.getIsOperator_ElevatorPyrmdLvl1Hgt_BtnJustPressed() || _dos.getIsEngineering_ElevatorPyramidHgt_BtnJustPressed()) {
-			_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.CUBE_ON_PYRAMID_LEVEL_1);
+			_cubeHandler.elevator_MoveToPresetPosition(ELEVATOR_PRESET_POSITION.CUBE_ON_PYRAMID_LEVEL_1);
 		}		
 		else if (_dos.getIsOperator_ElevatorHome_BtnJustPressed()) {
-			_elevator.MoveToPresetPosition(ELEVATOR_PRESET_POSITION.HOME);
+			_cubeHandler.elevator_MoveToPresetPosition(ELEVATOR_PRESET_POSITION.HOME);
 		} else {
-			_elevator.stop();
+			_cubeHandler.stopElevator();
 		} 
 				
 		// ============= Camera Switch ============= 
@@ -393,7 +404,8 @@ public class Robot extends IterativeRobot {
     		_elevator.outputToShuffleboard();
     		_infeed.outputToShuffleboard();
     		_carriage.outputToShuffleboard();
-    		_ultrasonic.outputToShuffleboard();
+    		//_ultrasonic.outputToShuffleboard();
+	    	_cubeHandler.outputToShuffleboard();
 	    	
     		// write the overall robot dashboard info
 	    	SmartDashboard.putString("Robot Build", _buildMsg);
@@ -424,7 +436,8 @@ public class Robot extends IterativeRobot {
 	    	//_elevator.updateLogData(logData);
 	    	_infeed.updateLogData(logData);
 	    	_carriage.updateLogData(logData);
-	    	_ultrasonic.updateLogData(logData);
+	    	//_ultrasonic.updateLogData(logData);
+	    	_cubeHandler.updateLogData(logData);
 	    	
 	    	_dataLogger.WriteDataLine(logData);
     	}

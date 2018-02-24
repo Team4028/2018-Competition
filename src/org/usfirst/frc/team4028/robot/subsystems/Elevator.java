@@ -589,10 +589,23 @@ public class Elevator implements Subsystem {
 	//=====================================================================================
 	//Methods for Exposing Properties of Elevator
 	//=====================================================================================
-	public boolean isElevatorAtFloorPosition() {
-		if(_elevatorState == ELEVATOR_STATE.MOVE_BELOW_SOFT_LIMIT || _targetElevatorPosition == CUBE_ON_FLOOR_POSITION) {
+	//public boolean isElevatorAtFloorPosition() {
+	//	if(_elevatorState == ELEVATOR_STATE.MOVE_BELOW_SOFT_LIMIT || _targetElevatorPosition == CUBE_ON_FLOOR_POSITION) {
+	//		return true;
+	//	} else {
+	//		return false;
+	//	}
+	//}
+	
+	private double elevatorActualPositionNU() {
+		return _elevatorMasterMotor.getSelectedSensorPosition(0);
+	}
+	
+	public boolean isElevatorAtInfeedPosition() {
+		if(elevatorActualPositionNU() < 100) {
 			return true;
-		} else {
+		}
+		else {
 			return false;
 		}
 	}
