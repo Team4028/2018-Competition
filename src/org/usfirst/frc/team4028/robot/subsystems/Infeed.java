@@ -151,7 +151,7 @@ public class Infeed  implements Subsystem {
 	
 	// handles issue that arms on practice robot do not hit home limit switches
 	//	at the same place
-	private static final int LEFT_INFEED_ARM_ZERO_OFFSET = 150;
+	private static final int LEFT_INFEED_ARM_ZERO_OFFSET = 75;  // 150 > 200 > 100 > 50 > 75
 	private static final int RIGHT_INFEED_ARM_ZERO_OFFSET = 0;
 	
 	//=====================================================================================
