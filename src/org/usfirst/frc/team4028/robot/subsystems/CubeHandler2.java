@@ -1,6 +1,7 @@
 package org.usfirst.frc.team4028.robot.subsystems;
 
 import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_PRESET_POSITION;
+import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_ARM_TARGET_POSITION;
 import org.usfirst.frc.team4028.util.LogDataBE;
 import org.usfirst.frc.team4028.util.loops.Loop;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -24,6 +25,7 @@ public class CubeHandler2 implements Subsystem {
 
 	private enum CUBE_HANDLER_STATE {
 		UNDEFINED,
+		STOPPED,
 		WANT_TO_MOVE_ELEVATOR_TO_PRESET,
 		SAFE_TO_MOVE_ELEVATOR_TO_PRESET,
 		WANT_TO_MOVE_ELEVATOR_JOYSTICK,		// Note: Separate state since the cmd method is different
@@ -79,6 +81,9 @@ public class CubeHandler2 implements Subsystem {
 			{	
 				switch(_cubeHandlerState) 
 				{
+					case STOPPED:
+						break;
+						
 					case WANT_TO_MOVE_ELEVATOR_TO_PRESET:
 						
 						if(!_infeed.areArmsInSafePosition())
@@ -157,7 +162,16 @@ public class CubeHandler2 implements Subsystem {
 	
 	public void stopElevator() 
 	{
-		_elevator.stop();
+		if(_cubeHandlerState == CUBE_HANDLER_STATE.SAFE_TO_MOVE_ELEVATOR_JOYSTICK)
+		{
+			_requestedElevatorSpeedCmd = 0;
+			if(_cubeHandlerState != CUBE_HANDLER_STATE.STOPPED)
+			{
+				ReportStateChg("Cube Handler (State) " + _cubeHandlerState.toString() + " ==> [STOPPED]");
+				_cubeHandlerState = CUBE_HANDLER_STATE.STOPPED;
+			}
+			_elevator.stop();
+		}
 	}
 
 	@Override
@@ -211,7 +225,7 @@ public class CubeHandler2 implements Subsystem {
 		//_elevator.JogAxis(speedCmd);
 		
 		_requestedElevatorSpeedCmd = speedCmd;
-		ReportStateChg("Infeed Arm (State) " + _cubeHandlerState.toString() + " ==> [WANT_TO_MOVE_ELEVATOR_JOYSTICK]");
+		ReportStateChg("Cube Handler (State) " + _cubeHandlerState.toString() + " ==> [WANT_TO_MOVE_ELEVATOR_JOYSTICK]");
 		_cubeHandlerState = CUBE_HANDLER_STATE.WANT_TO_MOVE_ELEVATOR_JOYSTICK;
 	}
 
@@ -221,7 +235,7 @@ public class CubeHandler2 implements Subsystem {
 		//_elevator.MoveToPresetPosition(presetPosition);	
 		
 		_requestedPresetPosition = presetPosition;
-		ReportStateChg("Infeed Arm (State) " + _cubeHandlerState.toString() + " ==> [WANT_TO_MOVE_ELEVATOR_TO_PRESET]");
+		ReportStateChg("Cube Handler (State) " + _cubeHandlerState.toString() + " ==> [WANT_TO_MOVE_ELEVATOR_TO_PRESET]");
 		_cubeHandlerState = CUBE_HANDLER_STATE.WANT_TO_MOVE_ELEVATOR_TO_PRESET;
 	}
 	
@@ -261,6 +275,27 @@ public class CubeHandler2 implements Subsystem {
 	public void infeedWheels_VBusCmd_BumpDown() 
 	{		
 		_infeed.infeedWheels_VBusCmd_BumpDown();
+	}
+	
+	// used by auton only
+	public void infeedArms_MoveToPresetPosition(INFEED_ARM_TARGET_POSITION presetTargetPostion)
+	{
+		switch(presetTargetPostion)
+		{
+			case SQUEEZE:
+				infeedArms_moveToSqueezePosition();
+				break;
+			case HOME:
+			case STORE:
+				infeedArms_moveToStorePosition();
+				break;
+			case INFEED:
+			case WIDE:
+				_infeed.moveArmsToWideInfeedPosition();
+				break;
+			default:
+				break;
+		}
 	}
 	
 	public void infeedArms_SqueezeAngle_BumpNarrower() 
