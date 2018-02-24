@@ -41,7 +41,7 @@ public class Carriage implements Subsystem {
 	
 	private CARRIAGE_WHEELS_STATE _carriageWheelsState;
 	
-	private double _currentCarriageWheelsVBusCmd = CARRIAGE_WHEELS_INFEED_COMMAND;
+	private double _currentCarriageWheelsVBusCmd = .45;
 	//private double _servoTargetPosition = 0.1;
 	
 	// private double _currentInFeedWheelsVBusCmd = INFEED_DRIVE_WHEELS_VBUS_COMMAND;
@@ -302,7 +302,7 @@ public class Carriage implements Subsystem {
 	public void outputToShuffleboard() 
 	{
 		SmartDashboard.putNumber("Carriage Current:", getCarriageMotorCurrent());
-		SmartDashboard.putNumber("Carriage Wheels %VBus", _currentCarriageWheelsVBusCmd * 100);
+		SmartDashboard.putNumber("Carriage Wheels %VBus", _currentCarriageWheelsVBusCmd);
 		SmartDashboard.putString("Carriage State", _carriageWheelsState.toString());
 		SmartDashboard.putBoolean("Carriage LimitSwitch", isCubeInCarriage());
 	}

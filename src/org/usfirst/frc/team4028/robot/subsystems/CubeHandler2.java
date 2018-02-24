@@ -1,7 +1,10 @@
 package org.usfirst.frc.team4028.robot.subsystems;
 
 import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_PRESET_POSITION;
+import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_STATE;
+import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_ARM_STATE;
 import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_ARM_TARGET_POSITION;
+import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_WHEELS_STATE;
 import org.usfirst.frc.team4028.util.LogDataBE;
 import org.usfirst.frc.team4028.util.loops.Loop;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -211,6 +214,7 @@ public class CubeHandler2 implements Subsystem {
 	
 	public void doNothing() 
 	{
+		//_infeed.reZeroArms();
 		//_infeed.doNothing();
 		//_elevator.doNothing();
 		//_carriage.stop();
@@ -237,6 +241,15 @@ public class CubeHandler2 implements Subsystem {
 		_requestedPresetPosition = presetPosition;
 		ReportStateChg("Cube Handler (State) " + _cubeHandlerState.toString() + " ==> [WANT_TO_MOVE_ELEVATOR_TO_PRESET]");
 		_cubeHandlerState = CUBE_HANDLER_STATE.WANT_TO_MOVE_ELEVATOR_TO_PRESET;
+	}
+	
+	public void elevator_SafeStartup()
+	{
+		if(_elevator.getElevatorState() == ELEVATOR_STATE.GOTO_TARGET_POSTION
+				|| _elevator.getElevatorState() == ELEVATOR_STATE.HOLD_TARGET_POSTION)
+		{
+			_elevator.rezeroElevator();
+		}
 	}
 	
 	//=====================================================================================
@@ -335,6 +348,14 @@ public class CubeHandler2 implements Subsystem {
 	{
 		_infeed.storeArms();
 	}	
+	
+	public void infeedArms_SafeStartup()
+	{
+		if(_infeed.getInfeedArmState() == INFEED_ARM_STATE.MOVE_TO_POSITION_AND_HOLD)
+		{
+			_infeed.reZeroArms();
+		}
+	}
 	
 	//=====================================================================================	
 	//Methods for Handling Interactions with Carriage Subsystem
