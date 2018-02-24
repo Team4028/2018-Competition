@@ -21,8 +21,6 @@ public class DriveSetDistanceAction implements Action{
 	@Override
 	public void done() {
 		_chassis.stop();
-		System.out.println("LeftPosinInchesFinish "+ _chassis.getLeftPosInches());
-		System.out.println("RightPosinInchesFinish "+ _chassis.getRightPosInches());
 	}
 
 	@Override

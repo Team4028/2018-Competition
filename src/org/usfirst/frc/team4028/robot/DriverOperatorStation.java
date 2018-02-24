@@ -32,7 +32,8 @@ import edu.wpi.first.wpilibj.XboxController;
 		DRIVER_YELLOW_BUTTON_Y						Squeeze Infeed
 		DRIVER_LEFT_BUMPER							Infeed Cube
 		DRIVER_RIGHT_BUMPER							Auto Acquire
-		DRIVER_BACK_BUTTON							ReZero Infeed
+		
+							ReZero Infeed
 		DRIVER_START_BUTTON							Shift Gear	
 		DRIVER_LEFT_THUMBSTICK
 		DRIVER_RIGHT_THUMBSTICK
@@ -134,26 +135,22 @@ public class DriverOperatorStation {
 		// Note: 2018 WPI code seems to have an issue that caches joystick button 
 		//			pressed while the robot is on but disabled
 		// 			so we eat cached button presses by reading them
-		if(_isDriverGamepad_PluggedIn)
-		{
+		if(_isDriverGamepad_PluggedIn) {
 			// eat cached button presses
 			resetGamepad(_driverGamepad);
 		}
 		
-		if(_isOperatorGamepad_PluggedIn)
-		{
+		if(_isOperatorGamepad_PluggedIn) {
 			// eat cached button presses
 			resetGamepad(_operatorGamepad);
 		}
 		
-		if(_isEngineeringGamepadA_PluggedIn)
-		{
+		if(_isEngineeringGamepadA_PluggedIn) {
 			// eat cached button presses
 			resetGamepad(_engineeringGamepadA);
 		}
 		
-		if(_isEngineeringGamepadB_PluggedIn)
-		{
+		if(_isEngineeringGamepadB_PluggedIn) {
 			// eat cached button presses
 			resetGamepad(_engineeringGamepadB);
 		}
@@ -180,7 +177,6 @@ public class DriverOperatorStation {
 	// ===================================
 	// === Driver Just Pressed buttons ===
 	// ===================================
-
 
 //		public boolean getIsDriver_Back_BtnJustPressed() {
 //			return _driverGamepad.getBackButtonPressed();
@@ -384,7 +380,7 @@ public class DriverOperatorStation {
 //		public boolean getIsOperator_LeftBumper_BtnJustPressed() {
 //			return _operatorGamepad.getBumperPressed(Hand.kLeft);
 //		}
-	
+
 //		public boolean getIsOperator_RightBumper_BtnJustPressed() {
 //			return _operatorGamepad.getBumperPressed(Hand.kRight);
 //		}
@@ -785,8 +781,7 @@ public class DriverOperatorStation {
 	// =========================================================================================================
 	// Engineering B	Engineering B	Engineering B	Engineering B	Engineering B	Engineering B
 	// =========================================================================================================
-	public boolean IsEngineeringGamepadBAvailable()
-	{
+	public boolean IsEngineeringGamepadBAvailable() {
 		return _isEngineeringGamepadB_PluggedIn;
 	}
 	
@@ -838,13 +833,13 @@ public class DriverOperatorStation {
 		}
 	}	
 
-		public boolean getIsEngrB_RezeroInfeed_BtnJustPressed() {
-			if(_isEngineeringGamepadB_PluggedIn) {
-				return _engineeringGamepadB.getXButtonPressed();
-			} else {
-				return false;
-			}
+	public boolean getIsEngrB_RezeroInfeed_BtnJustPressed() {
+		if(_isEngineeringGamepadB_PluggedIn) {
+			return _engineeringGamepadB.getXButtonPressed();
+		} else {
+			return false;
 		}
+	}
 	
 	public boolean getIsEngrB_CarriageVBusBumpDown_BtnJustPressed() {
 		if(_isEngineeringGamepadB_PluggedIn) {

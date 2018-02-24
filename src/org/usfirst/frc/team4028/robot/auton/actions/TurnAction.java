@@ -16,7 +16,7 @@ public class TurnAction implements Action{
 	
 	@Override
 	public void start() {
-		_chassis.setTargetAngle(_targetAngle, _isTurnRight);
+		_chassis.setTargetAngleAndTurnDirection(_targetAngle, _isTurnRight);
 	}
 
 	@Override
