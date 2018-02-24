@@ -18,7 +18,7 @@ public class LeftDoubleScale extends AutonBase{
 	
 	public LeftDoubleScale() {
 		toScale = Paths.getPath(PATHS.L_SCALE, 100.0, 100.0, 0.0055);
-		targetTurnAngle = 160;//137.862405226;
+		targetTurnAngle = 160;
 		endTargetTurnAngle = 30;
 		fromScaleToSwitch = Paths.getPath(PATHS.L_SCALE_TO_L_SWITCH, 100.0, 120.0, 0.005);
 		fromSwitchToScale = Paths.getPath(PATHS.L_SWITCH_TO_L_SCALE, 100.0, 120.0);

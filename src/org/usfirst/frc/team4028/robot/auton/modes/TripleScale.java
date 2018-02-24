@@ -6,6 +6,7 @@ import org.usfirst.frc.team4028.robot.auton.AutonBase;
 import org.usfirst.frc.team4028.robot.auton.actions.*;
 import org.usfirst.frc.team4028.robot.paths.Paths;
 import org.usfirst.frc.team4028.robot.paths.Paths.PATHS;
+import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_PRESET_POSITION;
 import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_ARM_TARGET_POSITION;
 import org.usfirst.frc.team4028.util.control.Path;
 
@@ -13,6 +14,7 @@ public class TripleScale extends AutonBase{
 	Path toScale;
 	Path fromScaleToSwitch, fromSwitchToScale, ScaleToSwitch2, SwitchtoScale2;
 	double targetTurnAngle1, targetTurnAngle2, endTargetTurnAngle;
+	double elevatorWaitTime1, elevatorWaitTime2;
 	
 	public TripleScale() {
 		toScale = Paths.getPath(PATHS.L_SCALE, 0.0055);
@@ -23,54 +25,69 @@ public class TripleScale extends AutonBase{
 		fromSwitchToScale = Paths.getPath(PATHS.L_SWITCH_TO_L_SCALE, 100.0, 120.0);
 		ScaleToSwitch2 = Paths.getPath(PATHS.L_SCALE_TO_L_SWITCH_2,100,120);
 		SwitchtoScale2 = Paths.getPath(PATHS.L_SWITCH_TO_L_SCALE_2);
+		
+		elevatorWaitTime1 = 2.0;
 	}
 
 	@Override
 	public void routine() {
-	runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-				new RunMotionProfileAction(toScale),
-				new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.STORE)
-	})));
-	runAction(new TurnAction(targetTurnAngle1, true));
-	//runAction(new DriveSetDistanceAction(30));
-	runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-				new RunMotionProfileAction(fromScaleToSwitch),
-				new SeriesAction(Arrays.asList(new Action[] {
-						new WaitAction(0.15),
-						new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.WIDE)
-				}))
-	})));
-	runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-				new SeriesAction(Arrays.asList(new Action[] {
-						new WaitAction(0.50),
-						new RunMotionProfileAction(fromSwitchToScale)
-				})),
-				new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.SQUEEZE),
-	}))); 
-	runAction(new TurnAction(endTargetTurnAngle, false));
-	runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-			new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.STORE),
-			new WaitAction(0.5)
-	})));
-	runAction(new TurnAction(targetTurnAngle2,true));
-	/*runAction(new ParallelAction(Arrays.asList(new Action[] {
-			new RunMotionProfileAction(ScaleToSwitch2),
-			new SeriesAction(Arrays.asList(new Action[] {
-					new WaitAction(0.75),
-					new ParallelAction(Arrays.asList(new Action[] {
-							new WaitAction(1),
-							new DriveInfeedWheelsAction(),
-							new SetInfeedPosAction(Infeed.INFEED_TARGET_POSITION.SQUEEZE)
+		// Drive to scale while storing infeed and raising elevator
+		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
+					new RunMotionProfileAction(toScale),
+					new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.STORE),
+					new SeriesAction(Arrays.asList(new Action[] {
+							new WaitAction(elevatorWaitTime1),
+							new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SCALE_HEIGHT)
 					}))
-			})),
-	})));
-	runAction(new ParallelAction(Arrays.asList(new Action[] {
-			new RunMotionProfileAction(SwitchtoScale2),
-			new DriveInfeedWheelsAction()
-	})));
-	runAction(new TurnAction(0, false));*/
-	runAction(new RunMotionProfileAction(ScaleToSwitch2));
-	//runAction(new DriveSetDistanceAction(30));
+		})));
+		// Outfeed cube for 0.2s
+		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
+					new WaitAction(0.2),
+					new OutfeedCubeAction()
+		})));
+		// Turn to switch while lowering elevator
+		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
+				new TurnAction(targetTurnAngle1, true),
+				new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT)
+		})));
+		// Drive to 2nd cube while setting infeed wide and continuing to lower elevator
+		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
+					new RunMotionProfileAction(fromScaleToSwitch),
+					new SeriesAction(Arrays.asList(new Action[] {
+							new WaitAction(0.65),
+							new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.WIDE)
+					}))
+		})));
+		// Infeed cube while sitting in place for 0.65s
+		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
+					new WaitAction(0.65),
+					new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.SQUEEZE),
+					new InfeedCubeAction()
+		})));
+		// Continue infeeding while driving back to scale and turning
+		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
+					new SeriesAction(Arrays.asList(new Action[] {
+							new RunMotionProfileAction(fromSwitchToScale),
+							new TurnAction(30, false)
+					})),
+					new SeriesAction(Arrays.asList(new Action[] {
+							new InfeedCubeAction(),
+							new SimultaneousAction(Arrays.asList(new Action[] {
+									new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SCALE_HEIGHT),
+									new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.STORE)
+							}))
+					}))
+		}))); 
+		// Outfeed cube for 0.2s
+		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
+				new WaitAction(0.2),
+				new OutfeedCubeAction()
+		})));
+		// Drive backwards 20in and move elevator to floor
+		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
+				new DriveSetDistanceAction(-20.0),
+				new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT)
+		})));
 	runAction(new PrintTimeFromStart(_startTime));
 	}
 }
