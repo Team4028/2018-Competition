@@ -44,7 +44,7 @@ public class Elevator implements Subsystem {
 	
 	public enum ELEVATOR_PRESET_POSITION {
 		HOME,
-		CUBE_ON_FLOOR,
+		INFEED_HEIGHT,
 		CUBE_ON_PYRAMID_LEVEL_1,
 		SWITCH_HEIGHT,
 		SCALE_HEIGHT,
@@ -90,11 +90,12 @@ public class Elevator implements Subsystem {
 	private static final int SWITCH_HEIGHT_POSITION = InchesToNativeUnits(32);
 	private static final int CUBE_ON_PYRAMID_LEVEL_1_POSITION = InchesToNativeUnits(24);
 	private static final int CUBE_ON_FLOOR_POSITION = InchesToNativeUnits(0);
+	private static final int INFEED_POSITION = 0;
 	private static final int HOME_POSITION = 0;
 
 //	private static final int ELEVATOR_MAX_TRAVEL = InchesToNativeUnits(41);
 	private static final int UP_SOFT_LIMIT = InchesToNativeUnits(90.0);
-	private static final int DOWN_SOFT_LIMIT = InchesToNativeUnits(6);
+	private static final int DOWN_SOFT_LIMIT = InchesToNativeUnits(3.0);
 	
 	/*
 	 * Moveable Slide Top to Bottom = 48.5 in
@@ -236,6 +237,7 @@ public class Elevator implements Subsystem {
 					case NEED_TO_HOME:
 						// snapshot start time
 						_elevatorHomeStartTime = System.currentTimeMillis();
+						DisableSoftLimits();
 						// change state
 						_elevatorState = ELEVATOR_STATE.MOVING_TO_HOME;
 						ReportStateChg("ElevatorAxis (State) [NEED_TO_HOME] ==> [MOVING_TO_HOME]");
@@ -277,7 +279,8 @@ public class Elevator implements Subsystem {
 											
 					case GOTO_TARGET_POSTION:
 						deltatime = (new Date().getTime()) - _lastScanTimeStamp;
-					
+						DisableSoftLimits();
+						
 						if(IsAtTargetPosition()) {
 							// change state
 	    					_elevatorState = ELEVATOR_STATE.HOLD_TARGET_POSTION;
@@ -309,10 +312,10 @@ public class Elevator implements Subsystem {
 	    					_elevatorState = ELEVATOR_STATE.GOTO_TARGET_POSTION;
 	    					ReportStateChg("ElevatorAxis (State) [HOLD_TARGET_POSTION] ==> [GOTO_TARGET_POSTION]");
 						}
-						else if (_targetElevatorPosition == DOWN_SOFT_LIMIT) {
-							_elevatorState = ELEVATOR_STATE.MOVE_BELOW_SOFT_LIMIT;
-							ReportStateChg("ElevatorAxis (State) [GOTO_TARGET_POSTION] ==> [MOVE_BELOW_SOFT_LIMIT]");
-						}
+						//else if (_targetElevatorPosition == DOWN_SOFT_LIMIT) {
+						//	_elevatorState = ELEVATOR_STATE.MOVE_BELOW_SOFT_LIMIT;
+						//	ReportStateChg("ElevatorAxis (State) [GOTO_TARGET_POSTION] ==> [MOVE_BELOW_SOFT_LIMIT]");
+						//}
 						else
 						{
 							// set appropriate gain slot to use	    	
@@ -324,13 +327,15 @@ public class Elevator implements Subsystem {
 						
 						break;
 						
-					case MOVE_BELOW_SOFT_LIMIT:
-						_elevatorMasterMotor.configReverseSoftLimitEnable(false, 20);
-						_elevatorMasterMotor.set(ControlMode.PercentOutput, -0.1);
-						break;
+					//case MOVE_BELOW_SOFT_LIMIT:
+					//	_elevatorMasterMotor.configReverseSoftLimitEnable(false, 20);
+					//	_elevatorMasterMotor.set(ControlMode.PercentOutput, -0.1);
+					//	break;
 					
 					case JOG_AXIS:
 						deltatime = (new Date().getTime()) - _lastScanTimeStamp;
+						
+						EnableSoftLimits();
 						
 						_actualPositionNU = _elevatorMasterMotor.getSelectedSensorPosition(0);
 						_actualVelocityNU_100mS  = _elevatorMasterMotor.getSelectedSensorVelocity(0);
@@ -384,7 +389,7 @@ public class Elevator implements Subsystem {
 	
 	// Support Operators Gamepad Buttons mapped to discrete positions
 	public void MoveToPresetPosition(ELEVATOR_PRESET_POSITION presetPosition) {
-		_elevatorMasterMotor.configReverseSoftLimitEnable(true, 20);
+		//_elevatorMasterMotor.configReverseSoftLimitEnable(true, 20);
 		switch(presetPosition) {
 			case HOME:
 				_targetElevatorPosition = HOME_POSITION;
@@ -392,11 +397,12 @@ public class Elevator implements Subsystem {
 				ReportStateChg("ElevatorAxis (State) [" + _elevatorState.toString() + "] ==> [GOTO_AND_HOLD_TARGET_POSTION:HOME]");
 				break;
 				
-			case CUBE_ON_FLOOR:
-				_targetElevatorPosition = DOWN_SOFT_LIMIT;
-				if(_elevatorState != ELEVATOR_STATE.MOVE_BELOW_SOFT_LIMIT) {
-					_elevatorState = ELEVATOR_STATE.GOTO_TARGET_POSTION;
-				}				
+			case INFEED_HEIGHT:
+				_targetElevatorPosition = INFEED_POSITION;
+				//if(_elevatorState != ELEVATOR_STATE.MOVE_BELOW_SOFT_LIMIT) {
+				//	_elevatorState = ELEVATOR_STATE.GOTO_TARGET_POSTION;
+				//}	
+				_elevatorState = ELEVATOR_STATE.GOTO_TARGET_POSTION;
 				ReportStateChg("ElevatorAxis (State) [" + _elevatorState.toString() + "] ==> [GOTO_AND_HOLD_TARGET_POSTION:CUBE_ON_FLOOR]");
 				break;
 				
@@ -478,9 +484,13 @@ public class Elevator implements Subsystem {
 			_targetElevatorPosition = _elevatorMasterMotor.getSelectedSensorPosition(0);
 			
 			// flip back to hold position mode using the current position
-			_elevatorState = ELEVATOR_STATE.HOLD_TARGET_POSTION;
-			ReportStateChg("ElevatorAxis (State) stop ==> [GOTO_TARGET_POSTION]");
+			if(_elevatorState != ELEVATOR_STATE.HOLD_TARGET_POSTION)
+			{
+				_elevatorState = ELEVATOR_STATE.HOLD_TARGET_POSTION;
+				ReportStateChg("ElevatorAxis (State) stop ==> [HOLD_TARGET_POSTION]");
+			}
 			
+			// cancel joystick cmd
 			_targetElevatorVelocity = 0.0;
 		}
 	}
