@@ -35,9 +35,7 @@ public class Robot extends IterativeRobot {
 	private CubeHandler2 _cubeHandler = CubeHandler2.getInstance();
 	
 	// Sensors
-	//private UltrasonicSensor _ultrasonic = UltrasonicSensor.getInstance();
 	private SwitchableCameraServer _switchableCameraServer = SwitchableCameraServer.getInstance();
-	//private PDPMonitor _pdpm = PDPMonitor.getInstance();
 	
 	// Other
 	private DriverOperatorStation _dos = DriverOperatorStation.getInstance();
@@ -112,9 +110,7 @@ public class Robot extends IterativeRobot {
 		stopAll();
 	}
 	
-	// ================================================================
-	// called once, each time the robot enters autonomous mode.
-	// ================================================================
+	/** Called once, each time the robot enters autonomous mode. */
 	@Override
 	public void autonomousInit() {
 		if (_autonExecuter != null) {
@@ -163,9 +159,7 @@ public class Robot extends IterativeRobot {
 		_autonStartTime = System.currentTimeMillis();
 	}
 
-	// ================================================================
-	// called each loop (approx every 20mS) in autonomous mode
-	// ================================================================
+	/** Called each loop (approx every 20mS) in autonomous mode */
 	@Override
 	public void autonomousPeriodic() {	
 		// Refresh Dashboard
@@ -177,9 +171,7 @@ public class Robot extends IterativeRobot {
 		logAllData();
 	}
 
-	// ================================================================
-	// called once, each time the robot enters teleop mode.
-	// ================================================================
+	/** Called once, each time the robot enters teleop mode. */
 	@Override
 	public void teleopInit() {		
 		if (_autonExecuter != null) {
@@ -210,9 +202,8 @@ public class Robot extends IterativeRobot {
 		_lastDashboardWriteTimeMSec = new Date().getTime();
 	}
 
-	// ================================================================
-	// called each loop (approx every 20mS) in telop mode
-	// ================================================================
+
+	/** Called each loop (approx every 20mS) in telop mode */
 	@Override
 	public void teleopPeriodic() {
 		// =============  CHASSIS ============= 
@@ -288,9 +279,7 @@ public class Robot extends IterativeRobot {
 			else if (Math.abs(_dos.getEngineering_EjectCube_JoystickCmd()) != 0) {
 				_cubeHandler.ejectCube(_dos.getEngineering_EjectCube_JoystickCmd());
 			} 
-
-			else 
-			{
+			else {
 				_cubeHandler.stopInfeedAndCarriage();			
 			}			
 
@@ -398,9 +387,7 @@ public class Robot extends IterativeRobot {
 		logAllData();
 	}
 	
-	//=====================================================================================
-	//Methods for Stopping All Motors on Every Subsystem (Every Subsystem w/ Motors needs a method here)
-	//=====================================================================================
+	/** Methods for Stopping All Motors on Every Subsystem (Every Subsystem w/ Motors needs a method here) */
 	private void stopAll() {
 		_chassis.stop();
 		_elevator.stop();
@@ -408,9 +395,7 @@ public class Robot extends IterativeRobot {
 		_carriage.stop();
 	}
 	
-	//=====================================================================================
-	//Method to Push Data to ShuffleBoard
-	//=====================================================================================
+	/** Method to Push Data to ShuffleBoard */
 	private void outputAllToDashboard() {
 		// limit spamming
     	long scanCycleDeltaInMSecs = new Date().getTime() - _lastScanEndTimeInMSec;
@@ -425,7 +410,6 @@ public class Robot extends IterativeRobot {
     		_elevator.outputToShuffleboard();
     		_infeed.outputToShuffleboard();
     		_carriage.outputToShuffleboard();
-    		//_ultrasonic.outputToShuffleboard();
 	    	_cubeHandler.outputToShuffleboard();
 	    	
     		// write the overall robot dashboard info
@@ -443,9 +427,7 @@ public class Robot extends IterativeRobot {
     	_lastScanEndTimeInMSec = new Date().getTime();
 	}
 	
-	//=====================================================================================
-	//Method for Logging Data to the USB Stick plugged into the RoboRio
-	//=====================================================================================
+	/** Method for Logging Data to the USB Stick plugged into the RoboRio */
 	private void logAllData() { 
 		// always call this 1st to calc drive metrics
     	if(_dataLogger != null) {    	
@@ -457,7 +439,6 @@ public class Robot extends IterativeRobot {
 	    	_elevator.updateLogData(logData);
 	    	_infeed.updateLogData(logData);
 	    	_carriage.updateLogData(logData);
-	    	//_ultrasonic.updateLogData(logData);
 	    	_cubeHandler.updateLogData(logData);
 	    	
 	    	_dataLogger.WriteDataLine(logData);

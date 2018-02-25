@@ -188,7 +188,7 @@ public class Chassis implements Subsystem {
 	}
 	
 	/* ===== Chassis State: PERCENT VBUS ===== */
-	/** Arcade drive with throttle and turn inputs. Includes anti-tipping and quick-turn. */
+	/** Arcade drive with throttle and turn inputs. Includes anti-tipping. */
 	public synchronized void arcadeDrive(double throttle, double turn) {
 		_chassisState = ChassisState.PERCENT_VBUS;
 		
@@ -196,9 +196,6 @@ public class Chassis implements Subsystem {
 			_leftMaster.set(ControlMode.PercentOutput, 0.0);
 			_rightMaster.set(ControlMode.PercentOutput, 0.0);
 			DriverStation.reportError("Tipping Threshold", false);
-		} else if (Math.abs(getLeftVelocityInchesPerSec() - getRightVelocityInchesPerSec()) < 5.0) {
-			_leftMaster.set(ControlMode.PercentOutput, -throttle + 0.7 * turn);
-			_rightMaster.set(ControlMode.PercentOutput, -throttle - 0.7 * turn);
 		} else {
 			_leftMaster.set(ControlMode.PercentOutput, -throttle + 0.5 * turn);
 			_rightMaster.set(ControlMode.PercentOutput, -throttle - 0.5 * turn);
