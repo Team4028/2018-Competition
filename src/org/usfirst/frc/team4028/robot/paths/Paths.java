@@ -238,17 +238,17 @@ public class Paths {
 	protected static ArrayList<Waypoint> getRightSwitchtoFrontofPyramidWaypoints() {
 		ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
         sWaypoints.add(new Waypoint(123,209,0,0));
-        sWaypoints.add(new Waypoint(89,209,20,80));
-        sWaypoints.add(new Waypoint(65,162,15,60));
+        sWaypoints.add(new Waypoint(89,209,20,70));
+        sWaypoints.add(new Waypoint(65,162,15,40));
         sWaypoints.add(new Waypoint(50,162,0,40));
         return sWaypoints;
 	}
 	protected static ArrayList<Waypoint> getLeftSwitchtoFrontofPyramidWaypoints() {
 		ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
         sWaypoints.add(new Waypoint(123,115,0,0));
-        sWaypoints.add(new Waypoint(95,115,20,80));
-        sWaypoints.add(new Waypoint(70,166,20,60));
-        sWaypoints.add(new Waypoint(50,166,0,40));
+        sWaypoints.add(new Waypoint(95,115,20,70));
+        sWaypoints.add(new Waypoint(70,166,20,40));
+        sWaypoints.add(new Waypoint(46,166,0,40));
         return sWaypoints;
 	}
 	
@@ -257,7 +257,7 @@ public class Paths {
 		sWaypoints.add(new Waypoint(50,166,0,0));
 		sWaypoints.add(new Waypoint(70,166,20,80));
 		sWaypoints.add(new Waypoint(95,115,20,80));
-        sWaypoints.add(new Waypoint(120,115,0,80));
+        sWaypoints.add(new Waypoint(122,115,0,80));
         return sWaypoints;
 	}
 	
@@ -297,8 +297,8 @@ public class Paths {
 	protected static ArrayList<Waypoint>  getLeftScaleExperimentalWaypoints() {
 		ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
 		sWaypoints.add(new Waypoint(20,46,0,0));
-        sWaypoints.add(new Waypoint(235,46,30,60));
-        sWaypoints.add(new Waypoint(276,67,0,40));
+        sWaypoints.add(new Waypoint(227,46,30,120));
+        sWaypoints.add(new Waypoint(278,71,0,100));
     	return sWaypoints;
 	}
 	
@@ -306,11 +306,12 @@ public class Paths {
 		ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
         sWaypoints.add(new Waypoint(20,46,0,0));
         sWaypoints.add(new Waypoint(195,46,0,120));
-        sWaypoints.add(new Waypoint(240,46,40,120));
-        sWaypoints.add(new Waypoint(240,96,0,120));
-        sWaypoints.add(new Waypoint(240,110,0,45));
-        sWaypoints.add(new Waypoint(240,247,40,120));
-        sWaypoints.add(new Waypoint(282,247,0,40));
+        sWaypoints.add(new Waypoint(240,46,40,100));
+        sWaypoints.add(new Waypoint(240,96,0,80));
+        sWaypoints.add(new Waypoint(240,110,0,40));
+        sWaypoints.add(new Waypoint(240,214,0,120));
+        sWaypoints.add(new Waypoint(240,251,37,80));
+        sWaypoints.add(new Waypoint(277,251,0,40));
         return sWaypoints;
 	}
 	

@@ -34,14 +34,17 @@ public class LeftDoubleScale extends AutonBase{
 					new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.STORE),
 					new SeriesAction(Arrays.asList(new Action[] {
 							new WaitAction(elevatorWaitTime1),
-							new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SCALE_HEIGHT)
+							new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SWITCH_HEIGHT)
 					}))
 		})));
+		runAction(new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SCALE_HEIGHT));
 		// Outfeed cube for 0.2s
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 					new WaitAction(0.2),
 					new OutfeedCubeAction()
 		})));
+		// Lower Elevator to Switch height
+		runAction(new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SWITCH_HEIGHT));
 		// Turn to switch while lowering elevator
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 				new TurnAction(targetTurnAngle, true),

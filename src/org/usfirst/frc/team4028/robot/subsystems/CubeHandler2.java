@@ -46,7 +46,7 @@ public class CubeHandler2 implements Subsystem {
 	private double _requestedElevatorSpeedCmd;
 	
 	// define class level constants
-	private static final boolean IS_VERBOSE_LOGGING_ENABLED = true;
+	private static final boolean IS_VERBOSE_LOGGING_ENABLED = false;
 	
 	//=====================================================================================
 	//Define Singleton Pattern
@@ -104,7 +104,6 @@ public class CubeHandler2 implements Subsystem {
 					case SAFE_TO_MOVE_ELEVATOR_TO_PRESET:
 						// move elevator to requested position
 						_elevator.MoveToPresetPosition(_requestedPresetPosition);	
-						
 						break;
 						
 					case WANT_TO_MOVE_ELEVATOR_JOYSTICK:

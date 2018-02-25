@@ -18,12 +18,12 @@ public class DoubleSwitch extends AutonBase {
 	public DoubleSwitch(boolean isLeftSwitch) {
 		if (isLeftSwitch) {
 			toSwitch = Paths.getPath(PATHS.L_SWITCH, 0.0065);
-			fromSwitchToFrontOfPyramidPath = Paths.getPath(PATHS.L_SWITCH_TO_FRONT_OF_PYRAMID, 0.002);
-			sTurnToSwitch = Paths.getPath(PATHS.S_TURN_TO_L_SWITCH, 0.009);
+			fromSwitchToFrontOfPyramidPath = Paths.getPath(PATHS.L_SWITCH_TO_FRONT_OF_PYRAMID, 0.006);
+			sTurnToSwitch = Paths.getPath(PATHS.S_TURN_TO_L_SWITCH, 0.01);
 		} else {
-			toSwitch = Paths.getPath(PATHS.R_SWITCH, 100.0, 120.0, 0.0065);
+			toSwitch = Paths.getPath(PATHS.R_SWITCH, 0.0065);
 			fromSwitchToFrontOfPyramidPath = Paths.getPath(PATHS.R_SWITCH_TO_FRONT_OF_PYRAMID, 0.008);
-			sTurnToSwitch = Paths.getPath(PATHS.S_TURN_TO_R_SWITCH, 0.009);
+			sTurnToSwitch = Paths.getPath(PATHS.S_TURN_TO_R_SWITCH, 0.01);
 		}
 		
 		elevatorWaitTimeFirstCube = 1.0;
@@ -51,9 +51,9 @@ public class DoubleSwitch extends AutonBase {
 		})));
 		// Drive to front of pyramid while moving elevator to floor and swinging out infeeds
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-					new RunMotionProfileAction(fromSwitchToFrontOfPyramidPath),
-					new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT),
-					new SeriesAction(Arrays.asList(new Action[] {
+				new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT),	
+				new RunMotionProfileAction(fromSwitchToFrontOfPyramidPath),	
+				new SeriesAction(Arrays.asList(new Action[] {
 							new WaitAction(1.4),
 							new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.WIDE)
 					}))
@@ -69,7 +69,6 @@ public class DoubleSwitch extends AutonBase {
 							}))
 					}))
 		})));
-		runAction(new WaitAction(0.5));
 		// Move back from pyramid while continuing to infeed
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 					new RunMotionProfileAction(fromPyramid),
@@ -90,7 +89,10 @@ public class DoubleSwitch extends AutonBase {
 				new OutfeedCubeAction()
 		})));
 		// Move elevator to floor
-		runAction(new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT));
+		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
+			new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT),
+			new WaitAction(1)
+		})));
 		runAction(new PrintTimeFromStart(_startTime));  
 	}
 }

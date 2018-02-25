@@ -49,6 +49,8 @@ public class ScaleThenSwitchOppositeSide extends AutonBase {
 					new WaitAction(0.2),
 					new OutfeedCubeAction()
 		})));
+		// Move elevator to switch height
+		runAction(new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SWITCH_HEIGHT));
 		// Turn to switch while lowering elevator
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 					new TurnAction(turnTargetAngle,true),

@@ -148,7 +148,7 @@ public class Infeed  implements Subsystem {
 	//Conversion Constant
 	private static final double DEGREES_TO_NATIVE_UNITS_CONVERSION = (4096/360);
 	
-	private static final boolean IS_VERBOSE_LOGGING_ENABLED = true;
+	private static final boolean IS_VERBOSE_LOGGING_ENABLED = false;
 	
 	// handles issue that arms on practice robot do not hit home limit switches
 	//	at the same place
@@ -321,8 +321,7 @@ public class Infeed  implements Subsystem {
 							// stop motor
 							_leftSwitchbladeArmMotor.set(ControlMode.PercentOutput, 0);
 							
-							if(!_hasLeftArmBeenHomed)
-							{
+							if(!_hasLeftArmBeenHomed) {
 								ReportStateChg("Left Arm [AT_HOME]");
 							}
 							
@@ -359,7 +358,6 @@ public class Infeed  implements Subsystem {
 							ReportStateChg("Infeed Arm (State) [" + _infeedArmState.toString() + "] ==> [AT_HOME]");
 							_infeedArmState = INFEED_ARM_STATE.AT_HOME;
 						}
-
 						break;
 						
 					case AT_HOME:
@@ -394,8 +392,7 @@ public class Infeed  implements Subsystem {
 						}
 						
 						// set target angle for both infeed arms
-						if(_infeedArmTargetPosition == INFEED_ARM_TARGET_POSITION.SQUEEZE)
-						{
+						if(_infeedArmTargetPosition == INFEED_ARM_TARGET_POSITION.SQUEEZE) {
 							// update _targetInfeedArmPosition since it might have been bumped
 							_targetInfeedArmPosition = _currentInFeedArmSqueezeTargetAngle;
 						}
@@ -564,41 +561,35 @@ public class Infeed  implements Subsystem {
 	//=====================================================================================
 	//Method for Engr GamePad B
 	//=====================================================================================
-	
-	public void infeedWheels_FeedIn()
-	{
+	public void infeedWheels_FeedIn() {
 		if(_infeedWheelsState != INFEED_WHEELS_STATE.FEED_IN) {
 			ReportStateChg("Infeed Arm (State) " + _infeedWheelsState.toString() + " ==> [ENGR_GAMEPAD_B_IN_MODE]");
 			_infeedWheelsState = INFEED_WHEELS_STATE.FEED_IN;
 		}
 	}
 	
-	public void infeedWheels_FeedOut()
-	{
+	public void infeedWheels_FeedOut() {
 		if(_infeedWheelsState != INFEED_WHEELS_STATE.FEED_OUT) {
 				ReportStateChg("Infeed Arm (State) " + _infeedWheelsState.toString() + " ==> [ENGR_GAMEPAD_B_OUT_MODE]");
 				_infeedWheelsState = INFEED_WHEELS_STATE.FEED_OUT;
 		}
 	}
 	
-	public void infeedWheels_SpinCube_CCW()
-	{
+	public void infeedWheels_SpinCube_CCW() {
 		if(_infeedWheelsState != INFEED_WHEELS_STATE.SPIN_COUNTER_CLOCKWISE) {
 			ReportStateChg("Infeed Wheel (State) " + _infeedWheelsState.toString() + " ==> [ENGR_GAMEPAD_B_SPIN_LEFT_MODE]");
 		_infeedWheelsState = INFEED_WHEELS_STATE.SPIN_COUNTER_CLOCKWISE;
 		}
 	}
 	
-	public void infeedWheels_SpinCube_CW()
-	{
+	public void infeedWheels_SpinCube_CW() {
 		if(_infeedWheelsState != INFEED_WHEELS_STATE.SPIN_CLOCKWISE) {
 			ReportStateChg("Infeed Arm (State) " + _infeedWheelsState.toString() + " ==> [ENGR_GAMEPAD_B_SPIN_RIGHT_MODE]");
 			_infeedWheelsState = INFEED_WHEELS_STATE.SPIN_CLOCKWISE;
 		}
 	}
 	
-	public void infeedWheels_VBusCmd_BumpUp()
-	{
+	public void infeedWheels_VBusCmd_BumpUp() {
 		double newCmd = _currentInFeedWheelsVBusCmd + INFEED_DRIVE_WHEELS_VBUS_COMMAND_BUMP;
 		
 		// only bump if new cmd is not over max
@@ -607,8 +598,7 @@ public class Infeed  implements Subsystem {
 		}
 	}
 	
-	public void infeedWheels_VBusCmd_BumpDown()
-	{		
+	public void infeedWheels_VBusCmd_BumpDown() {		
 		double newCmd = _currentInFeedWheelsVBusCmd - INFEED_DRIVE_WHEELS_VBUS_COMMAND_BUMP;
 		
 		// only bump if new cmd is not under min
@@ -617,14 +607,12 @@ public class Infeed  implements Subsystem {
 		}
 	}
 	
-	public void infeedArms_SqueezeAngle_BumpNarrower()
-	{
+	public void infeedArms_SqueezeAngle_BumpNarrower() {
 		double newTarget = _currentInFeedArmSqueezeTargetAngle + SQUEEZE_INFEED_POSITION_TARGET_ANGLE_BUMP;
 		_currentInFeedArmSqueezeTargetAngle = newTarget;
 	}
 	
-	public void infeedArms_SqueezeAngle_BumpWider()
-	{
+	public void infeedArms_SqueezeAngle_BumpWider() {
 		double newTarget = _currentInFeedArmSqueezeTargetAngle - SQUEEZE_INFEED_POSITION_TARGET_ANGLE_BUMP;
 		_currentInFeedArmSqueezeTargetAngle = newTarget;
 	}
@@ -690,8 +678,7 @@ public class Infeed  implements Subsystem {
 		return _rightSwitchbladeArmMotor.getSelectedSensorPosition(0);
 	}
 	
-	public INFEED_ARM_STATE getInfeedArmState()
-	{
+	public INFEED_ARM_STATE getInfeedArmState() {
 		return _infeedArmState;
 	}
 	

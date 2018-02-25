@@ -3,7 +3,6 @@ package org.usfirst.frc.team4028.robot.subsystems;
 import java.util.Date;
 
 import org.usfirst.frc.team4028.robot.Constants;
-import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_ARM_STATE;
 import org.usfirst.frc.team4028.util.GeneralUtilities;
 import org.usfirst.frc.team4028.util.LogDataBE;
 import org.usfirst.frc.team4028.util.loops.Loop;
@@ -445,8 +444,7 @@ public class Elevator implements Subsystem {
 		if(_elevatorState == ELEVATOR_STATE.GOTO_TARGET_POSTION 
 				|| _elevatorState == ELEVATOR_STATE.HOLD_TARGET_POSTION 
 				|| _elevatorState == ELEVATOR_STATE.AT_HOME
-				|| _elevatorState == ELEVATOR_STATE.JOG_AXIS)
-		{
+				|| _elevatorState == ELEVATOR_STATE.JOG_AXIS) {
 			if(_elevatorState != ELEVATOR_STATE.JOG_AXIS) {
 				// change the state
 				_elevatorState = ELEVATOR_STATE.JOG_AXIS;
@@ -457,8 +455,8 @@ public class Elevator implements Subsystem {
 				_targetElevatorVelocity = 0;
 			} else {
 				if(speedCmd > 0) {
-				// jog at a fixed rate in a + direction
-				_targetElevatorVelocity = JOG_UP_VELOCITY;
+					// jog at a fixed rate in a + direction
+					_targetElevatorVelocity = JOG_UP_VELOCITY;
 				}
 				else if(speedCmd < 0) {
 					// jog at a fixed rate in a - direction
@@ -496,8 +494,7 @@ public class Elevator implements Subsystem {
 		}
 	}
 
-	public ELEVATOR_STATE getElevatorState()
-	{
+	public ELEVATOR_STATE getElevatorState() {
 		return _elevatorState;
 	}
 	
@@ -568,21 +565,17 @@ public class Elevator implements Subsystem {
 		return IsAtTargetPosition(_targetElevatorPosition);
 	}
 
-	private void SetPidSlotToUse(String ref, int pidSlot)
-	{
-		if(pidSlot != _pidSlotInUse)
-		{
+	private void SetPidSlotToUse(String ref, int pidSlot) {
+		if(pidSlot != _pidSlotInUse) {
 			ReportStateChg("Chg Pid Slot: Ref: [" + ref + "] [" + _pidSlotInUse + "] => [" + pidSlot + "]");
 			_pidSlotInUse = pidSlot;
 			_elevatorMasterMotor.selectProfileSlot(_pidSlotInUse, 0);
 			
-			if(pidSlot == MOVING_UP_PID_SLOT_INDEX)
-			{
+			if(pidSlot == MOVING_UP_PID_SLOT_INDEX) {
 				_elevatorMasterMotor.configMotionCruiseVelocity(UP_CRUISE_VELOCITY, 0);
 				_elevatorMasterMotor.configMotionAcceleration(UP_ACCELERATION, 0);
 			}
-			else if(pidSlot == MOVING_DOWN_PID_SLOT_INDEX)
-			{
+			else if(pidSlot == MOVING_DOWN_PID_SLOT_INDEX) {
 				_elevatorMasterMotor.configMotionCruiseVelocity(DOWN_CRUISE_VELOCITY, 0);
 				_elevatorMasterMotor.configMotionAcceleration(DOWN_ACCELERATION, 0);
 			}

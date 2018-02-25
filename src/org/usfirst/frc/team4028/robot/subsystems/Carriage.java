@@ -41,7 +41,7 @@ public class Carriage implements Subsystem {
 	
 	private CARRIAGE_WHEELS_STATE _carriageWheelsState;
 	
-	private double _currentCarriageWheelsVBusCmd = .45;
+	private double _currentCarriageWheelsVBusCmd = 1.00;
 	//private double _servoTargetPosition = 0.1;
 	
 	// private double _currentInFeedWheelsVBusCmd = INFEED_DRIVE_WHEELS_VBUS_COMMAND;
