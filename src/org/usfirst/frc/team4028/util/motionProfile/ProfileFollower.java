@@ -3,6 +3,8 @@ package org.usfirst.frc.team4028.util.motionProfile;
 import org.usfirst.frc.team4028.robot.Constants;
 import org.usfirst.frc.team4028.util.motionProfile.MotionProfileGoal.CompletionBehavior;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 public class ProfileFollower {
 	protected double mKp = Constants.PATH_FOLLOWING_PROFILE_KP;
     protected double mKi = Constants.PATH_FOLLOWING_PROFILE_KI;
@@ -115,7 +117,12 @@ public class ProfileFollower {
         // Clamp to limits.
         output = Math.max(mMinOutput, Math.min(mMaxOutput, output));
 
-        return output;
+        SmartDashboard.putNumber("PosError: ", mLatestPosError);
+        SmartDashboard.putNumber("Vel Error: ", mLatestVelError);
+        SmartDashboard.putNumber("Total Error: ", mTotalError);
+        SmartDashboard.putNumber("Output: ", output);
+        
+        return output; 
     }
 
     /**

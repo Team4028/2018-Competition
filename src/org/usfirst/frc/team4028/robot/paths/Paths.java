@@ -248,16 +248,16 @@ public class Paths {
         sWaypoints.add(new Waypoint(123,115,0,0));
         sWaypoints.add(new Waypoint(95,115,20,70));
         sWaypoints.add(new Waypoint(70,166,20,40));
-        sWaypoints.add(new Waypoint(46,166,0,40));
+        sWaypoints.add(new Waypoint(50,166,0,40));
         return sWaypoints;
 	}
 	
 	protected static ArrayList<Waypoint> getFrontofPyramidtoLeftSwitchWaypoints() {
 		ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
-		sWaypoints.add(new Waypoint(50,166,0,0));
-		sWaypoints.add(new Waypoint(70,166,20,80));
+		sWaypoints.add(new Waypoint(50,162,0,0));
+		sWaypoints.add(new Waypoint(70,162,20,80));
 		sWaypoints.add(new Waypoint(95,115,20,80));
-        sWaypoints.add(new Waypoint(122,115,0,80));
+        sWaypoints.add(new Waypoint(118,115,0,80));
         return sWaypoints;
 	}
 	
