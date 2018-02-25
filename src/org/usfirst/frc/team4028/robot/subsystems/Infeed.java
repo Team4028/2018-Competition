@@ -59,8 +59,8 @@ public class Infeed  implements Subsystem {
 	private double _targetInfeedArmPosition;
 	
 	// supports bumping
-	private double _currentInFeedArmSqueezeTargetAngle = 198;
-	private double _currentInFeedWheelsVBusCmd = .45;
+	private double _currentInFeedArmSqueezeTargetAngle = INFEED_POSITION_ANGLE; // 198;
+	private double _currentInFeedWheelsVBusCmd = .50; //.45;
 	
 	// motor controllers
 	TalonSRX _leftSwitchbladeArmMotor; 
@@ -124,7 +124,7 @@ public class Infeed  implements Subsystem {
 	
 	// Infeed Position Constants [THESE ARE ANGLE MEASURES IN DEGREES]
 	private static final double HOME_POSITION_ANGLE = 0; //Is Home
-    private static final double INFEED_POSITION_ANGLE = 160;	
+    private static final double INFEED_POSITION_ANGLE = 184; //160;	
 	private static final double WIDE_INFEED_POSITION_ANGLE = 140;
 	private static final double SQUEEZE_INFEED_POSITION_ANGLE = 190;
 
@@ -368,8 +368,8 @@ public class Infeed  implements Subsystem {
 						zeroSensors();
 						
 						// enable fwd soft limits
-						_leftSwitchbladeArmMotor.configForwardSoftLimitEnable(true, 20);
-						_rightSwitchbladeArmMotor.configForwardSoftLimitEnable(true, 20);
+						_leftSwitchbladeArmMotor.configForwardSoftLimitEnable(true, 40);
+						_rightSwitchbladeArmMotor.configForwardSoftLimitEnable(true, 40);
 						
 						// hold arms at home
 						ReportStateChg("Infeed Arm (State) [" + _infeedArmState.toString() + "] ==> [MOVE_TO_POSITION_AND_HOLD]:[HOME]");
@@ -711,18 +711,22 @@ public class Infeed  implements Subsystem {
 	//=====================================================================================
 	//Methods for Logging and Outputting to Shuffleboard
 	//=====================================================================================	
-	public void outputToShuffleboard() {
-		SmartDashboard.putBoolean("Is the Infeed in Position?", areArmsInPosition());
-		SmartDashboard.putNumber("RP:", getCurrentRightInfeedPosition());
-		SmartDashboard.putNumber("LP:", getCurrentLeftInfeedPosition());
-		SmartDashboard.putNumber("Wide Infeed Position:", degreesToNativeUnits(WIDE_INFEED_POSITION_ANGLE));
-		SmartDashboard.putBoolean("Are Arms Safe?", areArmsInSafePosition());
-		SmartDashboard.putString("Infeed Wheels State", _infeedWheelsState.toString());
-		SmartDashboard.putNumber("Infeed Wheels %VBus", _currentInFeedWheelsVBusCmd);
-		SmartDashboard.putNumber("Infeed Arm Target Squeeze Angle", _currentInFeedArmSqueezeTargetAngle);
-		SmartDashboard.putString("Infeed Arm State", _infeedArmState.toString());
-		SmartDashboard.putBoolean("Left Arm: Homed?", _hasLeftArmBeenHomed);
-		SmartDashboard.putBoolean("Right Arm: Homed?", _hasRightArmBeenHomed);
+	public void outputToShuffleboard() 
+	{
+		SmartDashboard.putString("InfeedWheels:State", _infeedWheelsState.toString());
+		SmartDashboard.putNumber("InfeedWheels:%VBus", _currentInFeedWheelsVBusCmd);
+		
+		SmartDashboard.putNumber("InfeedArms:Target Wide Angle:", degreesToNativeUnits(WIDE_INFEED_POSITION_ANGLE));
+		SmartDashboard.putNumber("InfeedArms:Target Squeeze Angle", _currentInFeedArmSqueezeTargetAngle);
+		
+		SmartDashboard.putBoolean("InfeedArms:Left Homed?", _hasLeftArmBeenHomed);
+		SmartDashboard.putBoolean("InfeedArms:Right Homed?", _hasRightArmBeenHomed);
+		SmartDashboard.putBoolean("InfeedArms:Are Safe?", areArmsInSafePosition());		
+		SmartDashboard.putBoolean("InfeedArms:InPosition?", areArmsInPosition());
+		SmartDashboard.putString("InfeedArms:State", _infeedArmState.toString());
+		
+		SmartDashboard.putNumber("InfeedArms:Left Current PositionNU", getCurrentLeftInfeedPosition());
+		SmartDashboard.putNumber("InfeedArms:Right Current PositionNU:", getCurrentRightInfeedPosition());
 	}
 	
 	// add data elements to be logged  to the input param (which is passed by ref)
