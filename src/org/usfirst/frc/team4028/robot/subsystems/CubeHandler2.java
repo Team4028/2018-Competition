@@ -179,23 +179,11 @@ public class CubeHandler2 implements Subsystem {
 			_carriage.infeedCarriageMotorsVBus(joystickCommand);
 		}
 	}
-<<<<<<< HEAD
-		
-=======
-	
+
 	public boolean isCubeInCarriage() {
 		return _carriage.isCubeInCarriage();
 	}
 	
-	public void doNothing() 
-	{
-		//_infeed.reZeroArms();
-		//_infeed.doNothing();
-		//_elevator.doNothing();
-		//_carriage.stop();
-	}
-	
->>>>>>> 20bad615b2aebfaa196e99901b1d52d35b5adce7
 	//=====================================================================================
 	//Methods for Handling Interactions with Elevator Subsystem
 	//=====================================================================================	
@@ -219,29 +207,10 @@ public class CubeHandler2 implements Subsystem {
 		_cubeHandlerState = CUBE_HANDLER_STATE.WANT_TO_MOVE_ELEVATOR_TO_PRESET;
 	}
 	
-<<<<<<< HEAD
-	public void stopElevator() 
-=======
-
 	public boolean isElevatorAtTargetPos() {
 		return _elevator.IsAtTargetPosition();
 	}
-	public void elevator_SafeStartup()
->>>>>>> 20bad615b2aebfaa196e99901b1d52d35b5adce7
-	{
-		if(_cubeHandlerState == CUBE_HANDLER_STATE.SAFE_TO_MOVE_ELEVATOR_JOYSTICK)
-		{
-			_requestedElevatorSpeedCmd = 0;
-			if(_cubeHandlerState != CUBE_HANDLER_STATE.STOPPED)
-			{
-				ReportStateChg("Cube Handler (State) " + _cubeHandlerState.toString() + " ==> [STOPPED]");
-				_cubeHandlerState = CUBE_HANDLER_STATE.STOPPED;
-			}
-			_elevator.stop();
-		}
 
-	}
-	
 	public void elevator_SafeStartup()
 	{		
 		// in ONLY this special case we bypass looper and talk directly to elevator class
@@ -252,25 +221,22 @@ public class CubeHandler2 implements Subsystem {
 		_requestedPresetPosition = ELEVATOR_PRESET_POSITION.HOME;
 	}
 	
+	public void stopElevator()
+	{
+		_elevator.stop();
+	}
+	
 	//=====================================================================================
 	//Methods for Handling Interactions with Multiple Subsystem
 	//=====================================================================================	
-<<<<<<< HEAD
 	public void acquireCube_InfeedAndCarriage() 
 	{
-=======
-	public void acquireCube_InfeedPlusCarriage() {
->>>>>>> 20bad615b2aebfaa196e99901b1d52d35b5adce7
 		_infeed.infeedWheels_FeedIn();
 		_carriage.FeedIn();
 	}
 	
-<<<<<<< HEAD
 	public void ejectCube_InfeedAndCarriage() 
 	{
-=======
-	public void ejectCube_InfeedPlusCarriage() {
->>>>>>> 20bad615b2aebfaa196e99901b1d52d35b5adce7
 		_infeed.infeedWheels_FeedOut();
 		_carriage.FeedOut();
 	}
