@@ -147,8 +147,6 @@ public class Robot extends IterativeRobot {
 		_chassis.zeroGyro();
 		_chassis.setBrakeMode(true);
 		
-		_cubeHandler.doNothing();
-
 		_infeed.reZeroArms();
 
 		// init data logging
@@ -241,15 +239,11 @@ public class Robot extends IterativeRobot {
 				_cubeHandler.infeedArms_SpinCube_CW();
 			} 
 			else if (Math.abs(_dos.getDriver_InfeedCube_JoystickCmd()) != 0) {
-				//_cubeHandler.runInfeedCubePlusCarriage(_dos.getDriver_InfeedCube_JoystickCmd());
-				//_cubeHandler2.engrGamepadB_FeedIn();
-				//_carriage.runCarriageMotors();
-				_cubeHandler.acquireCube_InfeedPlusCarriage();
+				_cubeHandler.acquireCube_InfeedAndCarriage();
 			}			
-			else if (Math.abs(_dos.getDriver_EjectCube_JoystickCmd()) != 0) {
-				//_cubeHandler2.engrGamepadB_FeedOut();
-				//_carriage.ejectCube();
-				_cubeHandler.ejectCube_InfeedPlusCarriage();
+			else if ((Math.abs(_dos.getDriver_EjectCube_JoystickCmd()) != 0)
+						|| (Math.abs(_dos.getOperator_EjectCube_JoystickCmd()) != 0)) {
+				_cubeHandler.ejectCube_InfeedAndCarriage();
 			}
 			else {
 				_cubeHandler.stopInfeedAndCarriage();			
@@ -303,13 +297,22 @@ public class Robot extends IterativeRobot {
 			}
 			
 			// adjust Carriage Wheel Speeds
-			if(_dos.getIsEngrB_CarriageVBusBumpDown_BtnJustPressed()) {
+			if(_dos.getIsEngrB_Carriage_FeedIn_VBusBumpDown_BtnJustPressed()) {
 				//_carriage.engrGamepadB_CarriageVBUS_BumpDown();
-				_cubeHandler.carriage_VBusCmd_BumpDown();
+				_cubeHandler.carriage_FeedIn_VBusCmd_BumpDown();
 			}
-			else if(_dos.getIsEngrB_CarriageVBusBumpUp_BtnJustPressed()) {
+			else if(_dos.getIsEngrB_Carriage_FeedIn_VBusBumpUp_BtnJustPressed()) {
 				//_carriage.engrGamepadB_CarriageVBUS_BumpUp();
-				_cubeHandler.carriage_VBusCmd_BumpUp();
+				_cubeHandler.carriage_FeedIn_VBusCmd_BumpUp();
+			}
+			
+			if(_dos.getIsEngrB_Carriage_FeedOut_VBusBumpDown_BtnJustPressed()) {
+				//_carriage.engrGamepadB_CarriageVBUS_BumpDown();
+				_cubeHandler.carriage_FeedOut_VBusCmd_BumpDown();
+			}
+			else if(_dos.getIsEngrB_Carriage_FeedOut_VBusBumpUp_BtnJustPressed()) {
+				//_carriage.engrGamepadB_CarriageVBUS_BumpUp();
+				_cubeHandler.carriage_FeedOut_VBusCmd_BumpUp();
 			}
 			
 			// infeed arm positions
@@ -336,12 +339,12 @@ public class Robot extends IterativeRobot {
 			else if (_dos.getEngrB_InfeedAndCarriage_JoystickCmd() == 1.0) {
 				// _cubeHandler2.engrGamepadB_FeedOut();
 				// _carriage.ejectCube();
-				_cubeHandler.ejectCube_InfeedPlusCarriage();
+				_cubeHandler.ejectCube_InfeedAndCarriage();
 			}
 			else if (_dos.getEngrB_InfeedAndCarriage_JoystickCmd() == -1.0) {
 				// _cubeHandler2.engrGamepadB_FeedIn()
 				// _carriage.runCarriageMotors();
-				_cubeHandler.acquireCube_InfeedPlusCarriage();
+				_cubeHandler.acquireCube_InfeedAndCarriage();
 			}
 			else {
 				//_cubeHandler2.stop();

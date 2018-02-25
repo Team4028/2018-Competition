@@ -20,7 +20,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //-------------------------------------------------------------
 //	Rev		By			D/T				Description
 //	0		PatB		???			Initial Version
-//	1		TomB		18-Feb		Cleanup Looper
+//	1		TomB		18.Feb		Cleanup Looper
+//  2		TomB		25.Feb		Code Cleanup
 //-------------------------------------------------------------
 public class Carriage implements Subsystem {
 	
@@ -41,12 +42,13 @@ public class Carriage implements Subsystem {
 	
 	private CARRIAGE_WHEELS_STATE _carriageWheelsState;
 	
-	private double _currentCarriageWheelsVBusCmd = 1.00;
+	private double _currentCarriageWheelsFeedInVBusCmd = .45;
+	private double _currentCarriageWheelsFeedOutVBusCmd = .8;
 	//private double _servoTargetPosition = 0.1;
 	
 	// private double _currentInFeedWheelsVBusCmd = INFEED_DRIVE_WHEELS_VBUS_COMMAND;
 	
-	private static final double CARRIAGE_WHEELS_INFEED_COMMAND = 0.5;
+	//private static final double CARRIAGE_WHEELS_INFEED_COMMAND = 0.5;
 	private static final double CARRIAGE_WHEELS_VBUS_COMMAND_BUMP = 0.05;
 	
 	private static final boolean IS_VERBOSE_LOGGING_ENABLED = true;
@@ -158,18 +160,18 @@ public class Carriage implements Subsystem {
 						break;
 						
 					case FEED_IN:
-						_carriageLeftMotor.set(ControlMode.PercentOutput, _currentCarriageWheelsVBusCmd, 0);
-						_carriageRightMotor.set(ControlMode.PercentOutput, _currentCarriageWheelsVBusCmd, 0);
+						_carriageLeftMotor.set(ControlMode.PercentOutput, _currentCarriageWheelsFeedInVBusCmd, 0);
+						_carriageRightMotor.set(ControlMode.PercentOutput, _currentCarriageWheelsFeedInVBusCmd, 0);
 						break;
 						
 					case FEED_OUT:
-						_carriageLeftMotor.set(ControlMode.PercentOutput, -1 * _currentCarriageWheelsVBusCmd, 0);
-						_carriageRightMotor.set(ControlMode.PercentOutput, -1 * _currentCarriageWheelsVBusCmd, 0);
+						_carriageLeftMotor.set(ControlMode.PercentOutput, -1 * _currentCarriageWheelsFeedOutVBusCmd, 0);
+						_carriageRightMotor.set(ControlMode.PercentOutput, -1 * _currentCarriageWheelsFeedOutVBusCmd, 0);
 						break;
 						
 					case JOYSTICK:
-						_carriageLeftMotor.set(ControlMode.PercentOutput, _currentCarriageWheelsVBusCmd, 0);
-						_carriageRightMotor.set(ControlMode.PercentOutput, _currentCarriageWheelsVBusCmd, 0);
+						_carriageLeftMotor.set(ControlMode.PercentOutput, _currentCarriageWheelsFeedInVBusCmd, 0);
+						_carriageRightMotor.set(ControlMode.PercentOutput, _currentCarriageWheelsFeedInVBusCmd, 0);
 						break;
 				}
 			}
@@ -190,6 +192,9 @@ public class Carriage implements Subsystem {
 		return _loop;
 	}
 	
+	//=====================================================================================
+	// Public Methods to control motors
+	//=====================================================================================
 	@Override
 	public void stop() 
 	{
@@ -203,7 +208,7 @@ public class Carriage implements Subsystem {
 	{
 		if(!isCubeInCarriage()) {
 			// scale cmd
-			_currentCarriageWheelsVBusCmd = vbusCmd * 0.5;
+			_currentCarriageWheelsFeedInVBusCmd = vbusCmd * 0.5;
 			FeedIn();
 		} 
 		else {
@@ -242,7 +247,7 @@ public class Carriage implements Subsystem {
 	
 	public void ejectCubeVBus(double joystickCommand) 
 	{
-		_currentCarriageWheelsVBusCmd = -1 * joystickCommand;
+		_currentCarriageWheelsFeedInVBusCmd = -1 * joystickCommand;
 		
 		if(_carriageWheelsState != CARRIAGE_WHEELS_STATE.JOYSTICK) {
 			ReportStateChg("Carriage Wheels (State) " + _carriageWheelsState.toString() + " ==> [JOYSTICK]");
@@ -262,49 +267,75 @@ public class Carriage implements Subsystem {
 	//	}
 	//}
 	
-	public void carriageWheels_VBusCmd_BumpUp() 
+	public void carriageWheels_FeedIn_VBusCmd_BumpUp() 
 	{
-		double newCmd = _currentCarriageWheelsVBusCmd + CARRIAGE_WHEELS_VBUS_COMMAND_BUMP;
+		double newCmd = _currentCarriageWheelsFeedInVBusCmd + CARRIAGE_WHEELS_VBUS_COMMAND_BUMP;
 		
 		// only bump if new cmd is not over max
 		if(newCmd <= 1.0) {
-			_currentCarriageWheelsVBusCmd = newCmd;
+			_currentCarriageWheelsFeedInVBusCmd = newCmd;
 		}
 	}
 	
-	public void carriageWheels_VBusCmd_BumpDown() 
+	public void carriageWheels_FeedIn_VBusCmd_BumpDown() 
 	{		
-		double newCmd = _currentCarriageWheelsVBusCmd - CARRIAGE_WHEELS_VBUS_COMMAND_BUMP;
+		double newCmd = _currentCarriageWheelsFeedInVBusCmd - CARRIAGE_WHEELS_VBUS_COMMAND_BUMP;
 		
 		// only bump if new cmd is not under min
 		if(newCmd >= 0.0) {
-			_currentCarriageWheelsVBusCmd = newCmd;
+			_currentCarriageWheelsFeedInVBusCmd = newCmd;
 		}
 	}
 	
-	public boolean isCubeInCarriage() 
+	public void carriageWheels_FeedOut_VBusCmd_BumpUp() 
 	{
-		return _carriageLimitSwitch.get();
-	} 
+		double newCmd = _currentCarriageWheelsFeedOutVBusCmd + CARRIAGE_WHEELS_VBUS_COMMAND_BUMP;
+		
+		// only bump if new cmd is not over max
+		if(newCmd <= 1.0) {
+			_currentCarriageWheelsFeedOutVBusCmd = newCmd;
+		}
+	}
+	
+	public void carriageWheels_FeedOut_VBusCmd_BumpDown() 
+	{		
+		double newCmd = _currentCarriageWheelsFeedOutVBusCmd - CARRIAGE_WHEELS_VBUS_COMMAND_BUMP;
+		
+		// only bump if new cmd is not under min
+		if(newCmd >= 0.0) {
+			_currentCarriageWheelsFeedOutVBusCmd = newCmd;
+		}
+	}	
 	
 	@Override
 	public void zeroSensors() 
 	{
 		// N/A on this subsystem
 	}
-
+	//=====================================================================================
+	// Property Accessors
+	//=====================================================================================
+	public boolean isCubeInCarriage() 
+	{
+		return _carriageLimitSwitch.get();
+	} 
+	
 	private double getCarriageMotorCurrent()
 	{
 		return _carriageLeftMotor.getOutputCurrent();
 	}
 	
+	//=====================================================================================
+	// Utility Methods
+	//=====================================================================================
 	@Override
 	public void outputToShuffleboard() 
 	{
-		SmartDashboard.putNumber("Carriage Current:", getCarriageMotorCurrent());
-		SmartDashboard.putNumber("Carriage Wheels %VBus", _currentCarriageWheelsVBusCmd);
-		SmartDashboard.putString("Carriage State", _carriageWheelsState.toString());
-		SmartDashboard.putBoolean("Carriage LimitSwitch", isCubeInCarriage());
+		SmartDashboard.putNumber("Carriage:Motor Current:", getCarriageMotorCurrent());
+		SmartDashboard.putNumber("Carriage:Wheels Feed In %VBus", _currentCarriageWheelsFeedInVBusCmd);
+		SmartDashboard.putNumber("Carriage:Wheels Feed Out %VBus", _currentCarriageWheelsFeedOutVBusCmd);
+		SmartDashboard.putString("Carriage:State", _carriageWheelsState.toString());
+		SmartDashboard.putBoolean("Carriage:LimitSwitch Is Closed?", isCubeInCarriage());
 	}
 
 	@Override

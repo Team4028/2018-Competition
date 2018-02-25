@@ -16,13 +16,13 @@ public class InfeedCubeAction implements Action {
 	@Override
 	public void update() {
 		if ((Timer.getFPGATimestamp() - _startTime) < 2) {
-			_cubeHandler.acquireCube_InfeedPlusCarriage();
+			_cubeHandler.acquireCube_InfeedAndCarriage();;
 		} 
 		else if ((Timer.getFPGATimestamp() - _startTime) < 3) {
 			_cubeHandler.stopInfeedAndCarriage();
 		}
 		else {
-			_cubeHandler.acquireCube_InfeedPlusCarriage();
+			_cubeHandler.acquireCube_InfeedAndCarriage();
 		}
 	}
 
