@@ -157,42 +157,10 @@ public class CubeHandler2 implements Subsystem {
 		stopElevator();
 	}
 	
-	public void stopInfeedAndCarriage() 
-	{
-		_infeed.stopDriveMotors();
-		_carriage.stop();
-	}
-	
-	public void stopElevator() 
-	{
-		if(_cubeHandlerState == CUBE_HANDLER_STATE.SAFE_TO_MOVE_ELEVATOR_JOYSTICK)
-		{
-			_requestedElevatorSpeedCmd = 0;
-			if(_cubeHandlerState != CUBE_HANDLER_STATE.STOPPED)
-			{
-				ReportStateChg("Cube Handler (State) " + _cubeHandlerState.toString() + " ==> [STOPPED]");
-				_cubeHandlerState = CUBE_HANDLER_STATE.STOPPED;
-			}
-			_elevator.stop();
-		}
-	}
-
 	@Override
 	public void zeroSensors() 
 	{
 		// N/A for this class
-	}
-
-	@Override
-	public void outputToShuffleboard() 
-	{
-		SmartDashboard.putString("Cube Handler State:", _cubeHandlerState.toString() );
-	}
-
-	@Override
-	public void updateLogData(LogDataBE logData) 
-	{
-		logData.AddData("CubeHandler:State", _cubeHandlerState.toString());
 	}
 
 	//=====================================================================================
@@ -211,15 +179,7 @@ public class CubeHandler2 implements Subsystem {
 			_carriage.infeedCarriageMotorsVBus(joystickCommand);
 		}
 	}
-	
-	public void doNothing() 
-	{
-		//_infeed.reZeroArms();
-		//_infeed.doNothing();
-		//_elevator.doNothing();
-		//_carriage.stop();
-	}
-	
+		
 	//=====================================================================================
 	//Methods for Handling Interactions with Elevator Subsystem
 	//=====================================================================================	
@@ -243,28 +203,49 @@ public class CubeHandler2 implements Subsystem {
 		_cubeHandlerState = CUBE_HANDLER_STATE.WANT_TO_MOVE_ELEVATOR_TO_PRESET;
 	}
 	
-	public void elevator_SafeStartup()
+	public void stopElevator() 
 	{
-		if(_elevator.getElevatorState() == ELEVATOR_STATE.GOTO_TARGET_POSTION
-				|| _elevator.getElevatorState() == ELEVATOR_STATE.HOLD_TARGET_POSTION)
+		if(_cubeHandlerState == CUBE_HANDLER_STATE.SAFE_TO_MOVE_ELEVATOR_JOYSTICK)
 		{
-			_elevator.rezeroElevator();
+			_requestedElevatorSpeedCmd = 0;
+			if(_cubeHandlerState != CUBE_HANDLER_STATE.STOPPED)
+			{
+				ReportStateChg("Cube Handler (State) " + _cubeHandlerState.toString() + " ==> [STOPPED]");
+				_cubeHandlerState = CUBE_HANDLER_STATE.STOPPED;
+			}
+			_elevator.stop();
 		}
+	}
+	
+	public void elevator_SafeStartup()
+	{		
+		// in ONLY this special case we bypass looper and talk directly to elevator class
+		// we want to avoid 1 scan cycle when elevator looper can still have a cached target
+		_elevator.rezeroElevator();
+		
+		// reset any cached target position 
+		_requestedPresetPosition = ELEVATOR_PRESET_POSITION.HOME;
 	}
 	
 	//=====================================================================================
 	//Methods for Handling Interactions with Multiple Subsystem
 	//=====================================================================================	
-	public void acquireCube_InfeedPlusCarriage() 
+	public void acquireCube_InfeedAndCarriage() 
 	{
 		_infeed.infeedWheels_FeedIn();
 		_carriage.FeedIn();
 	}
 	
-	public void ejectCube_InfeedPlusCarriage() 
+	public void ejectCube_InfeedAndCarriage() 
 	{
 		_infeed.infeedWheels_FeedOut();
 		_carriage.FeedOut();
+	}
+	
+	public void stopInfeedAndCarriage() 
+	{
+		_infeed.stopDriveMotors();
+		_carriage.stop();
 	}
 	
 	//=====================================================================================
@@ -360,19 +341,41 @@ public class CubeHandler2 implements Subsystem {
 	//=====================================================================================	
 	//Methods for Handling Interactions with Carriage Subsystem
 	//=====================================================================================	
-	public void carriage_VBusCmd_BumpDown() 
+	public void carriage_FeedIn_VBusCmd_BumpDown() 
 	{
-		_carriage.carriageWheels_VBusCmd_BumpDown();
+		_carriage.carriageWheels_FeedIn_VBusCmd_BumpDown();
 	}
 	
-	public void carriage_VBusCmd_BumpUp() 
+	public void carriage_FeedIn_VBusCmd_BumpUp() 
 	{
-		_carriage.carriageWheels_VBusCmd_BumpUp();
+		_carriage.carriageWheels_FeedIn_VBusCmd_BumpUp();
+	}
+	
+	public void carriage_FeedOut_VBusCmd_BumpDown() 
+	{
+		_carriage.carriageWheels_FeedOut_VBusCmd_BumpDown();
+	}
+	
+	public void carriage_FeedOut_VBusCmd_BumpUp() 
+	{
+		_carriage.carriageWheels_FeedOut_VBusCmd_BumpUp();
 	}
 	
 	//=====================================================================================	
-	// private helper method to control how we write to the drivers station
+	// Utility Methods
 	//=====================================================================================	
+	@Override
+	public void outputToShuffleboard() 
+	{
+		SmartDashboard.putString("Cube Handler:State:", _cubeHandlerState.toString() );
+	}
+
+	@Override
+	public void updateLogData(LogDataBE logData) 
+	{
+		logData.AddData("CubeHandler:State", _cubeHandlerState.toString());
+	}
+	
 	private void ReportStateChg(String message) 
 	{
 		if(IS_VERBOSE_LOGGING_ENABLED) 

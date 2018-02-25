@@ -520,9 +520,9 @@ public class DriverOperatorStation {
 //			return  _operatorGamepad.getTriggerAxis(Hand.kLeft);
 //		}
 	
-//		public double getOperator_RightTrigger_JoystickCmd() {
-//			return _operatorGamepad.getTriggerAxis(Hand.kRight);
-//		}
+		public double getOperator_EjectCube_JoystickCmd() {
+			return _operatorGamepad.getTriggerAxis(Hand.kRight);
+		}
 	
 	// =========================================================================================================
 	// ENGINEER		ENGINEER	ENGINEER	ENGINEER	ENGINEER	ENGINEER	ENGINEER	ENGINEER	ENGINEER
@@ -846,7 +846,7 @@ public class DriverOperatorStation {
 			}
 		}
 	
-	public boolean getIsEngrB_CarriageVBusBumpDown_BtnJustPressed() {
+	public boolean getIsEngrB_Carriage_FeedIn_VBusBumpDown_BtnJustPressed() {
 		if(_isEngineeringGamepadB_PluggedIn) {
 			return _engineeringGamepadB.getBumperPressed(Hand.kLeft);
 		} 
@@ -855,7 +855,7 @@ public class DriverOperatorStation {
 		}
 	}
 	
-	public boolean getIsEngrB_CarriageVBusBumpUp_BtnJustPressed() {
+	public boolean getIsEngrB_Carriage_FeedIn_VBusBumpUp_BtnJustPressed() {
 		if(_isEngineeringGamepadB_PluggedIn) {
 			return _engineeringGamepadB.getBumperPressed(Hand.kRight);
 		} 
@@ -863,6 +863,46 @@ public class DriverOperatorStation {
 			return false;
 		}
 	}
+		
+	// implement just pressed for POV
+	boolean wasEngrBPOV180PresssedLastScan = false;
+	
+	public boolean getIsEngrB_Carriage_FeedOut_VBusBumpDown_BtnJustPressed() {
+		if(_isEngineeringGamepadB_PluggedIn) {
+			if(_engineeringGamepadB.getPOV(0) == 180) {
+				boolean isJustPressed = true && !wasEngrBPOV180PresssedLastScan;
+				wasEngrBPOV180PresssedLastScan = true;
+				return isJustPressed;
+			} 
+			else {
+				wasEngrBPOV180PresssedLastScan = false;
+				return false;
+			}
+		} 
+		else {
+			return false;
+		}
+	}
+	
+	boolean wasEngrBPOV0PresssedLastScan = false;
+	
+	public boolean getIsEngrB_Carriage_FeedOut_VBusBumpUp_BtnJustPressed() {
+		if(_isEngineeringGamepadB_PluggedIn) {
+			if(_engineeringGamepadB.getPOV(0) == 0) {
+				boolean isJustPressed = true && !wasEngrBPOV0PresssedLastScan;
+				wasEngrBPOV0PresssedLastScan = true;
+				return isJustPressed;
+			} 
+			else {
+				wasEngrBPOV0PresssedLastScan = false;
+				return false;
+			}
+		} 
+		else {
+			return false;
+		}
+	}
+	 
 	
 	public boolean getIsEngrB_SqueezeBumpNarrower_BtnJustPressed() {
 		if(_isEngineeringGamepadB_PluggedIn) {
@@ -881,6 +921,7 @@ public class DriverOperatorStation {
 			return false;
 		}
 	}
+	
 	
 	// ===================================
 	// === Engineering B Just Released buttons ==
