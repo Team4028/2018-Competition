@@ -10,7 +10,7 @@ public class InfeedCubeAction implements Action {
 
 	@Override
 	public void update() {
-		_cubeHandler.acquireCube_InfeedPlusCarriage();
+		_cubeHandler.acquireCube_InfeedAndCarriage();
 	}
 
 	@Override

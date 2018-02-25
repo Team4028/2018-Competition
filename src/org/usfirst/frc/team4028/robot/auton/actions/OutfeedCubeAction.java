@@ -10,7 +10,7 @@ public class OutfeedCubeAction implements Action {
 
 	@Override
 	public void update() {
-		_cubeHandler.ejectCube_InfeedPlusCarriage();
+		_cubeHandler.ejectCube_InfeedAndCarriage();
 	}
 
 	@Override
