@@ -295,4 +295,7 @@ public class AdaptedPaths extends Paths {/*
 		}
 		return sWaypoints;
 	}*/
+	
+	public static void locateFlavorTownUSA() {
+	}
 }

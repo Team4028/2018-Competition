@@ -179,7 +179,23 @@ public class CubeHandler2 implements Subsystem {
 			_carriage.infeedCarriageMotorsVBus(joystickCommand);
 		}
 	}
+<<<<<<< HEAD
 		
+=======
+	
+	public boolean isCubeInCarriage() {
+		return _carriage.isCubeInCarriage();
+	}
+	
+	public void doNothing() 
+	{
+		//_infeed.reZeroArms();
+		//_infeed.doNothing();
+		//_elevator.doNothing();
+		//_carriage.stop();
+	}
+	
+>>>>>>> 20bad615b2aebfaa196e99901b1d52d35b5adce7
 	//=====================================================================================
 	//Methods for Handling Interactions with Elevator Subsystem
 	//=====================================================================================	
@@ -203,7 +219,15 @@ public class CubeHandler2 implements Subsystem {
 		_cubeHandlerState = CUBE_HANDLER_STATE.WANT_TO_MOVE_ELEVATOR_TO_PRESET;
 	}
 	
+<<<<<<< HEAD
 	public void stopElevator() 
+=======
+
+	public boolean isElevatorAtTargetPos() {
+		return _elevator.IsAtTargetPosition();
+	}
+	public void elevator_SafeStartup()
+>>>>>>> 20bad615b2aebfaa196e99901b1d52d35b5adce7
 	{
 		if(_cubeHandlerState == CUBE_HANDLER_STATE.SAFE_TO_MOVE_ELEVATOR_JOYSTICK)
 		{
@@ -215,6 +239,7 @@ public class CubeHandler2 implements Subsystem {
 			}
 			_elevator.stop();
 		}
+
 	}
 	
 	public void elevator_SafeStartup()
@@ -230,14 +255,22 @@ public class CubeHandler2 implements Subsystem {
 	//=====================================================================================
 	//Methods for Handling Interactions with Multiple Subsystem
 	//=====================================================================================	
+<<<<<<< HEAD
 	public void acquireCube_InfeedAndCarriage() 
 	{
+=======
+	public void acquireCube_InfeedPlusCarriage() {
+>>>>>>> 20bad615b2aebfaa196e99901b1d52d35b5adce7
 		_infeed.infeedWheels_FeedIn();
 		_carriage.FeedIn();
 	}
 	
+<<<<<<< HEAD
 	public void ejectCube_InfeedAndCarriage() 
 	{
+=======
+	public void ejectCube_InfeedPlusCarriage() {
+>>>>>>> 20bad615b2aebfaa196e99901b1d52d35b5adce7
 		_infeed.infeedWheels_FeedOut();
 		_carriage.FeedOut();
 	}

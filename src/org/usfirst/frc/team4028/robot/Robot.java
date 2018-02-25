@@ -5,10 +5,13 @@ import java.text.DecimalFormat;
 import java.util.Date;
 
 import org.usfirst.frc.team4028.robot.auton.AutonExecuter;
+import org.usfirst.frc.team4028.robot.paths.AdaptedPaths;
+import org.usfirst.frc.team4028.robot.sensors.RobotState;
 import org.usfirst.frc.team4028.robot.sensors.RobotStateEstimator;
 import org.usfirst.frc.team4028.robot.sensors.SwitchableCameraServer;
 import org.usfirst.frc.team4028.robot.subsystems.*;
 import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_PRESET_POSITION;
+import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_ARM_TARGET_POSITION;
 import org.usfirst.frc.team4028.util.DataLogger;
 import org.usfirst.frc.team4028.util.GeneralUtilities;
 import org.usfirst.frc.team4028.util.LogDataBE;
@@ -96,8 +99,6 @@ public class Robot extends IterativeRobot {
 		
 		_chassis.setBrakeMode(false);
 		
-		
-		
 		stopAll();
 	}
 
@@ -141,6 +142,8 @@ public class Robot extends IterativeRobot {
 		
 		_chassis.zeroGyro();
 		
+		AdaptedPaths.locateFlavorTownUSA();
+		
 		_autonExecuter = new AutonExecuter();
 		_autonExecuter.setAutoMode(_dashboard.getSelectedAuton());
 		_autonExecuter.start();
@@ -181,6 +184,10 @@ public class Robot extends IterativeRobot {
 			_autonExecuter.stop();
 		}
 		_autonExecuter = null;
+
+		_enabledLooper.start();
+		
+		stopAll();
 		
 		// setup chassis default state
 		_chassis.zeroSensors();
@@ -205,11 +212,8 @@ public class Robot extends IterativeRobot {
 	// called each loop (approx every 20mS) in telop mode
 	// ================================================================
 	@Override
-	public void teleopPeriodic() {		
-		//_ultrasonic.refreshUltrasonicValues();
-		
+	public void teleopPeriodic() {
 		// =============  CHASSIS ============= 
-		
 		if ((Math.abs(_dos.getDriver_Throttle_JoystickCmd()) != 0) || (Math.abs(_dos.getDriver_Turn_JoystickCmd()) != 0)) {
 			_chassis.arcadeDrive(-1 * _dos.getDriver_Throttle_JoystickCmd(), -1 * _dos.getDriver_Turn_JoystickCmd());
 		} else {
@@ -221,8 +225,8 @@ public class Robot extends IterativeRobot {
 		}
 	
 		//=============  INFEED ============= 
-		if(!_dos.IsEngineeringGamepadBAvailable()) {			
 
+		if(!_dos.IsEngineeringGamepadBAvailable()) {			
 			if (_dos.getIsDriver_RezeroInfeed_BtnJustPressed()) {
 				_cubeHandler.infeedArms_Rezero();
 			}		
@@ -278,20 +282,20 @@ public class Robot extends IterativeRobot {
 			else if (Math.abs(_dos.getEngineering_EjectCube_JoystickCmd()) != 0) {
 				_cubeHandler.ejectCube(_dos.getEngineering_EjectCube_JoystickCmd());
 			} 
+
 			else 
 			{
 				_cubeHandler.stopInfeedAndCarriage();			
 			}			
+
 		} else {
 			// ENGR GamePad B is plugged In
 			// ignore Driver Gamepad if Engineering B is plugged in
 			// adjust Infeed Arm Width
-			if(_dos.getIsEngrB_SqueezeBumpWider_BtnJustPressed())
-			{
+			if(_dos.getIsEngrB_SqueezeBumpWider_BtnJustPressed()) {
 				_cubeHandler.infeedArms_SqueezeAngle_BumpWider();
 			}
-			else if(_dos.getIsEngrB_SqueezeBumpNarrower_BtnJustPressed())
-			{
+			else if(_dos.getIsEngrB_SqueezeBumpNarrower_BtnJustPressed()) {
 				_cubeHandler.infeedArms_SqueezeAngle_BumpNarrower();
 			}
 			
@@ -360,8 +364,7 @@ public class Robot extends IterativeRobot {
 			}
 		}
 		
-		// =============  ELEVATOR ============= 
-		
+		// =============  ELEVATOR ============= 		
 		if (_dos.getOperator_Elevator_JoystickCmd() != 0) {
 			_cubeHandler.elevator_JogAxis(_dos.getOperator_Elevator_JoystickCmd());
 		}
@@ -454,7 +457,7 @@ public class Robot extends IterativeRobot {
 	    	
 	    	// ask each subsystem that exists to add its data
 	    	_chassis.updateLogData(logData);
-	    	//_elevator.updateLogData(logData);
+	    	_elevator.updateLogData(logData);
 	    	_infeed.updateLogData(logData);
 	    	_carriage.updateLogData(logData);
 	    	//_ultrasonic.updateLogData(logData);
