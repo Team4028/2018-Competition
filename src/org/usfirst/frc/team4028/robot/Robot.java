@@ -226,7 +226,11 @@ public class Robot extends IterativeRobot {
 	
 		//=============  INFEED ============= 
 
-		if(!_dos.IsEngineeringGamepadBAvailable()) {			
+		if(!_dos.IsEngineeringGamepadBAvailable()
+				&& !_dos.IsEngineeringGamepadAAvailable()) {
+			// =============================
+			// ENGR GamePad A and B ARE NOT plugged in
+			// =============================
 			if (_dos.getIsDriver_RezeroInfeed_BtnJustPressed()) {
 				_cubeHandler.infeedArms_Rezero();
 			}		
@@ -241,6 +245,16 @@ public class Robot extends IterativeRobot {
 			}
 			
 			// ============= CARRIAGE =============
+			// adjust Carriage Wheel Feed Out Speeds
+			if(_dos.getIsDriver_Carriage_FeedOut_IndexUp_BtnJustPressed()
+					|| _dos.getIsOperator_Carriage_FeedOut_IndexUp_BtnJustPressed()) {
+				_cubeHandler.carriage_FeedOut_VBusCmd_IndexUp();
+			}
+			else if(_dos.getIsDriver_Carriage_FeedOut_IndexDown_BtnJustPressed()
+					|| _dos.getIsOperator_Carriage_FeedOut_IndexDown_BtnJustPressed()) {
+				_cubeHandler.carriage_FeedOut_VBusCmd_IndexDown();
+			}
+			
 			if (_dos.getIsDriver_SpinCubeCounterClockwise_BtnPressed()){
 				_cubeHandler.infeedArms_SpinCube_CCW();
 			}
@@ -259,6 +273,9 @@ public class Robot extends IterativeRobot {
 			}
 		}
 		else if(_dos.IsEngineeringGamepadAAvailable()) {
+			// =============================
+			// ENGR GamePad A is plugged In
+			// =============================
 			if (_dos.getIsEngineering_ReZeroInfeed_BtnJustPressed()) {
 				_cubeHandler.infeedArms_Rezero();
 			}		
@@ -288,8 +305,11 @@ public class Robot extends IterativeRobot {
 				_cubeHandler.stopInfeedAndCarriage();			
 			}			
 
-		} else {
+		} 
+		else if(_dos.IsEngineeringGamepadBAvailable()) {
+			// =============================
 			// ENGR GamePad B is plugged In
+			// =============================
 			// ignore Driver Gamepad if Engineering B is plugged in
 			// adjust Infeed Arm Width
 			if(_dos.getIsEngrB_SqueezeBumpWider_BtnJustPressed()) {

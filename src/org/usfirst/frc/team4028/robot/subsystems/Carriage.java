@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //	0		PatB		???			Initial Version
 //	1		TomB		18.Feb		Cleanup Looper
 //  2		TomB		25.Feb		Code Cleanup
+//	3		TomB		26.Feb		Initial support for Indexed Outfeed Cmds
 //-------------------------------------------------------------
 public class Carriage implements Subsystem {
 	
@@ -30,6 +31,12 @@ public class Carriage implements Subsystem {
 		FEED_IN,
 		FEED_OUT,
 		JOYSTICK
+	}
+	
+	private enum CARRIAGE_WHEELS_OUT_SPEED {
+		FAST,
+		MEDIUM,
+		SLOW
 	}
 	
 	// define class level working variables
@@ -41,14 +48,12 @@ public class Carriage implements Subsystem {
 	//private Servo _carriageSqueezeServo;
 	
 	private CARRIAGE_WHEELS_STATE _carriageWheelsState;
+	private CARRIAGE_WHEELS_OUT_SPEED _carriageWheelsOutSpeed = CARRIAGE_WHEELS_OUT_SPEED.MEDIUM;
 	
 	private double _currentCarriageWheelsFeedInVBusCmd = .45;
 	private double _currentCarriageWheelsFeedOutVBusCmd = .8;
 	//private double _servoTargetPosition = 0.1;
 	
-	// private double _currentInFeedWheelsVBusCmd = INFEED_DRIVE_WHEELS_VBUS_COMMAND;
-	
-	//private static final double CARRIAGE_WHEELS_INFEED_COMMAND = 0.5;
 	private static final double CARRIAGE_WHEELS_VBUS_COMMAND_BUMP = 0.05;
 	
 	private static final boolean IS_VERBOSE_LOGGING_ENABLED = true;
@@ -307,11 +312,52 @@ public class Carriage implements Subsystem {
 		}
 	}	
 	
+	public void carriage_FeedOut_VBusCmd_IndexUp()
+	{
+		switch (_carriageWheelsOutSpeed)
+		{
+			case FAST:
+				break;
+				
+			case MEDIUM:
+				_carriageWheelsOutSpeed = CARRIAGE_WHEELS_OUT_SPEED.FAST;
+				break;
+				
+			case SLOW:
+				_carriageWheelsOutSpeed = CARRIAGE_WHEELS_OUT_SPEED.MEDIUM;
+				break;
+				
+			default:
+				break;
+		}
+	}
+	
+	public void carriage_FeedOut_VBusCmd_IndexDown()
+	{
+		switch (_carriageWheelsOutSpeed)
+		{
+			case FAST:
+				_carriageWheelsOutSpeed = CARRIAGE_WHEELS_OUT_SPEED.MEDIUM;
+				break;
+				
+			case MEDIUM:
+				_carriageWheelsOutSpeed = CARRIAGE_WHEELS_OUT_SPEED.SLOW;
+				break;
+				
+			case SLOW:
+				break;
+				
+			default:
+				break;
+		}
+	}
+	
 	@Override
 	public void zeroSensors() 
 	{
 		// N/A on this subsystem
 	}
+	
 	//=====================================================================================
 	// Property Accessors
 	//=====================================================================================
@@ -334,6 +380,7 @@ public class Carriage implements Subsystem {
 		SmartDashboard.putNumber("Carriage:Motor Current:", getCarriageMotorCurrent());
 		SmartDashboard.putNumber("Carriage:Wheels Feed In %VBus", _currentCarriageWheelsFeedInVBusCmd);
 		SmartDashboard.putNumber("Carriage:Wheels Feed Out %VBus", _currentCarriageWheelsFeedOutVBusCmd);
+		SmartDashboard.putString("Carriage:Wheels Out Speed", _carriageWheelsOutSpeed.toString());
 		SmartDashboard.putString("Carriage:State", _carriageWheelsState.toString());
 		SmartDashboard.putBoolean("Carriage:LimitSwitch Is Closed?", isCubeInCarriage());
 	}
