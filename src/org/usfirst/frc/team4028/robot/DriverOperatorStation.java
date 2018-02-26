@@ -930,7 +930,8 @@ public class DriverOperatorStation {
 	// implement just pressed for POV
 	boolean wasEngrBPOV180PresssedLastScan = false;
 	
-	public boolean getIsEngrB_Carriage_FeedOut_VBusBumpDown_BtnJustPressed() {
+	//public boolean getIsEngrB_Carriage_FeedOut_VBusBumpDown_BtnJustPressed() {
+	public boolean getIsEngrB_Carriage_FeedOut_IndexBumpDown_BtnJustPressed() {
 		if(_isEngineeringGamepadB_PluggedIn) {
 			if(_engineeringGamepadB.getPOV(0) == 180) {
 				boolean isJustPressed = true && !wasEngrBPOV180PresssedLastScan;
@@ -949,7 +950,8 @@ public class DriverOperatorStation {
 	
 	boolean wasEngrBPOV0PresssedLastScan = false;
 	
-	public boolean getIsEngrB_Carriage_FeedOut_VBusBumpUp_BtnJustPressed() {
+	//public boolean getIsEngrB_Carriage_FeedOut_VBusBumpUp_BtnJustPressed() {
+	public boolean getIsEngrB_Carriage_FeedOut_IndexBumpUp_BtnJustPressed() {
 		if(_isEngineeringGamepadB_PluggedIn) {
 			if(_engineeringGamepadB.getPOV(0) == 0) {
 				boolean isJustPressed = true && !wasEngrBPOV0PresssedLastScan;
