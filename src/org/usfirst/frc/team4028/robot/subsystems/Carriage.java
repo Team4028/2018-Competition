@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //	0		PatB		???			Initial Version
 //	1		TomB		18.Feb		Cleanup Looper
 //  2		TomB		25.Feb		Code Cleanup
+//	3		TomB		26.Feb		Initial support for Indexed Outfeed Cmds
 //-------------------------------------------------------------
 public class Carriage implements Subsystem {
 	
@@ -30,6 +31,14 @@ public class Carriage implements Subsystem {
 		FEED_IN,
 		FEED_OUT,
 		JOYSTICK
+	}
+	
+	private enum CARRIAGE_WHEELS_OUT_VBUS_INDEX {
+		VBUS_20,
+		VBUS_40,
+		VBUS_60,
+		VBUS_80,
+		VBUS_100
 	}
 	
 	// define class level working variables
@@ -41,15 +50,14 @@ public class Carriage implements Subsystem {
 	//private Servo _carriageSqueezeServo;
 	
 	private CARRIAGE_WHEELS_STATE _carriageWheelsState;
+	private CARRIAGE_WHEELS_OUT_VBUS_INDEX _carriageWheelsOutVBusIndex = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_60;
 	
 	private double _currentCarriageWheelsFeedInVBusCmd = .45;
-	private double _currentCarriageWheelsFeedOutVBusCmd = .8;
+	//private double _currentCarriageWheelsFeedOutVBusCmd = .8;
 	//private double _servoTargetPosition = 0.1;
 	
-	// private double _currentInFeedWheelsVBusCmd = INFEED_DRIVE_WHEELS_VBUS_COMMAND;
-	
-	//private static final double CARRIAGE_WHEELS_INFEED_COMMAND = 0.5;
-	private static final double CARRIAGE_WHEELS_VBUS_COMMAND_BUMP = 0.05;
+	private static final double CARRIAGE_WHEELS_IN_VBUS_COMMAND_BUMP = 0.05;
+	private static final double CARRIAGE_WHEELS_OUT_VBUS_COMMAND_BUMP = 0.2;
 	
 	private static final boolean IS_VERBOSE_LOGGING_ENABLED = true;
 	
@@ -165,8 +173,8 @@ public class Carriage implements Subsystem {
 						break;
 						
 					case FEED_OUT:
-						_carriageLeftMotor.set(ControlMode.PercentOutput, -1 * _currentCarriageWheelsFeedOutVBusCmd, 0);
-						_carriageRightMotor.set(ControlMode.PercentOutput, -1 * _currentCarriageWheelsFeedOutVBusCmd, 0);
+						_carriageLeftMotor.set(ControlMode.PercentOutput, -1 * getCarriageWheelsFeedOutVBusCmd(), 0);
+						_carriageRightMotor.set(ControlMode.PercentOutput, -1 * getCarriageWheelsFeedOutVBusCmd(), 0);
 						break;
 						
 					case JOYSTICK:
@@ -269,7 +277,7 @@ public class Carriage implements Subsystem {
 	
 	public void carriageWheels_FeedIn_VBusCmd_BumpUp() 
 	{
-		double newCmd = _currentCarriageWheelsFeedInVBusCmd + CARRIAGE_WHEELS_VBUS_COMMAND_BUMP;
+		double newCmd = _currentCarriageWheelsFeedInVBusCmd + CARRIAGE_WHEELS_IN_VBUS_COMMAND_BUMP;
 		
 		// only bump if new cmd is not over max
 		if(newCmd <= 1.0) {
@@ -279,7 +287,7 @@ public class Carriage implements Subsystem {
 	
 	public void carriageWheels_FeedIn_VBusCmd_BumpDown() 
 	{		
-		double newCmd = _currentCarriageWheelsFeedInVBusCmd - CARRIAGE_WHEELS_VBUS_COMMAND_BUMP;
+		double newCmd = _currentCarriageWheelsFeedInVBusCmd - CARRIAGE_WHEELS_IN_VBUS_COMMAND_BUMP;
 		
 		// only bump if new cmd is not under min
 		if(newCmd >= 0.0) {
@@ -289,29 +297,88 @@ public class Carriage implements Subsystem {
 	
 	public void carriageWheels_FeedOut_VBusCmd_BumpUp() 
 	{
-		double newCmd = _currentCarriageWheelsFeedOutVBusCmd + CARRIAGE_WHEELS_VBUS_COMMAND_BUMP;
+	//	double newCmd = _currentCarriageWheelsFeedOutVBusCmd + CARRIAGE_WHEELS_IN_VBUS_COMMAND_BUMP;
 		
 		// only bump if new cmd is not over max
-		if(newCmd <= 1.0) {
-			_currentCarriageWheelsFeedOutVBusCmd = newCmd;
-		}
+	//	if(newCmd <= 1.0) {
+	//		_currentCarriageWheelsFeedOutVBusCmd = newCmd;
+	//	}
 	}
 	
 	public void carriageWheels_FeedOut_VBusCmd_BumpDown() 
 	{		
-		double newCmd = _currentCarriageWheelsFeedOutVBusCmd - CARRIAGE_WHEELS_VBUS_COMMAND_BUMP;
-		
+	//	double newCmd = _currentCarriageWheelsFeedOutVBusCmd - CARRIAGE_WHEELS_IN_VBUS_COMMAND_BUMP;
+	//	
 		// only bump if new cmd is not under min
-		if(newCmd >= 0.0) {
-			_currentCarriageWheelsFeedOutVBusCmd = newCmd;
-		}
+	//	if(newCmd >= 0.0) {
+	//		_currentCarriageWheelsFeedOutVBusCmd = newCmd;
+	//	}
 	}	
+	
+	public void carriage_FeedOut_VBusCmd_IndexBumpUp()
+	{
+		switch (_carriageWheelsOutVBusIndex)
+		{
+			case VBUS_100:
+				// do nothing
+				break;
+							
+			case VBUS_80:
+				_carriageWheelsOutVBusIndex = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_100;
+				break;
+				
+			case VBUS_60:
+				_carriageWheelsOutVBusIndex = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_80;
+				break;
+				
+			case VBUS_40:
+				_carriageWheelsOutVBusIndex = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_60;
+				break;
+				
+			case VBUS_20:
+				_carriageWheelsOutVBusIndex = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_40;
+				break;
+				
+			default:
+				break;
+		}
+	}
+	
+	public void carriage_FeedOut_VBusCmd_IndexBumpDown()
+	{
+		switch (_carriageWheelsOutVBusIndex)
+		{
+			case VBUS_100:
+				_carriageWheelsOutVBusIndex = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_80;
+				break;
+							
+			case VBUS_80:
+				_carriageWheelsOutVBusIndex = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_60;
+				break;
+				
+			case VBUS_60:
+				_carriageWheelsOutVBusIndex = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_40;
+				break;
+				
+			case VBUS_40:
+				_carriageWheelsOutVBusIndex = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_20;
+				break;
+				
+			case VBUS_20:
+				// do nothing
+				break;
+				
+			default:
+				break;
+		}
+	}
 	
 	@Override
 	public void zeroSensors() 
 	{
 		// N/A on this subsystem
 	}
+	
 	//=====================================================================================
 	// Property Accessors
 	//=====================================================================================
@@ -325,6 +392,30 @@ public class Carriage implements Subsystem {
 		return _carriageLeftMotor.getOutputCurrent();
 	}
 	
+	private double getCarriageWheelsFeedOutVBusCmd()
+	{
+		switch (_carriageWheelsOutVBusIndex)
+		{
+			case VBUS_100:
+				return 100;
+							
+			case VBUS_80:
+				return 80;
+				
+			case VBUS_60:
+				return 60;
+				
+			case VBUS_40:
+				return 40;
+				
+			case VBUS_20:
+				return 20;
+				
+			default:
+				return 0;
+		}
+	}
+	
 	//=====================================================================================
 	// Utility Methods
 	//=====================================================================================
@@ -333,7 +424,7 @@ public class Carriage implements Subsystem {
 	{
 		SmartDashboard.putNumber("Carriage:Motor Current:", getCarriageMotorCurrent());
 		SmartDashboard.putNumber("Carriage:Wheels Feed In %VBus", _currentCarriageWheelsFeedInVBusCmd);
-		SmartDashboard.putNumber("Carriage:Wheels Feed Out %VBus", _currentCarriageWheelsFeedOutVBusCmd);
+		SmartDashboard.putNumber("Carriage:Wheels Feed Out %VBus", getCarriageWheelsFeedOutVBusCmd());
 		SmartDashboard.putString("Carriage:State", _carriageWheelsState.toString());
 		SmartDashboard.putBoolean("Carriage:LimitSwitch Is Closed?", isCubeInCarriage());
 	}
