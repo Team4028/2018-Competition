@@ -62,7 +62,6 @@ public class DoubleScaleAndSwitch extends AutonBase{
 		})));
 		// Infeed cube while sitting in place
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-					new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.SQUEEZE),
 					new InfeedCubeAction()
 		})));
 		// Drive to switch while storing infeed and raising elevator

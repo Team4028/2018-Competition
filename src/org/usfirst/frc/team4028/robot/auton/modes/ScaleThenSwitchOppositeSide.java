@@ -63,10 +63,7 @@ public class ScaleThenSwitchOppositeSide extends AutonBase {
 					new TurnAction(180, isTurnRight),
 					new SeriesAction(Arrays.asList(new Action[] {
 							new WaitAction(0.5),
-							new SimultaneousAction(Arrays.asList(new Action[] {
-									new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.SQUEEZE),
-									new InfeedCubeAction()
-							}))
+							new InfeedCubeAction()
 					}))
 		})));
 		// Drive to switch while storing infeed and raising elevator

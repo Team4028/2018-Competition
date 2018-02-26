@@ -60,10 +60,7 @@ public class ScaleThenSwitchSameSide extends AutonBase {
 					}))	
 		})));
 		// Infeed cube while sitting in place
-		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-					new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.SQUEEZE),
-					new InfeedCubeAction()
-		})));
+		runAction(new InfeedCubeAction());
 		// Drive to switch while storing infeed and raising elevator
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 					new DriveSetDistanceAction(12),

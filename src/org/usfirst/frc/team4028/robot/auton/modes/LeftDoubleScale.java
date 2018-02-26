@@ -55,7 +55,6 @@ public class LeftDoubleScale extends AutonBase{
 		})));
 		// Infeed cube while sitting in place
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-					new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.SQUEEZE),
 					new InfeedCubeAction()
 		})));
 		// Drive back to scale and turn while raising elevator to scale height

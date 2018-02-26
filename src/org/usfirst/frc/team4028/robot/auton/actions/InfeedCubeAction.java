@@ -1,6 +1,7 @@
 package org.usfirst.frc.team4028.robot.auton.actions;
 
 import org.usfirst.frc.team4028.robot.subsystems.CubeHandler2;
+import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_ARM_TARGET_POSITION;
 
 import edu.wpi.first.wpilibj.Timer;
 
@@ -15,14 +16,17 @@ public class InfeedCubeAction implements Action {
 
 	@Override
 	public void update() {
-		if ((Timer.getFPGATimestamp() - _startTime) < 2) {
-			_cubeHandler.acquireCube_InfeedAndCarriage();;
+		if ((Timer.getFPGATimestamp() - _startTime) < 1.5) {
+			_cubeHandler.acquireCube_InfeedAndCarriage();
+			_cubeHandler.infeedArms_MoveToPresetPosition(INFEED_ARM_TARGET_POSITION.SQUEEZE);
 		} 
-		else if ((Timer.getFPGATimestamp() - _startTime) < 3) {
+		else if ((Timer.getFPGATimestamp() - _startTime) < 2) {
 			_cubeHandler.stopInfeedAndCarriage();
+			_cubeHandler.infeedArms_MoveToPresetPosition(INFEED_ARM_TARGET_POSITION.SQUEEZE);
 		}
 		else {
 			_cubeHandler.acquireCube_InfeedAndCarriage();
+			_cubeHandler.infeedArms_MoveToPresetPosition(INFEED_ARM_TARGET_POSITION.SQUEEZE);
 		}
 	}
 

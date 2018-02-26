@@ -16,7 +16,7 @@ public class Scale extends AutonBase{
 	
 	public Scale(boolean isScaleLeft) {
 		if (isScaleLeft) {
-			toScale = Paths.getPath(PATHS.L_SCALE, 100.0, 120.0, 0.003);
+			toScale = Paths.getPath(PATHS.L_SCALE, 100.0, 120.0, 0.005);
 			elevatorWaitTime = 2;
 		} else {
 			toScale = Paths.getPath(PATHS.R_SCALE, 100.0, 100.0, 0.0045);

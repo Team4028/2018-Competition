@@ -53,11 +53,8 @@ public class RightDoubleScale extends AutonBase {
 							}))
 					}))	
 		})));
-		// Infeed cube while sitting in place for 0.65s
-		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-					new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.SQUEEZE),
-					new InfeedCubeAction()
-		})));
+		// Infeed cube while sitting in place
+		runAction(new InfeedCubeAction());
 		// Drive back to scale and raise elevator to switch height
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 				new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.STORE),

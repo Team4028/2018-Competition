@@ -54,7 +54,7 @@ public class DoubleSwitch extends AutonBase {
 				new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT),	
 				new RunMotionProfileAction(fromSwitchToFrontOfPyramidPath),	
 				new SeriesAction(Arrays.asList(new Action[] {
-							new WaitAction(1.4),
+							new WaitAction(1.7),
 							new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.WIDE)
 					}))
 		})));
@@ -64,16 +64,12 @@ public class DoubleSwitch extends AutonBase {
 					new SeriesAction(Arrays.asList(new Action[] {
 							new WaitAction(1),
 							new SimultaneousAction(Arrays.asList(new Action[] {
-									new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.SQUEEZE),
 									new InfeedCubeAction()
 							}))
 					}))
 		})));
 		// Move back from pyramid while continuing to infeed
-		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-					new RunMotionProfileAction(fromPyramid),
-					new InfeedCubeAction()
-		})));
+		runAction(new RunMotionProfileAction(fromPyramid));
 		// Drive back to switch while storing infeed and raising elevator
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 					new RunMotionProfileAction(sTurnToSwitch),		
