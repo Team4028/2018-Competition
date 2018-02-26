@@ -118,6 +118,9 @@ public class Robot extends IterativeRobot {
 		}
 		_autonExecuter = null;
 		_dos.clearGamepadsCachedBtnPresses();
+
+		_cubeHandler.infeedArms_SafeStartup();
+		_cubeHandler.elevator_SafeStartup();
 		
 		_enabledLooper.start();
 		

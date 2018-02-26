@@ -20,10 +20,9 @@ public class RightDoubleScale extends AutonBase {
 		scaleToSwitch = Paths.getPath(PATHS.R_SCALE_TO_R_SWITCH, 100, 120);
 		switchToScale= Paths.getPath(PATHS.R_SWITCH_TO_R_SCALE, 100, 120);
 		
-		targetTurnAngle = -170;
+		targetTurnAngle = -168;
 		endTargetTurnAngle = 0;
-		elevatorWaitTime1 = 3.0;
-		elevatorWaitTime2 = 2.0;
+		elevatorWaitTime1 = 4.7;
 	}
 	
 	@Override
@@ -34,60 +33,55 @@ public class RightDoubleScale extends AutonBase {
 					new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.STORE),
 					new SeriesAction(Arrays.asList(new Action[] {
 							new WaitAction(elevatorWaitTime1),
-							new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SWITCH_HEIGHT)
+							new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SCALE_HEIGHT)
 					}))
 		})));
-		runAction(new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SCALE_HEIGHT));
 		// Outfeed cube for 0.2s
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 					new WaitAction(0.2),
 					new OutfeedCubeAction()
 		})));	
-		// Move elevator down to switch height
-		runAction(new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SWITCH_HEIGHT));
-		// Turn to switch while lowering elevator
+		// Lower Elevator to Switch during turn, then drive to 2nd cube while setting infeed wide and continuing to lower elevator
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-				new TurnAction(targetTurnAngle, true),
-				new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT)
-		})));
-		// Drive to 2nd cube while setting infeed wide and continuing to lower elevator
-		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-					new RunMotionProfileAction(scaleToSwitch),
+					new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT),
 					new SeriesAction(Arrays.asList(new Action[] {
-							new WaitAction(0.65),
-							new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.WIDE)
-					}))
+							new WaitAction(0.8),
+							new TurnAction(targetTurnAngle, true),
+							new SimultaneousAction(Arrays.asList(new Action[] {
+									new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.WIDE),
+									new DriveSetDistanceAction(38.0)
+							}))
+					}))	
 		})));
 		// Infeed cube while sitting in place for 0.65s
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-					new WaitAction(0.65),
 					new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.SQUEEZE),
 					new InfeedCubeAction()
 		})));
-		// Continue infeeding while driving back to scale and turning
+		// Drive back to scale and raise elevator to switch height
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-					new SeriesAction(Arrays.asList(new Action[] {
-							new RunMotionProfileAction(switchToScale),
-							new TurnAction(30, false)
-					})),
-					new SeriesAction(Arrays.asList(new Action[] {
-							new InfeedCubeAction(),
-							new SimultaneousAction(Arrays.asList(new Action[] {
-									new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SCALE_HEIGHT),
-									new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.STORE)
-							}))
-					}))
+				new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.STORE),
+				new SeriesAction(Arrays.asList(new Action[] {
+						new DriveSetDistanceAction(-38.0),
+						new TurnAction(0.0, false)
+				})),
+				new SeriesAction(Arrays.asList(new Action[] {
+						new WaitAction(1.0),
+						new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SCALE_HEIGHT)
+				}))
 		}))); 
+		// Turn while raising elevator to scale height
+		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
+					new TurnAction(-15.0, false),
+					new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SCALE_HEIGHT)
+		})));
 		// Outfeed cube for 0.2s
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 				new WaitAction(0.2),
 				new OutfeedCubeAction()
 		})));
-		// Drive backwards 20in and move elevator to floor
-		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-				new DriveSetDistanceAction(-20.0),
-				new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT)
-		})));
+		// Move elevator to floor
+		runAction(new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT));
 		runAction(new PrintTimeFromStart(_startTime));
 	}
 }

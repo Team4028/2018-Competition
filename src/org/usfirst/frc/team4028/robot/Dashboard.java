@@ -100,6 +100,8 @@ public class Dashboard {
 				} else {
 					return new ScaleThenSwitchOppositeSide(_isScaleLeft);
 				}
+			case DOUBLE_SCALE_THEN_SWITCH:
+				return new DoubleScaleAndSwitch(_isScaleLeft);
 			case TRIPLE_SCALE:
 				return new TripleScale();
 			default:

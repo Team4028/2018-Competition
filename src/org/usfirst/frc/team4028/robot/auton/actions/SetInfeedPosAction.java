@@ -12,7 +12,9 @@ public class SetInfeedPosAction implements Action{
 	} 
 
 	@Override
-	public void start() {}
+	public void start() {
+		_cubeHandler.infeedArms_MoveToPresetPosition(_infeedTargetPos);
+	}
 
 	@Override
 	public void update() {
