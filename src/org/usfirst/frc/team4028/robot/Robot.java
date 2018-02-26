@@ -248,11 +248,11 @@ public class Robot extends IterativeRobot {
 			// adjust Carriage Wheel Feed Out Speeds
 			if(_dos.getIsDriver_Carriage_FeedOut_IndexUp_BtnJustPressed()
 					|| _dos.getIsOperator_Carriage_FeedOut_IndexUp_BtnJustPressed()) {
-				_cubeHandler.carriage_FeedOut_VBusCmd_IndexUp();
+				_cubeHandler.carriage_FeedOut_VBusCmd_IndexBumpUp();
 			}
 			else if(_dos.getIsDriver_Carriage_FeedOut_IndexDown_BtnJustPressed()
 					|| _dos.getIsOperator_Carriage_FeedOut_IndexDown_BtnJustPressed()) {
-				_cubeHandler.carriage_FeedOut_VBusCmd_IndexDown();
+				_cubeHandler.carriage_FeedOut_VBusCmd_IndexBumpDown();
 			}
 			
 			if (_dos.getIsDriver_SpinCubeCounterClockwise_BtnPressed()){
@@ -337,13 +337,15 @@ public class Robot extends IterativeRobot {
 				_cubeHandler.carriage_FeedIn_VBusCmd_BumpUp();
 			}
 			
-			if(_dos.getIsEngrB_Carriage_FeedOut_VBusBumpDown_BtnJustPressed()) {
+			if(_dos.getIsEngrB_Carriage_FeedOut_IndexBumpDown_BtnJustPressed()) {
 				//_carriage.engrGamepadB_CarriageVBUS_BumpDown();
-				_cubeHandler.carriage_FeedOut_VBusCmd_BumpDown();
+				//_cubeHandler.carriage_FeedOut_VBusCmd_BumpDown();
+				_cubeHandler.carriage_FeedOut_VBusCmd_IndexBumpDown();
 			}
-			else if(_dos.getIsEngrB_Carriage_FeedOut_VBusBumpUp_BtnJustPressed()) {
+			else if(_dos.getIsEngrB_Carriage_FeedOut_IndexBumpUp_BtnJustPressed()) {
 				//_carriage.engrGamepadB_CarriageVBUS_BumpUp();
-				_cubeHandler.carriage_FeedOut_VBusCmd_BumpUp();
+				//_cubeHandler.carriage_FeedOut_VBusCmd_BumpUp();
+				_cubeHandler.carriage_FeedOut_VBusCmd_IndexBumpUp();
 			}
 			
 			// infeed arm positions
