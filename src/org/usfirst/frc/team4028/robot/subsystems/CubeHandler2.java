@@ -360,6 +360,16 @@ public class CubeHandler2 implements Subsystem {
 		_carriage.carriageWheels_FeedOut_VBusCmd_BumpUp();
 	}
 	
+	public void carriage_FeedOut_VBusCmd_IndexUp()
+	{
+		_carriage.carriage_FeedOut_VBusCmd_IndexUp();
+	}
+	
+	public void carriage_FeedOut_VBusCmd_IndexDown()
+	{
+		_carriage.carriage_FeedOut_VBusCmd_IndexDown();	
+	}
+	
 	//=====================================================================================	
 	// Utility Methods
 	//=====================================================================================	

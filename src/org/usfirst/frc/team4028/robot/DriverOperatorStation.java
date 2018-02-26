@@ -218,6 +218,40 @@ public class DriverOperatorStation {
 //			return _driverGamepad.getStickButtonPressed(Hand.kRight);
 //		}
 	
+	// implement just pressed for POV
+	boolean wasDriverPOV180PresssedLastScan = false;
+	
+	public boolean getIsDriver_Carriage_FeedOut_IndexDown_BtnJustPressed() 
+	{
+		if(_operatorGamepad.getPOV(0) == 180) 
+		{
+			boolean isJustPressed = true && !wasDriverPOV180PresssedLastScan;
+			wasDriverPOV180PresssedLastScan = true;
+			return isJustPressed;
+		} 
+		else 
+		{
+			wasDriverPOV180PresssedLastScan = false;
+			return false;
+		}
+	}
+	
+	boolean wasDriverPOV0PresssedLastScan = false;
+	
+	public boolean getIsDriver_Carriage_FeedOut_IndexUp_BtnJustPressed() 
+	{
+		if(_operatorGamepad.getPOV(0) == 0) 
+		{
+			boolean isJustPressed = true && !wasDriverPOV0PresssedLastScan;
+			wasDriverPOV0PresssedLastScan = true;
+			return isJustPressed;
+		} 
+		else {
+			wasDriverPOV0PresssedLastScan = false;
+			return false;
+		}
+	}
+	
 	// ===================================
 	// === Driver Just Released buttons ==
 	// ===================================
@@ -392,6 +426,40 @@ public class DriverOperatorStation {
 //		public boolean getIsOperator_RightStick_BtnJustPressed() {
 //			return _operatorGamepad.getStickButtonPressed(Hand.kRight);
 //		}
+	
+	// implement just pressed for POV
+	boolean wasOperatorPOV180PresssedLastScan = false;
+	
+	public boolean getIsOperator_Carriage_FeedOut_IndexDown_BtnJustPressed() 
+	{
+		if(_operatorGamepad.getPOV(0) == 180) 
+		{
+			boolean isJustPressed = true && !wasOperatorPOV180PresssedLastScan;
+			wasOperatorPOV180PresssedLastScan = true;
+			return isJustPressed;
+		} 
+		else 
+		{
+			wasOperatorPOV180PresssedLastScan = false;
+			return false;
+		}
+	}
+	
+	boolean wasOperatorPOV0PresssedLastScan = false;
+	
+	public boolean getIsOperator_Carriage_FeedOut_IndexUp_BtnJustPressed() 
+	{
+		if(_operatorGamepad.getPOV(0) == 0) 
+		{
+			boolean isJustPressed = true && !wasOperatorPOV0PresssedLastScan;
+			wasOperatorPOV0PresssedLastScan = true;
+			return isJustPressed;
+		} 
+		else {
+			wasOperatorPOV0PresssedLastScan = false;
+			return false;
+		}
+	}
 	
 	// ====================================
 	// == Operator Just Released buttons ==
