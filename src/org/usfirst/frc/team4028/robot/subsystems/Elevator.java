@@ -85,7 +85,7 @@ public class Elevator implements Subsystem {
 	
 	// hardcoded preset positions (in native units, 0 = home position)
 	private static final int SCALE_HEIGHT_POSITION = InchesToNativeUnits(80);
-	private static final int SWITCH_HEIGHT_POSITION = InchesToNativeUnits(32);
+	private static final int SWITCH_HEIGHT_POSITION = InchesToNativeUnits(28);
 	private static final int CUBE_ON_PYRAMID_LEVEL_1_POSITION = InchesToNativeUnits(24);
 	private static final int CUBE_ON_FLOOR_POSITION = InchesToNativeUnits(0);
 	private static final int INFEED_POSITION = 0;
