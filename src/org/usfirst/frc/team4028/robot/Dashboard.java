@@ -5,7 +5,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import org.usfirst.frc.team4028.robot.auton.AutonBase;
-import org.usfirst.frc.team4028.robot.auton.modes.*;
+import org.usfirst.frc.team4028.robot.auton.modes.center.*;
+import org.usfirst.frc.team4028.robot.auton.modes.left.*;
 
 /**
  *  This class contains code to interface with the Dashboard on the Driver's Station
