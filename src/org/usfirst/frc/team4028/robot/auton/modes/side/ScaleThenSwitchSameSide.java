@@ -1,4 +1,4 @@
-package org.usfirst.frc.team4028.robot.auton.modes.left;
+package org.usfirst.frc.team4028.robot.auton.modes.side;
 
 import java.util.Arrays;
 
@@ -10,17 +10,22 @@ import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_PRESET_POSITI
 import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_ARM_TARGET_POSITION;
 import org.usfirst.frc.team4028.util.control.Path;
 
-public class RightDoubleScale extends AutonBase {
-	Path toScale, scaleToSwitch, switchToScale;
-	double targetTurnAngle, endTargetTurnAngle;
-	double elevatorWaitTime1, elevatorWaitTime2;
+public class ScaleThenSwitchSameSide extends AutonBase {
+	Path toScale;
+	double targetTurnAngle, elevatorWaitTime, driveToSwitchDistance;
 	
-	public RightDoubleScale() {
-		toScale = Paths.getPath(PATHS.R_SCALE, 100.0, 100.0, 0.005);
-		
-		targetTurnAngle = -168;
-		endTargetTurnAngle = 0;
-		elevatorWaitTime1 = 4.7;
+	public ScaleThenSwitchSameSide(boolean isLeftScale) {
+		if (isLeftScale) {
+			toScale = Paths.getPath(PATHS.L_SCALE, 100.0, 120.0, 0.003);
+			targetTurnAngle = 165;
+			elevatorWaitTime = 2.0;
+			driveToSwitchDistance = 38.0;
+		} else {
+			toScale = Paths.getPath(PATHS.R_SCALE, 100.0, 100.0, 0.005);
+			targetTurnAngle = -168;
+			elevatorWaitTime = 4.7;	
+			driveToSwitchDistance = 38.0;
+		}
 	}
 	
 	@Override
@@ -30,7 +35,7 @@ public class RightDoubleScale extends AutonBase {
 					new RunMotionProfileAction(toScale),
 					new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.STORE),
 					new SeriesAction(Arrays.asList(new Action[] {
-							new WaitAction(elevatorWaitTime1),
+							new WaitAction(elevatorWaitTime),
 							new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SCALE_HEIGHT)
 					}))
 		})));
@@ -38,45 +43,32 @@ public class RightDoubleScale extends AutonBase {
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 					new WaitAction(0.2),
 					new OutfeedCubeAction()
-		})));	
+		})));
 		// Lower Elevator to Switch during turn, then drive to 2nd cube while setting infeed wide and continuing to lower elevator
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 					new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT),
 					new SeriesAction(Arrays.asList(new Action[] {
-							new WaitAction(0.8),
+							new WaitAction(0.5),
 							new TurnAction(targetTurnAngle, true),
 							new SimultaneousAction(Arrays.asList(new Action[] {
 									new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.WIDE),
-									new DriveSetDistanceAction(38.0)
+									new DriveSetDistanceAction(driveToSwitchDistance)
 							}))
 					}))	
 		})));
 		// Infeed cube while sitting in place
 		runAction(new InfeedCubeAction());
-		// Drive back to scale and raise elevator to switch height
+		// Drive to switch while storing infeed and raising elevator
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-				new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.STORE),
-				new SeriesAction(Arrays.asList(new Action[] {
-						new DriveSetDistanceAction(-38.0),
-						new TurnAction(0.0, false)
-				})),
-				new SeriesAction(Arrays.asList(new Action[] {
-						new WaitAction(1.0),
-						new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SCALE_HEIGHT)
-				}))
-		}))); 
-		// Turn while raising elevator to scale height
-		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-					new TurnAction(-15.0, false),
-					new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SCALE_HEIGHT)
+					new DriveSetDistanceAction(12),
+					new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.STORE),
+					new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SWITCH_HEIGHT)
 		})));
 		// Outfeed cube for 0.2s
-		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-				new WaitAction(0.2),
-				new OutfeedCubeAction()
-		})));
-		// Move elevator to floor
-		runAction(new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT));
+		runAction(new SimultaneousAction(Arrays.asList(new Action[ ] {
+					new WaitAction(0.2),
+					new OutfeedCubeAction()
+		}))); 
 		runAction(new PrintTimeFromStart(_startTime));
 	}
 }

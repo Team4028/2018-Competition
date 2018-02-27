@@ -1,4 +1,4 @@
-package org.usfirst.frc.team4028.robot.auton.modes.left;
+package org.usfirst.frc.team4028.robot.auton.modes.side;
 
 import java.util.Arrays;
 

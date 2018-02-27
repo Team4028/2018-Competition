@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import org.usfirst.frc.team4028.robot.auton.AutonBase;
 import org.usfirst.frc.team4028.robot.auton.modes.center.*;
-import org.usfirst.frc.team4028.robot.auton.modes.left.*;
+import org.usfirst.frc.team4028.robot.auton.modes.side.*;
 
 /**
  *  This class contains code to interface with the Dashboard on the Driver's Station
@@ -90,11 +90,7 @@ public class Dashboard {
 			case SCALE:
 				return new Scale(_isScaleLeft);
 			case DOUBLE_SCALE:
-				if (_isScaleLeft) {
-					return new LeftDoubleScale();
-				} else {
-					return new RightDoubleScale();
-				}
+				return new DoubleScale(_isScaleLeft);
 			case SCALE_THEN_SWITCH:
 				if(_isScaleLeft == _isSwitchLeft) {
 					return new ScaleThenSwitchSameSide(_isScaleLeft);
@@ -104,7 +100,11 @@ public class Dashboard {
 			case DOUBLE_SCALE_THEN_SWITCH:
 				return new DoubleScaleAndSwitch(_isScaleLeft);
 			case TRIPLE_SCALE:
-				return new TripleScale();
+				if (_isScaleLeft) {
+					return new TripleScale();
+				} else {
+					return new DoubleScale(_isScaleLeft);
+				}
 			default:
 				return new DoNothing();
 		}

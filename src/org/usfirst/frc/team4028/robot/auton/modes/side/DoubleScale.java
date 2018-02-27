@@ -1,34 +1,42 @@
-package org.usfirst.frc.team4028.robot.auton.modes.left;
+package org.usfirst.frc.team4028.robot.auton.modes.side;
 
 import java.util.Arrays;
 
 import org.usfirst.frc.team4028.robot.auton.AutonBase;
 import org.usfirst.frc.team4028.robot.auton.actions.*;
 import org.usfirst.frc.team4028.robot.paths.Paths;
-import org.usfirst.frc.team4028.robot.paths.Paths.PATHS;
+import org.usfirst.frc.team4028.robot.paths.Paths.LeftSide;
 import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_PRESET_POSITION;
 import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_ARM_TARGET_POSITION;
 import org.usfirst.frc.team4028.util.control.Path;
 
-public class DoubleScaleAndSwitch extends AutonBase{
+public class DoubleScale extends AutonBase{
 	Path toScale;
-	Path fromScaleToSwitchSecondCube;
-	double targetTurnAngle, elevatorWaitTime;
 	
-	public DoubleScaleAndSwitch(boolean isLeftScale) {
+	double toSwitchDistance, toScaleAgainDistance;
+	double targetTurnAngle,endTargetTurnAngle;
+	double elevatorWaitTime1, elevatorWaitTime2;
+	
+	public DoubleScale(boolean isLeftScale) {
 		if (isLeftScale) {
-			toScale = Paths.getPath(PATHS.L_SCALE, 100.0, 120.0, 0.003);
+			toScale = Paths.getPath(LeftSide.L_SCALE);
+			toSwitchDistance = 38.0;
+			toScaleAgainDistance = -42.0;
 			targetTurnAngle = 165;
-			elevatorWaitTime = 2.0;
-			fromScaleToSwitchSecondCube = Paths.getPath(PATHS.L_SWITCH_TO_L_SCALE_SECOND_CUBE, 0.005);
-		} 
-		else {
-			toScale = Paths.getPath(PATHS.R_SCALE, 100.0, 120.0, 0.005);
+			endTargetTurnAngle = 25;
+			elevatorWaitTime1 = 2.0;
+			elevatorWaitTime2 = 0.5;
+		} else {
+			toScale = Paths.getPath(LeftSide.R_SCALE);
+			toSwitchDistance = 38.0;
+			toScaleAgainDistance = -38.0;
 			targetTurnAngle = -168;
-			elevatorWaitTime = 4.7;
+			endTargetTurnAngle = -15.0;
+			elevatorWaitTime1 = 4.7;
+			elevatorWaitTime2 = 1.0;
 		}
 	}
-	
+
 	@Override
 	public void routine() {
 		// Drive to scale while storing infeed and raising elevator
@@ -36,7 +44,7 @@ public class DoubleScaleAndSwitch extends AutonBase{
 					new RunMotionProfileAction(toScale),
 					new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.STORE),
 					new SeriesAction(Arrays.asList(new Action[] {
-							new WaitAction(elevatorWaitTime),
+							new WaitAction(elevatorWaitTime1),
 							new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SCALE_HEIGHT)
 					}))
 		})));
@@ -49,45 +57,36 @@ public class DoubleScaleAndSwitch extends AutonBase{
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 					new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT),
 					new SeriesAction(Arrays.asList(new Action[] {
-							new WaitAction(0.5),
+							new WaitAction(0.7),
 							new TurnAction(targetTurnAngle, true),
 							new SimultaneousAction(Arrays.asList(new Action[] {
 									new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.WIDE),
-									new DriveSetDistanceAction(38.0)
+									new DriveSetDistanceAction(toSwitchDistance)
 							}))
 					}))	
 		})));
 		// Infeed cube while sitting in place
+		runAction(new InfeedCubeAction());
+		// Drive back to scale and turn while raising elevator to scale height
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-					new InfeedCubeAction()
-		})));
-		// Drive to switch while storing infeed and raising elevator
-		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-					new DriveSetDistanceAction(12),
 					new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.STORE),
-					new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SWITCH_HEIGHT)
-		})));
-		// Outfeed cube for 0.2s
-		runAction(new SimultaneousAction(Arrays.asList(new Action[ ] {
-					new WaitAction(0.2),
-					new OutfeedCubeAction()
-		}))); 
-		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 					new SeriesAction(Arrays.asList(new Action[] {
-							new DriveSetDistanceAction(-10.0),
-							new SimultaneousAction(Arrays.asList(new Action[] {
-									new TurnAction(130.0, false),
-									new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.SQUEEZE),
-						}))
+							new DriveSetDistanceAction(toScaleAgainDistance),
+							new TurnAction(endTargetTurnAngle, false)
 					})),
-					new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT)
-		})));
+					new SeriesAction(Arrays.asList(new Action[] {
+							new WaitAction(elevatorWaitTime2),
+							new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SCALE_HEIGHT)
+					}))
+		}))); 
+		// Outfeed cube for 0.2s
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-					new DriveSetDistanceAction(10.0),
-					new InfeedCubeAction()
+				new WaitAction(0.2),
+				new OutfeedCubeAction()
 		})));
-		runAction(new RunMotionProfileAction(fromScaleToSwitchSecondCube));
-		runAction(new TurnAction(0.0, true));
+		runAction(new PrintTimeFromStart(_startTime));
+		// Move elevator to floor
+		runAction(new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT));
 		runAction(new PrintTimeFromStart(_startTime));
 	}
 }

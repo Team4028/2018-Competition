@@ -1,4 +1,4 @@
-package org.usfirst.frc.team4028.robot.auton.modes.left;
+package org.usfirst.frc.team4028.robot.auton.modes.side;
 
 import java.util.Arrays;
 
@@ -10,26 +10,22 @@ import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_PRESET_POSITI
 import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_ARM_TARGET_POSITION;
 import org.usfirst.frc.team4028.util.control.Path;
 
-public class ScaleThenSwitchOppositeSide extends AutonBase {
+public class DoubleScaleAndSwitch extends AutonBase{
 	Path toScale;
-	Path fromScaleToSwitch;
-	double turnTargetAngle, elevatorWaitTime;
-	boolean isTurnRight;
+	Path fromScaleToSwitchSecondCube;
+	double targetTurnAngle, elevatorWaitTime;
 	
-	public ScaleThenSwitchOppositeSide(boolean isLeftScale) {
+	public DoubleScaleAndSwitch(boolean isLeftScale) {
 		if (isLeftScale) {
 			toScale = Paths.getPath(PATHS.L_SCALE, 100.0, 120.0, 0.003);
-			fromScaleToSwitch = Paths.getPath(PATHS.L_SCALE_TO_R_SWITCH, 100, 120, 0.007);
-			turnTargetAngle = 150;
-			isTurnRight = true;
+			targetTurnAngle = 165;
 			elevatorWaitTime = 2.0;
-			
-		} else {
-			toScale = Paths.getPath(PATHS.R_SCALE, 100.0, 120.0, 0.0045);
-			fromScaleToSwitch = Paths.getPath(PATHS.R_SCALE_TO_L_SWITCH,100,120,0.007);
-			turnTargetAngle = -150;
-			isTurnRight = false;
-			elevatorWaitTime = 4.75;
+			fromScaleToSwitchSecondCube = Paths.getPath(PATHS.L_SWITCH_TO_L_SCALE_SECOND_CUBE, 0.005);
+		} 
+		else {
+			toScale = Paths.getPath(PATHS.R_SCALE, 100.0, 120.0, 0.005);
+			targetTurnAngle = -168;
+			elevatorWaitTime = 4.7;
 		}
 	}
 	
@@ -49,36 +45,49 @@ public class ScaleThenSwitchOppositeSide extends AutonBase {
 					new WaitAction(0.2),
 					new OutfeedCubeAction()
 		})));
-		// Turn then driveto switch while lowering elevator
+		// Lower Elevator to Switch during turn, then drive to 2nd cube while setting infeed wide and continuing to lower elevator
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 					new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT),
 					new SeriesAction(Arrays.asList(new Action[] {
 							new WaitAction(0.5),
-							new TurnAction(turnTargetAngle, true),
-							new RunMotionProfileAction(fromScaleToSwitch)
-					}))
+							new TurnAction(targetTurnAngle, true),
+							new SimultaneousAction(Arrays.asList(new Action[] {
+									new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.WIDE),
+									new DriveSetDistanceAction(38.0)
+							}))
+					}))	
 		})));
-		// Turn to cube and infeed it
+		// Infeed cube while sitting in place
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-					new TurnAction(180, isTurnRight),
-					new SeriesAction(Arrays.asList(new Action[] {
-							new WaitAction(0.5),
-							new InfeedCubeAction()
-					}))
+					new InfeedCubeAction()
 		})));
 		// Drive to switch while storing infeed and raising elevator
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-					new DriveSetDistanceAction(18),
+					new DriveSetDistanceAction(12),
 					new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.STORE),
 					new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SWITCH_HEIGHT)
 		})));
 		// Outfeed cube for 0.2s
-		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
+		runAction(new SimultaneousAction(Arrays.asList(new Action[ ] {
 					new WaitAction(0.2),
 					new OutfeedCubeAction()
+		}))); 
+		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
+					new SeriesAction(Arrays.asList(new Action[] {
+							new DriveSetDistanceAction(-10.0),
+							new SimultaneousAction(Arrays.asList(new Action[] {
+									new TurnAction(130.0, false),
+									new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.SQUEEZE),
+						}))
+					})),
+					new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT)
 		})));
-		// Move elevator to floor
-		runAction(new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT));
+		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
+					new DriveSetDistanceAction(10.0),
+					new InfeedCubeAction()
+		})));
+		runAction(new RunMotionProfileAction(fromScaleToSwitchSecondCube));
+		runAction(new TurnAction(0.0, true));
 		runAction(new PrintTimeFromStart(_startTime));
 	}
 }
