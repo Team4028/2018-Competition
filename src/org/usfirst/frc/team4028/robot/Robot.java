@@ -33,6 +33,7 @@ public class Robot extends IterativeRobot {
 	private Elevator _elevator = Elevator.getInstance();
 	private Carriage _carriage = Carriage.getInstance();
 	private CubeHandler2 _cubeHandler = CubeHandler2.getInstance();
+	private Climber _climber = Climber.getInstance();
 	
 	// Sensors
 	//private UltrasonicSensor _ultrasonic = UltrasonicSensor.getInstance();
@@ -411,6 +412,12 @@ public class Robot extends IterativeRobot {
 			_cubeHandler.stopElevator();
 		} 
 				
+		// =============  CLIMBER ============= 
+		if(_dos.getOperator_Climber_JoystickCmd() != 0)
+		{
+			_climber.runMotor(_dos.getOperator_Climber_JoystickCmd());
+		}
+		
 		// ============= Camera Switch ============= 
 		if (_dos.getIsOperator_SwitchCamera_BtnJustPressed() == true) {
 			_switchableCameraServer.SwitchCamera();
@@ -431,6 +438,7 @@ public class Robot extends IterativeRobot {
 		_elevator.stop();
 		_infeed.stop();
 		_carriage.stop();
+		_climber.stop();
 	}
 	
 	//=====================================================================================
@@ -452,6 +460,7 @@ public class Robot extends IterativeRobot {
     		_carriage.outputToShuffleboard();
     		//_ultrasonic.outputToShuffleboard();
 	    	_cubeHandler.outputToShuffleboard();
+	    	_climber.outputToShuffleboard();
 	    	
     		// write the overall robot dashboard info
 	    	SmartDashboard.putString("Robot Build", _buildMsg);

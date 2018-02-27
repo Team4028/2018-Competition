@@ -566,7 +566,7 @@ public class DriverOperatorStation {
 //			return _operatorGamepad.getX(Hand.kLeft);
 //		}
 	
-	public double getOperator_Climb_JoystickCmd() {
+	public double getOperator_Climber_JoystickCmd() {
 		if(Math.abs(_operatorGamepad.getY(Hand.kRight)) >= JOYSTICK_DEADBAND){
 			// flip the sign, pushing the joystick up is a # < 0
 			return _operatorGamepad.getY(Hand.kRight) * -1.0;
