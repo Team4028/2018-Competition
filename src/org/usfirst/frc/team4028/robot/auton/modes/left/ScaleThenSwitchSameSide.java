@@ -12,19 +12,16 @@ import org.usfirst.frc.team4028.util.control.Path;
 
 public class ScaleThenSwitchSameSide extends AutonBase {
 	Path toScale;
-	Path fromScaleToSwitch;
 	double targetTurnAngle, elevatorWaitTime, driveToSwitchDistance;
 	
 	public ScaleThenSwitchSameSide(boolean isLeftScale) {
 		if (isLeftScale) {
 			toScale = Paths.getPath(PATHS.L_SCALE, 100.0, 120.0, 0.003);
-			fromScaleToSwitch = Paths.getPath(PATHS.L_SCALE_TO_L_SWITCH, 100, 120, 0.005);
 			targetTurnAngle = 165;
 			elevatorWaitTime = 2.0;
 			driveToSwitchDistance = 38.0;
 		} else {
 			toScale = Paths.getPath(PATHS.R_SCALE, 100.0, 100.0, 0.005);
-			fromScaleToSwitch = Paths.getPath(PATHS.R_SCALE_TO_R_SWITCH);
 			targetTurnAngle = -168;
 			elevatorWaitTime = 4.7;	
 			driveToSwitchDistance = 38.0;

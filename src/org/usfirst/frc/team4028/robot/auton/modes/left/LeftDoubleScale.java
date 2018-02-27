@@ -12,7 +12,6 @@ import org.usfirst.frc.team4028.util.control.Path;
 
 public class LeftDoubleScale extends AutonBase{
 	Path toScale;
-	Path fromScaleToSwitch, fromSwitchToScale;
 	double targetTurnAngle,endTargetTurnAngle;
 	double elevatorWaitTime1, elevatorWaitTime2;
 	
@@ -20,8 +19,6 @@ public class LeftDoubleScale extends AutonBase{
 		toScale = Paths.getPath(PATHS.L_SCALE, 100.0, 120.0, 0.003);
 		targetTurnAngle = 165;
 		endTargetTurnAngle = 0;
-		fromScaleToSwitch = Paths.getPath(PATHS.L_SCALE_TO_L_SWITCH, 100.0, 120.0, 0.005);
-		fromSwitchToScale = Paths.getPath(PATHS.L_SWITCH_TO_L_SCALE, 100.0, 120.0);
 		elevatorWaitTime1 = 2.0;
 	}
 

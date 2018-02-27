@@ -17,8 +17,6 @@ public class RightDoubleScale extends AutonBase {
 	
 	public RightDoubleScale() {
 		toScale = Paths.getPath(PATHS.R_SCALE, 100.0, 100.0, 0.005);
-		scaleToSwitch = Paths.getPath(PATHS.R_SCALE_TO_R_SWITCH, 100, 120);
-		switchToScale= Paths.getPath(PATHS.R_SWITCH_TO_R_SCALE, 100, 120);
 		
 		targetTurnAngle = -168;
 		endTargetTurnAngle = 0;

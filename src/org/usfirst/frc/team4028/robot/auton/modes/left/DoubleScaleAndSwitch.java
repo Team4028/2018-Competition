@@ -12,21 +12,18 @@ import org.usfirst.frc.team4028.util.control.Path;
 
 public class DoubleScaleAndSwitch extends AutonBase{
 	Path toScale;
-	Path fromScaleToSwitch;
 	Path fromScaleToSwitchSecondCube;
 	double targetTurnAngle, elevatorWaitTime;
 	
 	public DoubleScaleAndSwitch(boolean isLeftScale) {
 		if (isLeftScale) {
 			toScale = Paths.getPath(PATHS.L_SCALE, 100.0, 120.0, 0.003);
-			fromScaleToSwitch = Paths.getPath(PATHS.L_SCALE_TO_L_SWITCH, 100, 120, 0.005);
 			targetTurnAngle = 165;
 			elevatorWaitTime = 2.0;
 			fromScaleToSwitchSecondCube = Paths.getPath(PATHS.L_SWITCH_TO_L_SCALE_SECOND_CUBE, 0.005);
 		} 
 		else {
 			toScale = Paths.getPath(PATHS.R_SCALE, 100.0, 120.0, 0.005);
-			fromScaleToSwitch = Paths.getPath(PATHS.R_SCALE_TO_R_SWITCH);
 			targetTurnAngle = -168;
 			elevatorWaitTime = 4.7;
 		}
