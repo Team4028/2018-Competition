@@ -669,6 +669,7 @@ public class Elevator implements Subsystem {
 		SmartDashboard.putNumber("Elevator:VoltageActual", _elevatorMasterMotor.getMotorOutputVoltage());
 		
 		SmartDashboard.putNumber("Elevator:Position", actualPosition);
+		SmartDashboard.putNumber("Elevator:Position(in)", GeneralUtilities.RoundDouble((_actualPositionNU / NU_PER_INCH),2));
 		SmartDashboard.putNumber("Elevator:Velocity", GeneralUtilities.RoundDouble(actualVelocity, 2));
 		SmartDashboard.putNumber("Elevator:Acceleration", GeneralUtilities.RoundDouble(actualAcceleration, 2));
 

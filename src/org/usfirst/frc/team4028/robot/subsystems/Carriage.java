@@ -426,7 +426,7 @@ public class Carriage implements Subsystem {
 		SmartDashboard.putNumber("Carriage:Wheels Feed In %VBus", _currentCarriageWheelsFeedInVBusCmd);
 		SmartDashboard.putNumber("Carriage:Wheels Feed Out %VBus", getCarriageWheelsFeedOutVBusCmd());
 		SmartDashboard.putString("Carriage:State", _carriageWheelsState.toString());
-		SmartDashboard.putBoolean("Carriage:LimitSwitch Is Closed?", isCubeInCarriage());
+		SmartDashboard.putBoolean("Carriage:Is Cube In Carriage?", isCubeInCarriage());
 	}
 
 	@Override
