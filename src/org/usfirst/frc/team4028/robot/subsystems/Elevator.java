@@ -3,7 +3,6 @@ package org.usfirst.frc.team4028.robot.subsystems;
 import java.util.Date;
 
 import org.usfirst.frc.team4028.robot.Constants;
-import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_ARM_STATE;
 import org.usfirst.frc.team4028.util.GeneralUtilities;
 import org.usfirst.frc.team4028.util.LogDataBE;
 import org.usfirst.frc.team4028.util.loops.Loop;
@@ -39,7 +38,7 @@ public class Elevator implements Subsystem {
 		TIMEOUT,
 		GOTO_TARGET_POSITION,
 		HOLD_TARGET_POSITION,
-		MOVE_BELOW_SOFT_LIMIT,
+		//MOVE_BELOW_SOFT_LIMIT,
 		JOG_AXIS,
 		//DO_NOTHING
 	}
@@ -513,7 +512,7 @@ public class Elevator implements Subsystem {
 				&& _elevatorState != ELEVATOR_STATE.HOLD_TARGET_POSITION
 				&& _elevatorState != ELEVATOR_STATE.NEED_TO_HOME
 				&& _elevatorState != ELEVATOR_STATE.MOVING_TO_HOME
-				&& _elevatorState != ELEVATOR_STATE.MOVE_BELOW_SOFT_LIMIT
+				//&& _elevatorState != ELEVATOR_STATE.MOVE_BELOW_SOFT_LIMIT
 				//&& _elevatorState != ELEVATOR_STATE.DO_NOTHING
 				&& _elevatorState != ELEVATOR_STATE.TIMEOUT) {
 			// set target to current location

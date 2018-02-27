@@ -126,7 +126,7 @@ public class Infeed  implements Subsystem {
 	private static final double HOME_POSITION_ANGLE = 0; //Is Home
     private static final double INFEED_POSITION_ANGLE = 184; //160;	
 	private static final double WIDE_INFEED_POSITION_ANGLE = 140;
-	private static final double SQUEEZE_INFEED_POSITION_ANGLE = 190;
+//	private static final double SQUEEZE_INFEED_POSITION_ANGLE = 190;
 
 	private static final double STORE_POSITION_ANGLE = 10;
 //	private static final double THIN_SIDE_POSITION_ANGLE = 230;
