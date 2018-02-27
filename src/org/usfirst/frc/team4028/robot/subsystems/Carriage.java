@@ -33,7 +33,7 @@ public class Carriage implements Subsystem {
 		JOYSTICK
 	}
 	
-	private enum CARRIAGE_WHEELS_OUT_VBUS_INDEX {
+	public enum CARRIAGE_WHEELS_OUT_VBUS_INDEX {
 		VBUS_20,
 		VBUS_40,
 		VBUS_60,
@@ -57,7 +57,7 @@ public class Carriage implements Subsystem {
 	//private double _servoTargetPosition = 0.1;
 	
 	private static final double CARRIAGE_WHEELS_IN_VBUS_COMMAND_BUMP = 0.05;
-	private static final double CARRIAGE_WHEELS_OUT_VBUS_COMMAND_BUMP = 0.2;
+//	private static final double CARRIAGE_WHEELS_OUT_VBUS_COMMAND_BUMP = 0.2;
 	
 	private static final boolean IS_VERBOSE_LOGGING_ENABLED = true;
 	
@@ -357,6 +357,10 @@ public class Carriage implements Subsystem {
 			default:
 				break;
 		}
+	}
+	
+	public void autonCarriageSpeedChooser(CARRIAGE_WHEELS_OUT_VBUS_INDEX setSpeed) {
+		_carriageWheelsOutVBusIndex = setSpeed;
 	}
 	
 	@Override
