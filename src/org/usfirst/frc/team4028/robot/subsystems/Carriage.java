@@ -397,19 +397,19 @@ public class Carriage implements Subsystem {
 		switch (_carriageWheelsOutVBusIndex)
 		{
 			case VBUS_100:
-				return 100;
+				return 1;
 							
 			case VBUS_80:
-				return 80;
+				return .8;
 				
 			case VBUS_60:
-				return 60;
+				return .6;
 				
 			case VBUS_40:
-				return 40;
+				return .4;
 				
 			case VBUS_20:
-				return 20;
+				return .2;
 				
 			default:
 				return 0;
