@@ -85,6 +85,8 @@ public class Paths {
 		L_SCALE,
 		R_SCALE,
 		
+		L_SCALE_OUTSIDE,
+		
 		// Second Cube
 		L_SCALE_TO_R_SWITCH,
 		R_SCALE_TO_L_SWITCH,
@@ -100,6 +102,8 @@ public class Paths {
 		// First Cube
 		L_SCALE,
 		R_SCALE,
+		
+		R_SCALE_OUTSIDE,
 		
 		// Second Cube
 		L_SCALE_TO_R_SWITCH,
@@ -424,6 +428,9 @@ public class Paths {
 				path.setIsReversed(false);
 				return path;
 				
+			case L_SCALE_OUTSIDE:
+				
+				
 			case L_SCALE_TO_R_SWITCH:
 				path = buildPathFromWaypoints(getLeftScaleToRightSwitchWaypoints(), Constants.PATH_DEFAULT_ACCEL, Constants.PATH_DEFAULT_DECEL, 0.007);
 				path.setIsReversed(false);
@@ -475,6 +482,13 @@ public class Paths {
         sWaypoints.add(new Waypoint(240,250,35,80));
         sWaypoints.add(new Waypoint(275,250,0,40));
         return sWaypoints;
+	}
+	
+	protected static ArrayList<Waypoint> getLeftScaleOutsideWaypoints() {
+		ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
+        sWaypoints.add(new Waypoint(20,46,0,0));
+	    sWaypoints.add(new Waypoint(300,46,0,120));
+	    return sWaypoints;
 	}
 	
 	// Scale Then Switch	

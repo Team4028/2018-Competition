@@ -23,7 +23,7 @@ public class Dashboard {
 		return _instance;
 	}
 	
-	public enum AUTON_MODE {
+	private enum AUTON_MODE {
 		UNDEFINED,
 		DO_NOTHING,
 		AUTO_RUN,
@@ -31,13 +31,20 @@ public class Dashboard {
 		DOUBLE_SWITCH,
 		TRIPLE_SWITCH,
 		SCALE,
+		SCALE_OUTSIDE,
 		DOUBLE_SCALE,
 		TRIPLE_SCALE,
 		SCALE_THEN_SWITCH,
 		DOUBLE_SCALE_THEN_SWITCH
 	}
 	
+	private enum STARTING_SIDE {
+		LEFT,
+		RIGHT
+	}
+	
 	private SendableChooser<AUTON_MODE> _autonModeChooser = new SendableChooser<>();
+	private SendableChooser<STARTING_SIDE> _autonStartingSideChooser = new SendableChooser<>();
 	
 	private boolean _isSwitchLeft, _isScaleLeft;
 	
@@ -48,6 +55,7 @@ public class Dashboard {
 		_autonModeChooser.addObject("Double Switch", AUTON_MODE.DOUBLE_SWITCH);
 		_autonModeChooser.addObject("Triple Switch", AUTON_MODE.TRIPLE_SWITCH);
 		_autonModeChooser.addObject("Scale", AUTON_MODE.SCALE);
+		_autonModeChooser.addObject("Scale Outside", AUTON_MODE.SCALE_OUTSIDE);
 		_autonModeChooser.addObject("Double Scale", AUTON_MODE.DOUBLE_SCALE);
 		_autonModeChooser.addObject("Triple Scale", AUTON_MODE.TRIPLE_SCALE);
 		_autonModeChooser.addObject("Scale then Switch", AUTON_MODE.SCALE_THEN_SWITCH);
@@ -89,6 +97,12 @@ public class Dashboard {
 				return new TripleSwitch(_isSwitchLeft);
 			case SCALE:
 				return new Scale(_isScaleLeft);
+			case SCALE_OUTSIDE:
+				if (_isScaleLeft) {
+					return new ScaleOutside();
+				} else {
+					return new AutoRun();
+				}
 			case DOUBLE_SCALE:
 				return new DoubleScale(_isScaleLeft);
 			case SCALE_THEN_SWITCH:
