@@ -1,10 +1,9 @@
 package org.usfirst.frc.team4028.robot.subsystems;
 
+import org.usfirst.frc.team4028.robot.subsystems.Carriage.CARRIAGE_WHEELS_OUT_VBUS_INDEX;
 import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_PRESET_POSITION;
-import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_STATE;
 import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_ARM_STATE;
 import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_ARM_TARGET_POSITION;
-import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_WHEELS_STATE;
 import org.usfirst.frc.team4028.util.LogDataBE;
 import org.usfirst.frc.team4028.util.loops.Loop;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -345,13 +344,15 @@ public class CubeHandler2 implements Subsystem {
 	//=====================================================================================	
 	//Methods for Handling Interactions with Carriage Subsystem
 	//=====================================================================================	
-	public void carriage_FeedIn_VBusCmd_BumpDown() 
-	{
+	public void setAutonCarriageSpeed(CARRIAGE_WHEELS_OUT_VBUS_INDEX setSpeed) {
+		_carriage.autonCarriageSpeedChooser(setSpeed);
+	}
+	
+	public void carriage_FeedIn_VBusCmd_BumpDown() {
 		_carriage.carriageWheels_FeedIn_VBusCmd_BumpDown();
 	}
 	
-	public void carriage_FeedIn_VBusCmd_BumpUp() 
-	{
+	public void carriage_FeedIn_VBusCmd_BumpUp() {
 		_carriage.carriageWheels_FeedIn_VBusCmd_BumpUp();
 	}
 	

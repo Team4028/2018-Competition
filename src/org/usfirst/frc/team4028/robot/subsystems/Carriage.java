@@ -33,7 +33,7 @@ public class Carriage implements Subsystem {
 		JOYSTICK
 	}
 	
-	private enum CARRIAGE_WHEELS_OUT_VBUS_INDEX {
+	public enum CARRIAGE_WHEELS_OUT_VBUS_INDEX {
 		VBUS_20,
 		VBUS_40,
 		VBUS_60,
@@ -57,7 +57,7 @@ public class Carriage implements Subsystem {
 	//private double _servoTargetPosition = 0.1;
 	
 	private static final double CARRIAGE_WHEELS_IN_VBUS_COMMAND_BUMP = 0.05;
-	private static final double CARRIAGE_WHEELS_OUT_VBUS_COMMAND_BUMP = 0.2;
+//	private static final double CARRIAGE_WHEELS_OUT_VBUS_COMMAND_BUMP = 0.2;
 	
 	private static final boolean IS_VERBOSE_LOGGING_ENABLED = true;
 	
@@ -140,14 +140,11 @@ public class Carriage implements Subsystem {
 	//=====================================================================================
 	//Set Up Looper to run loop at 10ms interval (2x RoboRio Cycle Time)
 	//=====================================================================================
-	private final Loop _loop = new Loop() 
-	{
+	private final Loop _loop = new Loop() {
 		// called in Telop & Auton Init
 		@Override
-		public void onStart(double timestamp) 
-		{
-			synchronized (Carriage.this) 
-			{
+		public void onStart(double timestamp) {
+			synchronized (Carriage.this) {
 			}
 		}
 		
@@ -155,13 +152,9 @@ public class Carriage implements Subsystem {
 		//Looper and State Machine for Commanding Infeed Axis
 		//=====================================================================================
 		@Override
-		public void onLoop(double timestamp) 
-		{
-			synchronized (Carriage.this)
-			{	
-				
-				switch(_carriageWheelsState)
-				{
+		public void onLoop(double timestamp) {
+			synchronized (Carriage.this) {		
+				switch(_carriageWheelsState) {
 					case STOPPED:
 						_carriageLeftMotor.set(ControlMode.PercentOutput, 0, 0);
 						_carriageRightMotor.set(ControlMode.PercentOutput, 0, 0);
@@ -186,17 +179,14 @@ public class Carriage implements Subsystem {
 		}
 		
 		@Override
-		public void onStop(double timestamp) 
-		{
-			synchronized (Carriage.this) 
-			{
+		public void onStop(double timestamp) {
+			synchronized (Carriage.this) {
 				stop();
 			}
 		}
 	};
 	
-	public Loop getLoop() 
-	{
+	public Loop getLoop() {
 		return _loop;
 	}
 	
@@ -204,16 +194,14 @@ public class Carriage implements Subsystem {
 	// Public Methods to control motors
 	//=====================================================================================
 	@Override
-	public void stop() 
-	{
+	public void stop() {
 		if(_carriageWheelsState != CARRIAGE_WHEELS_STATE.STOPPED) {
 			ReportStateChg("Carriage Wheels (State) " + _carriageWheelsState.toString() + " ==> [STOPPED]");
 			_carriageWheelsState = CARRIAGE_WHEELS_STATE.STOPPED;
 		}
 	}
 
-	public void infeedCarriageMotorsVBus(double vbusCmd) 
-	{
+	public void infeedCarriageMotorsVBus(double vbusCmd) {
 		if(!isCubeInCarriage()) {
 			// scale cmd
 			_currentCarriageWheelsFeedInVBusCmd = vbusCmd * 0.5;
@@ -221,8 +209,7 @@ public class Carriage implements Subsystem {
 		} 
 		else {
 			stop();
-		}
-		
+		}		
 		ReportStateChg("Carriage Wheels (State) " + _carriageWheelsState.toString() + " ==> [JOYSTICK]");
 		_carriageWheelsState = CARRIAGE_WHEELS_STATE.JOYSTICK;
 	}
@@ -256,7 +243,6 @@ public class Carriage implements Subsystem {
 	public void ejectCubeVBus(double joystickCommand) 
 	{
 		_currentCarriageWheelsFeedInVBusCmd = -1 * joystickCommand;
-		
 		if(_carriageWheelsState != CARRIAGE_WHEELS_STATE.JOYSTICK) {
 			ReportStateChg("Carriage Wheels (State) " + _carriageWheelsState.toString() + " ==> [JOYSTICK]");
 			_carriageWheelsState = CARRIAGE_WHEELS_STATE.JOYSTICK;
@@ -371,6 +357,10 @@ public class Carriage implements Subsystem {
 			default:
 				break;
 		}
+	}
+	
+	public void autonCarriageSpeedChooser(CARRIAGE_WHEELS_OUT_VBUS_INDEX setSpeed) {
+		_carriageWheelsOutVBusIndex = setSpeed;
 	}
 	
 	@Override
