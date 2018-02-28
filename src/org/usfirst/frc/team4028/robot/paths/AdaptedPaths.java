@@ -10,9 +10,10 @@ import org.usfirst.frc.team4028.robot.Constants;
 import org.usfirst.frc.team4028.robot.paths.PathBuilder.Waypoint;
 import org.usfirst.frc.team4028.util.control.Path;
 
-public class AdaptedPaths extends Paths {/*
+public class AdaptedPaths extends Paths {//oh God we're here
+	/*
 	public static Path getAdaptedPath(PATHS pathName) {
-		return getPath(pathName, Constants.PATH_FOLLOWING_STANDARD_ACCEL, Constants.PATH_FOLLOWING_STANDARD_DECEL);
+		return getPath(pathName, Constants.PATH_DEFAULT_ACCEL, Constants.PATH_DEFAULT_DECEL,0.0);
 	}
 	
 	public static Path getAdaptedPath(PATHS pathName, double maxAccel, double maxDecel) {
@@ -41,18 +42,14 @@ public class AdaptedPaths extends Paths {/*
 				return getPath(PATHS.AWAY_FROM_RIGHT_SWITCH);
 			case PYRAMID_FOR_THIRD_CUBE_FROM_RIGHT:
 				return getPath(PATHS.PYRAMID_FOR_THIRD_CUBE_FROM_RIGHT);
-			case S_TURN_FROM_PYRAMID_TO_LEFT:
-				return getPath(PATHS.S_TURN_FROM_PYRAMID_TO_LEFT);
-			case TO_L_SWITCH_AFTER_S_TURN:
-				return getPath(PATHS.TO_L_SWITCH_AFTER_S_TURN);
+			case S_TURN_TO_L_SWITCH:
+				return getPath(PATHS.S_TURN_TO_L_SWITCH);
 			case AWAY_FROM_L_PYRAMID:
 				return getPath(PATHS.AWAY_FROM_L_PYRAMID);
 			case TO_L_SWITCH_WITH_CUBE_3:
 				return getPath(PATHS.TO_L_SWITCH_WITH_CUBE_3);
-			case S_TURN_FROM_PYRAMID_TO_RIGHT:
-				return getPath(PATHS.S_TURN_FROM_PYRAMID_TO_RIGHT);
-			case TO_R_SWITCH_AFTER_S_TURN:
-				return getPath(PATHS.TO_R_SWITCH_AFTER_S_TURN);
+			case S_TURN_TO_R_SWITCH:
+				return getPath(PATHS.S_TURN_TO_R_SWITCH);
 			case AWAY_FROM_R_PYRAMID:
 				return getPath(PATHS.AWAY_FROM_R_PYRAMID);
 			case TO_R_SWITCH_WITH_CUBE_3:
@@ -61,27 +58,14 @@ public class AdaptedPaths extends Paths {/*
 			case L_SCALE:
 				return getPath(PATHS.L_SCALE);
 				
-			case L_SCALE_TO_L_SWITCH:
-				return getPath(PATHS.L_SCALE_TO_L_SWITCH);
-			case L_SWITCH_TO_L_SCALE:
-				return getPath(PATHS.L_SWITCH_TO_L_SCALE);
-			case L_SCALE_TO_R_SWITCH_PT_1:
-				return getPath(PATHS.L_SCALE_TO_R_SWITCH_PT_1);
-			case L_SCALE_TO_R_SWITCH_PT_2:
-				return getPath(PATHS.L_SCALE_TO_R_SWITCH_PT_2);
+			case L_SCALE_TO_R_SWITCH:
+				return getPath(PATHS.L_SCALE_TO_R_SWITCH);
 				
 			case R_SCALE:
 				return getPath(PATHS.R_SCALE);
 				
-			case R_SCALE_TO_R_SWITCH:
-				return getPath(PATHS.R_SCALE_TO_R_SWITCH);
-			case R_SWITCH_TO_R_SCALE:
-				return getPath(PATHS.R_SWITCH_TO_R_SCALE);
-			case R_SCALE_TO_L_SWITCH_PT_1:
-				return getPath(PATHS.R_SCALE_TO_L_SWITCH_PT_1);
-			case R_SCALE_TO_L_SWITCH_PT_2:
-				return getPath(PATHS.R_SCALE_TO_L_SWITCH_PT_2);
-				
+			case R_SCALE_TO_L_SWITCH:
+				return getPath(PATHS.R_SCALE_TO_L_SWITCH);
 			default:
 				return getPath(PATHS.AUTO_RUN);
 		}
@@ -97,7 +81,7 @@ public class AdaptedPaths extends Paths {/*
 	
 	public static ArrayList<Waypoint> adaptLSwitchtoFrontOfPyramid() {
 		ArrayList<Waypoint> sWaypoints= new ArrayList<Waypoint>();
-		sWaypoints=PathBuilder.flipPath(Paths.getLeftSwitchtoFrontofPyramidWaypoints());
+		sWaypoints=Paths.getLeftSwitchtoFrontofPyramidWaypoints();
 		for(int point=0;point<sWaypoints.size();point++) {
 			sWaypoints.get(point).adjustWaypoint(Constants.LEFT_SWITCH_FRONT_X_DELTA, Constants.LEFT_SWITCH_FRONT_Y_DELTA);
 		}
@@ -106,13 +90,13 @@ public class AdaptedPaths extends Paths {/*
 	
 	public static ArrayList<Waypoint> adaptSTurnFromPyramidtoLeft() {
 		ArrayList<Waypoint> sWaypoints= new ArrayList<Waypoint>();
-		sWaypoints= reversePath(getLeftSwitchtoFrontofPyramidWaypoints());
+		sWaypoints= getFrontofPyramidtoLeftSwitchWaypoints();
 		for(int point=0;point<sWaypoints.size();point++) {
 			sWaypoints.get(point).adjustWaypoint(Constants.LEFT_SWITCH_FRONT_X_DELTA, Constants.LEFT_SWITCH_FRONT_Y_DELTA);
 		}
 		return sWaypoints;
 	}
-	
+/*	
 	public static ArrayList<Waypoint> adaptAwayFromLeftSwitch() {
 		ArrayList<Waypoint> sWaypoints= new ArrayList<Waypoint>();
 		sWaypoints=Paths.getAwayFromLeftSwitchForThirdCubeWaypoints();
@@ -151,7 +135,7 @@ public class AdaptedPaths extends Paths {/*
 	
 	public static ArrayList<Waypoint> adaptRightSwitch() {
 		ArrayList<Waypoint> sWaypoints= new ArrayList<Waypoint>();
-		sWaypoints=reversePath(Paths.getLeftSwitchWaypoints());
+		sWaypoints=flipPath(getLeftSwitchWaypoints());
 		for(int point=2;point<sWaypoints.size();point++) {
 			sWaypoints.get(point).adjustWaypoint(Constants.RIGHT_SWITCH_FRONT_X_DELTA, Constants.RIGHT_SWITCH_FRONT_Y_DELTA);
 		}
@@ -294,7 +278,7 @@ public class AdaptedPaths extends Paths {/*
 			sWaypoints.get(point).adjustWaypoint(Constants.RIGHT_SWITCH_BACK_X_DELTA, Constants.RIGHT_SWITCH_BACK_DELTA_Y);
 		}
 		return sWaypoints;
-	}*/
+	} */
 	
 	public static void locateFlavorTownUSA() {
 	}

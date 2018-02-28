@@ -466,8 +466,8 @@ public class Paths {
 	protected static ArrayList<Waypoint>  getLeftScaleExperimentalWaypoints() {
 		ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
 		sWaypoints.add(new Waypoint(20,46,0,0));
-        sWaypoints.add(new Waypoint(226,46,30,120));
-        sWaypoints.add(new Waypoint(278,74,0,100));
+        sWaypoints.add(new Waypoint(229,46,30,120));
+        sWaypoints.add(new Waypoint(281,74,0,100));
     	return sWaypoints;
 	}
 	

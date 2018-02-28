@@ -19,7 +19,7 @@ public class ScaleThenSwitchSameSide extends AutonBase {
 			toScale = Paths.getPath(PATHS.L_SCALE, 100.0, 120.0, 0.003);
 			targetTurnAngle = 165;
 			elevatorWaitTime = 2.0;
-			driveToSwitchDistance = 38.0;
+			driveToSwitchDistance = 42.0;
 		} else {
 			toScale = Paths.getPath(PATHS.R_SCALE, 100.0, 100.0, 0.005);
 			targetTurnAngle = -168;

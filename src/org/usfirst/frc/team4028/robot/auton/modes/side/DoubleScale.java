@@ -20,8 +20,8 @@ public class DoubleScale extends AutonBase{
 	public DoubleScale(boolean isLeftScale) {
 		if (isLeftScale) {
 			toScale = Paths.getPath(LeftSide.L_SCALE);
-			toSwitchDistance = 38.0;
-			toScaleAgainDistance = -42.0;
+			toSwitchDistance = 40.0;
+			toScaleAgainDistance = -44.0;
 			targetTurnAngle = 165;
 			endTargetTurnAngle = 25;
 			elevatorWaitTime1 = 2.0;
@@ -85,6 +85,7 @@ public class DoubleScale extends AutonBase{
 				new OutfeedCubeAction()
 		})));
 		runAction(new PrintTimeFromStart(_startTime));
+		runAction(new DriveSetDistanceAction(-10.0));
 		// Move elevator to floor
 		runAction(new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT));
 		runAction(new PrintTimeFromStart(_startTime));
