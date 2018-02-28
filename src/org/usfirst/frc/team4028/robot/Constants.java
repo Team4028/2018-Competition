@@ -42,6 +42,9 @@ public class Constants {
 	// Analog In Ports on RoboRIO
 	public static final int ULTRASONIC_PORT = 0;
 	
+	// PWM Ports on RoboRIO
+	public static final int CLIMBER_SERVO_PWM_ADDRESS = 0;
+	
 	// PCM Ports
 	public static final int SHIFTER_RETRACT_PCM_PORT = 7;
 	public static final int SHIFTER_EXTEND_PCM_PORT = 3;

@@ -411,9 +411,9 @@ public class DriverOperatorStation {
 		return _operatorGamepad.getXButtonPressed();
 	}
 	
-//		public boolean getIsOperator_LeftBumper_BtnJustPressed() {
-//			return _operatorGamepad.getBumperPressed(Hand.kLeft);
-//		}
+	public boolean getIsOperator_ToggleClimberServo_BtnJustPressed() {
+		return _operatorGamepad.getBumperPressed(Hand.kLeft);
+	}
 
 //		public boolean getIsOperator_RightBumper_BtnJustPressed() {
 //			return _operatorGamepad.getBumperPressed(Hand.kRight);
