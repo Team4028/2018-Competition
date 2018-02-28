@@ -418,6 +418,11 @@ public class Robot extends IterativeRobot {
 			_climber.runMotor(_dos.getOperator_Climber_JoystickCmd());
 		}
 		
+		// =============  CLIMBER SERVO ============= 
+		if(_dos.getIsOperator_ToggleClimberServo_BtnJustPressed()) {
+			_climber.toggleClimberServo();
+		}
+		
 		// ============= Camera Switch ============= 
 		if (_dos.getIsOperator_SwitchCamera_BtnJustPressed() == true) {
 			_switchableCameraServer.SwitchCamera();
