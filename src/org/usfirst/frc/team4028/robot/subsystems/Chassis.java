@@ -188,7 +188,7 @@ public class Chassis implements Subsystem {
 	}
 	
 	/* ===== Chassis State: PERCENT VBUS ===== */
-	/** Arcade drive with throttle and turn inputs. Includes anti-tipping and quick-turn. */
+	/** Arcade drive with throttle and turn inputs. Includes anti-tipping. */
 	public synchronized void arcadeDrive(double throttle, double turn) {
 		_chassisState = ChassisState.PERCENT_VBUS;
 		
@@ -196,9 +196,6 @@ public class Chassis implements Subsystem {
 			_leftMaster.set(ControlMode.PercentOutput, 0.0);
 			_rightMaster.set(ControlMode.PercentOutput, 0.0);
 			DriverStation.reportError("Tipping Threshold", false);
-		} else if (Math.abs(getLeftVelocityInchesPerSec() - getRightVelocityInchesPerSec()) < 5.0) {
-			_leftMaster.set(ControlMode.PercentOutput, -throttle + 0.7 * turn);
-			_rightMaster.set(ControlMode.PercentOutput, -throttle - 0.7 * turn);
 		} else {
 			_leftMaster.set(ControlMode.PercentOutput, -throttle + 0.5 * turn);
 			_rightMaster.set(ControlMode.PercentOutput, -throttle - 0.5 * turn);
@@ -279,7 +276,6 @@ public class Chassis implements Subsystem {
     /** Update PathFollower with latest pose estimate to get new target velocity */
     private void updatePathFollower(double timestamp) {
 		RigidTransform _robotPose = RobotState.getInstance().getLatestFieldToVehicle().getValue();
-		SmartDashboard.putString("Robot Pose: ", _robotPose.toString());
 		Twist command = _pathFollower.update(timestamp, _robotPose, RobotState.getInstance().getDistanceDriven(), RobotState.getInstance().getPredictedVelocity().dx);
 		if (!_pathFollower.isFinished()) {
 			Kinematics.DriveVelocity setpoint = Kinematics.inverseKinematics(command);
@@ -428,16 +424,14 @@ public class Chassis implements Subsystem {
 	
 	@Override
 	public void outputToShuffleboard() {
-		SmartDashboard.putNumber("Left Position in Rotations", getLeftPosInRot());
-		SmartDashboard.putNumber("Right Position in Rotations", getRightPosInRot());
+		SmartDashboard.putNumber("Chassis: Left Velocity", GeneralUtilities.RoundDouble(getLeftVelocityInchesPerSec(), 2));
+		SmartDashboard.putNumber("Chassis: Right Velocity", GeneralUtilities.RoundDouble(getLeftVelocityInchesPerSec(), 2));
 		
-		SmartDashboard.putNumber("Left Velocity", getLeftVelocityInchesPerSec());
-		SmartDashboard.putNumber("Right Velocity", getRightVelocityInchesPerSec());
+		SmartDashboard.putNumber("Chassis: Left Wheel Target Velocity", GeneralUtilities.RoundDouble(_leftTargetVelocity, 2));
+		SmartDashboard.putNumber("Chasiss: Right Wheel Target Velocity", GeneralUtilities.RoundDouble(_leftTargetVelocity, 2));
 		
-		SmartDashboard.putNumber("Left Wheel Target Velocity", _leftTargetVelocity);
-		SmartDashboard.putNumber("Right Wheel Target Velocity", _rightTargetVelocity);
-		
-		SmartDashboard.putNumber("Angle", getHeading());
+		SmartDashboard.putNumber("Chassis: Angle", GeneralUtilities.RoundDouble(getHeading(), 2));
+		SmartDashboard.putString("Chassis: Robot Pose", RobotState.getInstance().getLatestFieldToVehicle().getValue().toString());
 	}
 	
 	@Override

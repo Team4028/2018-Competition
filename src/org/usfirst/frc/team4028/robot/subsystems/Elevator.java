@@ -479,8 +479,7 @@ public class Elevator implements Subsystem {
 		if(_elevatorState == ELEVATOR_STATE.GOTO_TARGET_POSITION 
 				|| _elevatorState == ELEVATOR_STATE.HOLD_TARGET_POSITION 
 				|| _elevatorState == ELEVATOR_STATE.AT_HOME
-				|| _elevatorState == ELEVATOR_STATE.JOG_AXIS)
-		{
+				|| _elevatorState == ELEVATOR_STATE.JOG_AXIS) {
 			if(_elevatorState != ELEVATOR_STATE.JOG_AXIS) {
 				// change the state
 				ReportStateChg("ElevatorAxis (State) [" + _elevatorState.toString() + "] ==> [JOG_AXIS]");
@@ -491,8 +490,8 @@ public class Elevator implements Subsystem {
 				_targetElevatorVelocity = 0;
 			} else {
 				if(speedCmd > 0) {
-				// jog at a fixed rate in a + direction
-				_targetElevatorVelocity = JOG_UP_VELOCITY;
+					// jog at a fixed rate in a + direction
+					_targetElevatorVelocity = JOG_UP_VELOCITY;
 				}
 				else if(speedCmd < 0) {
 					// jog at a fixed rate in a - direction
@@ -530,6 +529,7 @@ public class Elevator implements Subsystem {
 		}
 	}
 
+
 	public void rezeroElevator() {
 		ReportStateChg("ElevatorAxis (State) [" + _elevatorState.toString() + "] ==> [NEED_TO_HOME]");
 		_elevatorState = ELEVATOR_STATE.NEED_TO_HOME;
@@ -550,6 +550,7 @@ public class Elevator implements Subsystem {
 	// Private helper methods for the elevator
 	// =================================================================================================================
 	
+
 	private void SetPidSlotToUse(String ref, int pidSlot)
 	{
 		if(pidSlot != _pidSlotInUse)
@@ -558,13 +559,11 @@ public class Elevator implements Subsystem {
 			_pidSlotInUse = pidSlot;
 			_elevatorMasterMotor.selectProfileSlot(_pidSlotInUse, 0);
 			
-			if(pidSlot == MOVING_UP_PID_SLOT_INDEX)
-			{
+			if(pidSlot == MOVING_UP_PID_SLOT_INDEX) {
 				_elevatorMasterMotor.configMotionCruiseVelocity(UP_CRUISE_VELOCITY, 0);
 				_elevatorMasterMotor.configMotionAcceleration(UP_ACCELERATION, 0);
 			}
-			else if(pidSlot == MOVING_DOWN_PID_SLOT_INDEX)
-			{
+			else if(pidSlot == MOVING_DOWN_PID_SLOT_INDEX) {
 				_elevatorMasterMotor.configMotionCruiseVelocity(DOWN_CRUISE_VELOCITY, 0);
 				_elevatorMasterMotor.configMotionAcceleration(DOWN_ACCELERATION, 0);
 			}

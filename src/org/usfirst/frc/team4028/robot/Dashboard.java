@@ -5,7 +5,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import org.usfirst.frc.team4028.robot.auton.AutonBase;
-import org.usfirst.frc.team4028.robot.auton.modes.*;
+import org.usfirst.frc.team4028.robot.auton.modes.center.*;
+import org.usfirst.frc.team4028.robot.auton.modes.side.*;
 
 /**
  *  This class contains code to interface with the Dashboard on the Driver's Station
@@ -22,7 +23,7 @@ public class Dashboard {
 		return _instance;
 	}
 	
-	public enum AUTON_MODE {
+	private enum AUTON_MODE {
 		UNDEFINED,
 		DO_NOTHING,
 		AUTO_RUN,
@@ -30,13 +31,20 @@ public class Dashboard {
 		DOUBLE_SWITCH,
 		TRIPLE_SWITCH,
 		SCALE,
+		SCALE_OUTSIDE,
 		DOUBLE_SCALE,
 		TRIPLE_SCALE,
 		SCALE_THEN_SWITCH,
 		DOUBLE_SCALE_THEN_SWITCH
 	}
 	
+	private enum STARTING_SIDE {
+		LEFT,
+		RIGHT
+	}
+	
 	private SendableChooser<AUTON_MODE> _autonModeChooser = new SendableChooser<>();
+	private SendableChooser<STARTING_SIDE> _autonStartingSideChooser = new SendableChooser<>();
 	
 	private boolean _isSwitchLeft, _isScaleLeft;
 	
@@ -47,6 +55,7 @@ public class Dashboard {
 		_autonModeChooser.addObject("Double Switch", AUTON_MODE.DOUBLE_SWITCH);
 		_autonModeChooser.addObject("Triple Switch", AUTON_MODE.TRIPLE_SWITCH);
 		_autonModeChooser.addObject("Scale", AUTON_MODE.SCALE);
+		_autonModeChooser.addObject("Scale Outside", AUTON_MODE.SCALE_OUTSIDE);
 		_autonModeChooser.addObject("Double Scale", AUTON_MODE.DOUBLE_SCALE);
 		_autonModeChooser.addObject("Triple Scale", AUTON_MODE.TRIPLE_SCALE);
 		_autonModeChooser.addObject("Scale then Switch", AUTON_MODE.SCALE_THEN_SWITCH);
@@ -88,20 +97,28 @@ public class Dashboard {
 				return new TripleSwitch(_isSwitchLeft);
 			case SCALE:
 				return new Scale(_isScaleLeft);
-			case DOUBLE_SCALE:
+			case SCALE_OUTSIDE:
 				if (_isScaleLeft) {
-					return new LeftDoubleScale();
+					return new ScaleOutside();
 				} else {
-					return new RightDoubleScale();
+					return new AutoRun();
 				}
+			case DOUBLE_SCALE:
+				return new DoubleScale(_isScaleLeft);
 			case SCALE_THEN_SWITCH:
 				if(_isScaleLeft == _isSwitchLeft) {
 					return new ScaleThenSwitchSameSide(_isScaleLeft);
 				} else {
 					return new ScaleThenSwitchOppositeSide(_isScaleLeft);
 				}
+			case DOUBLE_SCALE_THEN_SWITCH:
+				return new DoubleScaleAndSwitch(_isScaleLeft);
 			case TRIPLE_SCALE:
-				return new TripleScale();
+				if (_isScaleLeft) {
+					return new TripleScale();
+				} else {
+					return new DoubleScale(_isScaleLeft);
+				}
 			default:
 				return new DoNothing();
 		}

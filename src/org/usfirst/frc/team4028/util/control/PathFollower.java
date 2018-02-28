@@ -6,6 +6,9 @@ import org.usfirst.frc.team4028.util.motion.Twist;
 import org.usfirst.frc.team4028.util.motionProfile.MotionProfileConstraints;
 import org.usfirst.frc.team4028.util.motionProfile.MotionProfileGoal;
 import org.usfirst.frc.team4028.util.motionProfile.MotionProfileGoal.CompletionBehavior;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import org.usfirst.frc.team4028.util.motionProfile.MotionState;
 import org.usfirst.frc.team4028.util.motionProfile.ProfileFollower;
 
@@ -59,6 +62,8 @@ public class PathFollower {
                 doneSteering = true;
             }
             remainingPathLength = steering_command.remainingPathLength;
+            
+            SmartDashboard.putNumber("Remaining Path Length", remainingPathLength);
         }
 
         final double velocity_command = mVelocityController.update(new MotionState(t, displacement, velocity, 0.0), t);

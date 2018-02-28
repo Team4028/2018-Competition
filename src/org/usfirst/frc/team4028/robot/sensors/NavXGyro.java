@@ -27,7 +27,7 @@ public class NavXGyro {
 	}
 	
 	public double getYaw() { 
-		return _navXSensor.getYaw(); 
+		return _navXSensor.getYaw();
 	}
 	
 	public void zeroYaw() { 

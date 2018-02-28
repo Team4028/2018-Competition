@@ -12,12 +12,12 @@ public class MoveElevatorToPosAction implements Action {
 	}
 	
 	@Override
-	public void start() {}
-
-	@Override
-	public void update() {
+	public void start() {
 		_cubeHandler.elevator_MoveToPresetPosition(_targetPos);
 	}
+
+	@Override
+	public void update() {}
 
 	@Override
 	public void done() {}
