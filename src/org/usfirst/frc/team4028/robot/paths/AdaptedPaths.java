@@ -10,8 +10,10 @@ import org.usfirst.frc.team4028.robot.Constants;
 import org.usfirst.frc.team4028.robot.paths.PathBuilder.Waypoint;
 import org.usfirst.frc.team4028.util.control.Path;
 
+@SuppressWarnings("unused")// nailed it
+
 public class AdaptedPaths extends Paths {//oh God we're here
-	/*
+	
 	public static Path getAdaptedPath(PATHS pathName) {
 		return getPath(pathName, Constants.PATH_DEFAULT_ACCEL, Constants.PATH_DEFAULT_DECEL,0.0);
 	}
@@ -131,7 +133,7 @@ public class AdaptedPaths extends Paths {//oh God we're here
 			sWaypoints.get(point).adjustWaypoint(Constants.LEFT_SWITCH_FRONT_X_DELTA, Constants.LEFT_SWITCH_FRONT_Y_DELTA);
 		}
 		return sWaypoints;
-	}
+	}*/
 	
 	public static ArrayList<Waypoint> adaptRightSwitch() {
 		ArrayList<Waypoint> sWaypoints= new ArrayList<Waypoint>();
@@ -144,32 +146,23 @@ public class AdaptedPaths extends Paths {//oh God we're here
 	
 	public static ArrayList<Waypoint> adaptRSwitchtoFrontofPyramid() {
 		ArrayList<Waypoint> sWaypoints= new ArrayList<Waypoint>();
-		sWaypoints=Paths.getLeftSwitchtoFrontofPyramidWaypoints();
+		sWaypoints=getRightSwitchtoFrontofPyramidWaypoints();
 		for(int point=0;point<sWaypoints.size();point++) {
 			sWaypoints.get(point).adjustWaypoint(Constants.RIGHT_SWITCH_FRONT_X_DELTA, Constants.RIGHT_SWITCH_FRONT_Y_DELTA);
 		}
 		return sWaypoints;
 	}
 	
-	public static ArrayList<Waypoint> adaptSTurnToPyramidFromRight() {
+	public static ArrayList<Waypoint> adaptSTurnToRightFromPyramid() {
 		ArrayList<Waypoint> sWaypoints= new ArrayList<Waypoint>();
-		sWaypoints=PathBuilder.flipPath(Paths.getAutoRunWaypoints());//TODO fix
+		sWaypoints=getFrontofPyramidtoRightSwitchWaypoints();
 		for(int point=0;point<sWaypoints.size();point++) {
 			sWaypoints.get(point).adjustWaypoint(Constants.RIGHT_SWITCH_FRONT_X_DELTA, Constants.RIGHT_SWITCH_FRONT_Y_DELTA);
 		}
 		return sWaypoints;
 	}
 	
-	public static ArrayList<Waypoint> adaptToRightSwitchAfterSTurn() {
-		ArrayList<Waypoint> sWaypoints= new ArrayList<Waypoint>();
-		sWaypoints=PathBuilder.flipPath(Paths.getAutoRunWaypoints());//TODO fix
-		for(int point=0;point<sWaypoints.size();point++) {
-			sWaypoints.get(point).adjustWaypoint(Constants.RIGHT_SWITCH_FRONT_X_DELTA, Constants.RIGHT_SWITCH_FRONT_Y_DELTA);
-		}
-		return sWaypoints;
-	}
-	
-	public static ArrayList<Waypoint> adaptAwayFromRSwitch() {
+/*	public static ArrayList<Waypoint> adaptAwayFromRSwitch() {
 		ArrayList<Waypoint> sWaypoints= new ArrayList<Waypoint>();
 		sWaypoints=flipPath(Paths.getAwayFromLeftSwitchForThirdCubeWaypoints());
 		for(int point=0;point<sWaypoints.size();point++) {
@@ -203,83 +196,61 @@ public class AdaptedPaths extends Paths {//oh God we're here
 			sWaypoints.get(point).adjustWaypoint(Constants.RIGHT_SWITCH_FRONT_X_DELTA, Constants.RIGHT_SWITCH_FRONT_Y_DELTA);
 		}
 		return sWaypoints;
-	}
+	}*/
 	
 	public static ArrayList<Waypoint> adaptLeftScale() {
 		ArrayList<Waypoint> sWaypoints= new ArrayList<Waypoint>();
-		sWaypoints=Paths.getLeftScaleWaypoints();
-		for(int point=2;point<sWaypoints.size();point++) {
+		sWaypoints=getLeftScaleExperimentalWaypoints();
+		for(int point=1;point<sWaypoints.size();point++) {
 			sWaypoints.get(point).adjustWaypoint(Constants.LEFT_SCALE_X_DELTA, Constants.LEFT_SCALE_Y_DELTA);
 		}
 		return sWaypoints;
 	}
 	
-	public static ArrayList<Waypoint> adaptLScaletoLSwitchPt1() {
+	public static ArrayList<Waypoint> adaptLScaletoRSwitch() {
 		ArrayList<Waypoint> sWaypoints= new ArrayList<Waypoint>();
-		sWaypoints=Paths.getLeftScaleToLeftSwitchExperimentalWaypoints();
-		for(int point=0;point<sWaypoints.size();point++) {
-			sWaypoints.get(point).adjustWaypoint(Constants.LEFT_SCALE_X_DELTA, Constants.LEFT_SCALE_Y_DELTA);
-		}
-		return sWaypoints;
-	}
-	
-	public static ArrayList<Waypoint> adaptLScaletoRSwitchPt1() {
-		ArrayList<Waypoint> sWaypoints= new ArrayList<Waypoint>();
-		sWaypoints=Paths.getLeftScaleToRightSwitch1Waypoints();
-		for(int point=0;point<sWaypoints.size();point++) {
-			sWaypoints.get(point).adjustWaypoint(Constants.LEFT_SCALE_X_DELTA, Constants.LEFT_SCALE_Y_DELTA);
-		}
-		return sWaypoints;
-	}
-	
-	public static ArrayList<Waypoint> adaptLScaletoRSwitchPt2() {
-		ArrayList<Waypoint> sWaypoints= new ArrayList<Waypoint>();
-		sWaypoints=Paths.getLeftScaleToRightSwitch2Waypoints();
+		sWaypoints=Paths.getLeftScaleToRightSwitchWaypoints();
 		sWaypoints.get(0).adjustWaypoint(Constants.LEFT_SCALE_X_DELTA, Constants.LEFT_SCALE_Y_DELTA);
-		for(int point=1;point<sWaypoints.size()-1;point++)
-		{
-			sWaypoints.get(point).adjustWaypoint(Constants.RIGHT_SWITCH_BACK_X_DELTA,Constants.RIGHT_SWITCH_BACK_DELTA_Y);
+		for(int point=1;point<sWaypoints.size();point++) {
+			sWaypoints.get(point).adjustWaypoint(Constants.RIGHT_SWITCH_BACK_X_DELTA, Constants.RIGHT_SWITCH_BACK_DELTA_Y);
 		}
 		return sWaypoints;
 	}
 	
 	public static ArrayList<Waypoint> adaptRightScale() {
 		ArrayList<Waypoint> sWaypoints= new ArrayList<Waypoint>();
-		sWaypoints=flipPath(Paths.getLeftScaleWaypoints());
+		sWaypoints=getRightScaleWaypoints();
 		for(int point=2;point<sWaypoints.size();point++) {
 			sWaypoints.get(point).adjustWaypoint(Constants.RIGHT_SCALE_X_DELTA, Constants.RIGHT_SCALE_Y_DELTA);
 		}
 		return sWaypoints;
 	}
 	
-	public static ArrayList<Waypoint> adaptRScaletoRSwitchPt1() {
+	public static ArrayList<Waypoint> adaptLeftSwitchBeforeRightScale() {
 		ArrayList<Waypoint> sWaypoints= new ArrayList<Waypoint>();
-		sWaypoints=flipPath(Paths.getLeftScaleToLeftSwitchExperimentalWaypoints());
+		sWaypoints=getLeftSwitchBeforeRightScaleWaypoints();
 		for(int point=0;point<sWaypoints.size();point++) {
-			sWaypoints.get(point).adjustWaypoint(Constants.RIGHT_SCALE_X_DELTA, Constants.RIGHT_SCALE_Y_DELTA);
+			sWaypoints.get(point).adjustWaypoint(Constants.LEFT_SWITCH_FRONT_X_DELTA, Constants.LEFT_SWITCH_FRONT_Y_DELTA);
 		}
 		return sWaypoints;
 	}
 	
-	public static ArrayList<Waypoint> adaptRScaletoLSwitchPt1() {
-		ArrayList<Waypoint> sWaypoints= new ArrayList<Waypoint>();
-		sWaypoints=flipPath(Paths.getLeftScaleToRightSwitch1Waypoints());
-		for(int point=0;point<sWaypoints.size();point++) {
+	public static ArrayList<Waypoint> adaptRightScaleAfterLeftSwitch() 
+	{
+		ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
+		sWaypoints = getRightScaleFromLeftSwitchWaypoints();
+		sWaypoints.get(0).adjustWaypoint(Constants.LEFT_SWITCH_FRONT_X_DELTA, Constants.LEFT_SWITCH_FRONT_Y_DELTA);
+		for(int point =1; point<sWaypoints.size(); point++)
+		{
 			sWaypoints.get(point).adjustWaypoint(Constants.RIGHT_SCALE_X_DELTA, Constants.RIGHT_SCALE_Y_DELTA);
 		}
 		return sWaypoints;
 	}
-	
-	public static ArrayList<Waypoint> adaptRScaletoLSwitchPt2() {
-		ArrayList<Waypoint> sWaypoints= new ArrayList<Waypoint>();
-		sWaypoints=flipPath(Paths.getLeftScaleToRightSwitch2Waypoints());
-		sWaypoints.get(0).adjustWaypoint(Constants.RIGHT_SCALE_X_DELTA, Constants.RIGHT_SCALE_Y_DELTA);
-		for(int point=1;point<sWaypoints.size();point++) {
-			sWaypoints.get(point).adjustWaypoint(Constants.RIGHT_SWITCH_BACK_X_DELTA, Constants.RIGHT_SWITCH_BACK_DELTA_Y);
-		}
-		return sWaypoints;
-	} */
 	
 	public static void locateFlavorTownUSA() {
+		double flavorTownUSAX = Math.random()*360-180;
+		double flavorTownUSAY = Math.random()*360-180;
+		String ourLordAndSavior = "Guy Fieri";
+		String whatAreWeDoing = "Rolling Out to Find America's Greatest Diners, Drive-ins and Dives";
 	}
 }
