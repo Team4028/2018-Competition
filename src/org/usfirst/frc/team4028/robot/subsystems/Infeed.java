@@ -124,7 +124,7 @@ public class Infeed  implements Subsystem {
 	
 	// Infeed Position Constants [THESE ARE ANGLE MEASURES IN DEGREES]
 	private static final double HOME_POSITION_ANGLE = 0; //Is Home
-    private static final double INFEED_POSITION_ANGLE = 184; //160;	
+    private static final double INFEED_POSITION_ANGLE = 200; //160;	
 	private static final double WIDE_INFEED_POSITION_ANGLE = 140;
 //	private static final double SQUEEZE_INFEED_POSITION_ANGLE = 190;
 
@@ -152,7 +152,7 @@ public class Infeed  implements Subsystem {
 	
 	// handles issue that arms on practice robot do not hit home limit switches
 	//	at the same place
-	private static final int LEFT_INFEED_ARM_ZERO_OFFSET = 96; //75;  // 150 > 200 > 100 > 50 > 75
+	private static final int LEFT_INFEED_ARM_ZERO_OFFSET = 0; //96;  //75;  // 150 > 200 > 100 > 50 > 75
 	private static final int RIGHT_INFEED_ARM_ZERO_OFFSET = 0;
 	
 	//=====================================================================================
