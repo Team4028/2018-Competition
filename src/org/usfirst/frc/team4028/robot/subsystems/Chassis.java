@@ -54,8 +54,8 @@ public class Chassis implements Subsystem {
 	private static final double CODES_PER_REV = 30725.425;
 	private static final double ENCODER_ROTATIONS_PER_DEGREE = 46.15/3600;
 	
-	private static final double[] MOTION_MAGIC_TURN_PIDF_GAINS = {0.25, 0.0, 35.0, 0.095};
-	private static final double[] MOTION_MAGIC_STRAIGHT_PIDF_GAINS = {0.2, 0.0, 20.0, 0.095};
+	private static final double[] MOTION_MAGIC_TURN_PIDF_GAINS = {0.3, 0.0, 40.0, 0.095};
+	private static final double[] MOTION_MAGIC_STRAIGHT_PIDF_GAINS = {0.15, 0.0, 20.0, 0.095};
 	private static final double[] LOW_GEAR_VELOCITY_PIDF_GAINS = {0.15, 0.0, 1.5, 0.085}; 
 	private static final double[] HIGH_GEAR_VELOCITY_PIDF_GAINS = {0.065, 0.0, 1.0, 0.044}; 
     

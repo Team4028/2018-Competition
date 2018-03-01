@@ -5,7 +5,7 @@ import java.util.Arrays;
 import org.usfirst.frc.team4028.robot.auton.AutonBase;
 import org.usfirst.frc.team4028.robot.auton.actions.*;
 import org.usfirst.frc.team4028.robot.paths.Paths;
-import org.usfirst.frc.team4028.robot.paths.Paths.PATHS;
+import org.usfirst.frc.team4028.robot.paths.Paths.LeftSide;
 import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_PRESET_POSITION;
 import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_ARM_TARGET_POSITION;
 import org.usfirst.frc.team4028.util.control.Path;
@@ -17,7 +17,7 @@ public class TripleScale extends AutonBase{
 	double elevatorWaitTime;
 	
 	public TripleScale() {
-		toScale = Paths.getPath(PATHS.L_SCALE, 0.0055);
+		toScale = Paths.getPath(LeftSide.L_SCALE);
 		targetTurnAngle = 160;
 		targetTurnAngle2 = 145;
 		endTargetTurnAngle = 30;

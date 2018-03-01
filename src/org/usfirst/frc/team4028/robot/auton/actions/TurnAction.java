@@ -35,7 +35,7 @@ public class TurnAction implements Action{
 		}
 		else
 		{
-			return Math.abs(_targetAngle - _chassis.getHeading()) < 2.0;		// Returns true when chassis is within angle deadband
+			return Math.abs(_targetAngle - _chassis.getHeading()) < 2.5;		// Returns true when chassis is within angle deadband
 		}
 	}
 }

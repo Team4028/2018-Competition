@@ -6,16 +6,29 @@ import org.usfirst.frc.team4028.robot.auton.AutonBase;
 import org.usfirst.frc.team4028.robot.auton.actions.*;
 import org.usfirst.frc.team4028.robot.paths.Paths;
 import org.usfirst.frc.team4028.robot.paths.Paths.LeftSide;
+import org.usfirst.frc.team4028.robot.paths.Paths.RightSide;
 import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_PRESET_POSITION;
 import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_ARM_TARGET_POSITION;
 import org.usfirst.frc.team4028.util.control.Path;
 
 public class ScaleOutside extends AutonBase{
 	Path toScale;
+	double targetTurnAngle;
 	double elevatorWaitTime;
 	
-	public ScaleOutside() {
-		toScale = Paths.getPath(LeftSide.L_SCALE_OUTSIDE);
+	boolean isTurnRight;
+	
+	public ScaleOutside(boolean isStartingLeft) {
+		if (isStartingLeft) {
+			toScale = Paths.getPath(LeftSide.L_SCALE_OUTSIDE);
+			targetTurnAngle = 80;
+			isTurnRight = true;
+		} else {
+			toScale = Paths.getPath(RightSide.R_SCALE_OUTSIDE);
+			targetTurnAngle = -80;
+			isTurnRight = false;
+		}
+		elevatorWaitTime = 3.0;
 	}
 	
 	@Override
@@ -31,7 +44,10 @@ public class ScaleOutside extends AutonBase{
 		})));
 		// Turn to scale while raising elevator
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-				new TurnAction(80.0, true),
+				new SeriesAction(Arrays.asList(new Action[] {
+						new WaitAction(0.7),
+						new TurnAction(targetTurnAngle, isTurnRight)
+				})),
 				new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SCALE_HEIGHT)
 		})));
 		runAction(new DriveSetDistanceAction(15.0));

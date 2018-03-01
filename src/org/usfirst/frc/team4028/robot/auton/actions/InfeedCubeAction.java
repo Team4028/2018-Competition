@@ -16,17 +16,15 @@ public class InfeedCubeAction implements Action {
 
 	@Override
 	public void update() {
-		if ((Timer.getFPGATimestamp() - _startTime) < 1.5) {
+		if ((Timer.getFPGATimestamp() - _startTime) < 1) {
 			_cubeHandler.acquireCube_InfeedAndCarriage();
 			_cubeHandler.infeedArms_MoveToPresetPosition(INFEED_ARM_TARGET_POSITION.SQUEEZE);
 		} 
-		else if ((Timer.getFPGATimestamp() - _startTime) < 2) {
+		else if ((Timer.getFPGATimestamp() - _startTime) < 1.5) {
 			_cubeHandler.stopInfeedAndCarriage();
 			_cubeHandler.infeedArms_MoveToPresetPosition(INFEED_ARM_TARGET_POSITION.SQUEEZE);
-		}
-		else {
-			_cubeHandler.acquireCube_InfeedAndCarriage();
-			_cubeHandler.infeedArms_MoveToPresetPosition(INFEED_ARM_TARGET_POSITION.SQUEEZE);
+		} else {
+			_startTime = Timer.getFPGATimestamp();
 		}
 	}
 

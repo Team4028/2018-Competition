@@ -186,7 +186,7 @@ public class Robot extends IterativeRobot {
 		// setup chassis default state
 		_chassis.zeroSensors();
 		_chassis.setHighGear(false);
-		_chassis.setBrakeMode(false);  
+		_chassis.setBrakeMode(true);  
 		_chassis.stop();
 		
 		//_cubeHandler.doNothing();
