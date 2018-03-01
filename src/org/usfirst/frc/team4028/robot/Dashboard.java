@@ -1,6 +1,7 @@
 package org.usfirst.frc.team4028.robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -73,6 +74,11 @@ public class Dashboard {
 		} else {
 			return false;
 		}
+	}
+	
+	public boolean isBlueAlliance()
+	{
+		return DriverStation.getInstance().getAlliance() == Alliance.Blue;
 	}
 	
 	/** This prints once during robotInit */

@@ -251,20 +251,20 @@ public class Paths {
 				return path;
 				
 			case L_SWITCH:
-				path = buildPathFromWaypoints(getLeftSwitchWaypoints(), Constants.PATH_DEFAULT_ACCEL, Constants.PATH_DEFAULT_DECEL, 0.0065);
+				path = buildPathFromWaypoints(AdaptedPaths.adaptLeftSwitch(), Constants.PATH_DEFAULT_ACCEL, Constants.PATH_DEFAULT_DECEL, 0.0065);
 				path.setIsReversed(false);
 				return path;
 			case R_SWITCH:
-				path = buildPathFromWaypoints(flipPath(getLeftSwitchWaypoints()), Constants.PATH_DEFAULT_ACCEL, Constants.PATH_DEFAULT_DECEL, 0.0065);
+				path = buildPathFromWaypoints(AdaptedPaths.adaptRightSwitch(), Constants.PATH_DEFAULT_ACCEL, Constants.PATH_DEFAULT_DECEL, 0.0065);
 				path.setIsReversed(false);
 				return path;
 				
 			case L_SWITCH_TO_FRONT_OF_PYRAMID:
-				path = buildPathFromWaypoints(getLeftSwitchtoFrontofPyramidWaypoints(), Constants.PATH_DEFAULT_ACCEL, Constants.PATH_DEFAULT_DECEL, 0.006);
+				path = buildPathFromWaypoints(AdaptedPaths.adaptLSwitchtoFrontOfPyramid(), Constants.PATH_DEFAULT_ACCEL, Constants.PATH_DEFAULT_DECEL, 0.006);
 				path.setIsReversed(true);
 				return path;
 			case R_SWITCH_TO_FRONT_OF_PYRAMID:
-				path = buildPathFromWaypoints(getRightSwitchtoFrontofPyramidWaypoints(), Constants.PATH_DEFAULT_ACCEL, Constants.PATH_DEFAULT_DECEL, 0.008);
+				path = buildPathFromWaypoints(AdaptedPaths.adaptRSwitchtoFrontofPyramid(), Constants.PATH_DEFAULT_ACCEL, Constants.PATH_DEFAULT_DECEL, 0.008);
 				path.setIsReversed(true);
 				return path;
 				
@@ -278,11 +278,11 @@ public class Paths {
 				return path;
 				
 			case S_TURN_TO_L_SWITCH:
-				path = buildPathFromWaypoints(getFrontofPyramidtoLeftSwitchWaypoints(), Constants.PATH_DEFAULT_ACCEL, Constants.PATH_DEFAULT_DECEL, 0.01);
+				path = buildPathFromWaypoints(AdaptedPaths.adaptSTurnFromPyramidtoLeft(), Constants.PATH_DEFAULT_ACCEL, Constants.PATH_DEFAULT_DECEL, 0.01);
 				path.setIsReversed(false);
 				return path;
 			case S_TURN_TO_R_SWITCH:
-				path = buildPathFromWaypoints(getFrontofPyramidtoRightSwitchWaypoints(), Constants.PATH_DEFAULT_ACCEL, Constants.PATH_DEFAULT_DECEL, 0.01);
+				path = buildPathFromWaypoints(AdaptedPaths.adaptSTurnToRightFromPyramid(), Constants.PATH_DEFAULT_ACCEL, Constants.PATH_DEFAULT_DECEL, 0.01);
 				path.setIsReversed(false);
 				return path;
 				
@@ -417,11 +417,11 @@ public class Paths {
 		
 		switch (pathName) {
 			case L_SCALE:
-				path = buildPathFromWaypoints(getLeftScaleFromLeftWaypoints(), Constants.PATH_DEFAULT_ACCEL, Constants.PATH_DEFAULT_DECEL, 0.005);
+				path = buildPathFromWaypoints(AdaptedPaths.adaptLeftScale(), Constants.PATH_DEFAULT_ACCEL, Constants.PATH_DEFAULT_DECEL, 0.005);
 				path.setIsReversed(false);
 				return path;	
 			case R_SCALE:
-				path = buildPathFromWaypoints(getRightScaleFromLeftWaypoints(), Constants.PATH_DEFAULT_ACCEL, Constants.PATH_DEFAULT_DECEL, 0.0045);
+				path = buildPathFromWaypoints(AdaptedPaths.adaptRightScale(), Constants.PATH_DEFAULT_ACCEL, Constants.PATH_DEFAULT_DECEL, 0.0045);
 				path.setIsReversed(false);
 				return path;
 				
@@ -431,7 +431,7 @@ public class Paths {
 				return path;
 				
 			case L_SCALE_TO_R_SWITCH:
-				path = buildPathFromWaypoints(getLeftScaleToRightSwitchLeftSideWaypoints(), Constants.PATH_DEFAULT_ACCEL, Constants.PATH_DEFAULT_DECEL, 0.007);
+				path = buildPathFromWaypoints(AdaptedPaths.adaptLScaletoRSwitch(), Constants.PATH_DEFAULT_ACCEL, Constants.PATH_DEFAULT_DECEL, 0.007);
 				path.setIsReversed(false);
 				return path;
 			case R_SCALE_TO_L_SWITCH:
@@ -440,16 +440,16 @@ public class Paths {
 				return path; 
 				
 			case L_SWITCH_TO_L_SCALE_SECOND_CUBE:
-				path = buildPathFromWaypoints(getLeftSwitchToLeftScaleSecondCubeWaypoints(), Constants.PATH_DEFAULT_ACCEL, Constants.PATH_DEFAULT_DECEL, 0.0);
+				path = buildPathFromWaypoints(AdaptedPaths.adaptLSwitchtoLScaleforThirdCube(), Constants.PATH_DEFAULT_ACCEL, Constants.PATH_DEFAULT_DECEL, 0.0);
 				path.setIsReversed(true);
 				return path;
 				
 			case L_SWITCH_TO_SIDE:
-				path = buildPathFromWaypoints(getLeftSwitchBeforeRightScaleWaypoints(), Constants.PATH_DEFAULT_ACCEL, Constants.PATH_DEFAULT_DECEL, 0.0);
+				path = buildPathFromWaypoints(AdaptedPaths.adaptLeftSwitchBeforeRightScale(), Constants.PATH_DEFAULT_ACCEL, Constants.PATH_DEFAULT_DECEL, 0.0);
 				path.setIsReversed(false);
 				return path;
 			case L_SWITCH_SIDE_TO_R_SCALE:
-				path = buildPathFromWaypoints(getRightScaleFromLeftSwitchWaypoints(), Constants.PATH_DEFAULT_ACCEL, Constants.PATH_DEFAULT_DECEL, 0.0);
+				path = buildPathFromWaypoints(AdaptedPaths.adaptRightScaleAfterLeftSwitch(), Constants.PATH_DEFAULT_ACCEL, Constants.PATH_DEFAULT_DECEL, 0.0);
 				path.setIsReversed(false);
 				return path;
 				

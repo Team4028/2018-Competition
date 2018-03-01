@@ -2,42 +2,98 @@ package org.usfirst.frc.team4028.robot.paths.profiles;
 
 public class PittsburghField implements FieldProfile {
 	@Override
-	public double getLSwitchX() {
+	public double getLSwitchXBlue() {
+		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
-	public double getLSwitchY() {
+	public double getLSwitchYBlue() {
+		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
-	public double getRSwitchX() {
+	public double getRSwitchXBlue() {
+		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
-	public double getRSwitchY() {
+	public double getRSwitchYBlue() {
+		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
-	public double getLScaleX() {
+	public double getLScaleXBlue() {
+		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
-	public double getLScaleY() {
+	public double getLScaleYBlue() {
+		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
-	public double getRScaleX() {
+	public double getRScaleXBlue() {
+		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
-	public double getRScaleY() {
+	public double getRScaleYBlue() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public double getLSwitchXRed() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public double getLSwitchYRed() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public double getRSwitchXRed() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public double getRSwitchYRed() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public double getLScaleXRed() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public double getLScaleYRed() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public double getRScaleXRed() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public double getRScaleYRed() {
+		// TODO Auto-generated method stub
 		return 0;
 	}
 }
