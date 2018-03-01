@@ -68,7 +68,7 @@ public class Elevator implements Subsystem {
 	private boolean _isSoftLimitsEnabled = false;
 	
 	// define general constants
-	public static final double NU_PER_INCH = 106.040268456;
+	//public static final double NU_PER_INCH = 106.040268456;
 	
 	// hardcoded preset jogging velocities
 	private static final double JOG_UP_VELOCITY = 0.5; //0.4; //0.70;
@@ -84,8 +84,8 @@ public class Elevator implements Subsystem {
 	
 	// hardcoded preset positions (in native units, 0 = home position)
 	private static final int SCALE_HEIGHT_POSITION = InchesToNativeUnits(80);
-	private static final int SWITCH_HEIGHT_POSITION = InchesToNativeUnits(28);
-	private static final int CUBE_ON_PYRAMID_LEVEL_1_POSITION = InchesToNativeUnits(24);
+	private static final int CUBE_ON_PYRAMID_LEVEL_1_POSITION = InchesToNativeUnits(50);
+	private static final int SWITCH_HEIGHT_POSITION = InchesToNativeUnits(30);
 	private static final int CUBE_ON_FLOOR_POSITION = InchesToNativeUnits(0);
 	private static final int INFEED_POSITION = 0;
 	private static final int HOME_POSITION = 0;
@@ -641,10 +641,10 @@ public class Elevator implements Subsystem {
 		return nativeUnits;
 	}
 	
-//	private static double NativeUnitsToInches(double nativeUnitsMeasure) {
-//		double positionInInches = nativeUnitsMeasure / NATIVE_UNITS_PER_INCH_CONVERSION;
-//		return positionInInches;
-//	}
+	private static double NativeUnitsToInches(double nativeUnitsMeasure) {
+		double positionInInches = nativeUnitsMeasure / NATIVE_UNITS_PER_INCH_CONVERSION;
+		return positionInInches;
+	}
 		
 	// output data to the dashboard on the drivers station
 	@Override
@@ -655,9 +655,9 @@ public class Elevator implements Subsystem {
 		
 		boolean isDisplayNativeUnits = true;
 		if(!isDisplayNativeUnits) {
-			actualPosition =  _actualPositionNU / NU_PER_INCH;
-			actualVelocity = 10 * _actualVelocityNU_100mS / NU_PER_INCH;
-			actualAcceleration = 1000 * 10 * (_actualAccelerationNU_100mS_mS / NU_PER_INCH);
+			actualPosition =  NativeUnitsToInches(_actualPositionNU);
+			actualVelocity = 10 * _actualVelocityNU_100mS / NATIVE_UNITS_PER_INCH_CONVERSION;
+			actualAcceleration = 1000 * 10 * (_actualAccelerationNU_100mS_mS / NATIVE_UNITS_PER_INCH_CONVERSION);
 		} else {
 			actualPosition = _actualPositionNU;
 			actualVelocity = _actualVelocityNU_100mS;
@@ -669,7 +669,7 @@ public class Elevator implements Subsystem {
 		SmartDashboard.putNumber("Elevator:VoltageActual", _elevatorMasterMotor.getMotorOutputVoltage());
 		
 		SmartDashboard.putNumber("Elevator:Position", actualPosition);
-		SmartDashboard.putNumber("Elevator:Position(in)", GeneralUtilities.RoundDouble((_actualPositionNU / NU_PER_INCH),2));
+		SmartDashboard.putNumber("Elevator:Position(in)", GeneralUtilities.RoundDouble((_actualPositionNU),2));
 		SmartDashboard.putNumber("Elevator:Velocity", GeneralUtilities.RoundDouble(actualVelocity, 2));
 		SmartDashboard.putNumber("Elevator:Acceleration", GeneralUtilities.RoundDouble(actualAcceleration, 2));
 

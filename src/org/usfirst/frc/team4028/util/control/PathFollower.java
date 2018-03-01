@@ -7,6 +7,7 @@ import org.usfirst.frc.team4028.util.motionProfile.MotionProfileConstraints;
 import org.usfirst.frc.team4028.util.motionProfile.MotionProfileGoal;
 import org.usfirst.frc.team4028.util.motionProfile.MotionProfileGoal.CompletionBehavior;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import org.usfirst.frc.team4028.util.motionProfile.MotionState;
@@ -21,6 +22,8 @@ public class PathFollower {
     double maxAccel, maxDecel;
     double inertiaSteeringGain;
     double remainingPathLength;
+    boolean hasAutoStopCounterStarted;
+    double autoStopCounterInitTime;
 
     /** Create a new PathFollower for a given path */
     public PathFollower(Path path, boolean reversed, double maxAccel, double maxDecel, double inertiaSteeringGain) {
@@ -32,6 +35,7 @@ public class PathFollower {
         this.inertiaSteeringGain = inertiaSteeringGain;
         mVelocityController.setConstraints(
                 new MotionProfileConstraints(Constants.PATH_FOLLOWING_MAX_VEL, maxAccel, maxDecel));
+        hasAutoStopCounterStarted = false;
     }
 
     /**
@@ -63,6 +67,15 @@ public class PathFollower {
             }
             remainingPathLength = steering_command.remainingPathLength;
             
+            if (!hasAutoStopCounterStarted && (steering_command.remainingPathLength < 25.0)) {
+            	hasAutoStopCounterStarted = true;
+            	autoStopCounterInitTime = Timer.getFPGATimestamp();
+            }
+            
+            if (hasAutoStopCounterStarted && ((Timer.getFPGATimestamp() - autoStopCounterInitTime) > 2.0)) {
+            	forceFinish();
+            }
+            
             SmartDashboard.putNumber("Remaining Path Length", remainingPathLength);
         }
 
@@ -87,9 +100,5 @@ public class PathFollower {
 
     public void forceFinish() {
         overrideFinished = true;
-    }
-    
-    public double getRemainingPathLength() {
-    	return remainingPathLength;
     }
 }

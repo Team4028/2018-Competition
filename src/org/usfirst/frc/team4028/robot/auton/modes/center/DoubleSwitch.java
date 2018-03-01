@@ -6,7 +6,7 @@ import org.usfirst.frc.team4028.robot.auton.AutonBase;
 import org.usfirst.frc.team4028.robot.auton.actions.*;
 import org.usfirst.frc.team4028.robot.paths.Paths;
 import org.usfirst.frc.team4028.util.control.Path;
-import org.usfirst.frc.team4028.robot.paths.Paths.PATHS;
+import org.usfirst.frc.team4028.robot.paths.Paths.Center;
 import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_PRESET_POSITION;
 import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_ARM_TARGET_POSITION;
 
@@ -17,20 +17,20 @@ public class DoubleSwitch extends AutonBase {
 	
 	public DoubleSwitch(boolean isLeftSwitch) {
 		if (isLeftSwitch) {
-			toSwitch = Paths.getPath(PATHS.L_SWITCH, 0.0065);
-			fromSwitchToFrontOfPyramidPath = Paths.getPath(PATHS.L_SWITCH_TO_FRONT_OF_PYRAMID, 0.006);
-			sTurnToSwitch = Paths.getPath(PATHS.S_TURN_TO_L_SWITCH, 0.01);
+			toSwitch = Paths.getPath(Center.L_SWITCH);
+			fromSwitchToFrontOfPyramidPath = Paths.getPath(Center.L_SWITCH_TO_FRONT_OF_PYRAMID);
+			sTurnToSwitch = Paths.getPath(Center.S_TURN_TO_L_SWITCH);
 		} else {
-			toSwitch = Paths.getPath(PATHS.R_SWITCH, 0.0065);
-			fromSwitchToFrontOfPyramidPath = Paths.getPath(PATHS.R_SWITCH_TO_FRONT_OF_PYRAMID, 0.008);
-			sTurnToSwitch = Paths.getPath(PATHS.S_TURN_TO_R_SWITCH, 0.01);
+			toSwitch = Paths.getPath(Center.R_SWITCH);
+			fromSwitchToFrontOfPyramidPath = Paths.getPath(Center.R_SWITCH_TO_FRONT_OF_PYRAMID);
+			sTurnToSwitch = Paths.getPath(Center.S_TURN_TO_R_SWITCH);
 		}
 		
 		elevatorWaitTimeFirstCube = 1.0;
 		elevatorWaitTimeSecondCube = 0.8;
 		
-		toPyramid = Paths.getPath(PATHS.TO_PYRAMID);
-		fromPyramid = Paths.getPath(PATHS.FROM_PYRAMID);
+		toPyramid = Paths.getPath(Center.TO_PYRAMID);
+		fromPyramid = Paths.getPath(Center.FROM_PYRAMID);
 	}
 	
 	@Override

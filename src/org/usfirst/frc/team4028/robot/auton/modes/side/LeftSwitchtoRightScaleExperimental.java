@@ -4,15 +4,15 @@ import java.util.Arrays;
 
 import org.usfirst.frc.team4028.robot.auton.AutonBase;
 import org.usfirst.frc.team4028.robot.paths.Paths;
-import org.usfirst.frc.team4028.robot.paths.Paths.PATHS;
+import org.usfirst.frc.team4028.robot.paths.Paths.LeftSide;
 import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_PRESET_POSITION;
 import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_ARM_TARGET_POSITION;
 import org.usfirst.frc.team4028.util.control.Path;
 import org.usfirst.frc.team4028.robot.auton.actions.*;
 
 public class LeftSwitchtoRightScaleExperimental extends AutonBase {
-	Path _toleftSwitchonSide = Paths.getPath(PATHS.L_SWITCH_TO_SIDE);
-	Path _toRightScalefromLeftSwitchside = Paths.getPath(PATHS.L_SWITCH_SIDE_TO_R_SCALE);
+	Path _toleftSwitchonSide = Paths.getPath(LeftSide.L_SWITCH_TO_SIDE);
+	Path _toRightScalefromLeftSwitchside = Paths.getPath(LeftSide.L_SWITCH_SIDE_TO_R_SCALE);
 	double _firstWaitTime= 0.5;
 	
 	@Override

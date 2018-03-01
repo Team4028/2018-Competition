@@ -6,6 +6,7 @@ import org.usfirst.frc.team4028.robot.auton.AutonBase;
 import org.usfirst.frc.team4028.robot.auton.actions.*;
 import org.usfirst.frc.team4028.robot.paths.Paths;
 import org.usfirst.frc.team4028.robot.paths.Paths.LeftSide;
+import org.usfirst.frc.team4028.robot.paths.Paths.RightSide;
 import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_PRESET_POSITION;
 import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_ARM_TARGET_POSITION;
 import org.usfirst.frc.team4028.util.control.Path;
@@ -14,26 +15,57 @@ public class DoubleScale extends AutonBase{
 	Path toScale;
 	
 	double toSwitchDistance, toScaleAgainDistance;
-	double targetTurnAngle,endTargetTurnAngle;
+	double targetTurnAngle, endTargetTurnAngle;
+	double finalTurnTargetAngle;
 	double elevatorWaitTime1, elevatorWaitTime2;
 	
-	public DoubleScale(boolean isLeftScale) {
+	boolean isRightTurnToSwitch;
+	
+	public DoubleScale(boolean isLeftScale, boolean isStartingLeft) {
 		if (isLeftScale) {
-			toScale = Paths.getPath(LeftSide.L_SCALE);
-			toSwitchDistance = 40.0;
-			toScaleAgainDistance = -44.0;
-			targetTurnAngle = 165;
-			endTargetTurnAngle = 25;
-			elevatorWaitTime1 = 2.0;
-			elevatorWaitTime2 = 0.5;
+			if (isStartingLeft) {
+				toScale = Paths.getPath(LeftSide.L_SCALE);
+				toSwitchDistance = 38.0;
+				toScaleAgainDistance = -42.0;
+				targetTurnAngle = 165;
+				endTargetTurnAngle = 25;
+				finalTurnTargetAngle = 135;
+				elevatorWaitTime1 = 2.0;
+				elevatorWaitTime2 = 0.5;
+				isRightTurnToSwitch = true;
+			} else {
+				toScale = Paths.getPath(RightSide.L_SCALE);
+				toSwitchDistance = 38.0;
+				toScaleAgainDistance = -38.0;
+				targetTurnAngle = 168;
+				endTargetTurnAngle = 15;
+				finalTurnTargetAngle = 135;
+				elevatorWaitTime1 = 4.5;
+				elevatorWaitTime2 = 1.0;
+				isRightTurnToSwitch = false;
+			}
 		} else {
-			toScale = Paths.getPath(LeftSide.R_SCALE);
-			toSwitchDistance = 38.0;
-			toScaleAgainDistance = -38.0;
-			targetTurnAngle = -168;
-			endTargetTurnAngle = -15.0;
-			elevatorWaitTime1 = 4.7;
-			elevatorWaitTime2 = 1.0;
+			if (isStartingLeft) {
+				toScale = Paths.getPath(LeftSide.R_SCALE);
+				toSwitchDistance = 38.0;
+				toScaleAgainDistance = -38.0;
+				targetTurnAngle = -168;
+				endTargetTurnAngle = -20.0;
+				finalTurnTargetAngle = -135;
+				elevatorWaitTime1 = 4.5;
+				elevatorWaitTime2 = 1.0;
+				isRightTurnToSwitch = true;
+			} else {
+				toScale = Paths.getPath(RightSide.R_SCALE);
+				toSwitchDistance = 38.0;
+				toScaleAgainDistance = -42.0;
+				targetTurnAngle = -165;
+				endTargetTurnAngle = -25;
+				finalTurnTargetAngle = -135;
+				elevatorWaitTime1 = 2.0;
+				elevatorWaitTime2 = 0.5;
+				isRightTurnToSwitch = false;
+			}
 		}
 	}
 
@@ -58,7 +90,7 @@ public class DoubleScale extends AutonBase{
 					new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT),
 					new SeriesAction(Arrays.asList(new Action[] {
 							new WaitAction(0.7),
-							new TurnAction(targetTurnAngle, true),
+							new TurnAction(targetTurnAngle, isRightTurnToSwitch),
 							new SimultaneousAction(Arrays.asList(new Action[] {
 									new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.WIDE),
 									new DriveSetDistanceAction(toSwitchDistance)
@@ -72,7 +104,7 @@ public class DoubleScale extends AutonBase{
 					new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.STORE),
 					new SeriesAction(Arrays.asList(new Action[] {
 							new DriveSetDistanceAction(toScaleAgainDistance),
-							new TurnAction(endTargetTurnAngle, false)
+							new TurnAction(endTargetTurnAngle, !isRightTurnToSwitch)
 					})),
 					new SeriesAction(Arrays.asList(new Action[] {
 							new WaitAction(elevatorWaitTime2),
@@ -87,7 +119,14 @@ public class DoubleScale extends AutonBase{
 		runAction(new PrintTimeFromStart(_startTime));
 		runAction(new DriveSetDistanceAction(-10.0));
 		// Move elevator to floor
-		runAction(new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT));
+		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
+				new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT),
+				new SeriesAction(Arrays.asList(new Action[] {
+						new WaitAction(0.7),
+						new TurnAction(finalTurnTargetAngle, isRightTurnToSwitch),
+						new DriveSetDistanceAction(40.0)
+				}))
+		})));
 		runAction(new PrintTimeFromStart(_startTime));
 	}
 }

@@ -34,10 +34,15 @@ public class Carriage implements Subsystem {
 	}
 	
 	public enum CARRIAGE_WHEELS_OUT_VBUS_INDEX {
+		VBUS_10,
 		VBUS_20,
+		VBUS_30,
 		VBUS_40,
+		VBUS_50,
 		VBUS_60,
+		VBUS_70,
 		VBUS_80,
+		VBUS_90,
 		VBUS_100
 	}
 	
@@ -305,25 +310,45 @@ public class Carriage implements Subsystem {
 	{
 		switch (_carriageWheelsOutVBusIndex)
 		{
-			case VBUS_100:
-				// do nothing
-				break;
-							
-			case VBUS_80:
-				_carriageWheelsOutVBusIndex = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_100;
-				break;
-				
-			case VBUS_60:
-				_carriageWheelsOutVBusIndex = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_80;
-				break;
-				
-			case VBUS_40:
-				_carriageWheelsOutVBusIndex = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_60;
-				break;
-				
-			case VBUS_20:
-				_carriageWheelsOutVBusIndex = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_40;
-				break;
+		case VBUS_100:
+			// do nothing
+			break;
+
+		case VBUS_90:
+			_carriageWheelsOutVBusIndex = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_100;
+			break;
+			
+		case VBUS_80:
+			_carriageWheelsOutVBusIndex = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_90;
+			break;
+
+		case VBUS_70:
+			_carriageWheelsOutVBusIndex = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_80;
+			break;
+			
+		case VBUS_60:
+			_carriageWheelsOutVBusIndex = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_70;
+			break;
+
+		case VBUS_50:
+			_carriageWheelsOutVBusIndex = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_60;
+			break;
+			
+		case VBUS_40:
+			_carriageWheelsOutVBusIndex = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_50;
+			break;
+
+		case VBUS_30:
+			_carriageWheelsOutVBusIndex = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_40;
+			break;
+
+		case VBUS_20:
+			_carriageWheelsOutVBusIndex = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_30;
+			break;
+			
+		case VBUS_10:
+			_carriageWheelsOutVBusIndex = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_20;
+			break;
 				
 			default:
 				break;
@@ -335,22 +360,42 @@ public class Carriage implements Subsystem {
 		switch (_carriageWheelsOutVBusIndex)
 		{
 			case VBUS_100:
+				_carriageWheelsOutVBusIndex = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_90;
+				break;
+
+			case VBUS_90:
 				_carriageWheelsOutVBusIndex = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_80;
 				break;
-							
+				
 			case VBUS_80:
+				_carriageWheelsOutVBusIndex = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_70;
+				break;
+
+			case VBUS_70:
 				_carriageWheelsOutVBusIndex = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_60;
 				break;
 				
 			case VBUS_60:
+				_carriageWheelsOutVBusIndex = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_50;
+				break;
+
+			case VBUS_50:
 				_carriageWheelsOutVBusIndex = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_40;
 				break;
 				
 			case VBUS_40:
+				_carriageWheelsOutVBusIndex = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_30;
+				break;
+
+			case VBUS_30:
 				_carriageWheelsOutVBusIndex = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_20;
 				break;
-				
+
 			case VBUS_20:
+				_carriageWheelsOutVBusIndex = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_10;
+				break;
+				
+			case VBUS_10:
 				// do nothing
 				break;
 				
@@ -388,18 +433,33 @@ public class Carriage implements Subsystem {
 		{
 			case VBUS_100:
 				return 1;
-							
+			
+			case VBUS_90:
+				return .9;
+				
 			case VBUS_80:
 				return .8;
+				
+			case VBUS_70:
+				return .7;
 				
 			case VBUS_60:
 				return .6;
 				
+			case VBUS_50:
+				return .5;
+				
 			case VBUS_40:
 				return .4;
 				
+			case VBUS_30:
+				return .3;
+				
 			case VBUS_20:
 				return .2;
+				
+			case VBUS_10:
+				return .1;
 				
 			default:
 				return 0;

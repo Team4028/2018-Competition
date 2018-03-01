@@ -200,7 +200,7 @@ public class AdaptedPaths extends Paths {//oh God we're here
 	
 	public static ArrayList<Waypoint> adaptLeftScale() {
 		ArrayList<Waypoint> sWaypoints= new ArrayList<Waypoint>();
-		sWaypoints=getLeftScaleExperimentalWaypoints();
+		sWaypoints=getLeftScaleFromLeftWaypoints();
 		for(int point=1;point<sWaypoints.size();point++) {
 			sWaypoints.get(point).adjustWaypoint(Constants.LEFT_SCALE_X_DELTA, Constants.LEFT_SCALE_Y_DELTA);
 		}
@@ -209,7 +209,7 @@ public class AdaptedPaths extends Paths {//oh God we're here
 	
 	public static ArrayList<Waypoint> adaptLScaletoRSwitch() {
 		ArrayList<Waypoint> sWaypoints= new ArrayList<Waypoint>();
-		sWaypoints=Paths.getLeftScaleToRightSwitchWaypoints();
+		sWaypoints=Paths.getLeftScaleToRightSwitchLeftSideWaypoints();
 		sWaypoints.get(0).adjustWaypoint(Constants.LEFT_SCALE_X_DELTA, Constants.LEFT_SCALE_Y_DELTA);
 		for(int point=1;point<sWaypoints.size();point++) {
 			sWaypoints.get(point).adjustWaypoint(Constants.RIGHT_SWITCH_BACK_X_DELTA, Constants.RIGHT_SWITCH_BACK_DELTA_Y);
@@ -219,7 +219,7 @@ public class AdaptedPaths extends Paths {//oh God we're here
 	
 	public static ArrayList<Waypoint> adaptRightScale() {
 		ArrayList<Waypoint> sWaypoints= new ArrayList<Waypoint>();
-		sWaypoints=getRightScaleWaypoints();
+		sWaypoints=getRightScaleFromLeftWaypoints();
 		for(int point=2;point<sWaypoints.size();point++) {
 			sWaypoints.get(point).adjustWaypoint(Constants.RIGHT_SCALE_X_DELTA, Constants.RIGHT_SCALE_Y_DELTA);
 		}
@@ -252,5 +252,6 @@ public class AdaptedPaths extends Paths {//oh God we're here
 		double flavorTownUSAY = Math.random()*360-180;
 		String ourLordAndSavior = "Guy Fieri";
 		String whatAreWeDoing = "Rolling Out to Find America's Greatest Diners, Drive-ins and Dives";
+		System.out.println("Flavor Town USA Located: " + flavorTownUSAX + ", " + flavorTownUSAY);
 	}
 }

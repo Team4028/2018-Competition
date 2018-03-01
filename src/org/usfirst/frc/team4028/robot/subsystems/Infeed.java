@@ -1,6 +1,7 @@
 package org.usfirst.frc.team4028.robot.subsystems;
 
 import org.usfirst.frc.team4028.robot.Constants;
+import org.usfirst.frc.team4028.util.GeneralUtilities;
 //import org.usfirst.frc.team4028.robot.sensors.UltrasonicSensor;
 import org.usfirst.frc.team4028.util.LogDataBE;
 import org.usfirst.frc.team4028.util.loops.Loop;
@@ -128,7 +129,7 @@ public class Infeed  implements Subsystem {
 	private static final double WIDE_INFEED_POSITION_ANGLE = 140;
 //	private static final double SQUEEZE_INFEED_POSITION_ANGLE = 190;
 
-	private static final double STORE_POSITION_ANGLE = 10;
+	private static final double STORE_POSITION_ANGLE = 20;
 //	private static final double THIN_SIDE_POSITION_ANGLE = 230;
 //	private static final double STAGGER_POSITION_ANGLE = 185;
 	
@@ -719,6 +720,9 @@ public class Infeed  implements Subsystem {
 		
 		SmartDashboard.putNumber("InfeedArms:Left Current PositionNU", getCurrentLeftInfeedPosition());
 		SmartDashboard.putNumber("InfeedArms:Right Current PositionNU:", getCurrentRightInfeedPosition());
+		
+		SmartDashboard.putNumber("InfeedArms:Left Current Angle", GeneralUtilities.RoundDouble(nativeUnitsToDegrees(getCurrentLeftInfeedPosition()), 1));
+		SmartDashboard.putNumber("InfeedArms:Right Current Angle:", GeneralUtilities.RoundDouble(nativeUnitsToDegrees(getCurrentRightInfeedPosition()), 1));
 	}
 	
 	// add data elements to be logged  to the input param (which is passed by ref)
