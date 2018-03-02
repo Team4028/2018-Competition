@@ -25,8 +25,8 @@ public class DoubleScale extends AutonBase{
 		if (isLeftScale) {
 			if (isStartingLeft) {
 				toScale = Paths.getPath(LeftSide.L_SCALE);
-				toSwitchDistance = 44.0;
-				toScaleAgainDistance = -46.0;
+				toSwitchDistance = 40.0;
+				toScaleAgainDistance = -42.0;
 				targetTurnAngle = 160;
 				endTargetTurnAngle = 25;
 				finalTurnTargetAngle = 135;
@@ -47,8 +47,8 @@ public class DoubleScale extends AutonBase{
 		} else {
 			if (isStartingLeft) {
 				toScale = Paths.getPath(LeftSide.R_SCALE);
-				toSwitchDistance = 39.0;
-				toScaleAgainDistance = -40.0;
+				toSwitchDistance = 38.0;
+				toScaleAgainDistance = -39.0;
 				targetTurnAngle = -168;
 				endTargetTurnAngle = -20.0;
 				finalTurnTargetAngle = -135;

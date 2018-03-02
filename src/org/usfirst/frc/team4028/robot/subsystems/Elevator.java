@@ -68,6 +68,7 @@ public class Elevator implements Subsystem {
 	private double _lastScanActualVelocityNU_100mS = 0;
 	private int _pidSlotInUse = -1;
 	private boolean _isSoftLimitsEnabled = false;
+	int _adjustedTarget = 0;
 	
 	// define general constants
 	//public static final double NU_PER_INCH = 106.040268456;
@@ -289,9 +290,14 @@ public class Elevator implements Subsystem {
 						deltatime = (new Date().getTime()) - _lastScanTimeStamp;
 						DisableSoftLimits();
 						
-						if(IsAtTargetPosition(_targetElevatorPosition)) {
+						_adjustedTarget = _targetElevatorPosition;
+						if(_targetElevatorPosition == NEUTRAL_SCALE_HEIGHT_POSITION) {
+							_adjustedTarget = _targetElevatorPosition + _elevatorScaleOffset;
+						}
+						
+						if(IsAtTargetPosition(_adjustedTarget)) {
 							// change state
-							ReportStateChg("ElevatorAxis (State) [" + _elevatorState.toString() + "] ==> [HOLD_TARGET_POSTION]:[" + _targetElevatorPosition +"]");
+							ReportStateChg("ElevatorAxis (State) [" + _elevatorState.toString() + "] ==> [HOLD_TARGET_POSTION]:[" + _adjustedTarget +"]");
 	    					_elevatorState = ELEVATOR_STATE.HOLD_TARGET_POSITION;
 						} 
 						else {
@@ -300,32 +306,26 @@ public class Elevator implements Subsystem {
 							_actualAccelerationNU_100mS_mS = (_actualVelocityNU_100mS - _lastScanActualVelocityNU_100mS) / deltatime;
 		
 							// set appropriate gain slot to use
-							if(_targetElevatorPosition > _actualPositionNU) {
+							if(_adjustedTarget > _actualPositionNU) {
 								SetPidSlotToUse("GotoUp", MOVING_UP_PID_SLOT_INDEX);
 							}
 							else {
 								SetPidSlotToUse("GotoDown", MOVING_DOWN_PID_SLOT_INDEX);
 							}
 							
-							if(_targetElevatorPosition == NEUTRAL_SCALE_HEIGHT_POSITION) {
-								_elevatorMasterMotor.set(ControlMode.MotionMagic, _targetElevatorPosition + _elevatorScaleOffset, 0);
-							}
-							else {
-								_elevatorMasterMotor.set(ControlMode.MotionMagic, _targetElevatorPosition, 0);
-							}
-							
-							
+							_elevatorMasterMotor.set(ControlMode.MotionMagic, _adjustedTarget, 0);
 						}
 						_lastScanTimeStamp = new Date().getTime();
 						_lastScanActualVelocityNU_100mS = _actualVelocityNU_100mS;					
 						
 						break;
 						
-					case HOLD_TARGET_POSITION:
-						if(!IsAtTargetPosition(_targetElevatorPosition))
+					case HOLD_TARGET_POSITION:						
+						//if(!IsAtTargetPosition(_targetElevatorPosition))
+						if(!IsAtTargetPosition(_adjustedTarget))
 						{
 							// change state
-							ReportStateChg("ElevatorAxis (State) " + _elevatorState.toString() + " ==> [GOTO_TARGET_POSTION]:[" + _targetElevatorPosition  +"]");
+							ReportStateChg("ElevatorAxis (State) " + _elevatorState.toString() + " ==> [GOTO_TARGET_POSTION]:[" + _adjustedTarget  +"]");
 	    					_elevatorState = ELEVATOR_STATE.GOTO_TARGET_POSITION;
 						}
 						//else if (_targetElevatorPosition == DOWN_SOFT_LIMIT) {
@@ -336,7 +336,7 @@ public class Elevator implements Subsystem {
 						{
 							// set appropriate gain slot to use	    	
 							SetPidSlotToUse("Hold", HOLDING_PID_SLOT_INDEX);
-							_elevatorMasterMotor.set(ControlMode.MotionMagic, _targetElevatorPosition, 0);
+							_elevatorMasterMotor.set(ControlMode.MotionMagic, _adjustedTarget, 0);
 						}
 						
 						break;
@@ -448,7 +448,7 @@ public class Elevator implements Subsystem {
 					break;
 										
 				case NEUTRAL_SCALE_HEIGHT:
-					if((_elevatorState !=ELEVATOR_STATE.GOTO_TARGET_POSITION && _elevatorState !=ELEVATOR_STATE.HOLD_TARGET_POSITION)
+					if((_elevatorState !=ELEVATOR_STATE.GOTO_TARGET_POSITION&& _elevatorState !=ELEVATOR_STATE.HOLD_TARGET_POSITION)
 							|| _targetElevatorPosition != NEUTRAL_SCALE_HEIGHT_POSITION)
 					{				
 						_targetElevatorPosition = NEUTRAL_SCALE_HEIGHT_POSITION;
@@ -613,18 +613,19 @@ public class Elevator implements Subsystem {
 	}
 	
 	public void elevatorScaleHeightBumpPositionUp() {
-		if(_elevatorScaleOffset < 12) {
-			_elevatorScaleOffset = _elevatorScaleOffset; // + BUMP_AMOUNT_IN_NU;
+		if(NativeUnitsToInches(_elevatorScaleOffset) < 12) {
+			_elevatorScaleOffset = _elevatorScaleOffset+ BUMP_AMOUNT_IN_NU;
+			_elevatorState = ELEVATOR_STATE.GOTO_TARGET_POSITION;
 		}
 		else {
 			System.out.println("Elevator Scale Position Bump Tooooooo Large");
 		}
-		
 	}
 	
 	public void elevatorScaleHeightBumpPositionDown() {
-		if(_elevatorScaleOffset > -12) {
-			_elevatorScaleOffset = _elevatorScaleOffset; // - BUMP_AMOUNT_IN_NU;
+		if(NativeUnitsToInches(_elevatorScaleOffset) > -12) {
+			_elevatorScaleOffset = _elevatorScaleOffset - BUMP_AMOUNT_IN_NU;
+			_elevatorState = ELEVATOR_STATE.GOTO_TARGET_POSITION;
 		}
 		else {
 			System.out.println("Elevator Scale Position Bump Tooooooo Large");	
@@ -724,7 +725,7 @@ public class Elevator implements Subsystem {
 		SmartDashboard.putNumber("Elevator:TargetPosition",_targetElevatorPosition);
 		SmartDashboard.putBoolean("Elevator:IsInPosition", IsAtTargetPosition());
 		SmartDashboard.putString("Elevator:State", _elevatorState.toString());
-		SmartDashboard.putNumber("Elevator:Scale Bump", _elevatorScaleOffset);
+		SmartDashboard.putNumber("Elevator:Scale Bump", NativeUnitsToInches(_elevatorScaleOffset));
 	}
 	
 	// add data elements to be logged  to the input param (which is passed by ref)

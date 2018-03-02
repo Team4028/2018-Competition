@@ -486,8 +486,8 @@ public class Paths {
         sWaypoints.add(new Waypoint(242,96,0,120));
         sWaypoints.add(new Waypoint(242,110,0,30));
         sWaypoints.add(new Waypoint(242,217,0,120));
-        sWaypoints.add(new Waypoint(242,252,34,80));
-        sWaypoints.add(new Waypoint(277,252,0,40));
+        sWaypoints.add(new Waypoint(242,252,35,80));
+        sWaypoints.add(new Waypoint(280,252,0,40));
         return sWaypoints;
 	}
 	

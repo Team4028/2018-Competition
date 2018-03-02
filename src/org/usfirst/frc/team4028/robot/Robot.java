@@ -393,16 +393,16 @@ public class Robot extends IterativeRobot {
 		else if (_dos.getIsOperator_ElevatorInfeedHgt_BtnJustPressed() || _dos.getIsEngineering_ElevatorCubeOnFloorHgt_BtnJustPressed()) {
 			_cubeHandler.elevator_MoveToPresetPosition(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT);
 		}	
-//		else if (_dos.getIsOperator_ElevatorNeutralScaleHgt_BtnJustPressed() || _dos.getIsEngineering_ElevatorScaleHgt_BtnJustPressed()) {
-//			_cubeHandler.elevator_MoveToPresetPosition(ELEVATOR_PRESET_POSITION.HIGH_SCALE_HEIGHT);
-//		} 
-		else if (_dos.getIsOperator_ElevatorSwitchHeight_BtnJustPressed() || _dos.getIsEngineering_ElevatorSwitchHgt_BtnJustPressed()) {
+		else if (_dos.getIsOperator_ElevatorNeutralScaleHgt_BtnJustPressed() || _dos.getIsEngineering_ElevatorScaleHgt_BtnJustPressed()) {
+			_cubeHandler.elevator_MoveToPresetPosition(ELEVATOR_PRESET_POSITION.HIGH_SCALE_HEIGHT);
+		} 
+		else if (_dos.getIsOperator_ElevatorScaleHeightBumpUp_BtnJustPressed() || _dos.getIsEngineering_ElevatorSwitchHgt_BtnJustPressed()) {
 			_cubeHandler.elevator_MoveToPresetPosition(ELEVATOR_PRESET_POSITION.SWITCH_HEIGHT);
 		}
-//		else if (_dos.getIsOperator_ElevatorLowScaleHgt_BtnJustPressed() || _dos.getIsEngineering_ElevatorPyramidHgt_BtnJustPressed()) {
-//			_cubeHandler.elevator_MoveToPresetPosition(ELEVATOR_PRESET_POSITION.LOW_SCALE_HEIGHT);
-//		}
-		else if (_dos.getIsOperator_ElevatorNeutralScaleHgt_BtnJustPressed()) {
+		else if (_dos.getIsOperator_ElevatorScalePositionBumpDown_BtnJustPressed() || _dos.getIsEngineering_ElevatorPyramidHgt_BtnJustPressed()) {
+			_cubeHandler.elevator_MoveToPresetPosition(ELEVATOR_PRESET_POSITION.LOW_SCALE_HEIGHT);
+		}
+		else if (_dos.getIsOperator_ElevatorSwitchHeight_BtnJustPressed()) {
 			_cubeHandler.elevator_MoveToPresetPosition(ELEVATOR_PRESET_POSITION.NEUTRAL_SCALE_HEIGHT);
 		}
 		else if (_dos.getIsOperator_ElevatorReHome_BtnJustPressed()) {
@@ -411,13 +411,13 @@ public class Robot extends IterativeRobot {
 			_cubeHandler.stopElevator();
 		} 
 		
-		if(_dos.getIsOperator_ElevatorScaleHeightBumpUp_BtnJustPressed()) {
-			_elevator.elevatorScaleHeightBumpPositionUp();
-		}
-		else if (_dos.getIsOperator_ElevatorScalePositionBumpDown_BtnJustPressed()) {
-			_elevator.elevatorScaleHeightBumpPositionDown();
-		}
-		else {}
+//		if(_dos.getIsOperator_ElevatorScaleHeightBumpUp_BtnJustPressed()) {
+//			_elevator.elevatorScaleHeightBumpPositionUp();
+//		}
+//		else if (_dos.getIsOperator_ElevatorScalePositionBumpDown_BtnJustPressed()) {
+//			_elevator.elevatorScaleHeightBumpPositionDown();
+//		}
+//		else {}
 				
 		// =============  CLIMBER ============= 
 
