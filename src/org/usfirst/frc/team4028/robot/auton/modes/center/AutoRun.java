@@ -12,7 +12,7 @@ public class AutoRun extends AutonBase {
 	
 	@Override
 	public void routine() {
-		runAction(new RunMotionProfileAction(path, true));
+		runAction(new RunMotionProfileAction(path));
 		runAction(new PrintTimeFromStart(_startTime));
 	}
 }

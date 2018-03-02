@@ -25,8 +25,8 @@ public class DoubleScale extends AutonBase{
 		if (isLeftScale) {
 			if (isStartingLeft) {
 				toScale = Paths.getPath(LeftSide.L_SCALE);
-				toSwitchDistance = 38.0;
-				toScaleAgainDistance = -42.0;
+				toSwitchDistance = 36.0;
+				toScaleAgainDistance = -38.0;
 				targetTurnAngle = 165;
 				endTargetTurnAngle = 25;
 				finalTurnTargetAngle = 135;
@@ -35,30 +35,30 @@ public class DoubleScale extends AutonBase{
 				isRightTurnToSwitch = true;
 			} else {
 				toScale = Paths.getPath(RightSide.L_SCALE);
-				toSwitchDistance = 38.0;
-				toScaleAgainDistance = -38.0;
+				toSwitchDistance = 36.0;
+				toScaleAgainDistance = -36.0;
 				targetTurnAngle = 168;
 				endTargetTurnAngle = 15;
 				finalTurnTargetAngle = 135;
-				elevatorWaitTime1 = 4.5;
+				elevatorWaitTime1 = 4.25;
 				elevatorWaitTime2 = 1.0;
 				isRightTurnToSwitch = false;
 			}
 		} else {
 			if (isStartingLeft) {
 				toScale = Paths.getPath(LeftSide.R_SCALE);
-				toSwitchDistance = 38.0;
-				toScaleAgainDistance = -38.0;
+				toSwitchDistance = 39.0;
+				toScaleAgainDistance = -39.0;
 				targetTurnAngle = -168;
 				endTargetTurnAngle = -20.0;
 				finalTurnTargetAngle = -135;
-				elevatorWaitTime1 = 4.5;
+				elevatorWaitTime1 = 4.25;
 				elevatorWaitTime2 = 1.0;
 				isRightTurnToSwitch = true;
 			} else {
 				toScale = Paths.getPath(RightSide.R_SCALE);
-				toSwitchDistance = 38.0;
-				toScaleAgainDistance = -42.0;
+				toSwitchDistance = 36.0;
+				toScaleAgainDistance = -40.0;
 				targetTurnAngle = -165;
 				endTargetTurnAngle = -25;
 				finalTurnTargetAngle = -135;

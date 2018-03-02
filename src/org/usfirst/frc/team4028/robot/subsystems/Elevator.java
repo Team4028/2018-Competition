@@ -84,7 +84,7 @@ public class Elevator implements Subsystem {
 	
 	// hardcoded preset positions (in native units, 0 = home position)
 	private static final int SCALE_HEIGHT_POSITION = InchesToNativeUnits(80);
-	private static final int CUBE_ON_PYRAMID_LEVEL_1_POSITION = InchesToNativeUnits(50);
+	private static final int CUBE_ON_PYRAMID_LEVEL_1_POSITION = InchesToNativeUnits(65);
 	private static final int SWITCH_HEIGHT_POSITION = InchesToNativeUnits(30);
 	private static final int CUBE_ON_FLOOR_POSITION = InchesToNativeUnits(0);
 	private static final int INFEED_POSITION = 0;
@@ -669,7 +669,7 @@ public class Elevator implements Subsystem {
 		SmartDashboard.putNumber("Elevator:VoltageActual", _elevatorMasterMotor.getMotorOutputVoltage());
 		
 		SmartDashboard.putNumber("Elevator:Position", actualPosition);
-		SmartDashboard.putNumber("Elevator:Position(in)", GeneralUtilities.RoundDouble((_actualPositionNU),2));
+		SmartDashboard.putNumber("Elevator:Position(in)", GeneralUtilities.RoundDouble((NativeUnitsToInches(_actualPositionNU)),2));
 		SmartDashboard.putNumber("Elevator:Velocity", GeneralUtilities.RoundDouble(actualVelocity, 2));
 		SmartDashboard.putNumber("Elevator:Acceleration", GeneralUtilities.RoundDouble(actualAcceleration, 2));
 

@@ -6,23 +6,24 @@ import org.usfirst.frc.team4028.util.control.Path;
 
 import edu.wpi.first.wpilibj.Timer;
 
-/* Runs a motion profile */
-public class RunMotionProfileAction implements Action {
+public class RunTimedMotionProfileAction implements Action{
 	private Chassis _chassis = Chassis.getInstance();
 	private Path _path;
 	private double _startTime;
-
-	public RunMotionProfileAction(Path p){
+	private double _maxTime;
+	
+	public RunTimedMotionProfileAction(Path p, double maxTime){
 		_path = p;
+		_maxTime = maxTime;
 	}
-
+	
 	@Override
 	public void start() {
 		RobotState.getInstance().reset(Timer.getFPGATimestamp(), _path.getStartPose());
 		_chassis.setWantDrivePath(_path, _path.isReversed());
 		_startTime = Timer.getFPGATimestamp();
 	}
-
+	
 	@Override
 	public void update() {
 		if(Timer.getFPGATimestamp() - _startTime > 0.25) {
@@ -32,7 +33,7 @@ public class RunMotionProfileAction implements Action {
 			}
 		}
 	}
-
+	
 	@Override
 	public void done() {	
 		_chassis.stop();
@@ -40,7 +41,7 @@ public class RunMotionProfileAction implements Action {
 
 	@Override
 	public boolean isFinished() {
-		if ((Timer.getFPGATimestamp() - _startTime) > 1000) {
+		if ((Timer.getFPGATimestamp() - _startTime) > _maxTime) {
 			_chassis.forceDoneWithPath();
 			return true;
 		} else {

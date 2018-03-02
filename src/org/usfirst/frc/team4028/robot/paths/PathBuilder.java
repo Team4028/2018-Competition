@@ -99,20 +99,21 @@ public class PathBuilder {
             speed = s;
             marker = m;
         }
-        public void adjustWaypoint(double x, double y)
-        {
+        public void adjustWaypoint(double x, double y) {
         	pos = new Translation(pos.x()+x,pos.y()+y);
-        	
         }
           
         public void flipWaypoint() {
         	pos = new Translation(pos.x(), 324 - pos.y());
         }
+        
+        @Override
+        public String toString() {
+        	return "(" + pos.x() + "," + pos.y() + "," + radius + "," + speed + ")";
+        }
     }
 
-    /**
-     * A Line object is formed by two Waypoints. Contains a start and end position, slope, and speed.
-     */
+    /** A Line object is formed by two Waypoints. Contains a start and end position, slope, and speed. */
     static class Line {
         Waypoint a;
         Waypoint b;
@@ -141,13 +142,10 @@ public class PathBuilder {
                             p.getLastMotionState(), endSpeed, maxAccel, maxDecel));
                 }
             }
-
         }
     }
 
-    /**
-     * An Arc object is formed by two Lines that share a common Waypoint. Contains a center position, radius, and speed.
-     */
+    /** An Arc object is formed by two Lines that share a common Waypoint. Contains a center position, radius, and speed. */
     static class Arc {
         Line a;
         Line b;

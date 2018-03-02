@@ -33,8 +33,8 @@ public class Climber implements Subsystem
 	private static final double SERVO_OPEN_POSITION = 1;
 	private static final double SERVO_CLOSED_POSITION = 0;
 	
-	public static final double CLIMBER_MOTOR_HIGH_VBUS = -1.0;
-	public static final double CLIMBER_MOTOR_LOW_VBUS = -0.40;
+	public static final double CLIMBER_MOTOR_HIGH_VBUS = 1.0;
+	public static final double CLIMBER_MOTOR_LOW_VBUS = 0.40;
 	
 	//=====================================================================================
 	//Define Singleton Pattern
