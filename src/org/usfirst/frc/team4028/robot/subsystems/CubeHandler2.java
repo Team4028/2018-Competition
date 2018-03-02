@@ -146,12 +146,14 @@ public class CubeHandler2 implements Subsystem {
 	}
 
 	
-	// =====================================================================================
+	//=====================================================================================
+	//
+	//=====================================================================================	
 	
 	@Override
 	public void stop() 
 	{
-		stopInfeedAndCarriage();
+		stop_InfeedAndCarriage();
 		stopElevator();
 	}
 	
@@ -161,27 +163,6 @@ public class CubeHandler2 implements Subsystem {
 		// N/A for this class
 	}
 
-	//=====================================================================================
-	//Methods from original cube handler
-	//=====================================================================================	
-	public void ejectCube(double joystickCommand) 
-	{
-		_carriage.ejectCubeVBus(joystickCommand);
-	}
-	
-	public void runInfeedCubePlusCarriage(double joystickCommand) 
-	{
-		if(_elevator.isElevatorAtInfeedPosition()) 
-		{
-			_infeed.driveInfeedWheelsVBus(joystickCommand);
-			_carriage.infeedCarriageMotorsVBus(joystickCommand);
-		}
-	}
-
-	public boolean isCubeInCarriage() {
-		return _carriage.isCubeInCarriage();
-	}
-	
 	//=====================================================================================
 	//Methods for Handling Interactions with Elevator Subsystem
 	//=====================================================================================	
@@ -229,22 +210,32 @@ public class CubeHandler2 implements Subsystem {
 	//=====================================================================================	
 	public void acquireCube_InfeedAndCarriage() 
 	{
-		_infeed.infeedWheels_FeedIn();
-		_carriage.FeedIn();
+		_infeed.feedIn();
+		_carriage.feedIn();
 	}
 	
 	public void ejectCube_InfeedAndCarriage() 
 	{
 		// only run infeed wheels if we are at squeeze position
-		if(_infeed.getInfeedArmTargetPosition() == INFEED_ARM_TARGET_POSITION.SQUEEZE)
+		if(_infeed.getInfeedArmsTargetPosition() == INFEED_ARM_TARGET_POSITION.SQUEEZE)
 		{
-			_infeed.infeedWheels_FeedOut();
+			_infeed.feedOut();
 		}
 		
-		_carriage.FeedOut();
+		// always run carriage wheels
+		_carriage.feedOut();
 	}
 	
-	public void stopInfeedAndCarriage() 
+	//public void runCube_InfeedAndCarriage(double joystickCommand) 
+	//{
+	//	if(_elevator.isElevatorAtInfeedPosition()) 
+	//	{
+	//		_infeed.driveInfeedWheelsVBus(joystickCommand);
+	//		_carriage.feedIn(joystickCommand);
+	//	}
+	//}
+	
+	public void stop_InfeedAndCarriage() 
 	{
 		_infeed.stopDriveMotors();
 		_carriage.stop();
@@ -263,16 +254,6 @@ public class CubeHandler2 implements Subsystem {
 		_infeed.infeedWheels_SpinCube_CW();
 	}
 	
-	public void infeedWheels_VBusCmd_BumpUp() 
-	{
-		_infeed.infeedWheels_VBusCmd_BumpUp();
-	}
-	
-	public void infeedWheels_VBusCmd_BumpDown() 
-	{		
-		_infeed.infeedWheels_VBusCmd_BumpDown();
-	}
-	
 	// used by auton only
 	public void infeedArms_MoveToPresetPosition(INFEED_ARM_TARGET_POSITION presetTargetPostion)
 	{
@@ -281,37 +262,20 @@ public class CubeHandler2 implements Subsystem {
 			case SQUEEZE:
 				infeedArms_moveToSqueezePosition();
 				break;
+				
 			case HOME:
 			case STORE:
 				infeedArms_moveToStorePosition();
 				break;
+				
 			case INFEED:
 			case WIDE:
-				_infeed.moveArmsToWideInfeedPosition();
+				infeedArms_moveToWidePosition();
 				break;
+				
 			default:
 				break;
 		}
-	}
-	
-	public void infeedArms_SqueezeAngle_BumpNarrower() 
-	{
-		_infeed.infeedArms_SqueezeAngle_BumpNarrower();
-	}
-	
-	public void infeedArms_SqueezeAngle_BumpWider() 
-	{
-		_infeed.infeedArms_SqueezeAngle_BumpWider();
-	}
-	
-	public void infeedArms_Rezero() 
-	{
-		_infeed.reZeroArms();
-	}
-	
-	public void infeedArms_moveToWidePosition() 
-	{
-		_infeed.moveArmsToWideInfeedPosition();
 	}
 	
 	public void infeedArms_moveToSqueezePosition() 
@@ -332,6 +296,26 @@ public class CubeHandler2 implements Subsystem {
 		_infeed.storeArms();
 	}	
 	
+	public void infeedArms_moveToWidePosition() 
+	{
+		_infeed.moveArmsToWideInfeedPosition();
+	}
+	
+	public void infeedArms_SqueezeAngle_BumpNarrower() 
+	{
+		_infeed.infeedArms_SqueezeAngle_BumpNarrower();
+	}
+	
+	public void infeedArms_SqueezeAngle_BumpWider() 
+	{
+		_infeed.infeedArms_SqueezeAngle_BumpWider();
+	}
+	
+	public void infeedArms_Rezero() 
+	{
+		_infeed.reZeroArms();
+	}
+	
 	public void infeedArms_SafeStartup()
 	{
 		if(_infeed.getInfeedArmState() == INFEED_ARM_STATE.MOVE_TO_POSITION_AND_HOLD)
@@ -340,11 +324,21 @@ public class CubeHandler2 implements Subsystem {
 		}
 	}
 	
+	public void infeedWheels_VBusCmd_BumpUp() 
+	{
+		_infeed.infeedWheels_VBusCmd_BumpUp();
+	}
+	
+	public void infeedWheels_VBusCmd_BumpDown() 
+	{		
+		_infeed.infeedWheels_VBusCmd_BumpDown();
+	}
+	
 	//=====================================================================================	
 	//Methods for Handling Interactions with Carriage Subsystem
 	//=====================================================================================	
-	public void setAutonCarriageSpeed(CARRIAGE_WHEELS_OUT_VBUS_INDEX setSpeed) {
-		_carriage.autonCarriageSpeedChooser(setSpeed);
+	public void carriage_FeedOut(CARRIAGE_WHEELS_OUT_VBUS_INDEX setSpeed) {
+		_carriage.feedOut(setSpeed);
 	}
 	
 	public void carriage_FeedIn_VBusCmd_BumpDown() {
@@ -355,25 +349,34 @@ public class CubeHandler2 implements Subsystem {
 		_carriage.carriageWheels_FeedIn_VBusCmd_BumpUp();
 	}
 	
-	public void carriage_FeedOut_VBusCmd_BumpDown() 
-	{
-		_carriage.carriageWheels_FeedOut_VBusCmd_BumpDown();
-	}
+	//public void carriage_FeedOut_VBusCmd_BumpDown() 
+	//{
+	//	_carriage.carriageWheels_FeedOut_VBusCmd_BumpDown();
+	//}
 	
-	public void carriage_FeedOut_VBusCmd_BumpUp() 
-	{
-		_carriage.carriageWheels_FeedOut_VBusCmd_BumpUp();
-	}
+	//public void carriage_FeedOut_VBusCmd_BumpUp() 
+	//{
+	//	_carriage.carriageWheels_FeedOut_VBusCmd_BumpUp();
+	//}
 	
 	public void carriage_FeedOut_VBusCmd_IndexBumpUp()
 	{
-		_carriage.carriage_FeedOut_VBusCmd_IndexBumpUp();
+		_carriage.carriageWheels_FeedOut_VBusCmd_IndexBumpUp();
 	}
 	
 	public void carriage_FeedOut_VBusCmd_IndexBumpDown()
 	{
 		_carriage.carriage_FeedOut_VBusCmd_IndexBumpDown();	
 	}
+	
+	public boolean isCubeInCarriage() {
+		return _carriage.isCubeInCarriage();
+	}
+	
+	//public void ejectCube(double joystickCommand) 
+	//{
+	//	_carriage.feedOut(joystickCommand);
+	//}
 	
 	//=====================================================================================	
 	// Utility Methods
