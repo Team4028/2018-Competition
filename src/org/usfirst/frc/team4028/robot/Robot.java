@@ -150,7 +150,7 @@ public class Robot extends IterativeRobot {
 		_chassis.zeroGyro();
 		_chassis.setBrakeMode(true);
 		
-		_infeed.reZeroArms();
+		//_infeed.reZeroArms();
 
 		// init data logging
 		_dataLogger = GeneralUtilities.setupLogging("auton");
