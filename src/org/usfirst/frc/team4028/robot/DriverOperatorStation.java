@@ -395,11 +395,11 @@ public class DriverOperatorStation {
 		return _operatorGamepad.getStartButtonPressed();
 	}
 	
-	public boolean getIsOperator_ElevatorScaleHgt_BtnJustPressed() {
+	public boolean getIsOperator_ElevatorNeutralScaleHgt_BtnJustPressed() {
 		return _operatorGamepad.getYButtonPressed();
 	}
 	 
-	public boolean getIsOperator_ElevatorPyrmdLvl1Hgt_BtnJustPressed() {
+	public boolean getIsOperator_ElevatorScalePositionBumpDown_BtnJustPressed() {
 		return _operatorGamepad.getXButtonPressed();
 	}
 	
@@ -407,7 +407,7 @@ public class DriverOperatorStation {
 		return _operatorGamepad.getAButtonPressed();
 	}	
 
-	public boolean getIsOperator_ElevatorSwitchHgt_BtnJustPressed() {
+	public boolean getIsOperator_ElevatorScaleHeightBumpUp_BtnJustPressed() {
 		return _operatorGamepad.getBButtonPressed();
 	}
 	
@@ -415,9 +415,9 @@ public class DriverOperatorStation {
 		return _operatorGamepad.getBumperPressed(Hand.kLeft);
 	}
 
-//		public boolean getIsOperator_RightBumper_BtnJustPressed() {
-//			return _operatorGamepad.getBumperPressed(Hand.kRight);
-//		}
+	public boolean getIsOperator_ElevatorSwitchHeight_BtnJustPressed() {
+		return _operatorGamepad.getBumperPressed(Hand.kRight);
+	}
 	
 //		public boolean getIsOperator_LeftStick_BtnJustPressed() {
 //			return _operatorGamepad.getStickButtonPressed(Hand.kLeft);

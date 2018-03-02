@@ -34,7 +34,8 @@ public class Dashboard {
 		SCALE_OUTSIDE,
 		DOUBLE_SCALE,
 		SCALE_THEN_SWITCH,
-		DOUBLE_SCALE_THEN_SWITCH
+		DOUBLE_SCALE_THEN_SWITCH,
+		TEST_AUTON
 	}
 	
 	private enum STARTING_SIDE {
@@ -57,6 +58,7 @@ public class Dashboard {
 		_autonModeChooser.addObject("Double Scale", AUTON_MODE.DOUBLE_SCALE);
 		_autonModeChooser.addObject("Scale then Switch", AUTON_MODE.SCALE_THEN_SWITCH);
 		_autonModeChooser.addObject("Double Scale Then Switch", AUTON_MODE.DOUBLE_SCALE_THEN_SWITCH);
+		_autonModeChooser.addObject("Test Auton: DO NOT SELECT", AUTON_MODE.TEST_AUTON);
 		SmartDashboard.putData("AUTON MODE: ", _autonModeChooser);
 		
 		_autonStartingSideChooser.addDefault("LEFT", STARTING_SIDE.LEFT);
@@ -136,6 +138,10 @@ public class Dashboard {
 						return new ScaleThenSwitchOppositeSide(_isScaleLeft, _isStartingLeft);
 					}
 				}
+				
+			case TEST_AUTON:
+				return new TestAuton();
+				
 			default:
 				return new DoNothing();
 		}

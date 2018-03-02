@@ -320,7 +320,7 @@ public class CubeHandler2 implements Subsystem {
 	{
 		if(_infeed.getInfeedArmState() == INFEED_ARM_STATE.MOVE_TO_POSITION_AND_HOLD)
 		{
-			_infeed.reZeroArms();
+			//_infeed.reZeroArms();
 		}
 	}
 	

@@ -46,9 +46,10 @@ public class Elevator implements Subsystem {
 	public enum ELEVATOR_PRESET_POSITION {
 		HOME,
 		INFEED_HEIGHT,
-		CUBE_ON_PYRAMID_LEVEL_1,
+		LOW_SCALE_HEIGHT,
+		NEUTRAL_SCALE_HEIGHT,
+		HIGH_SCALE_HEIGHT,
 		SWITCH_HEIGHT,
-		SCALE_HEIGHT,
 		OTHER
 	}
 	
@@ -58,6 +59,7 @@ public class Elevator implements Subsystem {
 	private long _elevatorHomeStartTime;
 	private int _targetElevatorPosition;
 	private double _targetElevatorVelocity;
+	private int _elevatorScaleOffset = 0;
 		
 	private double _actualPositionNU = 0;
 	private double _actualVelocityNU_100mS = 0;
@@ -83,8 +85,9 @@ public class Elevator implements Subsystem {
 	public static final double NATIVE_UNITS_PER_INCH_CONVERSION = (28510/78.75);//(29638 / 41);
 	
 	// hardcoded preset positions (in native units, 0 = home position)
-	private static final int SCALE_HEIGHT_POSITION = InchesToNativeUnits(80);
-	private static final int CUBE_ON_PYRAMID_LEVEL_1_POSITION = InchesToNativeUnits(65);
+	private static final int HIGH_SCALE_HEIGHT_POSITION = InchesToNativeUnits(80);
+	private static final int NEUTRAL_SCALE_HEIGHT_POSITION = InchesToNativeUnits(72.5);
+	private static final int LOW_SCALE_HEIGHT_POSITION = InchesToNativeUnits(65);
 	private static final int SWITCH_HEIGHT_POSITION = InchesToNativeUnits(30);
 	private static final int CUBE_ON_FLOOR_POSITION = InchesToNativeUnits(0);
 	private static final int INFEED_POSITION = 0;
@@ -93,6 +96,9 @@ public class Elevator implements Subsystem {
 //	private static final int ELEVATOR_MAX_TRAVEL = InchesToNativeUnits(41);
 	private static final int UP_SOFT_LIMIT = InchesToNativeUnits(90.0);
 	private static final int DOWN_SOFT_LIMIT = InchesToNativeUnits(3.0);
+	
+	//Bump Position Up/Down on Elevator Constant
+	private static final int BUMP_AMOUNT_IN_NU = InchesToNativeUnits(3);
 	
 	/*
 	 * Moveable Slide Top to Bottom = 48.5 in
@@ -299,8 +305,16 @@ public class Elevator implements Subsystem {
 							}
 							else {
 								SetPidSlotToUse("GotoDown", MOVING_DOWN_PID_SLOT_INDEX);
-							}					
-							_elevatorMasterMotor.set(ControlMode.MotionMagic, _targetElevatorPosition, 0);
+							}
+							
+							if(_targetElevatorPosition == NEUTRAL_SCALE_HEIGHT_POSITION) {
+								_elevatorMasterMotor.set(ControlMode.MotionMagic, _targetElevatorPosition + _elevatorScaleOffset, 0);
+							}
+							else {
+								_elevatorMasterMotor.set(ControlMode.MotionMagic, _targetElevatorPosition, 0);
+							}
+							
+							
 						}
 						_lastScanTimeStamp = new Date().getTime();
 						_lastScanActualVelocityNU_100mS = _actualVelocityNU_100mS;					
@@ -423,15 +437,36 @@ public class Elevator implements Subsystem {
 					}
 					break;
 					
-				case CUBE_ON_PYRAMID_LEVEL_1:
+				case LOW_SCALE_HEIGHT:
 					if((_elevatorState !=ELEVATOR_STATE.GOTO_TARGET_POSITION && _elevatorState !=ELEVATOR_STATE.HOLD_TARGET_POSITION)
-							|| _targetElevatorPosition != CUBE_ON_PYRAMID_LEVEL_1_POSITION)
+							|| _targetElevatorPosition != LOW_SCALE_HEIGHT_POSITION)
 					{
-						_targetElevatorPosition = CUBE_ON_PYRAMID_LEVEL_1_POSITION;
-						ReportStateChg("ElevatorAxis (State) [" + _elevatorState.toString() + "] ==> [GOTO_TARGET_POSTION]:[CUBE_ON_PYRAMID_LEVEL_1_POSITION]");
+						_targetElevatorPosition = LOW_SCALE_HEIGHT_POSITION;
+						ReportStateChg("ElevatorAxis (State) [" + _elevatorState.toString() + "] ==> [GOTO_TARGET_POSTION]:[LOW_SCALE_HEIGHT_POSITION]");
 						_elevatorState = ELEVATOR_STATE.GOTO_TARGET_POSITION;
 					}
 					break;
+										
+				case NEUTRAL_SCALE_HEIGHT:
+					if((_elevatorState !=ELEVATOR_STATE.GOTO_TARGET_POSITION && _elevatorState !=ELEVATOR_STATE.HOLD_TARGET_POSITION)
+							|| _targetElevatorPosition != NEUTRAL_SCALE_HEIGHT_POSITION)
+					{				
+						_targetElevatorPosition = NEUTRAL_SCALE_HEIGHT_POSITION;
+						_elevatorScaleOffset = 0;
+						ReportStateChg("ElevatorAxis (State) [" + _elevatorState.toString() + "] ==> [GOTO_TARGET_POSTION]:[NEUTRAL_SCALE_HEIGHT_POSITION]");
+						_elevatorState = ELEVATOR_STATE.GOTO_TARGET_POSITION;
+					}
+					break;
+					
+				case HIGH_SCALE_HEIGHT:
+					if((_elevatorState !=ELEVATOR_STATE.GOTO_TARGET_POSITION && _elevatorState !=ELEVATOR_STATE.HOLD_TARGET_POSITION)
+							|| _targetElevatorPosition != HIGH_SCALE_HEIGHT_POSITION)
+					{
+						_targetElevatorPosition = HIGH_SCALE_HEIGHT_POSITION;
+						ReportStateChg("ElevatorAxis (State) [" + _elevatorState.toString() + "] ==> [GOTO_TARGET_POSTION]:[HIGH_SCALE_HEIGHT_POSITION]");
+						_elevatorState = ELEVATOR_STATE.GOTO_TARGET_POSITION;
+					}
+					break;		
 					
 				case SWITCH_HEIGHT:
 					if((_elevatorState !=ELEVATOR_STATE.GOTO_TARGET_POSITION && _elevatorState !=ELEVATOR_STATE.HOLD_TARGET_POSITION)
@@ -441,17 +476,7 @@ public class Elevator implements Subsystem {
 						ReportStateChg("ElevatorAxis (State) [" + _elevatorState.toString() + "] ==> [GOTO_TARGET_POSTION]:[SWITCH_HEIGHT_POSITION]");
 						_elevatorState = ELEVATOR_STATE.GOTO_TARGET_POSITION;
 					}
-					break;
-					
-				case SCALE_HEIGHT:
-					if((_elevatorState !=ELEVATOR_STATE.GOTO_TARGET_POSITION && _elevatorState !=ELEVATOR_STATE.HOLD_TARGET_POSITION)
-							|| _targetElevatorPosition != SCALE_HEIGHT_POSITION)
-					{
-						_targetElevatorPosition = SCALE_HEIGHT_POSITION;
-						ReportStateChg("ElevatorAxis (State) [" + _elevatorState.toString() + "] ==> [GOTO_TARGET_POSTION]:[SCALE_HEIGHT_POSITION]");
-						_elevatorState = ELEVATOR_STATE.GOTO_TARGET_POSITION;
-					}
-					break;
+					break;			
 					
 				case OTHER:
 					DriverStation.reportWarning("ElevatorAxis (State) ILLEGAL value for presetPosition", false);
@@ -587,6 +612,25 @@ public class Elevator implements Subsystem {
 		_isSoftLimitsEnabled = false;
 	}
 	
+	public void elevatorScaleHeightBumpPositionUp() {
+		if(_elevatorScaleOffset < 12) {
+			_elevatorScaleOffset = _elevatorScaleOffset; // + BUMP_AMOUNT_IN_NU;
+		}
+		else {
+			System.out.println("Elevator Scale Position Bump Tooooooo Large");
+		}
+		
+	}
+	
+	public void elevatorScaleHeightBumpPositionDown() {
+		if(_elevatorScaleOffset > -12) {
+			_elevatorScaleOffset = _elevatorScaleOffset; // - BUMP_AMOUNT_IN_NU;
+		}
+		else {
+			System.out.println("Elevator Scale Position Bump Tooooooo Large");	
+		}
+	}
+	
 	//=====================================================================================
 	// Public Methods for Exposing Elevator Properties
 	//=====================================================================================
@@ -633,6 +677,10 @@ public class Elevator implements Subsystem {
 		}
 	}
 	
+	public boolean isElevatorAtUnsafeHeight() {
+		return _actualPositionNU > LOW_SCALE_HEIGHT_POSITION;
+	}
+	
 	// ===============================================================================================================
 	// General Purpose Utility Methods
 	// ===============================================================================================================
@@ -676,6 +724,7 @@ public class Elevator implements Subsystem {
 		SmartDashboard.putNumber("Elevator:TargetPosition",_targetElevatorPosition);
 		SmartDashboard.putBoolean("Elevator:IsInPosition", IsAtTargetPosition());
 		SmartDashboard.putString("Elevator:State", _elevatorState.toString());
+		SmartDashboard.putNumber("Elevator:Scale Bump", _elevatorScaleOffset);
 	}
 	
 	// add data elements to be logged  to the input param (which is passed by ref)
@@ -684,7 +733,10 @@ public class Elevator implements Subsystem {
 		logData.AddData("Elevator:PostionNu", String.valueOf(_actualPositionNU));	
 		logData.AddData("Elevator:VelocityNu", String.valueOf(_actualVelocityNU_100mS));	
 		logData.AddData("Elevator:AccelNu", String.valueOf(_actualAccelerationNU_100mS_mS));	
-		logData.AddData("Elevator:State", _elevatorState.toString());	
+		logData.AddData("Elevator:State", _elevatorState.toString());
+		logData.AddData("Is Elevator At Target Position?", String.valueOf(IsAtTargetPosition()));
+		logData.AddData("Elevator Target Position:", String.valueOf(_targetElevatorPosition));
+		logData.AddData("Elevator Scale Height Bump Amount:", String.valueOf(_elevatorScaleOffset));
 	}
 	
 	// private helper method to control how we write to the drivers station

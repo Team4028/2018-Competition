@@ -8,7 +8,6 @@ import org.usfirst.frc.team4028.robot.paths.Paths;
 import org.usfirst.frc.team4028.robot.paths.Paths.LeftSide;
 import org.usfirst.frc.team4028.robot.paths.Paths.RightSide;
 import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_PRESET_POSITION;
-import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_ARM_TARGET_POSITION;
 import org.usfirst.frc.team4028.util.control.Path;
 
 public class ScaleOutside extends AutonBase{
@@ -36,7 +35,6 @@ public class ScaleOutside extends AutonBase{
 		// Drive to scale while storing infeed and raising elevator
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 				new RunMotionProfileAction(toScale),
-				new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.STORE),
 				new SeriesAction(Arrays.asList(new Action[] {
 						new WaitAction(elevatorWaitTime),
 						new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SWITCH_HEIGHT)
@@ -48,7 +46,7 @@ public class ScaleOutside extends AutonBase{
 						new WaitAction(0.7),
 						new TurnAction(targetTurnAngle, isTurnRight)
 				})),
-				new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SCALE_HEIGHT)
+				new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.HIGH_SCALE_HEIGHT)
 		})));
 		runAction(new DriveSetDistanceAction(15.0));
 		// Outfeed cube for 0.2s

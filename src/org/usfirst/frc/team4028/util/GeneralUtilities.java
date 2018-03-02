@@ -116,4 +116,18 @@ public class GeneralUtilities {
     	talon.configMotionCruiseVelocity(constants[0], 0);
     	talon.configMotionAcceleration(constants[1], 0);
     }
+    
+ // This method makes sure a value is between a max & min value
+ 	public static int ClampValue(int originalValue, int minValue, int maxValue) {
+ 		int clampedValue = originalValue;
+ 		
+ 		if (clampedValue > maxValue) {
+ 			clampedValue = maxValue;
+ 		}
+ 		else if (clampedValue < minValue) {
+ 			clampedValue = minValue;
+ 		}
+ 		
+ 		return clampedValue;
+ 	}
 }
