@@ -1,5 +1,6 @@
 package org.usfirst.frc.team4028.robot.auton.actions;
 
+import org.usfirst.frc.team4028.robot.subsystems.Carriage.CARRIAGE_WHEELS_OUT_VBUS_INDEX;
 import org.usfirst.frc.team4028.robot.subsystems.CubeHandler2;
 
 public class OutfeedCubeAction implements Action {
@@ -10,7 +11,7 @@ public class OutfeedCubeAction implements Action {
 
 	@Override
 	public void update() {
-		_cubeHandler.ejectCube(1.0);
+		_cubeHandler.setAutonCarriageSpeed(CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_100);
 	}
 
 	@Override

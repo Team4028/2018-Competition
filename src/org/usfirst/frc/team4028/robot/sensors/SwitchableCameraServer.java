@@ -21,6 +21,8 @@ public class SwitchableCameraServer {
 	UsbCamera _camera3;
     MjpegServer _rawVideoServer;
     private CircularQueue<UsbCamera> _camList;
+    
+    private static final int CAMERA_TCP_PORT = 1180;
 	
     private static SwitchableCameraServer _instance = new SwitchableCameraServer();
 	String _currentCamera;
@@ -38,7 +40,7 @@ public class SwitchableCameraServer {
 		int height = 480;
 		int frames_per_sec = 15;
 		
-		_rawVideoServer = new MjpegServer("raw_video_server", 8080);    	
+		_rawVideoServer = new MjpegServer("raw_video_server", CAMERA_TCP_PORT);    	
 		
 		// build list of available cameras
 		_camList = new CircularQueue<UsbCamera>();

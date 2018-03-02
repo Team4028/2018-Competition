@@ -1,6 +1,7 @@
 package org.usfirst.frc.team4028.robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -44,13 +45,13 @@ public class Dashboard {
 	private SendableChooser<AUTON_MODE> _autonModeChooser = new SendableChooser<>();
 	private SendableChooser<STARTING_SIDE> _autonStartingSideChooser = new SendableChooser<>();
 	
-	private boolean _isSwitchLeft, _isScaleLeft, _isStartingLeft;
+	private boolean _isSwitchLeft, _isScaleLeft, _isStartingLeft = true;
 	
 	private Dashboard() {
-		_autonModeChooser.addDefault("Do Nothing", AUTON_MODE.DO_NOTHING);
+		_autonModeChooser.addObject("Do Nothing", AUTON_MODE.DO_NOTHING);
 		_autonModeChooser.addObject("Auto Run", AUTON_MODE.AUTO_RUN);
 		_autonModeChooser.addObject("Switch", AUTON_MODE.SWITCH);
-		_autonModeChooser.addObject("Double Switch", AUTON_MODE.DOUBLE_SWITCH);
+		_autonModeChooser.addDefault("Double Switch", AUTON_MODE.DOUBLE_SWITCH);
 		_autonModeChooser.addObject("Scale", AUTON_MODE.SCALE);
 		_autonModeChooser.addObject("Scale Outside", AUTON_MODE.SCALE_OUTSIDE);
 		_autonModeChooser.addObject("Double Scale", AUTON_MODE.DOUBLE_SCALE);
@@ -65,14 +66,20 @@ public class Dashboard {
 	
 	public boolean isGameDataReceived() {
 		String gameData = DriverStation.getInstance().getGameSpecificMessage();
+		//String gameData = "RRR";
 		
 		if (gameData.length() > 0) {
 			_isSwitchLeft = (gameData.charAt(0) == 'L');
 			_isScaleLeft = (gameData.charAt(1) == 'L');
+			DriverStation.reportWarning("GAMEDATA: "+ gameData, false);
 			return true;
 		} else {
 			return false;
 		}
+	}
+	
+	public boolean isBlueAlliance() {
+		return DriverStation.getInstance().getAlliance() == Alliance.Blue;
 	}
 	
 	/** This prints once during robotInit */
@@ -132,5 +139,9 @@ public class Dashboard {
 			default:
 				return new DoNothing();
 		}
+	}
+	
+	public void outputToDashboard() {
+		SmartDashboard.putString("AUTON SELECTED", _autonModeChooser.getSelected().toString());
 	}
 }

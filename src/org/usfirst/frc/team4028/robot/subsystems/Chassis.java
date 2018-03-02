@@ -441,5 +441,6 @@ public class Chassis implements Subsystem {
 		
 		logData.AddData("Right Actual Velocity [in/s]", String.valueOf(GeneralUtilities.RoundDouble(-getRightVelocityInchesPerSec(), 2)));
 		logData.AddData("Right Target Velocity [in/s]", String.valueOf(GeneralUtilities.RoundDouble(_rightTargetVelocity, 2)));
+		logData.AddData("Chassis: Angle", String.valueOf(GeneralUtilities.RoundDouble(getHeading(), 2)));
 	}
 }

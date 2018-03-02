@@ -136,7 +136,7 @@ public class Paths {
 		        path.setIsReversed(false);
 		        return path;
 			case R_SWITCH:
-				path = buildPathFromWaypoints(flipPath(getLeftSwitchWaypoints()), maxAccel, maxDecel,inertiaSteeringGain);
+				path = buildPathFromWaypoints(getRightSwitchWaypoints(), maxAccel, maxDecel,inertiaSteeringGain);
 				path.setIsReversed(false);
 				return path;
 				
@@ -251,20 +251,20 @@ public class Paths {
 				return path;
 				
 			case L_SWITCH:
-				path = buildPathFromWaypoints(getLeftSwitchWaypoints(), Constants.PATH_DEFAULT_ACCEL, Constants.PATH_DEFAULT_DECEL, 0.0065);
+				path = buildPathFromWaypoints(AdaptedPaths.adaptLeftSwitch(), Constants.PATH_DEFAULT_ACCEL, Constants.PATH_DEFAULT_DECEL, 0.0065);
 				path.setIsReversed(false);
 				return path;
 			case R_SWITCH:
-				path = buildPathFromWaypoints(flipPath(getLeftSwitchWaypoints()), Constants.PATH_DEFAULT_ACCEL, Constants.PATH_DEFAULT_DECEL, 0.0065);
+				path = buildPathFromWaypoints(AdaptedPaths.adaptRightSwitch(), Constants.PATH_DEFAULT_ACCEL, Constants.PATH_DEFAULT_DECEL, 0.0065);
 				path.setIsReversed(false);
 				return path;
 				
 			case L_SWITCH_TO_FRONT_OF_PYRAMID:
-				path = buildPathFromWaypoints(getLeftSwitchtoFrontofPyramidWaypoints(), Constants.PATH_DEFAULT_ACCEL, Constants.PATH_DEFAULT_DECEL, 0.006);
+				path = buildPathFromWaypoints(AdaptedPaths.adaptLSwitchtoFrontofPyramid(), Constants.PATH_DEFAULT_ACCEL, Constants.PATH_DEFAULT_DECEL, 0.006);
 				path.setIsReversed(true);
 				return path;
 			case R_SWITCH_TO_FRONT_OF_PYRAMID:
-				path = buildPathFromWaypoints(getRightSwitchtoFrontofPyramidWaypoints(), Constants.PATH_DEFAULT_ACCEL, Constants.PATH_DEFAULT_DECEL, 0.008);
+				path = buildPathFromWaypoints(AdaptedPaths.adaptRSwitchtoFrontofPyramid(), Constants.PATH_DEFAULT_ACCEL, Constants.PATH_DEFAULT_DECEL, 0.008);
 				path.setIsReversed(true);
 				return path;
 				
@@ -278,11 +278,11 @@ public class Paths {
 				return path;
 				
 			case S_TURN_TO_L_SWITCH:
-				path = buildPathFromWaypoints(getFrontofPyramidtoLeftSwitchWaypoints(), Constants.PATH_DEFAULT_ACCEL, Constants.PATH_DEFAULT_DECEL, 0.01);
+				path = buildPathFromWaypoints(AdaptedPaths.adaptSTurnFromPyramidtoLeft(), Constants.PATH_DEFAULT_ACCEL, Constants.PATH_DEFAULT_DECEL, 0.01);
 				path.setIsReversed(false);
 				return path;
 			case S_TURN_TO_R_SWITCH:
-				path = buildPathFromWaypoints(getFrontofPyramidtoRightSwitchWaypoints(), Constants.PATH_DEFAULT_ACCEL, Constants.PATH_DEFAULT_DECEL, 0.01);
+				path = buildPathFromWaypoints(AdaptedPaths.adaptSTurnFromPyramidtoRight(), Constants.PATH_DEFAULT_ACCEL, Constants.PATH_DEFAULT_DECEL, 0.01);
 				path.setIsReversed(false);
 				return path;
 				
@@ -346,10 +346,19 @@ public class Paths {
 	// Switch (First Cube)
 	protected static ArrayList<Waypoint> getLeftSwitchWaypoints() {
 		ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
-		sWaypoints.add(new Waypoint(20,162,0,0));
-        sWaypoints.add(new Waypoint(50,162,25,80));
+		sWaypoints.add(new Waypoint(20,166,0,0));
+        sWaypoints.add(new Waypoint(50,166,25,80));
         sWaypoints.add(new Waypoint(90,107,30,80));
-        sWaypoints.add(new Waypoint(120,107,0,80));
+        sWaypoints.add(new Waypoint(125,107,0,80));
+        return sWaypoints;
+	}
+	
+	protected static ArrayList<Waypoint> getRightSwitchWaypoints() {
+		ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
+		sWaypoints.add(new Waypoint(20,166,0,0));
+        sWaypoints.add(new Waypoint(50,166,25,80));
+        sWaypoints.add(new Waypoint(90,217,30,80));
+        sWaypoints.add(new Waypoint(125,217,0,80));
         return sWaypoints;
 	}
 	
@@ -358,8 +367,8 @@ public class Paths {
 		ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
         sWaypoints.add(new Waypoint(123,217,0,0));
         sWaypoints.add(new Waypoint(89,217,20,70));
-        sWaypoints.add(new Waypoint(60,162,15,50));
-        sWaypoints.add(new Waypoint(45,162,0,40));
+        sWaypoints.add(new Waypoint(60,155,15,50));
+        sWaypoints.add(new Waypoint(45,155,0,40));
         return sWaypoints;
 	}
 	protected static ArrayList<Waypoint> getLeftSwitchtoFrontofPyramidWaypoints() {
@@ -376,7 +385,7 @@ public class Paths {
 		sWaypoints.add(new Waypoint(45,162,0,0));
 		sWaypoints.add(new Waypoint(65,162,20,80));
 		sWaypoints.add(new Waypoint(95,107,20,80));
-        sWaypoints.add(new Waypoint(118,107,0,80));
+        sWaypoints.add(new Waypoint(126,107,0,80));
         return sWaypoints;
 	}
 	
@@ -385,14 +394,14 @@ public class Paths {
 		sWaypoints.add(new Waypoint(45,162,0,0));
 		 sWaypoints.add(new Waypoint(60,162,15,80));
 		 sWaypoints.add(new Waypoint(89,217,20,80));
-        sWaypoints.add(new Waypoint(119,217,0,80));
+        sWaypoints.add(new Waypoint(130,217,0,80));
         return sWaypoints;
 	}
 	
 	protected static ArrayList<Waypoint> getToPyramidWaypoints() {
         ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
         sWaypoints.add(new Waypoint(45,162,0,0));
-        sWaypoints.add(new Waypoint(75,162,0,60));
+        sWaypoints.add(new Waypoint(80,162,0,60));
         return sWaypoints;
 	}
 	
@@ -440,7 +449,7 @@ public class Paths {
 				return path; 
 				
 			case L_SWITCH_TO_L_SCALE_SECOND_CUBE:
-				path = buildPathFromWaypoints(getLeftSwitchToLeftScaleSecondCubeWaypoints(), Constants.PATH_DEFAULT_ACCEL, Constants.PATH_DEFAULT_DECEL, 0.0);
+				path = buildPathFromWaypoints(getLeftScaleToLeftSwitch2Waypoints(), Constants.PATH_DEFAULT_ACCEL, Constants.PATH_DEFAULT_DECEL, 0.0);
 				path.setIsReversed(true);
 				return path;
 				
@@ -464,8 +473,8 @@ public class Paths {
 	protected static ArrayList<Waypoint>  getLeftScaleFromLeftWaypoints() {
 		ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
 		sWaypoints.add(new Waypoint(20,46,0,0));
-        sWaypoints.add(new Waypoint(227,46,30,120));
-        sWaypoints.add(new Waypoint(279,74,0,100));
+        sWaypoints.add(new Waypoint(221,46,30,120));
+        sWaypoints.add(new Waypoint(273,74,0,100));
     	return sWaypoints;
 	}
 	
@@ -592,13 +601,13 @@ public class Paths {
 	protected static ArrayList<Waypoint> getLeftScaleFromRightWaypoints() {
 		ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
         sWaypoints.add(new Waypoint(20,278,0,0));
-        sWaypoints.add(new Waypoint(195,278,0,120));
-        sWaypoints.add(new Waypoint(240,278,40,120));
-        sWaypoints.add(new Waypoint(240,228,0,120));
-        sWaypoints.add(new Waypoint(240,214,0,20));
-        sWaypoints.add(new Waypoint(240,109,0,120));
-        sWaypoints.add(new Waypoint(240,74,35,80));
-        sWaypoints.add(new Waypoint(275,74,0,40));
+        sWaypoints.add(new Waypoint(191,278,0,120));
+        sWaypoints.add(new Waypoint(232,278,40,120));
+        sWaypoints.add(new Waypoint(232,228,0,120));
+        sWaypoints.add(new Waypoint(232,214,0,20));
+        sWaypoints.add(new Waypoint(232,109,0,100));
+        sWaypoints.add(new Waypoint(232,74,35,80));
+        sWaypoints.add(new Waypoint(268,74,0,40));
         return sWaypoints;
 	}
 	

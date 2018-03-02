@@ -400,7 +400,7 @@ public class DriverOperatorStation {
 	}
 	 
 	public boolean getIsOperator_ElevatorPyrmdLvl1Hgt_BtnJustPressed() {
-		return _operatorGamepad.getBButtonPressed();
+		return _operatorGamepad.getXButtonPressed();
 	}
 	
 	public boolean getIsOperator_ElevatorInfeedHgt_BtnJustPressed() {
@@ -408,7 +408,7 @@ public class DriverOperatorStation {
 	}	
 
 	public boolean getIsOperator_ElevatorSwitchHgt_BtnJustPressed() {
-		return _operatorGamepad.getXButtonPressed();
+		return _operatorGamepad.getBButtonPressed();
 	}
 	
 	public boolean getIsOperator_ToggleClimberServo_BtnJustPressed() {

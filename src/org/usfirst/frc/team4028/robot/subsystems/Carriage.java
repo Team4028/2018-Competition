@@ -406,6 +406,10 @@ public class Carriage implements Subsystem {
 	
 	public void autonCarriageSpeedChooser(CARRIAGE_WHEELS_OUT_VBUS_INDEX setSpeed) {
 		_carriageWheelsOutVBusIndex = setSpeed;
+		if(_carriageWheelsState != CARRIAGE_WHEELS_STATE.FEED_OUT) {
+			ReportStateChg("Carriage Wheels (State) " + _carriageWheelsState.toString() + " ==> [FEED_OUT]");
+			_carriageWheelsState = CARRIAGE_WHEELS_STATE.FEED_OUT;
+		}
 	}
 	
 	@Override

@@ -107,6 +107,7 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void disabledPeriodic() {
 		stopAll();
+		_dashboard.outputToDashboard();
 	}
 	
 	/** Called once, each time the robot enters autonomous mode. */
@@ -155,6 +156,8 @@ public class Robot extends IterativeRobot {
 		_dataLogger = GeneralUtilities.setupLogging("auton");
 		// snapshot time to control spamming
 		_lastDashboardWriteTimeMSec = new Date().getTime();
+		
+		_dashboard.outputToDashboard();
 		
 		_autonStartTime = System.currentTimeMillis();
 	}

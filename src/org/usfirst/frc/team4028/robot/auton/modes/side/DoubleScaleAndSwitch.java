@@ -61,7 +61,7 @@ public class DoubleScaleAndSwitch extends AutonBase{
 							new TurnAction(targetTurnAngle, isRightTurnToSwitch),
 							new SimultaneousAction(Arrays.asList(new Action[] {
 									new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.WIDE),
-									new DriveSetDistanceAction(38.0)
+									new DriveSetDistanceAction(36.0)
 							}))
 					}))	
 		})));

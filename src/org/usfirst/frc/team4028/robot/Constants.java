@@ -1,5 +1,8 @@
 package org.usfirst.frc.team4028.robot;
 
+import org.usfirst.frc.team4028.robot.paths.profiles.MiamiValleyField;
+import org.usfirst.frc.team4028.robot.paths.profiles.PracticeField;
+
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.SPI.Port;
@@ -111,18 +114,31 @@ public class Constants {
     public static final double WARP_SPEED = 100;
     public static final double KEEEEEEEEEEEEEEEEEEENS_SPEED = 120;
     
-    public static final double LEFT_SWITCH_FRONT_X_DELTA = 0;
-    public static final double LEFT_SWITCH_FRONT_Y_DELTA = 0;
-    public static final double LEFT_SWITCH_BACK_X_DELTA = 0;
-    public static final double LEFT_SCALE_X_DELTA = 0;
-    public static final double LEFT_SCALE_Y_DELTA = 0;
-    public static final double LEFT_SWITCH_BACK_DELTA_Y = 0;
-    public static final double RIGHT_SWITCH_FRONT_X_DELTA = 0;
-    public static final double RIGHT_SWITCH_FRONT_Y_DELTA = 0;
-    public static final double RIGHT_SWITCH_BACK_X_DELTA = 0;
-    public static final double RIGHT_SCALE_X_DELTA = 0;
-    public static final double RIGHT_SCALE_Y_DELTA = 0;
-    public static final double RIGHT_SWITCH_BACK_DELTA_Y = 0;
+    public static final double BLUE_LEFT_SWITCH_FRONT_X_DELTA = MiamiValleyField._leftSwitchFrontBlueX-PracticeField._leftSwitchFrontBlueX;
+    public static final double BLUE_LEFT_SWITCH_FRONT_Y_DELTA = MiamiValleyField._leftSwitchFrontBlueY-PracticeField._leftSwitchFrontBlueY;
+    public static final double BLUE_LEFT_SWITCH_BACK_X_DELTA = MiamiValleyField._leftSwitchBackBlueX-PracticeField._leftSwitchBackBlueX;
+    public static final double BLUE_LEFT_SCALE_X_DELTA = MiamiValleyField._leftScaleBlueX-PracticeField._leftScaleBlueX;
+    public static final double BLUE_LEFT_SCALE_Y_DELTA = MiamiValleyField._leftScaleBlueY-PracticeField._leftScaleBlueY;
+    public static final double BLUE_LEFT_SWITCH_BACK_DELTA_Y = MiamiValleyField._leftSwitchBackBlueY-PracticeField._leftSwitchBackBlueY;
+    public static final double BLUE_RIGHT_SWITCH_FRONT_X_DELTA = MiamiValleyField._rightSwitchFrontBlueX-PracticeField._rightSwitchFrontBlueX;
+    public static final double BLUE_RIGHT_SWITCH_FRONT_Y_DELTA = MiamiValleyField._rightSwitchFrontBlueY-PracticeField._rightSwitchFrontBlueY;
+    public static final double BLUE_RIGHT_SWITCH_BACK_X_DELTA = MiamiValleyField._rightSwitchBackBlueX-PracticeField._rightSwitchBackBlueX;
+    public static final double BLUE_RIGHT_SCALE_X_DELTA = MiamiValleyField._rightScaleBlueX-PracticeField._rightScaleBlueX;
+    public static final double BLUE_RIGHT_SCALE_Y_DELTA = MiamiValleyField._rightScaleBlueY-PracticeField._rightScaleBlueY;
+    public static final double BLUE_RIGHT_SWITCH_BACK_DELTA_Y = MiamiValleyField._rightSwitchBackBlueY-PracticeField._rightSwitchBackBlueY;
+    
+    public static final double RED_LEFT_SWITCH_FRONT_X_DELTA = MiamiValleyField._leftSwitchFrontRedX-PracticeField._leftSwitchFrontRedX;
+    public static final double RED_LEFT_SWITCH_FRONT_Y_DELTA = MiamiValleyField._leftSwitchFrontRedY-PracticeField._leftSwitchFrontRedY;
+    public static final double RED_LEFT_SWITCH_BACK_X_DELTA = MiamiValleyField._leftSwitchBackRedX-PracticeField._leftSwitchBackRedX;
+    public static final double RED_LEFT_SCALE_X_DELTA = MiamiValleyField._leftScaleRedX-PracticeField._leftScaleRedX;
+    public static final double RED_LEFT_SCALE_Y_DELTA = MiamiValleyField._leftScaleRedY-PracticeField._leftScaleRedY;
+    public static final double RED_LEFT_SWITCH_BACK_DELTA_Y = MiamiValleyField._leftSwitchBackRedY-PracticeField._leftSwitchBackRedY;
+    public static final double RED_RIGHT_SWITCH_FRONT_X_DELTA = MiamiValleyField._rightSwitchFrontRedX-PracticeField._rightSwitchFrontRedX;
+    public static final double RED_RIGHT_SWITCH_FRONT_Y_DELTA = MiamiValleyField._rightSwitchFrontRedY-PracticeField._rightSwitchFrontRedY;
+    public static final double RED_RIGHT_SWITCH_BACK_X_DELTA = MiamiValleyField._rightSwitchBackRedX-PracticeField._rightSwitchBackRedX;
+    public static final double RED_RIGHT_SCALE_X_DELTA = MiamiValleyField._rightScaleRedX-PracticeField._rightScaleRedX;
+    public static final double RED_RIGHT_SCALE_Y_DELTA = MiamiValleyField._rightScaleRedY-PracticeField._rightScaleRedY;
+    public static final double RED_RIGHT_SWITCH_BACK_DELTA_Y = MiamiValleyField._rightSwitchBackRedY-PracticeField._rightSwitchBackRedY;
     
     public static final int BIG_NUMBER = (int)1e6;
     public static final double EPSILON_NEGATIVE_6 = 1e-6;
