@@ -144,7 +144,7 @@ public class Infeed  implements Subsystem {
 	private static final double INFEED_SPIN_CUBE_WHEELS_VBUS_COMMAND = 0.2;
 	
 	//Infeed Homing Speed
-	private static final double INFEED_HOMING_VBUS_COMMAND = 0.2;
+	private static final double INFEED_HOMING_VBUS_COMMAND = 0.27; // 0.2  // increase homing speed because of left arm
 	
 	//Conversion Constant
 	private static final double DEGREES_TO_NATIVE_UNITS_CONVERSION = (4096/360);
@@ -287,20 +287,28 @@ public class Infeed  implements Subsystem {
 		// called in Telop & Auton Init
 		@Override
 		public void onStart(double timestamp) {
-			synchronized (Infeed.this) {
+			synchronized (Infeed.this) 
+			{
+				// reset to default startup start
+				_hasLeftArmBeenHomed = false;
+				_hasRightArmBeenHomed = false;
+				
+				_infeedArmState = INFEED_ARM_STATE.NEED_TO_HOME;
+				_infeedWheelsState = INFEED_WHEELS_STATE.STOPPED;
 			}
 		}
 		
 		//=====================================================================================
-		//Looper and State Machine for Commanding Infeed Axis
+		// Looper and State Machine for Commanding Infeed Axis
 		//=====================================================================================
 		@Override
 		public void onLoop(double timestamp) {
 			synchronized (Infeed.this) {	
+				//=====================================================================================
+				// Control Infeed Arms
+				//=====================================================================================
 				switch(_infeedArmState) {
 					case STOPPED:
-						//_leftSwitchbladeMotor.set(ControlMode.MotionMagic, 0);
-						//_leftSwitchbladeMotor.set(ControlMode.MotionMagic, 0);
 						_leftSwitchbladeArmMotor.set(ControlMode.PercentOutput, 0);
 						_leftSwitchbladeArmMotor.set(ControlMode.PercentOutput, 0);
 						break;
@@ -407,6 +415,9 @@ public class Infeed  implements Subsystem {
 						break;
 				}
 				
+				//=====================================================================================
+				// Control Infeed Wheels
+				//=====================================================================================
 				switch (_infeedWheelsState)	{
 					case STOPPED:
 						_leftInfeedWheelMotor.set(ControlMode.PercentOutput,0);
@@ -448,6 +459,12 @@ public class Infeed  implements Subsystem {
 		return _loop;
 	}
 	
+	@Override
+	public void zeroSensors() {
+		_leftSwitchbladeArmMotor.setSelectedSensorPosition(LEFT_INFEED_ARM_ZERO_OFFSET, 0, 0);
+		_rightSwitchbladeArmMotor.setSelectedSensorPosition(RIGHT_INFEED_ARM_ZERO_OFFSET, 0, 0);
+	}
+	
 	//=====================================================================================
 	//Supports Button Mapping to Pre-Set Positions while staying in Same State
 	//=====================================================================================
@@ -477,11 +494,12 @@ public class Infeed  implements Subsystem {
 				 break;
 		}
 		
+		// change state
 		_infeedArmState = INFEED_ARM_STATE.MOVE_TO_POSITION_AND_HOLD;
 	}
 	
 	//=====================================================================================
-	//Methods for Calling Positions of Infeed Arms
+	//Methods for Moving Infeed Arms to Preset Positions
 	//=====================================================================================
 	public void storeArms() {
 		if (_hasLeftArmBeenHomed && _hasRightArmBeenHomed) {
@@ -540,36 +558,36 @@ public class Infeed  implements Subsystem {
 	//=====================================================================================
 	//Method for Driving Infeed Wheels
 	//=====================================================================================
-	public void driveInfeedWheels() {
-		_leftInfeedWheelMotor.set(ControlMode.PercentOutput, INFEED_DRIVE_WHEELS_VBUS_COMMAND);
-		_rightInfeedWheelMotor.set(ControlMode.PercentOutput, INFEED_DRIVE_WHEELS_VBUS_COMMAND);
-	}
+	//public void driveInfeedWheels() {
+	//	_leftInfeedWheelMotor.set(ControlMode.PercentOutput, INFEED_DRIVE_WHEELS_VBUS_COMMAND);
+	//	_rightInfeedWheelMotor.set(ControlMode.PercentOutput, INFEED_DRIVE_WHEELS_VBUS_COMMAND);
+	//}
 	
-	public void driveInfeedWheelsVBus(double joystickCommand) {
-		if(areArmsInPosition()) {
-			_leftInfeedWheelMotor.set(ControlMode.PercentOutput, joystickCommand);
-			_rightInfeedWheelMotor.set(ControlMode.PercentOutput, -1 * joystickCommand);
-		}
-	}
+	//public void driveInfeedWheelsVBus(double joystickCommand) {
+	//	if(areArmsInPosition()) {
+	//		_leftInfeedWheelMotor.set(ControlMode.PercentOutput, joystickCommand);
+	//		_rightInfeedWheelMotor.set(ControlMode.PercentOutput, -1 * joystickCommand);
+	//	}
+	//}
 	
-	public void spinManuverInfeedWheels() {
-		if(areArmsInPosition()) {
-			_leftInfeedWheelMotor.set(ControlMode.PercentOutput, INFEED_SPIN_CUBE_WHEELS_VBUS_COMMAND);
-			_rightInfeedWheelMotor.set(ControlMode.PercentOutput, INFEED_SPIN_CUBE_WHEELS_VBUS_COMMAND);
-		}
-	}
+	//public void spinManuverInfeedWheels() {
+	//	if(areArmsInPosition()) {
+	//		_leftInfeedWheelMotor.set(ControlMode.PercentOutput, INFEED_SPIN_CUBE_WHEELS_VBUS_COMMAND);
+	//		_rightInfeedWheelMotor.set(ControlMode.PercentOutput, INFEED_SPIN_CUBE_WHEELS_VBUS_COMMAND);
+	//	}
+	//}
 	
 	//=====================================================================================
-	//Method for Engr GamePad B
+	// Methods for Driving Infeed Wheels
 	//=====================================================================================
-	public void infeedWheels_FeedIn() {
+	public void feedIn() {
 		if(_infeedWheelsState != INFEED_WHEELS_STATE.FEED_IN) {
 			ReportStateChg("Infeed Arm (State) " + _infeedWheelsState.toString() + " ==> [ENGR_GAMEPAD_B_IN_MODE]");
 			_infeedWheelsState = INFEED_WHEELS_STATE.FEED_IN;
 		}
 	}
 	
-	public void infeedWheels_FeedOut() {
+	public void feedOut() {
 		if(_infeedWheelsState != INFEED_WHEELS_STATE.FEED_OUT) {
 				ReportStateChg("Infeed Arm (State) " + _infeedWheelsState.toString() + " ==> [ENGR_GAMEPAD_B_OUT_MODE]");
 				_infeedWheelsState = INFEED_WHEELS_STATE.FEED_OUT;
@@ -683,7 +701,7 @@ public class Infeed  implements Subsystem {
 		return _infeedArmState;
 	}
 	
-	public INFEED_ARM_TARGET_POSITION getInfeedArmTargetPosition()
+	public INFEED_ARM_TARGET_POSITION getInfeedArmsTargetPosition()
 	{
 		return _infeedArmTargetPosition;
 	}
@@ -736,11 +754,5 @@ public class Infeed  implements Subsystem {
 		if(IS_VERBOSE_LOGGING_ENABLED) {
 			System.out.println(message);
 		}
-	}
-
-	@Override
-	public void zeroSensors() {
-		_leftSwitchbladeArmMotor.setSelectedSensorPosition(LEFT_INFEED_ARM_ZERO_OFFSET, 0, 0);
-		_rightSwitchbladeArmMotor.setSelectedSensorPosition(RIGHT_INFEED_ARM_ZERO_OFFSET, 0, 0);
 	}
 }

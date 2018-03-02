@@ -21,7 +21,7 @@ public class InfeedCubeAction implements Action {
 			_cubeHandler.infeedArms_MoveToPresetPosition(INFEED_ARM_TARGET_POSITION.SQUEEZE);
 		} 
 		else if ((Timer.getFPGATimestamp() - _startTime) < 1.5) {
-			_cubeHandler.stopInfeedAndCarriage();
+			_cubeHandler.stop_InfeedAndCarriage();
 			_cubeHandler.infeedArms_MoveToPresetPosition(INFEED_ARM_TARGET_POSITION.SQUEEZE);
 		} else {
 			_startTime = Timer.getFPGATimestamp();

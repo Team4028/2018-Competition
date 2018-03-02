@@ -265,7 +265,7 @@ public class Robot extends IterativeRobot {
 				_cubeHandler.ejectCube_InfeedAndCarriage();
 			}
 			else {
-				_cubeHandler.stopInfeedAndCarriage();			
+				_cubeHandler.stop_InfeedAndCarriage();			
 			}
 		}
 		else if(_dos.IsEngineeringGamepadAAvailable()) {
@@ -289,14 +289,14 @@ public class Robot extends IterativeRobot {
 			if (_dos.getIsEngineering_SpinCubeManuver_BtnPressed()){
 				_cubeHandler.infeedArms_SpinCube_CCW();
 			}
-			else if (Math.abs(_dos.getEngineering_InfeedCube_JoystickCmd()) != 0) {
-				_cubeHandler.runInfeedCubePlusCarriage(_dos.getEngineering_InfeedCube_JoystickCmd());
-			}
-			else if (Math.abs(_dos.getEngineering_EjectCube_JoystickCmd()) != 0) {
-				_cubeHandler.ejectCube(_dos.getEngineering_EjectCube_JoystickCmd());
-			} 
+			//else if (Math.abs(_dos.getEngineering_InfeedCube_JoystickCmd()) != 0) {
+			//	_cubeHandler.runCube_InfeedAndCarriage(_dos.getEngineering_InfeedCube_JoystickCmd());
+			//}
+			//else if (Math.abs(_dos.getEngineering_EjectCube_JoystickCmd()) != 0) {
+			//	_cubeHandler.ejectCube(_dos.getEngineering_EjectCube_JoystickCmd());
+			//} 
 			else {
-				_cubeHandler.stopInfeedAndCarriage();			
+				_cubeHandler.stop_InfeedAndCarriage();			
 			}			
 
 		} 
@@ -376,7 +376,7 @@ public class Robot extends IterativeRobot {
 			else {
 				//_cubeHandler2.stop();
 				//_carriage.stop();
-				_cubeHandler.stopInfeedAndCarriage();
+				_cubeHandler.stop_InfeedAndCarriage();
 			}
 		}
 		
