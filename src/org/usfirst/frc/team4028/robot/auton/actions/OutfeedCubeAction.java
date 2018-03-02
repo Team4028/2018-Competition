@@ -11,7 +11,7 @@ public class OutfeedCubeAction implements Action {
 
 	@Override
 	public void update() {
-		_cubeHandler.setAutonCarriageSpeed(CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_100);
+		_cubeHandler.carriage_FeedOut(CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_100);
 	}
 
 	@Override

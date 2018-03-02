@@ -337,7 +337,7 @@ public class CubeHandler2 implements Subsystem {
 	//=====================================================================================	
 	//Methods for Handling Interactions with Carriage Subsystem
 	//=====================================================================================	
-	public void setAutonCarriageSpeed(CARRIAGE_WHEELS_OUT_VBUS_INDEX setSpeed) {
+	public void carriage_FeedOut(CARRIAGE_WHEELS_OUT_VBUS_INDEX setSpeed) {
 		_carriage.feedOut(setSpeed);
 	}
 	
