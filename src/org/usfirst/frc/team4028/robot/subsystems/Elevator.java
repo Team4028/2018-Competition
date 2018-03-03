@@ -289,7 +289,6 @@ public class Elevator implements Subsystem {
 					case GOTO_TARGET_POSITION:
 						deltatime = (new Date().getTime()) - _lastScanTimeStamp;
 						DisableSoftLimits();
-						
 						_adjustedTarget = _targetElevatorPosition;
 						if(_targetElevatorPosition == NEUTRAL_SCALE_HEIGHT_POSITION) {
 							_adjustedTarget = _targetElevatorPosition + _elevatorScaleOffset;
@@ -448,11 +447,10 @@ public class Elevator implements Subsystem {
 					break;
 										
 				case NEUTRAL_SCALE_HEIGHT:
-					if((_elevatorState !=ELEVATOR_STATE.GOTO_TARGET_POSITION&& _elevatorState !=ELEVATOR_STATE.HOLD_TARGET_POSITION)
-							|| _targetElevatorPosition != NEUTRAL_SCALE_HEIGHT_POSITION)
+					if((_elevatorState !=ELEVATOR_STATE.GOTO_TARGET_POSITION && _elevatorState != ELEVATOR_STATE.HOLD_TARGET_POSITION
+							|| _targetElevatorPosition != NEUTRAL_SCALE_HEIGHT_POSITION )// || _adjustedTarget != NEUTRAL_SCALE_HEIGHT_POSITION)
 					{				
 						_targetElevatorPosition = NEUTRAL_SCALE_HEIGHT_POSITION;
-						_elevatorScaleOffset = 0;
 						ReportStateChg("ElevatorAxis (State) [" + _elevatorState.toString() + "] ==> [GOTO_TARGET_POSTION]:[NEUTRAL_SCALE_HEIGHT_POSITION]");
 						_elevatorState = ELEVATOR_STATE.GOTO_TARGET_POSITION;
 					}
@@ -566,6 +564,10 @@ public class Elevator implements Subsystem {
 		_elevatorMasterMotor.setSelectedSensorPosition(0, 0, 0);
 	}
 	
+	public void resetElevatorScaleHeightBump() {
+		_elevatorScaleOffset = 0;
+	}
+	
 	//public void doNothing() {
 	//	ReportStateChg("ElevatorAxis (State) [" + _elevatorState.toString() + "] ==> [DO_NOTHING]");
 	//	_elevatorState = ELEVATOR_STATE.DO_NOTHING;
@@ -614,7 +616,7 @@ public class Elevator implements Subsystem {
 	
 	public void elevatorScaleHeightBumpPositionUp() {
 		if(NativeUnitsToInches(_elevatorScaleOffset) < 12) {
-			_elevatorScaleOffset = _elevatorScaleOffset+ BUMP_AMOUNT_IN_NU;
+			_elevatorScaleOffset = _elevatorScaleOffset + BUMP_AMOUNT_IN_NU;
 			_elevatorState = ELEVATOR_STATE.GOTO_TARGET_POSITION;
 		}
 		else {
@@ -725,7 +727,7 @@ public class Elevator implements Subsystem {
 		SmartDashboard.putNumber("Elevator:TargetPosition",_targetElevatorPosition);
 		SmartDashboard.putBoolean("Elevator:IsInPosition", IsAtTargetPosition());
 		SmartDashboard.putString("Elevator:State", _elevatorState.toString());
-		SmartDashboard.putNumber("Elevator:Scale Bump", NativeUnitsToInches(_elevatorScaleOffset));
+		SmartDashboard.putNumber("Elevator:Scale Bump", GeneralUtilities.RoundDouble(NativeUnitsToInches(_elevatorScaleOffset), 2));
 	}
 	
 	// add data elements to be logged  to the input param (which is passed by ref)
