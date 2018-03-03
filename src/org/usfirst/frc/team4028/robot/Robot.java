@@ -403,7 +403,6 @@ public class Robot extends IterativeRobot {
 //			_cubeHandler.elevator_MoveToPresetPosition(ELEVATOR_PRESET_POSITION.LOW_SCALE_HEIGHT);
 //		}
 		else if (_dos.getIsOperator_ElevatorNeutralScaleHgt_BtnJustPressed()) {
-			_elevator.resetElevatorScaleHeightBump();
 			_cubeHandler.elevator_MoveToPresetPosition(ELEVATOR_PRESET_POSITION.NEUTRAL_SCALE_HEIGHT);
 		}
 		else if (_dos.getIsOperator_ElevatorReHome_BtnJustPressed()) {
@@ -412,11 +411,12 @@ public class Robot extends IterativeRobot {
 			_cubeHandler.stopElevator();
 		} 
 		
+		// Neutral Scale Height Bumps
 		if(_dos.getIsOperator_ElevatorScaleHeightBumpUp_BtnJustPressed()) {
-			_elevator.elevatorScaleHeightBumpPositionUp();
+			_cubeHandler.elevator_ScaleHeight_BumpPositionUp();
 		}
 		else if (_dos.getIsOperator_ElevatorScalePositionBumpDown_BtnJustPressed()) {
-			_elevator.elevatorScaleHeightBumpPositionDown();
+			_cubeHandler.elevator_ScaleHeight_BumpPositionDown();
 		}
 				
 		// =============  CLIMBER ============= 

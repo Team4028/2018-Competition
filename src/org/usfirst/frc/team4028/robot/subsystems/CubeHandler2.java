@@ -2,6 +2,7 @@ package org.usfirst.frc.team4028.robot.subsystems;
 
 import org.usfirst.frc.team4028.robot.subsystems.Carriage.CARRIAGE_WHEELS_OUT_VBUS_INDEX;
 import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_PRESET_POSITION;
+import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_STATE;
 import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_ARM_STATE;
 import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_ARM_TARGET_POSITION;
 import org.usfirst.frc.team4028.util.LogDataBE;
@@ -181,6 +182,9 @@ public class CubeHandler2 implements Subsystem {
 		// TODO: Intercept
 		//_elevator.MoveToPresetPosition(presetPosition);	
 		
+		// always reset bump when we move to a position
+		_elevator.resetElevatorScaleHeightBump();
+		
 		_requestedPresetPosition = presetPosition;
 		ReportStateChg("Cube Handler (State) " + _cubeHandlerState.toString() + " ==> [WANT_TO_MOVE_ELEVATOR_TO_PRESET]");
 		_cubeHandlerState = CUBE_HANDLER_STATE.WANT_TO_MOVE_ELEVATOR_TO_PRESET;
@@ -203,6 +207,38 @@ public class CubeHandler2 implements Subsystem {
 	public void stopElevator()
 	{
 		_elevator.stop();
+	}
+	
+	public void elevator_ScaleHeight_BumpPositionUp() {
+		if(_requestedPresetPosition == ELEVATOR_PRESET_POSITION.NEUTRAL_SCALE_HEIGHT)
+		{
+			if(_elevator.getElevatorScaleHeightBumpInches() < 11.9) {
+				_elevator.elevatorScaleHeightBumpPositionUp();
+			}
+			else {
+				System.out.println("Elevator Scale Position Bump Tooooooo Large");
+			}
+		}
+		else
+		{
+			System.out.println("Bump Up Only honored when requested position is Scale ");
+		}
+	}
+	
+	public void elevator_ScaleHeight_BumpPositionDown() {
+		if(_requestedPresetPosition == ELEVATOR_PRESET_POSITION.NEUTRAL_SCALE_HEIGHT)
+		{
+			if(_elevator.getElevatorScaleHeightBumpInches() > -11.9) {
+				_elevator.elevatorScaleHeightBumpPositionDown();
+			}
+			else {
+				System.out.println("Elevator Scale Position Bump Tooooooo Large");
+			}
+		}
+		else
+		{
+			System.out.println("Bump Down Only honored when requested position is Scale ");
+		}
 	}
 	
 	//=====================================================================================
