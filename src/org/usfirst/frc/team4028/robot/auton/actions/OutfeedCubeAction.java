@@ -1,10 +1,10 @@
 package org.usfirst.frc.team4028.robot.auton.actions;
 
 import org.usfirst.frc.team4028.robot.subsystems.Carriage.CARRIAGE_WHEELS_OUT_VBUS_INDEX;
-import org.usfirst.frc.team4028.robot.subsystems.CubeHandler2;
+import org.usfirst.frc.team4028.robot.subsystems.CubeHandler;
 
 public class OutfeedCubeAction implements Action {
-	CubeHandler2 _cubeHandler = CubeHandler2.getInstance();
+	CubeHandler _cubeHandler = CubeHandler.getInstance();
 	CARRIAGE_WHEELS_OUT_VBUS_INDEX _speed;
 	
 	public OutfeedCubeAction() {

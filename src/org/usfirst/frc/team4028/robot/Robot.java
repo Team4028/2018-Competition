@@ -30,7 +30,7 @@ public class Robot extends IterativeRobot {
 	private Infeed _infeed = Infeed.getInstance();
 	private Elevator _elevator = Elevator.getInstance();
 	private Carriage _carriage = Carriage.getInstance();
-	private CubeHandler2 _cubeHandler = CubeHandler2.getInstance();
+	private CubeHandler _cubeHandler = CubeHandler.getInstance();
 	private Climber _climber = Climber.getInstance();
 	
 	// Sensors

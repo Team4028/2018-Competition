@@ -24,7 +24,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //	0		PatB		???			Initial Version
 //	1		TomB,Nick	24-Feb		Implement Elevator, Infeed Interlock
 //-------------------------------------------------------------
-public class CubeHandler2 implements Subsystem {
+public class CubeHandler implements Subsystem {
 
 	private enum CUBE_HANDLER_STATE {
 		UNDEFINED,
@@ -51,14 +51,14 @@ public class CubeHandler2 implements Subsystem {
 	//=====================================================================================
 	//Define Singleton Pattern
 	//=====================================================================================
-	private static CubeHandler2 _instance = new CubeHandler2();
+	private static CubeHandler _instance = new CubeHandler();
 	
-	public static CubeHandler2 getInstance() {
+	public static CubeHandler getInstance() {
 		return _instance;
 	}
 	
 	// private constructor for singleton pattern
-	private CubeHandler2() {
+	private CubeHandler() {
 	}
 	
 	//=====================================================================================
@@ -68,7 +68,7 @@ public class CubeHandler2 implements Subsystem {
 		// called in Telop & Auton Init
 		@Override
 		public void onStart(double timestamp) {
-			synchronized (CubeHandler2.this) {
+			synchronized (CubeHandler.this) {
 			}
 		}
 		
@@ -80,7 +80,7 @@ public class CubeHandler2 implements Subsystem {
 		@Override
 		public void onLoop(double timestamp) 
 		{
-			synchronized (CubeHandler2.this) 
+			synchronized (CubeHandler.this) 
 			{	
 				switch(_cubeHandlerState) 
 				{
@@ -134,7 +134,7 @@ public class CubeHandler2 implements Subsystem {
 		@Override
 		public void onStop(double timestamp) 
 		{
-			synchronized (CubeHandler2.this) 
+			synchronized (CubeHandler.this) 
 			{
 				stop();
 			}

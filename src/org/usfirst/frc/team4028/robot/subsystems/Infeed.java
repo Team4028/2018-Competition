@@ -43,7 +43,7 @@ public class Infeed  implements Subsystem {
 		SPIN_CLOCKWISE,
 	}
 		
-	public enum INFEED_DRIVE_DIRECTION{
+	public enum INFEED_DRIVE_DIRECTION {
 		UNDEFINED,
 		IN,
 		OUT

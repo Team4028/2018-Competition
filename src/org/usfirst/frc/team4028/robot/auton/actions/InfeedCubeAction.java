@@ -1,12 +1,12 @@
 package org.usfirst.frc.team4028.robot.auton.actions;
 
-import org.usfirst.frc.team4028.robot.subsystems.CubeHandler2;
+import org.usfirst.frc.team4028.robot.subsystems.CubeHandler;
 import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_ARM_TARGET_POSITION;
 
 import edu.wpi.first.wpilibj.Timer;
 
 public class InfeedCubeAction implements Action {
-	CubeHandler2 _cubeHandler = CubeHandler2.getInstance();
+	CubeHandler _cubeHandler = CubeHandler.getInstance();
 	double _startTime;
 	
 	@Override
