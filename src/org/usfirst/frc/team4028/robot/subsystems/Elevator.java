@@ -617,7 +617,7 @@ public class Elevator implements Subsystem {
 	}
 	
 	public void elevatorScaleHeightBumpPositionUp() {
-		if(NativeUnitsToInches(_elevatorAtScaleOffsetNU) < 12) {
+		if(NativeUnitsToInches(_elevatorAtScaleOffsetNU) < 8.9) {
 			_elevatorAtScaleOffsetNU = _elevatorAtScaleOffsetNU + BUMP_AMOUNT_IN_NU;
 			//_elevatorState = ELEVATOR_STATE.GOTO_TARGET_POSITION;
 		}
@@ -627,7 +627,7 @@ public class Elevator implements Subsystem {
 	}
 	
 	public void elevatorScaleHeightBumpPositionDown() {
-		if(NativeUnitsToInches(_elevatorAtScaleOffsetNU) > -12) {
+		if(NativeUnitsToInches(_elevatorAtScaleOffsetNU) > -11.9) {
 			_elevatorAtScaleOffsetNU = _elevatorAtScaleOffsetNU - BUMP_AMOUNT_IN_NU;
 			//_elevatorState = ELEVATOR_STATE.GOTO_TARGET_POSITION;
 		}

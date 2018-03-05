@@ -5,13 +5,22 @@ import org.usfirst.frc.team4028.robot.subsystems.CubeHandler2;
 
 public class OutfeedCubeAction implements Action {
 	CubeHandler2 _cubeHandler = CubeHandler2.getInstance();
+	CARRIAGE_WHEELS_OUT_VBUS_INDEX _speed;
+	
+	public OutfeedCubeAction() {
+		_speed = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_100;
+	}
+	
+	public OutfeedCubeAction(CARRIAGE_WHEELS_OUT_VBUS_INDEX speed) {
+		_speed = speed;
+	}
 	
 	@Override
 	public void start() {}
 
 	@Override
 	public void update() {
-		_cubeHandler.carriage_FeedOut(CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_100);
+		_cubeHandler.carriage_FeedOut(_speed);
 	}
 
 	@Override

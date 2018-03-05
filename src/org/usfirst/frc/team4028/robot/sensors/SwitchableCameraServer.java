@@ -36,9 +36,9 @@ public class SwitchableCameraServer {
 		// option 2: (
 		// =============
 		/* Open connection to USB Camera (video device 0 [/dev/video0]) */
-		int width = 640;
-		int height = 480;
-		int frames_per_sec = 15;
+		int width = 640; // 160; // 320; //640;
+		int height = 480; //90; //180; //480;
+		int frames_per_sec = 10; //20; //15;
 		
 		_rawVideoServer = new MjpegServer("raw_video_server", CAMERA_TCP_PORT);    	
 		
