@@ -43,7 +43,7 @@ public class Infeed  implements Subsystem {
 		SPIN_CLOCKWISE,
 	}
 		
-	public enum INFEED_DRIVE_DIRECTION{
+	public enum INFEED_DRIVE_DIRECTION {
 		UNDEFINED,
 		IN,
 		OUT
@@ -144,7 +144,7 @@ public class Infeed  implements Subsystem {
 	private static final double INFEED_SPIN_CUBE_WHEELS_VBUS_COMMAND = 0.2;
 	
 	//Infeed Homing Speed
-	private static final double INFEED_HOMING_VBUS_COMMAND = 0.27; // 0.2  // increase homing speed because of left arm
+	private static final double INFEED_HOMING_VBUS_COMMAND = 0.35; // 0.2  // increase homing speed because of left arm
 	
 	//Conversion Constant
 	private static final double DEGREES_TO_NATIVE_UNITS_CONVERSION = (4096/360);
@@ -272,8 +272,8 @@ public class Infeed  implements Subsystem {
 		_rightSwitchbladeArmMotor.configPeakOutputReverse(-1, 0);
 		
 		//Initially Configure Booleans
-		_hasLeftArmBeenHomed = false;
-		_hasRightArmBeenHomed = false;
+		//_hasLeftArmBeenHomed = false;
+		//_hasRightArmBeenHomed = false;
 		//_isStaggerAtInitialPosition = false;
 		
 		_infeedArmState = INFEED_ARM_STATE.NEED_TO_HOME;
@@ -287,11 +287,10 @@ public class Infeed  implements Subsystem {
 		// called in Telop & Auton Init
 		@Override
 		public void onStart(double timestamp) {
-			synchronized (Infeed.this) 
-			{
+			synchronized (Infeed.this) {
 				// reset to default startup start
-				_hasLeftArmBeenHomed = false;
-				_hasRightArmBeenHomed = false;
+				//_hasLeftArmBeenHomed = false;
+				//_hasRightArmBeenHomed = false;
 				
 				_infeedArmState = INFEED_ARM_STATE.NEED_TO_HOME;
 				_infeedWheelsState = INFEED_WHEELS_STATE.STOPPED;
@@ -380,8 +379,9 @@ public class Infeed  implements Subsystem {
 						
 						// hold arms at home
 						ReportStateChg("Infeed Arm (State) [" + _infeedArmState.toString() + "] ==> [MOVE_TO_POSITION_AND_HOLD]:[HOME]");
-						_infeedArmState = INFEED_ARM_STATE.MOVE_TO_POSITION_AND_HOLD;
 						MoveToPresetPosition(INFEED_ARM_TARGET_POSITION.HOME);
+						_infeedArmState = INFEED_ARM_STATE.MOVE_TO_POSITION_AND_HOLD;
+						
 						break;
 											
 					case MOVE_TO_POSITION_AND_HOLD:				
@@ -747,6 +747,10 @@ public class Infeed  implements Subsystem {
 	public void updateLogData(LogDataBE logData) {			
 		logData.AddData("Left Infeed Position:", String.valueOf(getCurrentLeftInfeedPosition()));
 		logData.AddData("Right Infeed Position:", String.valueOf(getCurrentRightInfeedPosition()));
+		logData.AddData("Is Left Infeed Arm Homed?", String.valueOf(_hasLeftArmBeenHomed));
+		logData.AddData("Is Right Infeed Arm Homed?", String.valueOf(_hasLeftArmBeenHomed));
+		logData.AddData("Infeed State:", _infeedArmState.toString());
+		logData.AddData("Infeed Arm Position:", String.valueOf(_targetInfeedArmPosition));
 	} 
 	
 	// private helper method to control how we write to the drivers station

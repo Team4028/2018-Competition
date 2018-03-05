@@ -34,12 +34,12 @@ public class NavXGyro {
 		_navXSensor.zeroYaw(); 
 	}
 	
-	public double getPitch() {
+	public double getRoll() {
 		return _navXSensor.getPitch();
 	}
 	
 	public boolean isPitchPastThreshhold() {
-		if(getPitch() >= Constants.MAX_PITCH_POSITIVE || getPitch() <= Constants.MAX_PITCH_NEGATIVE) {
+		if(getRoll() >= Constants.MAX_PITCH_POSITIVE || getRoll() <= Constants.MAX_PITCH_NEGATIVE) {
 			return true;
 		} else {
 			return false;

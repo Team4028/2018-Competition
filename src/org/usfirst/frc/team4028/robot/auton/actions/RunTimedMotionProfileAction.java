@@ -21,6 +21,7 @@ public class RunTimedMotionProfileAction implements Action{
 	public void start() {
 		RobotState.getInstance().reset(Timer.getFPGATimestamp(), _path.getStartPose());
 		_chassis.setWantDrivePath(_path, _path.isReversed());
+		_chassis.setHighGear(true);
 		_startTime = Timer.getFPGATimestamp();
 	}
 	

@@ -2,6 +2,7 @@ package org.usfirst.frc.team4028.robot.subsystems;
 
 import org.usfirst.frc.team4028.robot.subsystems.Carriage.CARRIAGE_WHEELS_OUT_VBUS_INDEX;
 import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_PRESET_POSITION;
+import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_STATE;
 import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_ARM_STATE;
 import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_ARM_TARGET_POSITION;
 import org.usfirst.frc.team4028.util.LogDataBE;
@@ -23,7 +24,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //	0		PatB		???			Initial Version
 //	1		TomB,Nick	24-Feb		Implement Elevator, Infeed Interlock
 //-------------------------------------------------------------
-public class CubeHandler2 implements Subsystem {
+public class CubeHandler implements Subsystem {
 
 	private enum CUBE_HANDLER_STATE {
 		UNDEFINED,
@@ -50,14 +51,14 @@ public class CubeHandler2 implements Subsystem {
 	//=====================================================================================
 	//Define Singleton Pattern
 	//=====================================================================================
-	private static CubeHandler2 _instance = new CubeHandler2();
+	private static CubeHandler _instance = new CubeHandler();
 	
-	public static CubeHandler2 getInstance() {
+	public static CubeHandler getInstance() {
 		return _instance;
 	}
 	
 	// private constructor for singleton pattern
-	private CubeHandler2() {
+	private CubeHandler() {
 	}
 	
 	//=====================================================================================
@@ -67,7 +68,7 @@ public class CubeHandler2 implements Subsystem {
 		// called in Telop & Auton Init
 		@Override
 		public void onStart(double timestamp) {
-			synchronized (CubeHandler2.this) {
+			synchronized (CubeHandler.this) {
 			}
 		}
 		
@@ -79,7 +80,7 @@ public class CubeHandler2 implements Subsystem {
 		@Override
 		public void onLoop(double timestamp) 
 		{
-			synchronized (CubeHandler2.this) 
+			synchronized (CubeHandler.this) 
 			{	
 				switch(_cubeHandlerState) 
 				{
@@ -133,7 +134,7 @@ public class CubeHandler2 implements Subsystem {
 		@Override
 		public void onStop(double timestamp) 
 		{
-			synchronized (CubeHandler2.this) 
+			synchronized (CubeHandler.this) 
 			{
 				stop();
 			}
@@ -181,6 +182,9 @@ public class CubeHandler2 implements Subsystem {
 		// TODO: Intercept
 		//_elevator.MoveToPresetPosition(presetPosition);	
 		
+		// always reset bump when we move to a position
+		_elevator.resetElevatorScaleHeightBump();
+		
 		_requestedPresetPosition = presetPosition;
 		ReportStateChg("Cube Handler (State) " + _cubeHandlerState.toString() + " ==> [WANT_TO_MOVE_ELEVATOR_TO_PRESET]");
 		_cubeHandlerState = CUBE_HANDLER_STATE.WANT_TO_MOVE_ELEVATOR_TO_PRESET;
@@ -203,6 +207,38 @@ public class CubeHandler2 implements Subsystem {
 	public void stopElevator()
 	{
 		_elevator.stop();
+	}
+	
+	public void elevator_ScaleHeight_BumpPositionUp() {
+		if(_requestedPresetPosition == ELEVATOR_PRESET_POSITION.NEUTRAL_SCALE_HEIGHT)
+		{
+			if(_elevator.getElevatorScaleHeightBumpInches() < 11.9) {
+				_elevator.elevatorScaleHeightBumpPositionUp();
+			}
+			else {
+				System.out.println("Elevator Scale Position Bump Tooooooo Large");
+			}
+		}
+		else
+		{
+			System.out.println("Bump Up Only honored when requested position is Scale ");
+		}
+	}
+	
+	public void elevator_ScaleHeight_BumpPositionDown() {
+		if(_requestedPresetPosition == ELEVATOR_PRESET_POSITION.NEUTRAL_SCALE_HEIGHT)
+		{
+			if(_elevator.getElevatorScaleHeightBumpInches() > -11.9) {
+				_elevator.elevatorScaleHeightBumpPositionDown();
+			}
+			else {
+				System.out.println("Elevator Scale Position Bump Tooooooo Large");
+			}
+		}
+		else
+		{
+			System.out.println("Bump Down Only honored when requested position is Scale ");
+		}
 	}
 	
 	//=====================================================================================
@@ -320,7 +356,7 @@ public class CubeHandler2 implements Subsystem {
 	{
 		if(_infeed.getInfeedArmState() == INFEED_ARM_STATE.MOVE_TO_POSITION_AND_HOLD)
 		{
-			_infeed.reZeroArms();
+			//_infeed.reZeroArms();
 		}
 	}
 	
