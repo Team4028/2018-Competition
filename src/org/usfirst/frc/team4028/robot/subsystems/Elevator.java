@@ -30,7 +30,16 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //	4		TomB		25.Feb		Resolve Elevator move on enable after disable when elevator was not at home
 //-------------------------------------------------------------
 public class Elevator implements Subsystem {
-	// define enums for the elevator axis
+	// =================================================================================================================
+	// Singleton Pattern
+	private static Elevator _instance = new Elevator();
+	
+	public static Elevator getInstance() {
+		return _instance;
+	}
+	
+	// =================================================================================================================
+	// Define Enums for the Elevator Axis
 	public enum ELEVATOR_STATE {
 		NEED_TO_HOME,
 		MOVING_TO_HOME,
@@ -38,9 +47,7 @@ public class Elevator implements Subsystem {
 		TIMEOUT,
 		GOTO_TARGET_POSITION,
 		HOLD_TARGET_POSITION,
-		//MOVE_BELOW_SOFT_LIMIT,
 		JOG_AXIS,
-		//DO_NOTHING
 	}
 	
 	public enum ELEVATOR_PRESET_POSITION {
@@ -53,8 +60,9 @@ public class Elevator implements Subsystem {
 		OTHER
 	}
 	
+	// =================================================================================================================
 	// define class level working variables
-	private TalonSRX _elevatorMasterMotor; //, _elevatorSlaveMotor;
+	private TalonSRX _elevatorMasterMotor;
 	private ELEVATOR_STATE _elevatorState;
 	private long _elevatorHomeStartTime;
 	private int _targetElevatorPositionNU;
@@ -69,14 +77,11 @@ public class Elevator implements Subsystem {
 	private double _lastScanActualVelocityNU_100mS = 0;
 	private int _pidSlotInUse = -1;
 	private boolean _isSoftLimitsEnabled = false;
-	//int _adjustedTarget = 0;
 	
-	// define general constants
-	//public static final double NU_PER_INCH = 106.040268456;
-	
+	// =================================================================================================================
 	// hardcoded preset jogging velocities
-	private static final double JOG_UP_VELOCITY = 0.5; //0.4; //0.70;
-	private static final double JOG_DOWN_VELOCITY = -0.25; //-0.50;
+	private static final double JOG_UP_VELOCITY = 0.5;
+	private static final double JOG_DOWN_VELOCITY = -0.25;
 	private static final double ELEVATOR_MOVE_TO_HOME_VELOCITY_CMD = -0.20;   
 	private static final long ELEVATOR_MAXIMUM_MOVE_TO_HOME_TIME_IN_MSEC = 5000;	// 5 sec
 	
@@ -84,7 +89,7 @@ public class Elevator implements Subsystem {
 	private static final int ELEVATOR_POS_ALLOWABLE_ERROR_IN_NU = InchesToNativeUnits(ELEVATOR_POS_ALLOWABLE_ERROR_IN_INCHES);
 	
 	//Conversion Constant
-	public static final double NATIVE_UNITS_PER_INCH_CONVERSION = (28510/78.75);//(29638 / 41);
+	public static final double NATIVE_UNITS_PER_INCH_CONVERSION = (28510/78.75);
 	
 	// hardcoded preset positions (in native units, 0 = home position)
 	private static final int HIGH_SCALE_HEIGHT_POSITION = InchesToNativeUnits(80);
@@ -95,24 +100,11 @@ public class Elevator implements Subsystem {
 	private static final int INFEED_POSITION = 0;
 	private static final int HOME_POSITION = 0;
 
-//	private static final int ELEVATOR_MAX_TRAVEL = InchesToNativeUnits(41);
 	private static final int UP_SOFT_LIMIT = InchesToNativeUnits(90.0);
 	private static final int DOWN_SOFT_LIMIT = InchesToNativeUnits(3.0);
 	
 	//Bump Position Up/Down on Elevator Constant
 	private static final int BUMP_AMOUNT_IN_NU = InchesToNativeUnits(3);
-	
-	/*
-	 * Moveable Slide Top to Bottom = 48.5 in
-	 * 
-	 * Travel (in)	Floor to bottom of Slide	Floor to Top Stop (in)	Encoder Native Units
-	 * ===========	========================	======================	====================
-	 * 		40.75		42.75					95						29638
-	 * 			
-	 * 		12			14						66.5					8736
-	 * 		3			5						57.5				
-	 * 		0			2						54.5					0
-	 */
 	
 	private static final boolean IS_VERBOSE_LOGGING_ENABLED = false;
 	
@@ -122,37 +114,29 @@ public class Elevator implements Subsystem {
 	
 	// define PID Constants
 	public static final int UP_CRUISE_VELOCITY = 4061; // native units per 100 mSec 50% of max
-	public static final int UP_ACCELERATION = 4500; //3061; 	// native units per 100 mSec per sec
+	public static final int UP_ACCELERATION = 4500;	// native units per 100 mSec per sec
 	
-	public static final int DOWN_CRUISE_VELOCITY = 3000;//2000; // native units per 100 mSec 50% of max
-	public static final int DOWN_ACCELERATION = 2500; //1500; 	// native units per 100 mSec per sec
+	public static final int DOWN_CRUISE_VELOCITY = 3000; // native units per 100 mSec 50% of max
+	public static final int DOWN_ACCELERATION = 2500; // native units per 100 mSec per sec
 	
-	public static final double FEED_FORWARD_GAIN_HOLD = 1.0; //1.5; //3.4074425;
-	public static final double PROPORTIONAL_GAIN_HOLD  = 0.65; //.4; //0.0731; //3.0;
-	public static final double INTEGRAL_GAIN_HOLD  = 0; //0.03; //0.0; 
-	public static final int INTEGRAL_ZONE_HOLD = 0; //0.0; 
-	public static final double DERIVATIVE_GAIN_HOLD  = 40; //4.0; //0.7;
+	public static final double FEED_FORWARD_GAIN_HOLD = 1.0;
+	public static final double PROPORTIONAL_GAIN_HOLD  = 0.65;
+	public static final double INTEGRAL_GAIN_HOLD  = 0;
+	public static final int INTEGRAL_ZONE_HOLD = 0; 
+	public static final double DERIVATIVE_GAIN_HOLD  = 40;
 	
-	public static final double FEED_FORWARD_GAIN_UP = 0.4; //3.4074425;
-	public static final double PROPORTIONAL_GAIN_UP = 1.5; //.4; //0.0731; //3.0;
-	public static final double INTEGRAL_GAIN_UP = 0; //0.03; //0.0; 
-	public static final int INTEGRAL_ZONE_UP = 0; //0.0; 
-	public static final double DERIVATIVE_GAIN_UP = 75; //4.0; //0.7;
+	public static final double FEED_FORWARD_GAIN_UP = 0.4;
+	public static final double PROPORTIONAL_GAIN_UP = 1.5;
+	public static final double INTEGRAL_GAIN_UP = 0;
+	public static final int INTEGRAL_ZONE_UP = 0; 
+	public static final double DERIVATIVE_GAIN_UP = 75;
 	
-	public static final double FEED_FORWARD_GAIN_DOWN = 0.2;// 1.0; //3.4074425;
-	public static final double PROPORTIONAL_GAIN_DOWN = 0.1; //.14; //2.0;
-	public static final double INTEGRAL_GAIN_DOWN = 0; //0.03; //0.0; 
-	public static final int INTEGRAL_ZONE_DOWN = 0; //200; //0.0; 
-	public static final double DERIVATIVE_GAIN_DOWN = 2; //3.0; // 0.7;
+	public static final double FEED_FORWARD_GAIN_DOWN = 0.2;
+	public static final double PROPORTIONAL_GAIN_DOWN = 0.1;
+	public static final double INTEGRAL_GAIN_DOWN = 0;
+	public static final int INTEGRAL_ZONE_DOWN = 0; 
+	public static final double DERIVATIVE_GAIN_DOWN = 2;
 	
-	// singleton pattern
-	private static Elevator _instance = new Elevator();
-	
-	public static Elevator getInstance() {
-		return _instance;
-	}
-
-	// private constructor for singleton pattern
 	private Elevator() {
 		// config master & slave talon objects
 		_elevatorMasterMotor = new TalonSRX(Constants.ELEVATOR_LIFT_MASTER_CAN_ADDRESS);
@@ -213,7 +197,6 @@ public class Elevator implements Subsystem {
 		_elevatorMasterMotor.configMotionAcceleration(UP_ACCELERATION, 0);
 		
 		// set allowable closed loop gain
-		// +/- 0.25"
 		_elevatorMasterMotor.configAllowableClosedloopError(0, ELEVATOR_POS_ALLOWABLE_ERROR_IN_NU, 0);
 		
 		// set initial elevator state
@@ -224,8 +207,7 @@ public class Elevator implements Subsystem {
 	}
 	
 	// this is run by Looper typically at a 10mS interval (or 2x the RoboRio Scan time)
-	private final Loop _loop = new Loop() {
-		// called in Telop & Auton Init
+	private final Loop _loop = new Loop() { // called in Telop & Auton Init
 		@Override
 		public void onStart(double timestamp) {
 			synchronized (Elevator.this) {}
@@ -233,8 +215,6 @@ public class Elevator implements Subsystem {
 			_elevatorAtScaleOffsetNU = 0;
 		}
 		
-		// the goal is to have ALL motion controlled thru here
-		// ie this is the place where in the case stmts, mtr ctrls are commanded to move
 		@Override
 		public void onLoop(double timestamp) {
 			synchronized (Elevator.this) {
@@ -242,37 +222,30 @@ public class Elevator implements Subsystem {
 				
 				switch(_elevatorState) {
 					case NEED_TO_HOME:
-						// snapshot start time
-						_elevatorHomeStartTime = System.currentTimeMillis();
+						_elevatorHomeStartTime = System.currentTimeMillis(); // snapshot start time
 						DisableSoftLimits();
 						_elevatorMasterMotor.set(ControlMode.PercentOutput, 0);
 						
-						// change state
 						ReportStateChg("ElevatorAxis (State) " + _elevatorState.toString() + "==> [MOVING_TO_HOME]");
-						_elevatorState = ELEVATOR_STATE.MOVING_TO_HOME;
+						_elevatorState = ELEVATOR_STATE.MOVING_TO_HOME; // change state
 						break;
 						
 					case MOVING_TO_HOME:
-						// are we on the rev (home) limit switch
-						if(!_elevatorMasterMotor.getSensorCollection().isRevLimitSwitchClosed()) {
-							
-							// change state
+						if(!_elevatorMasterMotor.getSensorCollection().isRevLimitSwitchClosed()) { // are we on the rev (home) limit switch
 							ReportStateChg("ElevatorAxis (State) " + _elevatorState.toString() + "==> [AT_HOME]");
 							EnableSoftLimits();
-							_elevatorState = ELEVATOR_STATE.AT_HOME;
+							_elevatorState = ELEVATOR_STATE.AT_HOME; // change state
 						} 
 						else {
 		    				// check for timeout
 		    				long elapsedTime = System.currentTimeMillis() - _elevatorHomeStartTime;
 		    				if (elapsedTime >= ELEVATOR_MAXIMUM_MOVE_TO_HOME_TIME_IN_MSEC) {
-								// change state
 		    					ReportStateChg("ElevatorAxis (State) " + _elevatorState.toString() + "==> [TIMEOUT]");
-		    					_elevatorState = ELEVATOR_STATE.TIMEOUT;
+		    					_elevatorState = ELEVATOR_STATE.TIMEOUT; // change state
 		    				} 
 		    				else {
-		    					// drive axis down in % vbus mode
 		    					DisableSoftLimits();
-		    					_elevatorMasterMotor.set(ControlMode.PercentOutput, ELEVATOR_MOVE_TO_HOME_VELOCITY_CMD);
+		    					_elevatorMasterMotor.set(ControlMode.PercentOutput, ELEVATOR_MOVE_TO_HOME_VELOCITY_CMD); // drive axis down in % vbus mode
 		    				}
 						}
 						break;
@@ -280,31 +253,27 @@ public class Elevator implements Subsystem {
 					case AT_HOME:
 						_elevatorMasterMotor.set(ControlMode.PercentOutput, 0);
 						zeroSensors();
-							
-						// set default position after homing
-						_targetElevatorPositionNU = CUBE_ON_FLOOR_POSITION;
-						
-						// change state
+												
+						_targetElevatorPositionNU = CUBE_ON_FLOOR_POSITION; // set default position after homing
+												
 						ReportStateChg("ElevatorAxis (State) " + _elevatorState.toString() + " ==> [GOTO_TARGET_POSTION]:[CUBE_ON_FLOOR_POSITION]");
-    					_elevatorState = ELEVATOR_STATE.GOTO_TARGET_POSITION;
+    					_elevatorState = ELEVATOR_STATE.GOTO_TARGET_POSITION; // change state
 						break;
 											
 					case GOTO_TARGET_POSITION:
 						deltatime = (new Date().getTime()) - _lastScanTimeStamp;
 						DisableSoftLimits();
 						
-						if(IsAtTargetPosition(_targetElevatorPositionNU)) {
-							// change state
+						if(IsAtTargetPosition(_targetElevatorPositionNU)) {							
 							ReportStateChg("ElevatorAxis (State) [" + _elevatorState.toString() + "] ==> [HOLD_TARGET_POSTION]:[" + _targetElevatorPositionNU +"]");
-	    					_elevatorState = ELEVATOR_STATE.HOLD_TARGET_POSITION;
+	    					_elevatorState = ELEVATOR_STATE.HOLD_TARGET_POSITION; // change state
 						} 
 						else {
 							_actualPositionNU = _elevatorMasterMotor.getSelectedSensorPosition(0);
 							_actualVelocityNU_100mS  = _elevatorMasterMotor.getSelectedSensorVelocity(0);
 							_actualAccelerationNU_100mS_mS = (_actualVelocityNU_100mS - _lastScanActualVelocityNU_100mS) / deltatime;
 		
-							// set appropriate gain slot to use
-							if(_targetElevatorPositionNU > _actualPositionNU) {
+							if(_targetElevatorPositionNU > _actualPositionNU) { // set appropriate gain slot to use
 								SetPidSlotToUse("GotoUp", MOVING_UP_PID_SLOT_INDEX);
 							}
 							else {
@@ -318,31 +287,17 @@ public class Elevator implements Subsystem {
 						
 						break;
 						
-					case HOLD_TARGET_POSITION:						
-						//if(!IsAtTargetPosition(_targetElevatorPosition))
-						if(!IsAtTargetPosition(_targetElevatorPositionNU))
-						{
-							// change state
+					case HOLD_TARGET_POSITION:
+						if(!IsAtTargetPosition(_targetElevatorPositionNU)) {
 							ReportStateChg("ElevatorAxis (State) " + _elevatorState.toString() + " ==> [GOTO_TARGET_POSTION]:[" + _targetElevatorPositionNU  +"]");
-	    					_elevatorState = ELEVATOR_STATE.GOTO_TARGET_POSITION;
+	    					_elevatorState = ELEVATOR_STATE.GOTO_TARGET_POSITION; // change state
 						}
-						//else if (_targetElevatorPosition == DOWN_SOFT_LIMIT) {
-						//	_elevatorState = ELEVATOR_STATE.MOVE_BELOW_SOFT_LIMIT;
-						//	ReportStateChg("ElevatorAxis (State) [GOTO_TARGET_POSTION] ==> [MOVE_BELOW_SOFT_LIMIT]");
-						//}
-						else
-						{
-							// set appropriate gain slot to use	    	
-							SetPidSlotToUse("Hold", HOLDING_PID_SLOT_INDEX);
+						else {    	
+							SetPidSlotToUse("Hold", HOLDING_PID_SLOT_INDEX); // set appropriate gain slot to use	
 							_elevatorMasterMotor.set(ControlMode.MotionMagic, _targetElevatorPositionNU, 0);
 						}
 						
 						break;
-						
-					//case MOVE_BELOW_SOFT_LIMIT:
-					//	_elevatorMasterMotor.configReverseSoftLimitEnable(false, 20);
-					//	_elevatorMasterMotor.set(ControlMode.PercentOutput, -0.1);
-					//	break;
 					
 					case JOG_AXIS:
 						deltatime = (new Date().getTime()) - _lastScanTimeStamp;
@@ -366,20 +321,9 @@ public class Elevator implements Subsystem {
 						}
 						break;
 						
-					//case DO_NOTHING:
-					//	if(_elevatorState != ELEVATOR_STATE.NEED_TO_HOME) {
-					//		_elevatorMasterMotor.set(ControlMode.PercentOutput, 0);
-					//	}
-					//	else {
-					//		_elevatorState = ELEVATOR_STATE.NEED_TO_HOME;
-					//	}
-						
-					//	break;
-						
 					case TIMEOUT:
 						_elevatorMasterMotor.set(ControlMode.PercentOutput, 0);
-						// add logic to control spamming
-						ReportStateChg("ElevatorAxis (State) [TIMEOUT] error homing axis");
+						ReportStateChg("ElevatorAxis (State) [TIMEOUT] error homing axis"); // add logic to control spamming
 						break;
 				}
 			}
@@ -404,7 +348,7 @@ public class Elevator implements Subsystem {
 	// =================================================================================================================
 	
 	// Support Operators Gamepad Buttons mapped to discrete positions
-	// Note: gets spammed by CUbeHandler!
+	// Note: gets spammed by CubeHandler!
 	public void MoveToPresetPosition(ELEVATOR_PRESET_POSITION presetPosition) 
 	{
 		// ignore move requests while in homing process
@@ -428,9 +372,6 @@ public class Elevator implements Subsystem {
 							|| _targetElevatorPositionNU != INFEED_POSITION)
 					{
 						_targetElevatorPositionNU = INFEED_POSITION;
-						//if(_elevatorState != ELEVATOR_STATE.MOVE_BELOW_SOFT_LIMIT) {
-						//	_elevatorState = ELEVATOR_STATE.GOTO_TARGET_POSTION;
-						//}	
 						ReportStateChg("ElevatorAxis (State) [" + _elevatorState.toString() + "] ==> [GOTO_TARGET_POSTION]:[INFEED_POSITION]");
 						_elevatorState = ELEVATOR_STATE.GOTO_TARGET_POSITION;
 					}
@@ -448,9 +389,8 @@ public class Elevator implements Subsystem {
 										
 				case NEUTRAL_SCALE_HEIGHT:
 					if((_elevatorState !=ELEVATOR_STATE.GOTO_TARGET_POSITION && _elevatorState != ELEVATOR_STATE.HOLD_TARGET_POSITION)
-							|| _targetElevatorPositionNU != NEUTRAL_SCALE_HEIGHT_POSITION )// || _adjustedTarget != NEUTRAL_SCALE_HEIGHT_POSITION)
+							|| _targetElevatorPositionNU != NEUTRAL_SCALE_HEIGHT_POSITION )
 					{				
-						//_targetElevatorPositionNU = NEUTRAL_SCALE_HEIGHT_POSITION + _elevatorAtScaleOffsetNU;
 						ReportStateChg("ElevatorAxis (State) [" + _elevatorState.toString() + "] ==> [GOTO_TARGET_POSTION]:[NEUTRAL_SCALE_HEIGHT_POSITION]");
 						_elevatorState = ELEVATOR_STATE.GOTO_TARGET_POSITION;
 					}
@@ -485,14 +425,11 @@ public class Elevator implements Subsystem {
 			
 			// set appropriate gain slot to use (only flip if outside deadband
 			int currentError = Math.abs(_elevatorMasterMotor.getSelectedSensorPosition(0) - _targetElevatorPositionNU);
-            if (currentError > ELEVATOR_POS_ALLOWABLE_ERROR_IN_NU) 
-			{
-				if(_targetElevatorPositionNU > _actualPositionNU) 
-				{
+            if (currentError > ELEVATOR_POS_ALLOWABLE_ERROR_IN_NU) {
+				if(_targetElevatorPositionNU > _actualPositionNU) {
 					SetPidSlotToUse("MoveUp", MOVING_UP_PID_SLOT_INDEX);
 				}
-				else 
-				{
+				else {
 					SetPidSlotToUse("MoveDown", MOVING_DOWN_PID_SLOT_INDEX);
 				}
 			}
@@ -536,19 +473,15 @@ public class Elevator implements Subsystem {
 				&& _elevatorState != ELEVATOR_STATE.HOLD_TARGET_POSITION
 				&& _elevatorState != ELEVATOR_STATE.NEED_TO_HOME
 				&& _elevatorState != ELEVATOR_STATE.MOVING_TO_HOME
-				//&& _elevatorState != ELEVATOR_STATE.MOVE_BELOW_SOFT_LIMIT
-				//&& _elevatorState != ELEVATOR_STATE.DO_NOTHING
 				&& _elevatorState != ELEVATOR_STATE.TIMEOUT) {
 			// set target to current location
 			_targetElevatorPositionNU = _elevatorMasterMotor.getSelectedSensorPosition(0);
 			
 			// flip back to hold position mode using the current position
-			if(_elevatorState != ELEVATOR_STATE.HOLD_TARGET_POSITION)
-			{
+			if(_elevatorState != ELEVATOR_STATE.HOLD_TARGET_POSITION) {
 				ReportStateChg("ElevatorAxis (State) [" + _elevatorState.toString() + "] ==> [HOLD_TARGET_POSTION]");
 				_elevatorState = ELEVATOR_STATE.HOLD_TARGET_POSITION;
 			}
-			
 			// cancel joystick cmd
 			_targetElevatorVelocity = 0.0;
 		}
@@ -569,21 +502,12 @@ public class Elevator implements Subsystem {
 	public void resetElevatorScaleHeightBump() {
 		_elevatorAtScaleOffsetNU = 0;
 	}
-		
-	//public void doNothing() {
-	//	ReportStateChg("ElevatorAxis (State) [" + _elevatorState.toString() + "] ==> [DO_NOTHING]");
-	//	_elevatorState = ELEVATOR_STATE.DO_NOTHING;
-	//}
 	
 	// =================================================================================================================
 	// Private helper methods for the elevator
 	// =================================================================================================================
-	
-
-	private void SetPidSlotToUse(String ref, int pidSlot)
-	{
-		if(pidSlot != _pidSlotInUse)
-		{
+	private void SetPidSlotToUse(String ref, int pidSlot) {
+		if(pidSlot != _pidSlotInUse) {
 			ReportStateChg("Chg Pid Slot: Ref: [" + ref + "] [" + _pidSlotInUse + "] => [" + pidSlot + "]");
 			_pidSlotInUse = pidSlot;
 			_elevatorMasterMotor.selectProfileSlot(_pidSlotInUse, 0);
@@ -619,7 +543,6 @@ public class Elevator implements Subsystem {
 	public void elevatorScaleHeightBumpPositionUp() {
 		if(NativeUnitsToInches(_elevatorAtScaleOffsetNU) < 8.9) {
 			_elevatorAtScaleOffsetNU = _elevatorAtScaleOffsetNU + BUMP_AMOUNT_IN_NU;
-			//_elevatorState = ELEVATOR_STATE.GOTO_TARGET_POSITION;
 		}
 		else {
 			System.out.println("Elevator Scale Position Bump Tooooooo Large");
@@ -629,7 +552,6 @@ public class Elevator implements Subsystem {
 	public void elevatorScaleHeightBumpPositionDown() {
 		if(NativeUnitsToInches(_elevatorAtScaleOffsetNU) > -11.9) {
 			_elevatorAtScaleOffsetNU = _elevatorAtScaleOffsetNU - BUMP_AMOUNT_IN_NU;
-			//_elevatorState = ELEVATOR_STATE.GOTO_TARGET_POSITION;
 		}
 		else {
 			System.out.println("Elevator Scale Position Bump Tooooooo Large");	
@@ -639,17 +561,14 @@ public class Elevator implements Subsystem {
 	//=====================================================================================
 	// Public Methods for Exposing Elevator Properties
 	//=====================================================================================
-	
-	public ELEVATOR_STATE getElevatorState()
-	{
+	public ELEVATOR_STATE getElevatorState() {
 		return _elevatorState;
 	}
 	
 	// this property indicates if the elevator is w/i the position deadband of the target position
 	public boolean IsAtTargetPosition(int targetPosition) {
         if (_elevatorState == ELEVATOR_STATE.GOTO_TARGET_POSITION
-        		|| _elevatorState == ELEVATOR_STATE.HOLD_TARGET_POSITION) 
-        {
+        		|| _elevatorState == ELEVATOR_STATE.HOLD_TARGET_POSITION) {
         	int currentError = Math.abs(_elevatorMasterMotor.getSelectedSensorPosition(0) - targetPosition);
 
             if (currentError <= ELEVATOR_POS_ALLOWABLE_ERROR_IN_NU) {
@@ -722,7 +641,6 @@ public class Elevator implements Subsystem {
 		}
 				
 		SmartDashboard.putNumber("Elevator:Current", _elevatorMasterMotor.getOutputCurrent());
-		//SmartDashboard.putNumber("Elevator:VoltageCmd", elevatorCommandedVoltage);
 		SmartDashboard.putNumber("Elevator:VoltageActual", _elevatorMasterMotor.getMotorOutputVoltage());
 		
 		SmartDashboard.putNumber("Elevator:Position", actualPosition);
