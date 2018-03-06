@@ -41,14 +41,11 @@ public class Climber implements Subsystem
 	//=====================================================================================
 	private static Climber _instance = new Climber();
 	
-	public static Climber getInstance() 
-	{
+	public static Climber getInstance() {
 		return _instance;
 	}
 	
-	// private constructor for singleton pattern
-	private Climber() 
-	{
+	private Climber() { // private constructor for singleton pattern
 		//====================================================================================
 		//	config master & slave talon objects
 		//====================================================================================
@@ -70,8 +67,6 @@ public class Climber implements Subsystem
 	
 		//Enable Current Limiting
 		_climberMotor.enableCurrentLimit(false);
-		//_climberMotor.configPeakCurrentDuration(200, 0);
-		//_climberMotor.configPeakCurrentLimit(17, 0);
 			
 		//configure the peak and nominal output voltages in both directions for both Talons
 		_climberMotor.configNominalOutputForward(0, 0);
@@ -94,21 +89,13 @@ public class Climber implements Subsystem
 
 	public void runMotor(double vbusCmd)
 	{
-		//_climberMotor.set(ControlMode.PercentOutput, vbusCmd, 0);		
-		// simple 2 speed motor control
-		// push joystick up (0 => 1.0)
-		if(vbusCmd > 0.8) 
-		{
-			// more than 1/2 way, climb @ high speed
+		if(vbusCmd > 0.8) { // more than 1/2 way, climb @ high speed
 			_climberMotor.set(ControlMode.PercentOutput, CLIMBER_MOTOR_HIGH_VBUS, 0);
 		}
-		else if(vbusCmd > 0.05)
-		{
-			// more than 1/2 way, climb @ low speed
+		else if(vbusCmd > 0.05)	{ // more than 1/2 way, climb @ low speed
 			_climberMotor.set(ControlMode.PercentOutput, CLIMBER_MOTOR_LOW_VBUS, 0);
 		}
-		else
-		{
+		else {
 			_climberMotor.set(ControlMode.PercentOutput, 0.0, 0);
 		}
 	}
@@ -127,22 +114,17 @@ public class Climber implements Subsystem
 	}
 	
 	@Override
-	public void stop() 
-	{
+	public void stop() {
 		_climberMotor.set(ControlMode.PercentOutput, 0, 0);
 	}
 
 	@Override
-	public void zeroSensors()
-	{
-		// N/A on this subsystem
-	}
+	public void zeroSensors() {}
 	
 	//=====================================================================================
 	// Property Accessors
 	//=====================================================================================
-	private double getClimberMotorCurrent()
-	{
+	private double getClimberMotorCurrent()	{
 		return _climberMotor.getOutputCurrent();
 	}
 	
@@ -150,15 +132,13 @@ public class Climber implements Subsystem
 	// Utility Methods
 	//=====================================================================================
 	@Override
-	public void outputToShuffleboard() 
-	{
+	public void outputToShuffleboard() {
 		SmartDashboard.putNumber("Climber:Current:", getClimberMotorCurrent());
 		SmartDashboard.putBoolean("Is Climber Servo Open?:", _isClimberServoOpen);
 	}
 
 	@Override
-	public void updateLogData(LogDataBE logData) 
-	{
+	public void updateLogData(LogDataBE logData) {
 		logData.AddData("Climber:Current", String.valueOf(getClimberMotorCurrent()));
 	}
 }

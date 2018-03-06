@@ -17,7 +17,19 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Infeed  implements Subsystem {	
-	// define the Class Level Enums
+	
+	//=====================================================================================
+	//Define Singleton Pattern
+	//=====================================================================================
+	private static Infeed _instance = new Infeed();
+	
+	public static Infeed getInstance() {
+		return _instance;
+	}
+	
+	//=====================================================================================
+	//Define Enum Variables
+	//=====================================================================================
 	public enum INFEED_ARM_STATE {
 		STOPPED,
 		NEED_TO_HOME,
@@ -56,7 +68,6 @@ public class Infeed  implements Subsystem {
 	
 	private boolean _hasLeftArmBeenHomed;
 	private boolean _hasRightArmBeenHomed;
-	//private boolean _isStaggerAtInitialPosition;
 	private double _targetInfeedArmPosition;
 	
 	// supports bumping
@@ -69,57 +80,27 @@ public class Infeed  implements Subsystem {
 	TalonSRX _leftInfeedWheelMotor;
 	TalonSRX _rightInfeedWheelMotor;
 	
-	//private UltrasonicSensor _ultrasonic;
-	
 	//====================================================================================
 	//	Constants for Closed Loop Gains for Infeed Motors
 	//====================================================================================
 	// PID gains for infeed
 	private static final int INFEED_POSITIONS_PID_SLOT_INDEX = 0; //Infeed
 	private static final int STORING_ARMS_PID_SLOT_INDEX = 1; //Store
-	private static final int STAGGER_MANUVER_PID_SLOT_INDEX = 2;
 	
-	private static final double LEFT_SWITCHBLADE_INFEED_MOTION_MAGIC_F = 0.3354098361; //Since the two motors have different gear boxes 
-	private static final double LEFT_SWITCHBLADE_INFEED_MOTION_MAGIC_P = 1.5;			//for testing, the F-values are very different
-    private static final double LEFT_SWITCHBLADE_INFEED_MOTION_MAGIC_I = 0;			// |
-    private static final double LEFT_SWITCHBLADE_INFEED_MOTION_MAGIC_D = 0;			// |
-    private static final int LEFT_SWITCHBLADE_INFEED_MOTION_MAGIC_IZONE = 0;
-
-    private static final double RIGHT_SWITCHBLADE_INFEED_MOTION_MAGIC_F = 0.3354098361;// V
-    private static final double RIGHT_SWITCHBLADE_INFEED_MOTION_MAGIC_P = 1.5;
-    private static final double RIGHT_SWITCHBLADE_INFEED_MOTION_MAGIC_I = 0;
-    private static final double RIGHT_SWITCHBLADE_INFEED_MOTION_MAGIC_D = 0;
-    private static final int RIGHT_SWITCHBLADE_INFEED_MOTION_MAGIC_IZONE = 0;
+	private static final double SWITCHBLADE_INFEED_MOTION_MAGIC_F = 0.3354098361; //Since the two motors have different gear boxes 
+	private static final double SWITCHBLADE_INFEED_MOTION_MAGIC_P = 1.5;			//for testing, the F-values are very different
+    private static final double SWITCHBLADE_INFEED_MOTION_MAGIC_I = 0;			// |
+    private static final double SWITCHBLADE_INFEED_MOTION_MAGIC_D = 0;			// |
+    private static final int SWITCHBLADE_INFEED_MOTION_MAGIC_IZONE = 0;
     
-    private static final double LEFT_SWITCHBLADE_STORE_MOTION_MAGIC_F = 0.3354098361; //Since the two motors have different gear boxes 
-	private static final double LEFT_SWITCHBLADE_STORE_MOTION_MAGIC_P = 3.0;			//for testing, the F-values are very different
-    private static final double LEFT_SWITCHBLADE_STORE_MOTION_MAGIC_I = 0;			// |
-    private static final double LEFT_SWITCHBLADE_STORE_MOTION_MAGIC_D = 0;			// |
-    private static final int LEFT_SWITCHBLADE_STORE_MOTION_MAGIC_IZONE = 0;																			
-    
-    private static final double RIGHT_SWITCHBLADE_STORE_MOTION_MAGIC_F = 0.3354098361;// V
-    private static final double RIGHT_SWITCHBLADE_STORE_MOTION_MAGIC_P = 3.0; 
-    private static final double RIGHT_SWITCHBLADE_STORE_MOTION_MAGIC_I = 0;
-    private static final double RIGHT_SWITCHBLADE_STORE_MOTION_MAGIC_D = 0;
-    private static final int RIGHT_SWITCHBLADE_STORE_MOTION_MAGIC_IZONE = 0;
-    
-    private static final double LEFT_SWITCHBLADE_STAGGER_MOTION_MAGIC_F = 0.3354098361; //Since the two motors have different gear boxes 
-	private static final double LEFT_SWITCHBLADE_STAGGER_MOTION_MAGIC_P = 1.8;			//for testing, the F-values are very different
-    private static final double LEFT_SWITCHBLADE_STAGGER_MOTION_MAGIC_I = 0;			// |
-    private static final double LEFT_SWITCHBLADE_STAGGER_MOTION_MAGIC_D = 0;			// |
-    private static final int LEFT_SWITCHBLADE_STAGGER_MOTION_MAGIC_IZONE = 0;																			
-    
-    private static final double RIGHT_SWITCHBLADE_STAGGER_MOTION_MAGIC_F = 0.3354098361;// V
-    private static final double RIGHT_SWITCHBLADE_STAGGER_MOTION_MAGIC_P = 1.8;
-    private static final double RIGHT_SWITCHBLADE_STAGGER_MOTION_MAGIC_I = 0;
-    private static final double RIGHT_SWITCHBLADE_STAGGER_MOTION_MAGIC_D = 0;
-    private static final int RIGHT_SWITCHBLADE_STAGGER_MOTION_MAGIC_IZONE = 0;
+    private static final double SWITCHBLADE_STORE_MOTION_MAGIC_F = 0.3354098361; //Since the two motors have different gear boxes 
+	private static final double SWITCHBLADE_STORE_MOTION_MAGIC_P = 3.0;			//for testing, the F-values are very different
+    private static final double SWITCHBLADE_STORE_MOTION_MAGIC_I = 0;			// |
+    private static final double SWITCHBLADE_STORE_MOTION_MAGIC_D = 0;			// |
+    private static final int SWITCHBLADE_STORE_MOTION_MAGIC_IZONE = 0;					
             
     private static final int INFEED_ARM_MOTION_MAGIC_MAX_VEL = 3000;
     private static final int INFEED_ARM_MOTION_MAGIC_MAX_ACC = 2000;
-    
-    //private static final int INFEED_STAGGER_MOTION_MAGIC_MAX_VEL = 7000;
-    //private static final int INFEED_STAGGER_MOTION_MAGIC_MAX_ACC = 6000;
     
     private static final int INFEED_ARM_FORWARD_SOFT_LIMIT = 3000;
 	
@@ -127,24 +108,16 @@ public class Infeed  implements Subsystem {
 	private static final double HOME_POSITION_ANGLE = 0; //Is Home
     private static final double INFEED_POSITION_ANGLE = 200; //160;	
 	private static final double WIDE_INFEED_POSITION_ANGLE = 140;
-//	private static final double SQUEEZE_INFEED_POSITION_ANGLE = 190;
-
 	private static final double STORE_POSITION_ANGLE = 20;
-//	private static final double THIN_SIDE_POSITION_ANGLE = 230;
-//	private static final double STAGGER_POSITION_ANGLE = 185;
 	
 	private static final double SQUEEZE_INFEED_POSITION_TARGET_ANGLE_BUMP = 1.0;
 	
 	private static final double INFEED_ALLOWED_ERROR_ANGLE = 5;
 	
 	// Infeed Drive Wheel Constant
-	private static final double INFEED_DRIVE_WHEELS_VBUS_COMMAND = 0.5;
 	private static final double INFEED_DRIVE_WHEELS_VBUS_COMMAND_BUMP = 0.05;
-	
-	private static final double INFEED_SPIN_CUBE_WHEELS_VBUS_COMMAND = 0.2;
-	
 	//Infeed Homing Speed
-	private static final double INFEED_HOMING_VBUS_COMMAND = 0.35; // 0.2  // increase homing speed because of left arm
+	private static final double INFEED_HOMING_VBUS_COMMAND = 0.35;
 	
 	//Conversion Constant
 	private static final double DEGREES_TO_NATIVE_UNITS_CONVERSION = (4096/360);
@@ -153,17 +126,8 @@ public class Infeed  implements Subsystem {
 	
 	// handles issue that arms on practice robot do not hit home limit switches
 	//	at the same place
-	private static final int LEFT_INFEED_ARM_ZERO_OFFSET = 0; //96;  //75;  // 150 > 200 > 100 > 50 > 75
+	private static final int LEFT_INFEED_ARM_ZERO_OFFSET = 0;
 	private static final int RIGHT_INFEED_ARM_ZERO_OFFSET = 0;
-	
-	//=====================================================================================
-	//Define Singleton Pattern
-	//=====================================================================================
-	private static Infeed _instance = new Infeed();
-	
-	public static Infeed getInstance() {
-		return _instance;
-	}
 	
 	// private constructor
 	private Infeed() {
@@ -177,8 +141,6 @@ public class Infeed  implements Subsystem {
 		_leftSwitchbladeArmMotor.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed, 0);
 		_leftSwitchbladeArmMotor.configForwardLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
 		
-		//_leftArmMotor.configOpenloopRamp(5, 0);
-		
 		_leftSwitchbladeArmMotor.setNeutralMode(NeutralMode.Brake);
 		
 		_leftSwitchbladeArmMotor.configForwardSoftLimitEnable(false, 0);
@@ -189,23 +151,17 @@ public class Infeed  implements Subsystem {
 		
 		_leftSwitchbladeArmMotor.selectProfileSlot(INFEED_POSITIONS_PID_SLOT_INDEX, 0);
 		
-		_leftSwitchbladeArmMotor.config_kF(INFEED_POSITIONS_PID_SLOT_INDEX, LEFT_SWITCHBLADE_INFEED_MOTION_MAGIC_F, 0);
-		_leftSwitchbladeArmMotor.config_kP(INFEED_POSITIONS_PID_SLOT_INDEX, LEFT_SWITCHBLADE_INFEED_MOTION_MAGIC_P, 0);
-		_leftSwitchbladeArmMotor.config_kI(INFEED_POSITIONS_PID_SLOT_INDEX, LEFT_SWITCHBLADE_INFEED_MOTION_MAGIC_I, 0);
-		_leftSwitchbladeArmMotor.config_kD(INFEED_POSITIONS_PID_SLOT_INDEX, LEFT_SWITCHBLADE_INFEED_MOTION_MAGIC_D, 0);
-		_leftSwitchbladeArmMotor.config_IntegralZone(INFEED_POSITIONS_PID_SLOT_INDEX, LEFT_SWITCHBLADE_INFEED_MOTION_MAGIC_IZONE, 0);
+		_leftSwitchbladeArmMotor.config_kF(INFEED_POSITIONS_PID_SLOT_INDEX, SWITCHBLADE_INFEED_MOTION_MAGIC_F, 0);
+		_leftSwitchbladeArmMotor.config_kP(INFEED_POSITIONS_PID_SLOT_INDEX, SWITCHBLADE_INFEED_MOTION_MAGIC_P, 0);
+		_leftSwitchbladeArmMotor.config_kI(INFEED_POSITIONS_PID_SLOT_INDEX, SWITCHBLADE_INFEED_MOTION_MAGIC_I, 0);
+		_leftSwitchbladeArmMotor.config_kD(INFEED_POSITIONS_PID_SLOT_INDEX, SWITCHBLADE_INFEED_MOTION_MAGIC_D, 0);
+		_leftSwitchbladeArmMotor.config_IntegralZone(INFEED_POSITIONS_PID_SLOT_INDEX, SWITCHBLADE_INFEED_MOTION_MAGIC_IZONE, 0);
 		
-		_leftSwitchbladeArmMotor.config_kF(STORING_ARMS_PID_SLOT_INDEX, LEFT_SWITCHBLADE_STORE_MOTION_MAGIC_F, 0);
-		_leftSwitchbladeArmMotor.config_kP(STORING_ARMS_PID_SLOT_INDEX, LEFT_SWITCHBLADE_STORE_MOTION_MAGIC_P, 0);
-		_leftSwitchbladeArmMotor.config_kI(STORING_ARMS_PID_SLOT_INDEX, LEFT_SWITCHBLADE_STORE_MOTION_MAGIC_I, 0);
-		_leftSwitchbladeArmMotor.config_kD(STORING_ARMS_PID_SLOT_INDEX, LEFT_SWITCHBLADE_STORE_MOTION_MAGIC_D, 0);
-		_leftSwitchbladeArmMotor.config_IntegralZone(STORING_ARMS_PID_SLOT_INDEX, LEFT_SWITCHBLADE_STORE_MOTION_MAGIC_IZONE, 0);
-		
-		_leftSwitchbladeArmMotor.config_kF(STAGGER_MANUVER_PID_SLOT_INDEX, LEFT_SWITCHBLADE_STAGGER_MOTION_MAGIC_F, 0);
-		_leftSwitchbladeArmMotor.config_kP(STAGGER_MANUVER_PID_SLOT_INDEX, LEFT_SWITCHBLADE_STAGGER_MOTION_MAGIC_P, 0);
-		_leftSwitchbladeArmMotor.config_kI(STAGGER_MANUVER_PID_SLOT_INDEX, LEFT_SWITCHBLADE_STAGGER_MOTION_MAGIC_I, 0);
-		_leftSwitchbladeArmMotor.config_kD(STAGGER_MANUVER_PID_SLOT_INDEX, LEFT_SWITCHBLADE_STAGGER_MOTION_MAGIC_D, 0);
-		_leftSwitchbladeArmMotor.config_IntegralZone(STAGGER_MANUVER_PID_SLOT_INDEX, LEFT_SWITCHBLADE_STAGGER_MOTION_MAGIC_IZONE, 0);
+		_leftSwitchbladeArmMotor.config_kF(STORING_ARMS_PID_SLOT_INDEX, SWITCHBLADE_STORE_MOTION_MAGIC_F, 0);
+		_leftSwitchbladeArmMotor.config_kP(STORING_ARMS_PID_SLOT_INDEX, SWITCHBLADE_STORE_MOTION_MAGIC_P, 0);
+		_leftSwitchbladeArmMotor.config_kI(STORING_ARMS_PID_SLOT_INDEX, SWITCHBLADE_STORE_MOTION_MAGIC_I, 0);
+		_leftSwitchbladeArmMotor.config_kD(STORING_ARMS_PID_SLOT_INDEX, SWITCHBLADE_STORE_MOTION_MAGIC_D, 0);
+		_leftSwitchbladeArmMotor.config_IntegralZone(STORING_ARMS_PID_SLOT_INDEX, SWITCHBLADE_STORE_MOTION_MAGIC_IZONE, 0);
 		
 		_leftSwitchbladeArmMotor.configMotionCruiseVelocity(INFEED_ARM_MOTION_MAGIC_MAX_VEL, 0);
 		_leftSwitchbladeArmMotor.configMotionAcceleration(INFEED_ARM_MOTION_MAGIC_MAX_ACC, 0);
@@ -219,8 +175,6 @@ public class Infeed  implements Subsystem {
 		_rightSwitchbladeArmMotor.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed, 0);
 		_rightSwitchbladeArmMotor.configForwardLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
 		
-		//_rightArmMotor.configOpenloopRamp(5, 0);
-		
 		_rightSwitchbladeArmMotor.setNeutralMode(NeutralMode.Brake);
 		
 		_rightSwitchbladeArmMotor.configForwardSoftLimitEnable(false, 0);
@@ -231,23 +185,17 @@ public class Infeed  implements Subsystem {
 		
 		_rightSwitchbladeArmMotor.selectProfileSlot(INFEED_POSITIONS_PID_SLOT_INDEX, 0);
 		
-		_rightSwitchbladeArmMotor.config_kF(INFEED_POSITIONS_PID_SLOT_INDEX, RIGHT_SWITCHBLADE_INFEED_MOTION_MAGIC_F, 0);
-		_rightSwitchbladeArmMotor.config_kP(INFEED_POSITIONS_PID_SLOT_INDEX, RIGHT_SWITCHBLADE_INFEED_MOTION_MAGIC_P, 0);
-		_rightSwitchbladeArmMotor.config_kI(INFEED_POSITIONS_PID_SLOT_INDEX, RIGHT_SWITCHBLADE_INFEED_MOTION_MAGIC_I, 0);
-		_rightSwitchbladeArmMotor.config_kD(INFEED_POSITIONS_PID_SLOT_INDEX, RIGHT_SWITCHBLADE_INFEED_MOTION_MAGIC_D, 0);
-		_rightSwitchbladeArmMotor.config_IntegralZone(INFEED_POSITIONS_PID_SLOT_INDEX, RIGHT_SWITCHBLADE_INFEED_MOTION_MAGIC_IZONE, 0);
+		_rightSwitchbladeArmMotor.config_kF(INFEED_POSITIONS_PID_SLOT_INDEX, SWITCHBLADE_INFEED_MOTION_MAGIC_F, 0);
+		_rightSwitchbladeArmMotor.config_kP(INFEED_POSITIONS_PID_SLOT_INDEX, SWITCHBLADE_INFEED_MOTION_MAGIC_P, 0);
+		_rightSwitchbladeArmMotor.config_kI(INFEED_POSITIONS_PID_SLOT_INDEX, SWITCHBLADE_INFEED_MOTION_MAGIC_I, 0);
+		_rightSwitchbladeArmMotor.config_kD(INFEED_POSITIONS_PID_SLOT_INDEX, SWITCHBLADE_INFEED_MOTION_MAGIC_D, 0);
+		_rightSwitchbladeArmMotor.config_IntegralZone(INFEED_POSITIONS_PID_SLOT_INDEX, SWITCHBLADE_INFEED_MOTION_MAGIC_IZONE, 0);
 		
-		_rightSwitchbladeArmMotor.config_kF(STORING_ARMS_PID_SLOT_INDEX, RIGHT_SWITCHBLADE_STORE_MOTION_MAGIC_F, 0);
-		_rightSwitchbladeArmMotor.config_kP(STORING_ARMS_PID_SLOT_INDEX, RIGHT_SWITCHBLADE_STORE_MOTION_MAGIC_P, 0);
-		_rightSwitchbladeArmMotor.config_kI(STORING_ARMS_PID_SLOT_INDEX, RIGHT_SWITCHBLADE_STORE_MOTION_MAGIC_I, 0);
-		_rightSwitchbladeArmMotor.config_kD(STORING_ARMS_PID_SLOT_INDEX, RIGHT_SWITCHBLADE_STORE_MOTION_MAGIC_D, 0);
-		_rightSwitchbladeArmMotor.config_IntegralZone(STORING_ARMS_PID_SLOT_INDEX, RIGHT_SWITCHBLADE_STORE_MOTION_MAGIC_IZONE, 0);
-		
-		_rightSwitchbladeArmMotor.config_kF(STAGGER_MANUVER_PID_SLOT_INDEX, RIGHT_SWITCHBLADE_STAGGER_MOTION_MAGIC_F, 0);
-		_rightSwitchbladeArmMotor.config_kP(STAGGER_MANUVER_PID_SLOT_INDEX, RIGHT_SWITCHBLADE_STAGGER_MOTION_MAGIC_P, 0);
-		_rightSwitchbladeArmMotor.config_kI(STAGGER_MANUVER_PID_SLOT_INDEX, RIGHT_SWITCHBLADE_STAGGER_MOTION_MAGIC_I, 0);
-		_rightSwitchbladeArmMotor.config_kD(STAGGER_MANUVER_PID_SLOT_INDEX, RIGHT_SWITCHBLADE_STAGGER_MOTION_MAGIC_D, 0);
-		_rightSwitchbladeArmMotor.config_IntegralZone(STAGGER_MANUVER_PID_SLOT_INDEX, RIGHT_SWITCHBLADE_STAGGER_MOTION_MAGIC_IZONE, 0);
+		_rightSwitchbladeArmMotor.config_kF(STORING_ARMS_PID_SLOT_INDEX, SWITCHBLADE_STORE_MOTION_MAGIC_F, 0);
+		_rightSwitchbladeArmMotor.config_kP(STORING_ARMS_PID_SLOT_INDEX, SWITCHBLADE_STORE_MOTION_MAGIC_P, 0);
+		_rightSwitchbladeArmMotor.config_kI(STORING_ARMS_PID_SLOT_INDEX, SWITCHBLADE_STORE_MOTION_MAGIC_I, 0);
+		_rightSwitchbladeArmMotor.config_kD(STORING_ARMS_PID_SLOT_INDEX, SWITCHBLADE_STORE_MOTION_MAGIC_D, 0);
+		_rightSwitchbladeArmMotor.config_IntegralZone(STORING_ARMS_PID_SLOT_INDEX, SWITCHBLADE_STORE_MOTION_MAGIC_IZONE, 0);
 		
 		_rightSwitchbladeArmMotor.configMotionCruiseVelocity(INFEED_ARM_MOTION_MAGIC_MAX_VEL, 0);
 		_rightSwitchbladeArmMotor.configMotionAcceleration(INFEED_ARM_MOTION_MAGIC_MAX_ACC, 0);
@@ -263,18 +211,10 @@ public class Infeed  implements Subsystem {
 		_rightInfeedWheelMotor.setInverted(true);
 				
 		//=====================================================================================
-		//Set up Ultrasonic Sensor
-		//_ultrasonic = UltrasonicSensor.getInstance();
-		
 		_leftSwitchbladeArmMotor.configPeakOutputForward(1, 0);
 		_leftSwitchbladeArmMotor.configPeakOutputReverse(-1, 0);
 		_rightSwitchbladeArmMotor.configPeakOutputForward(1, 0);
 		_rightSwitchbladeArmMotor.configPeakOutputReverse(-1, 0);
-		
-		//Initially Configure Booleans
-		//_hasLeftArmBeenHomed = false;
-		//_hasRightArmBeenHomed = false;
-		//_isStaggerAtInitialPosition = false;
 		
 		_infeedArmState = INFEED_ARM_STATE.NEED_TO_HOME;
 		_infeedWheelsState = INFEED_WHEELS_STATE.STOPPED;
@@ -287,11 +227,7 @@ public class Infeed  implements Subsystem {
 		// called in Telop & Auton Init
 		@Override
 		public void onStart(double timestamp) {
-			synchronized (Infeed.this) {
-				// reset to default startup start
-				//_hasLeftArmBeenHomed = false;
-				//_hasRightArmBeenHomed = false;
-				
+			synchronized (Infeed.this) {				
 				_infeedArmState = INFEED_ARM_STATE.NEED_TO_HOME;
 				_infeedWheelsState = INFEED_WHEELS_STATE.STOPPED;
 			}
@@ -322,47 +258,33 @@ public class Infeed  implements Subsystem {
 						
 					case MOVING_TO_HOME:
 						// ==== left side ====
-						// are we on the home l/s?
 						if (_leftSwitchbladeArmMotor.getSensorCollection().isRevLimitSwitchClosed() == false) {
-							// zero encoder
-							_leftSwitchbladeArmMotor.setSelectedSensorPosition(0, 0, 0);
-							// stop motor
-							_leftSwitchbladeArmMotor.set(ControlMode.PercentOutput, 0);
+							_leftSwitchbladeArmMotor.setSelectedSensorPosition(0, 0, 0); // zero encoder
+							_leftSwitchbladeArmMotor.set(ControlMode.PercentOutput, 0); // stop motor
 							
 							if(!_hasLeftArmBeenHomed) {
 								ReportStateChg("Left Arm [AT_HOME]");
 							}
-							
 							_hasLeftArmBeenHomed = true;
 						}
-						// only run this side if home not reached, may still be running the other side
-						else if (_hasLeftArmBeenHomed == false) {	
-							// run motor "backwards"
-							_leftSwitchbladeArmMotor.set(ControlMode.PercentOutput, -1 * INFEED_HOMING_VBUS_COMMAND);
+						else if (_hasLeftArmBeenHomed == false) {// only run this side if home not reached, may still be running the other side
+							_leftSwitchbladeArmMotor.set(ControlMode.PercentOutput, -1 * INFEED_HOMING_VBUS_COMMAND); // run motor "backwards"
 						}
 						// ==== right side ====
-						// are we on the home l/s?
 						if (_rightSwitchbladeArmMotor.getSensorCollection().isRevLimitSwitchClosed() == false) {
-							// zero encoder
-							_rightSwitchbladeArmMotor.setSelectedSensorPosition(0, 0, 0);
-							// stop motor
-							_rightSwitchbladeArmMotor.set(ControlMode.PercentOutput, 0);
+							_rightSwitchbladeArmMotor.setSelectedSensorPosition(0, 0, 0); // zero encoder
+							_rightSwitchbladeArmMotor.set(ControlMode.PercentOutput, 0); // stop motor
 							
-							if(!_hasRightArmBeenHomed)
-							{
+							if(!_hasRightArmBeenHomed) {
 								ReportStateChg("Right Arm [AT_HOME]");
 							}
-							
 							_hasRightArmBeenHomed = true;
-						}
-						// only run this side if home not reached, may still be running the other side
-						else if (_hasRightArmBeenHomed == false) {
-							// run motor "backwards"
-							_rightSwitchbladeArmMotor.set(ControlMode.PercentOutput, -1 * INFEED_HOMING_VBUS_COMMAND);
-						}
+						}				
+						else if (_hasRightArmBeenHomed == false) { // only run this side if home not reached, may still be running the other side
+							_rightSwitchbladeArmMotor.set(ControlMode.PercentOutput, -1 * INFEED_HOMING_VBUS_COMMAND); // run motor "backwards"
+						}						
 						
-						// only when both arms have been homed
-						if (_hasLeftArmBeenHomed && _hasRightArmBeenHomed) {
+						if (_hasLeftArmBeenHomed && _hasRightArmBeenHomed) { // only when both arms have been homed
 							ReportStateChg("Infeed Arm (State) [" + _infeedArmState.toString() + "] ==> [AT_HOME]");
 							_infeedArmState = INFEED_ARM_STATE.AT_HOME;
 						}
@@ -472,7 +394,6 @@ public class Infeed  implements Subsystem {
 		ReportStateChg("Infeed Arm (State) " + _infeedArmState.toString() + " ==> [MOVE_TO_POSITION_AND_HOLD]:[" + presetPosition.toString() + "]");
 		
 		_infeedArmTargetPosition = presetPosition;
-		//_isStaggerAtInitialPosition = false;
 		switch(presetPosition) {
 			case HOME:
 				_targetInfeedArmPosition = HOME_POSITION_ANGLE;
@@ -486,9 +407,6 @@ public class Infeed  implements Subsystem {
 			case SQUEEZE:
 				 _targetInfeedArmPosition = _currentInFeedArmSqueezeTargetAngle;
 				 break;
-			//case THIN_SIDE:
-			//	_targetInfeedPosition = THIN_SIDE_POSITION_ANGLE;
-			//	break;
 			case STORE:
 				 _targetInfeedArmPosition = STORE_POSITION_ANGLE;
 				 break;
@@ -554,28 +472,6 @@ public class Infeed  implements Subsystem {
 		_hasRightArmBeenHomed = false;
 		_infeedArmState = INFEED_ARM_STATE.NEED_TO_HOME;
 	}
-	
-	//=====================================================================================
-	//Method for Driving Infeed Wheels
-	//=====================================================================================
-	//public void driveInfeedWheels() {
-	//	_leftInfeedWheelMotor.set(ControlMode.PercentOutput, INFEED_DRIVE_WHEELS_VBUS_COMMAND);
-	//	_rightInfeedWheelMotor.set(ControlMode.PercentOutput, INFEED_DRIVE_WHEELS_VBUS_COMMAND);
-	//}
-	
-	//public void driveInfeedWheelsVBus(double joystickCommand) {
-	//	if(areArmsInPosition()) {
-	//		_leftInfeedWheelMotor.set(ControlMode.PercentOutput, joystickCommand);
-	//		_rightInfeedWheelMotor.set(ControlMode.PercentOutput, -1 * joystickCommand);
-	//	}
-	//}
-	
-	//public void spinManuverInfeedWheels() {
-	//	if(areArmsInPosition()) {
-	//		_leftInfeedWheelMotor.set(ControlMode.PercentOutput, INFEED_SPIN_CUBE_WHEELS_VBUS_COMMAND);
-	//		_rightInfeedWheelMotor.set(ControlMode.PercentOutput, INFEED_SPIN_CUBE_WHEELS_VBUS_COMMAND);
-	//	}
-	//}
 	
 	//=====================================================================================
 	// Methods for Driving Infeed Wheels
@@ -701,8 +597,7 @@ public class Infeed  implements Subsystem {
 		return _infeedArmState;
 	}
 	
-	public INFEED_ARM_TARGET_POSITION getInfeedArmsTargetPosition()
-	{
+	public INFEED_ARM_TARGET_POSITION getInfeedArmsTargetPosition() {
 		return _infeedArmTargetPosition;
 	}
 	
@@ -722,8 +617,7 @@ public class Infeed  implements Subsystem {
 	//=====================================================================================
 	//Methods for Logging and Outputting to Shuffleboard
 	//=====================================================================================	
-	public void outputToShuffleboard() 
-	{
+	public void outputToShuffleboard() {
 		SmartDashboard.putString("InfeedWheels:State", _infeedWheelsState.toString());
 		SmartDashboard.putNumber("InfeedWheels:%VBus", _currentInFeedWheelsVBusCmd);
 		

@@ -70,7 +70,7 @@ public class Robot extends IterativeRobot {
 		_dashboard.printStartupMessage();
 		
 		// Hold scan times moving average samples
-		_scanTimeSamples = new MovingAverage(100);  // 2 sec * 1000mSec/Sec / 20mSec/Scan
+		_scanTimeSamples = new MovingAverage(100);
 		SmartDashboard.putString("Scan Time (2 sec roll avg)", "0.0 mSec");
 		
 		outputAllToDashboard();
@@ -121,7 +121,6 @@ public class Robot extends IterativeRobot {
 		
 		_enabledLooper.start();
 
-		_cubeHandler.infeedArms_SafeStartup();
 		_cubeHandler.elevator_SafeStartup();
 		
 		int retries = 100;
@@ -130,9 +129,7 @@ public class Robot extends IterativeRobot {
 			retries--;
 			try { 
 				Thread.sleep(5);
-			} catch (InterruptedException ie) {
-				// Ignore InterruptedException
-			}
+			} catch (InterruptedException ie) {}
 		}
 		
 		if (retries == 0) {
@@ -150,12 +147,9 @@ public class Robot extends IterativeRobot {
 		_chassis.zeroGyro();
 		_chassis.setBrakeMode(true);
 		
-		//_infeed.reZeroArms();
-
-		// init data logging
-		_dataLogger = GeneralUtilities.setupLogging("auton");
-		// snapshot time to control spamming
-		_lastDashboardWriteTimeMSec = new Date().getTime();
+		_dataLogger = GeneralUtilities.setupLogging("auton"); // init data logging
+		
+		_lastDashboardWriteTimeMSec = new Date().getTime(); // snapshot time to control spamming
 		
 		_dashboard.outputToDashboard();
 		
@@ -165,13 +159,11 @@ public class Robot extends IterativeRobot {
 	/** Called each loop (approx every 20mS) in autonomous mode */
 	@Override
 	public void autonomousPeriodic() {	
-		// Refresh Dashboard
-		outputAllToDashboard();
+		outputAllToDashboard(); // Refresh Dashboard
 		
 		_chassis.setBrakeMode(true);
 		
-		// Optionally Log Data
-		logAllData();
+		logAllData(); // Optionally Log Data
 	}
 
 	/** Called once, each time the robot enters teleop mode. */
@@ -192,15 +184,13 @@ public class Robot extends IterativeRobot {
 		_chassis.setBrakeMode(true);  
 		_chassis.stop();
 		
-		//_cubeHandler.doNothing();
-		_cubeHandler.infeedArms_SafeStartup();
 		_cubeHandler.elevator_SafeStartup();
 		
 		_dos.clearGamepadsCachedBtnPresses();
-		// init data logging
-		_dataLogger = GeneralUtilities.setupLogging("auton");
-		// snapshot time to control spamming
-		_lastDashboardWriteTimeMSec = new Date().getTime();
+		
+		_dataLogger = GeneralUtilities.setupLogging("auton"); // init data logging
+		
+		_lastDashboardWriteTimeMSec = new Date().getTime(); // snapshot time to control spamming
 	}
 
 
