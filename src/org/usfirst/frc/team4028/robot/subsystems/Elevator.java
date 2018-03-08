@@ -211,7 +211,7 @@ public class Elevator implements Subsystem {
 		@Override
 		public void onStart(double timestamp) {
 			synchronized (Elevator.this) {}
-			
+			_elevatorState = ELEVATOR_STATE.NEED_TO_HOME;
 			_elevatorAtScaleOffsetNU = 0;
 		}
 		
