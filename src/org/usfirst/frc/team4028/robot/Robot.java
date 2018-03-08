@@ -120,8 +120,6 @@ public class Robot extends IterativeRobot {
 		_dos.clearGamepadsCachedBtnPresses();
 		
 		_enabledLooper.start();
-
-		_cubeHandler.elevator_SafeStartup();
 		
 		int retries = 100;
 		
@@ -183,8 +181,6 @@ public class Robot extends IterativeRobot {
 		_chassis.setHighGear(false);
 		_chassis.setBrakeMode(true);  
 		_chassis.stop();
-		
-		_cubeHandler.elevator_SafeStartup();
 		
 		_dos.clearGamepadsCachedBtnPresses();
 		

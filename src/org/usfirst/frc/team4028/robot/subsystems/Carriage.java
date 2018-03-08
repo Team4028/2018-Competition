@@ -52,15 +52,12 @@ public class Carriage implements Subsystem {
 	
 	private DigitalInput _carriageLimitSwitch;
 	
-	//private Servo _carriageSqueezeServo;
-	
 	private CARRIAGE_WHEELS_STATE _carriageWheelsState;
 	private CARRIAGE_WHEELS_OUT_VBUS_INDEX _currentCarriageWheelsFeedOutVBusIndex = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_60;
 	private double _currentCarriageWheelsFeedInVBusCmd = .45;
 	private double _currentCarriageWheelsJoystickVBusCmd = 0;
 	
 	private static final double CARRIAGE_WHEELS_IN_VBUS_COMMAND_BUMP = 0.05;
-//	private static final double CARRIAGE_WHEELS_OUT_VBUS_COMMAND_BUMP = 0.2;
 	
 	private static final boolean IS_VERBOSE_LOGGING_ENABLED = true;
 	
@@ -130,10 +127,6 @@ public class Carriage implements Subsystem {
 		_carriageRightMotor.configReverseSoftLimitEnable(false, 0);
 		_carriageRightMotor.configForwardSoftLimitEnable(false, 0);
 		
-		// Setup Carriage Servo Motors
-		//_carriageSqueezeServo = new Servo(Constants.CARRIAGE_SERVO_PWM_ADDRESS);
-		//_carriageSqueezeServo.set(0);
-		
 		//Setup Limit Switch
 		_carriageLimitSwitch = new DigitalInput(Constants.CARRIAGE_LIMIT_SWITCH_DIO_PORT);
 		
@@ -143,14 +136,11 @@ public class Carriage implements Subsystem {
 	//=====================================================================================
 	//Set Up Looper to run loop at 10ms interval (2x RoboRio Cycle Time)
 	//=====================================================================================
-	private final Loop _loop = new Loop() {
-		// called in Telop & Auton Init
+	private final Loop _loop = new Loop() { // called in Telop & Auton Init
 		@Override
 		public void onStart(double timestamp) {
-			synchronized (Carriage.this) 
-			{
-				// reset to default startup start
-				_carriageWheelsState = CARRIAGE_WHEELS_STATE.STOPPED;
+			synchronized (Carriage.this) {
+				_carriageWheelsState = CARRIAGE_WHEELS_STATE.STOPPED; // reset to default startup start
 			}
 		}
 		
@@ -208,39 +198,32 @@ public class Carriage implements Subsystem {
 	}
 
 	//=== Feed In =================================================================
-	public void feedIn() 
-	{
-		if(!isCubeInCarriage()) 
-		{
+	public void feedIn() {
+		if(!isCubeInCarriage()) {
 			if(_carriageWheelsState != CARRIAGE_WHEELS_STATE.FEED_IN) {
 				ReportStateChg("Carriage Wheels (State) " + _carriageWheelsState.toString() + " ==> [FEED_IN]");
 				_carriageWheelsState = CARRIAGE_WHEELS_STATE.FEED_IN;
 			}			
-		} 
-		else {
+		} else {
 			stop();
 		}
 	}
 	
-	public void feedIn(double joystickCommand) 
-	{
-		if(!isCubeInCarriage()) 
-		{
+	public void feedIn(double joystickCommand) {
+		if(!isCubeInCarriage()) {
 			_currentCarriageWheelsJoystickVBusCmd = joystickCommand * 0.5;
 			
 			if(_carriageWheelsState != CARRIAGE_WHEELS_STATE.JOYSTICK) {
 				ReportStateChg("Carriage Wheels (State) " + _carriageWheelsState.toString() + " ==> [JOYSTICK][IN]");
 				_carriageWheelsState = CARRIAGE_WHEELS_STATE.JOYSTICK;
 			}			
-		} 
-		else {
+		} else {
 			stop();
 		}
 	}
 	
 	//=== Feed Out =================================================================
-	public void feedOut() 
-	{
+	public void feedOut() {
 		if(_carriageWheelsState != CARRIAGE_WHEELS_STATE.FEED_OUT) {
 			ReportStateChg("Carriage Wheels (State) " + _carriageWheelsState.toString() + " ==> [FEED_OUT]");
 			_carriageWheelsState = CARRIAGE_WHEELS_STATE.FEED_OUT;
@@ -256,10 +239,8 @@ public class Carriage implements Subsystem {
 		}
 	}
 	
-	public void feedOut(double joystickCommand) 
-	{
-		// invert cmd
-		_currentCarriageWheelsJoystickVBusCmd = -1 * joystickCommand;
+	public void feedOut(double joystickCommand) {
+		_currentCarriageWheelsJoystickVBusCmd = -1 * joystickCommand; // invert cmd
 		
 		if(_carriageWheelsState != CARRIAGE_WHEELS_STATE.JOYSTICK) {
 			ReportStateChg("Carriage Wheels (State) " + _carriageWheelsState.toString() + " ==> [JOYSTICK][OUT]");
@@ -268,80 +249,72 @@ public class Carriage implements Subsystem {
 	}
 	
 	//=== Bump Feed In Cmd =================================================================
-	public void carriageWheels_FeedIn_VBusCmd_BumpUp() 
-	{
+	public void carriageWheels_FeedIn_VBusCmd_BumpUp() {
 		double newCmd = _currentCarriageWheelsFeedInVBusCmd + CARRIAGE_WHEELS_IN_VBUS_COMMAND_BUMP;
 		
-		// only bump if new cmd is not over max
-		if(newCmd <= 1.0) {
+		if(newCmd <= 1.0) { // only bump if new cmd is not over max
 			_currentCarriageWheelsFeedInVBusCmd = newCmd;
 		}
 	}
 	
-	public void carriageWheels_FeedIn_VBusCmd_BumpDown() 
-	{		
+	public void carriageWheels_FeedIn_VBusCmd_BumpDown() {		
 		double newCmd = _currentCarriageWheelsFeedInVBusCmd - CARRIAGE_WHEELS_IN_VBUS_COMMAND_BUMP;
 		
-		// only bump if new cmd is not under min
-		if(newCmd >= 0.0) {
+		if(newCmd >= 0.0) { // only bump if new cmd is not under min
 			_currentCarriageWheelsFeedInVBusCmd = newCmd;
 		}
 	}
 	
 	//=== Bump Feed Out Cmd =================================================================
-	public void carriageWheels_FeedOut_VBusCmd_IndexBumpUp()
-	{
-		switch (_currentCarriageWheelsFeedOutVBusIndex)
-		{
-		case VBUS_100:
-			// do nothing
-			break;
-
-		case VBUS_90:
-			_currentCarriageWheelsFeedOutVBusIndex = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_100;
-			break;
-			
-		case VBUS_80:
-			_currentCarriageWheelsFeedOutVBusIndex = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_90;
-			break;
-
-		case VBUS_70:
-			_currentCarriageWheelsFeedOutVBusIndex = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_80;
-			break;
-			
-		case VBUS_60:
-			_currentCarriageWheelsFeedOutVBusIndex = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_70;
-			break;
-
-		case VBUS_50:
-			_currentCarriageWheelsFeedOutVBusIndex = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_60;
-			break;
-			
-		case VBUS_40:
-			_currentCarriageWheelsFeedOutVBusIndex = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_50;
-			break;
-
-		case VBUS_30:
-			_currentCarriageWheelsFeedOutVBusIndex = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_40;
-			break;
-
-		case VBUS_20:
-			_currentCarriageWheelsFeedOutVBusIndex = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_30;
-			break;
-			
-		case VBUS_10:
-			_currentCarriageWheelsFeedOutVBusIndex = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_20;
-			break;
+	public void carriageWheels_FeedOut_VBusCmd_IndexBumpUp() {
+		switch (_currentCarriageWheelsFeedOutVBusIndex)	{
+			case VBUS_100:
+				// do nothing
+				break;
+	
+			case VBUS_90:
+				_currentCarriageWheelsFeedOutVBusIndex = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_100;
+				break;
+				
+			case VBUS_80:
+				_currentCarriageWheelsFeedOutVBusIndex = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_90;
+				break;
+	
+			case VBUS_70:
+				_currentCarriageWheelsFeedOutVBusIndex = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_80;
+				break;
+				
+			case VBUS_60:
+				_currentCarriageWheelsFeedOutVBusIndex = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_70;
+				break;
+	
+			case VBUS_50:
+				_currentCarriageWheelsFeedOutVBusIndex = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_60;
+				break;
+				
+			case VBUS_40:
+				_currentCarriageWheelsFeedOutVBusIndex = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_50;
+				break;
+	
+			case VBUS_30:
+				_currentCarriageWheelsFeedOutVBusIndex = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_40;
+				break;
+	
+			case VBUS_20:
+				_currentCarriageWheelsFeedOutVBusIndex = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_30;
+				break;
+				
+			case VBUS_10:
+				_currentCarriageWheelsFeedOutVBusIndex = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_20;
+				break;
 				
 			default:
 				break;
 		}
 	}
 	
-	public void carriage_FeedOut_VBusCmd_IndexBumpDown()
-	{
-		switch (_currentCarriageWheelsFeedOutVBusIndex)
-		{
+	public void carriage_FeedOut_VBusCmd_IndexBumpDown() {
+		switch (_currentCarriageWheelsFeedOutVBusIndex)	{
 			case VBUS_100:
 				_currentCarriageWheelsFeedOutVBusIndex = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_90;
 				break;
@@ -386,21 +359,6 @@ public class Carriage implements Subsystem {
 				break;
 		}
 	}
-		
-	//=====================================================================================
-	//  Carriage Servo
-	//=====================================================================================
-	//public void moveCarriageServosWider() {
-	//	if(_servoTargetPosition != 1) {
-	//		_servoTargetPosition = _servoTargetPosition + 0.05;
-	//	}
-	//}
-	
-	//public void moveCarriageServosCloser() {
-	//	if(_servoTargetPosition != 0) {
-	//		_servoTargetPosition = _servoTargetPosition - 0.05;
-	//	}
-	//}
 	
 	@Override
 	public void zeroSensors() 
@@ -411,21 +369,17 @@ public class Carriage implements Subsystem {
 	//=====================================================================================
 	// Property Accessors
 	//=====================================================================================
-	public boolean isCubeInCarriage() 
-	{
-		// normally closed switch, input is pulled low
-		return _carriageLimitSwitch.get();
+	public boolean isCubeInCarriage() {
+		
+		return _carriageLimitSwitch.get(); // normally closed switch, input is pulled low
 	} 
 	
-	private double getCarriageMotorCurrent()
-	{
+	private double getCarriageMotorCurrent() {
 		return _carriageLeftMotor.getOutputCurrent();
 	}
 	
-	private double getCurrentCarriageWheelsFeedOutVBusCmd()
-	{
-		switch (_currentCarriageWheelsFeedOutVBusIndex)
-		{
+	private double getCurrentCarriageWheelsFeedOutVBusCmd() {
+		switch (_currentCarriageWheelsFeedOutVBusIndex)	{
 			case VBUS_100:
 				return 1;
 			
@@ -465,8 +419,7 @@ public class Carriage implements Subsystem {
 	// Utility Methods
 	//=====================================================================================
 	@Override
-	public void outputToShuffleboard() 
-	{
+	public void outputToShuffleboard() {
 		SmartDashboard.putNumber("Carriage:Motor Current:", getCarriageMotorCurrent());
 		SmartDashboard.putNumber("Carriage:Wheels Feed In %VBus", _currentCarriageWheelsFeedInVBusCmd);
 		SmartDashboard.putNumber("Carriage:Wheels Feed Out %VBus", getCurrentCarriageWheelsFeedOutVBusCmd());
@@ -475,14 +428,12 @@ public class Carriage implements Subsystem {
 	}
 
 	@Override
-	public void updateLogData(LogDataBE logData) 
-	{
+	public void updateLogData(LogDataBE logData) {
 		logData.AddData("Carriage:LimitSwitch", String.valueOf(isCubeInCarriage()));
 	}
 	
 	// private helper method to control how we write to the drivers station
-	private void ReportStateChg(String message) 
-	{
+	private void ReportStateChg(String message) {
 		if(IS_VERBOSE_LOGGING_ENABLED) {
 			System.out.println(message);
 		}

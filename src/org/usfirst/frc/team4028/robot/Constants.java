@@ -41,9 +41,6 @@ public class Constants {
 	public static final SPI.Port NAVX_PORT = Port.kMXP;
 	public static final double MAX_PITCH_POSITIVE = 25.0;
 	public static final double MAX_PITCH_NEGATIVE = -25.0;
-	  
-	// Analog In Ports on RoboRIO
-	public static final int ULTRASONIC_PORT = 0;
 	
 	// PWM Ports on RoboRIO
 	public static final int CLIMBER_SERVO_PWM_ADDRESS = 0;

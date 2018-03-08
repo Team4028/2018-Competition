@@ -157,7 +157,6 @@ public class CubeHandler implements Subsystem {
 	}
 
 	public void elevator_MoveToPresetPosition(ELEVATOR_PRESET_POSITION presetPosition) {
-		
 		_elevator.resetElevatorScaleHeightBump(); // always reset bump when we move to a position
 		_requestedPresetPosition = presetPosition;
 		ReportStateChg("Cube Handler (State) " + _cubeHandlerState.toString() + " ==> [WANT_TO_MOVE_ELEVATOR_TO_PRESET]");
@@ -166,11 +165,6 @@ public class CubeHandler implements Subsystem {
 	
 	public boolean isElevatorAtTargetPos() {
 		return _elevator.IsAtTargetPosition();
-	}
-
-	public void elevator_SafeStartup() {
-		_elevator.rezeroElevator();
-		_requestedPresetPosition = ELEVATOR_PRESET_POSITION.HOME; // reset any cached target position 
 	}
 	
 	public void stopElevator() {

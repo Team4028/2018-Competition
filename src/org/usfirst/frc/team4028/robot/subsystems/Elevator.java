@@ -359,8 +359,7 @@ public class Elevator implements Subsystem {
 				case HOME:
 					// limit spamming from CubeHandler
 					if((_elevatorState !=ELEVATOR_STATE.GOTO_TARGET_POSITION && _elevatorState !=ELEVATOR_STATE.HOLD_TARGET_POSITION)
-							|| _targetElevatorPositionNU != HOME_POSITION)
-					{
+							|| _targetElevatorPositionNU != HOME_POSITION) {
 						_targetElevatorPositionNU = HOME_POSITION;
 						ReportStateChg("ElevatorAxis (State) [" + _elevatorState.toString() + "] ==> [GOTO_TARGET_POSTION]:[HOME_POSITION]");
 						_elevatorState = ELEVATOR_STATE.GOTO_TARGET_POSITION;
@@ -369,8 +368,7 @@ public class Elevator implements Subsystem {
 					
 				case INFEED_HEIGHT:
 					if((_elevatorState !=ELEVATOR_STATE.GOTO_TARGET_POSITION && _elevatorState !=ELEVATOR_STATE.HOLD_TARGET_POSITION)
-							|| _targetElevatorPositionNU != INFEED_POSITION)
-					{
+							|| _targetElevatorPositionNU != INFEED_POSITION) {
 						_targetElevatorPositionNU = INFEED_POSITION;
 						ReportStateChg("ElevatorAxis (State) [" + _elevatorState.toString() + "] ==> [GOTO_TARGET_POSTION]:[INFEED_POSITION]");
 						_elevatorState = ELEVATOR_STATE.GOTO_TARGET_POSITION;
@@ -379,8 +377,7 @@ public class Elevator implements Subsystem {
 					
 				case LOW_SCALE_HEIGHT:
 					if((_elevatorState !=ELEVATOR_STATE.GOTO_TARGET_POSITION && _elevatorState !=ELEVATOR_STATE.HOLD_TARGET_POSITION)
-							|| _targetElevatorPositionNU != LOW_SCALE_HEIGHT_POSITION)
-					{
+							|| _targetElevatorPositionNU != LOW_SCALE_HEIGHT_POSITION) {
 						_targetElevatorPositionNU = LOW_SCALE_HEIGHT_POSITION;
 						ReportStateChg("ElevatorAxis (State) [" + _elevatorState.toString() + "] ==> [GOTO_TARGET_POSTION]:[LOW_SCALE_HEIGHT_POSITION]");
 						_elevatorState = ELEVATOR_STATE.GOTO_TARGET_POSITION;
@@ -389,8 +386,7 @@ public class Elevator implements Subsystem {
 										
 				case NEUTRAL_SCALE_HEIGHT:
 					if((_elevatorState !=ELEVATOR_STATE.GOTO_TARGET_POSITION && _elevatorState != ELEVATOR_STATE.HOLD_TARGET_POSITION)
-							|| _targetElevatorPositionNU != NEUTRAL_SCALE_HEIGHT_POSITION )
-					{				
+							|| _targetElevatorPositionNU != NEUTRAL_SCALE_HEIGHT_POSITION )	{				
 						ReportStateChg("ElevatorAxis (State) [" + _elevatorState.toString() + "] ==> [GOTO_TARGET_POSTION]:[NEUTRAL_SCALE_HEIGHT_POSITION]");
 						_elevatorState = ELEVATOR_STATE.GOTO_TARGET_POSITION;
 					}
@@ -400,8 +396,7 @@ public class Elevator implements Subsystem {
 					
 				case HIGH_SCALE_HEIGHT:
 					if((_elevatorState !=ELEVATOR_STATE.GOTO_TARGET_POSITION && _elevatorState !=ELEVATOR_STATE.HOLD_TARGET_POSITION)
-							|| _targetElevatorPositionNU != HIGH_SCALE_HEIGHT_POSITION)
-					{
+							|| _targetElevatorPositionNU != HIGH_SCALE_HEIGHT_POSITION)	{
 						_targetElevatorPositionNU = HIGH_SCALE_HEIGHT_POSITION;
 						ReportStateChg("ElevatorAxis (State) [" + _elevatorState.toString() + "] ==> [GOTO_TARGET_POSTION]:[HIGH_SCALE_HEIGHT_POSITION]");
 						_elevatorState = ELEVATOR_STATE.GOTO_TARGET_POSITION;
@@ -410,8 +405,7 @@ public class Elevator implements Subsystem {
 					
 				case SWITCH_HEIGHT:
 					if((_elevatorState !=ELEVATOR_STATE.GOTO_TARGET_POSITION && _elevatorState !=ELEVATOR_STATE.HOLD_TARGET_POSITION)
-							|| _targetElevatorPositionNU != SWITCH_HEIGHT_POSITION)
-					{
+							|| _targetElevatorPositionNU != SWITCH_HEIGHT_POSITION)	{
 						_targetElevatorPositionNU = SWITCH_HEIGHT_POSITION;
 						ReportStateChg("ElevatorAxis (State) [" + _elevatorState.toString() + "] ==> [GOTO_TARGET_POSTION]:[SWITCH_HEIGHT_POSITION]");
 						_elevatorState = ELEVATOR_STATE.GOTO_TARGET_POSITION;
