@@ -543,7 +543,8 @@ public class Infeed  implements Subsystem {
 				&& _targetInfeedArmPosition != HOME_POSITION_ANGLE
 				&& _targetInfeedArmPosition != STORE_POSITION_ANGLE) {
 			return true;
-		} else if(_targetInfeedArmPosition == _currentInFeedArmSqueezeTargetAngle) { 
+		} 
+		else if(_targetInfeedArmPosition == _currentInFeedArmSqueezeTargetAngle) { 
 			return true;
 		} else {
 			return false;
