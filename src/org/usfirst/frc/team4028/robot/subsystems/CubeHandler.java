@@ -2,8 +2,6 @@ package org.usfirst.frc.team4028.robot.subsystems;
 
 import org.usfirst.frc.team4028.robot.subsystems.Carriage.CARRIAGE_WHEELS_OUT_VBUS_INDEX;
 import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_PRESET_POSITION;
-import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_STATE;
-import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_ARM_STATE;
 import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_ARM_TARGET_POSITION;
 import org.usfirst.frc.team4028.util.LogDataBE;
 import org.usfirst.frc.team4028.util.loops.Loop;
@@ -89,40 +87,32 @@ public class CubeHandler implements Subsystem {
 						
 					case WANT_TO_MOVE_ELEVATOR_TO_PRESET:
 						
-						if(!_infeed.areArmsInSafePosition())
-						{
-							// make sure arms are safe before moving elevator
-							_infeed.moveArmsToSafePosition();
+						if(!_infeed.areArmsInSafePosition()) {							
+							_infeed.moveArmsToSafePosition(); // make sure arms are safe before moving elevator
 						}
-						else 
-						{
+						else {
 							ReportStateChg("Infeed Arm (State) " + _cubeHandlerState.toString() + " ==> [SAFE_TO_MOVE_ELEVATOR_PRESET]");
 							_cubeHandlerState = CUBE_HANDLER_STATE.SAFE_TO_MOVE_ELEVATOR_TO_PRESET;
 						}
 						break;
 					
 					case SAFE_TO_MOVE_ELEVATOR_TO_PRESET:
-						// move elevator to requested position
-						_elevator.MoveToPresetPosition(_requestedPresetPosition);	
+						_elevator.MoveToPresetPosition(_requestedPresetPosition); // move elevator to requested position	
 						break;
 						
 					case WANT_TO_MOVE_ELEVATOR_JOYSTICK:
 						
-						if(!_infeed.areArmsInSafePosition())
-						{
-							// make sure arms are safe before moving elevator
-							_infeed.moveArmsToSafePosition();
+						if(!_infeed.areArmsInSafePosition()) {
+							_infeed.moveArmsToSafePosition(); // make sure arms are safe before moving elevator
 						}
-						else 
-						{
+						else {
 							ReportStateChg("Infeed Arm (State) " + _cubeHandlerState.toString() + " ==> [SAFE_TO_MOVE_ELEVATOR_JOYSTICK]");
 							_cubeHandlerState = CUBE_HANDLER_STATE.SAFE_TO_MOVE_ELEVATOR_JOYSTICK;
 						}
 						break;
 					
 					case SAFE_TO_MOVE_ELEVATOR_JOYSTICK:
-						// move elevator to requested position
-						_elevator.JogAxis(_requestedElevatorSpeedCmd);
+						_elevator.JogAxis(_requestedElevatorSpeedCmd); // move elevator to requested position
 						break;
 							
 					default:
@@ -132,17 +122,14 @@ public class CubeHandler implements Subsystem {
 		}
 		
 		@Override
-		public void onStop(double timestamp) 
-		{
-			synchronized (CubeHandler.this) 
-			{
+		public void onStop(double timestamp) {
+			synchronized (CubeHandler.this) {
 				stop();
 			}
 		}
 	};
 	
-	public Loop getLoop() 
-	{
+	public Loop getLoop() {
 		return _loop;
 	}
 
@@ -152,39 +139,25 @@ public class CubeHandler implements Subsystem {
 	//=====================================================================================	
 	
 	@Override
-	public void stop() 
-	{
+	public void stop() {
 		stop_InfeedAndCarriage();
 		stopElevator();
 	}
 	
 	@Override
-	public void zeroSensors() 
-	{
-		// N/A for this class
-	}
+	public void zeroSensors() {}
 
 	//=====================================================================================
 	//Methods for Handling Interactions with Elevator Subsystem
 	//=====================================================================================	
-	public void elevator_JogAxis(double speedCmd) 
-	{
-		// TODO: Intercept
-		//_elevator.JogAxis(speedCmd);
-		
+	public void elevator_JogAxis(double speedCmd) {		
 		_requestedElevatorSpeedCmd = speedCmd;
 		ReportStateChg("Cube Handler (State) " + _cubeHandlerState.toString() + " ==> [WANT_TO_MOVE_ELEVATOR_JOYSTICK]");
 		_cubeHandlerState = CUBE_HANDLER_STATE.WANT_TO_MOVE_ELEVATOR_JOYSTICK;
 	}
 
-	public void elevator_MoveToPresetPosition(ELEVATOR_PRESET_POSITION presetPosition) 
-	{
-		// TODO: Intercept
-		//_elevator.MoveToPresetPosition(presetPosition);	
-		
-		// always reset bump when we move to a position
-		_elevator.resetElevatorScaleHeightBump();
-		
+	public void elevator_MoveToPresetPosition(ELEVATOR_PRESET_POSITION presetPosition) {
+		_elevator.resetElevatorScaleHeightBump(); // always reset bump when we move to a position
 		_requestedPresetPosition = presetPosition;
 		ReportStateChg("Cube Handler (State) " + _cubeHandlerState.toString() + " ==> [WANT_TO_MOVE_ELEVATOR_TO_PRESET]");
 		_cubeHandlerState = CUBE_HANDLER_STATE.WANT_TO_MOVE_ELEVATOR_TO_PRESET;
@@ -193,25 +166,13 @@ public class CubeHandler implements Subsystem {
 	public boolean isElevatorAtTargetPos() {
 		return _elevator.IsAtTargetPosition();
 	}
-
-	public void elevator_SafeStartup()
-	{		
-		// in ONLY this special case we bypass looper and talk directly to elevator class
-		// we want to avoid 1 scan cycle when elevator looper can still have a cached target
-		_elevator.rezeroElevator();
-		
-		// reset any cached target position 
-		_requestedPresetPosition = ELEVATOR_PRESET_POSITION.HOME;
-	}
 	
-	public void stopElevator()
-	{
+	public void stopElevator() {
 		_elevator.stop();
 	}
 	
 	public void elevator_ScaleHeight_BumpPositionUp() {
-		if(_requestedPresetPosition == ELEVATOR_PRESET_POSITION.NEUTRAL_SCALE_HEIGHT)
-		{
+		if(_requestedPresetPosition == ELEVATOR_PRESET_POSITION.NEUTRAL_SCALE_HEIGHT) {
 			if(_elevator.getElevatorScaleHeightBumpInches() < 11.9) {
 				_elevator.elevatorScaleHeightBumpPositionUp();
 			}
@@ -219,15 +180,13 @@ public class CubeHandler implements Subsystem {
 				System.out.println("Elevator Scale Position Bump Tooooooo Large");
 			}
 		}
-		else
-		{
+		else {
 			System.out.println("Bump Up Only honored when requested position is Scale ");
 		}
 	}
 	
 	public void elevator_ScaleHeight_BumpPositionDown() {
-		if(_requestedPresetPosition == ELEVATOR_PRESET_POSITION.NEUTRAL_SCALE_HEIGHT)
-		{
+		if(_requestedPresetPosition == ELEVATOR_PRESET_POSITION.NEUTRAL_SCALE_HEIGHT) {
 			if(_elevator.getElevatorScaleHeightBumpInches() > -11.9) {
 				_elevator.elevatorScaleHeightBumpPositionDown();
 			}
@@ -235,8 +194,7 @@ public class CubeHandler implements Subsystem {
 				System.out.println("Elevator Scale Position Bump Tooooooo Large");
 			}
 		}
-		else
-		{
+		else {
 			System.out.println("Bump Down Only honored when requested position is Scale ");
 		}
 	}
@@ -244,35 +202,19 @@ public class CubeHandler implements Subsystem {
 	//=====================================================================================
 	//Methods for Handling Interactions with Multiple Subsystem
 	//=====================================================================================	
-	public void acquireCube_InfeedAndCarriage() 
-	{
+	public void acquireCube_InfeedAndCarriage() {
 		_infeed.feedIn();
 		_carriage.feedIn();
 	}
 	
-	public void ejectCube_InfeedAndCarriage() 
-	{
-		// only run infeed wheels if we are at squeeze position
-		if(_infeed.getInfeedArmsTargetPosition() == INFEED_ARM_TARGET_POSITION.SQUEEZE)
-		{
+	public void ejectCube_InfeedAndCarriage() {
+		if(_infeed.getInfeedArmsTargetPosition() == INFEED_ARM_TARGET_POSITION.SQUEEZE) { // only run infeed wheels if we are at squeeze position
 			_infeed.feedOut();
 		}
-		
-		// always run carriage wheels
-		_carriage.feedOut();
+		_carriage.feedOut(); // always run carriage wheels
 	}
 	
-	//public void runCube_InfeedAndCarriage(double joystickCommand) 
-	//{
-	//	if(_elevator.isElevatorAtInfeedPosition()) 
-	//	{
-	//		_infeed.driveInfeedWheelsVBus(joystickCommand);
-	//		_carriage.feedIn(joystickCommand);
-	//	}
-	//}
-	
-	public void stop_InfeedAndCarriage() 
-	{
+	public void stop_InfeedAndCarriage() {
 		_infeed.stopDriveMotors();
 		_carriage.stop();
 	}
@@ -280,21 +222,16 @@ public class CubeHandler implements Subsystem {
 	//=====================================================================================
 	//Methods for Handling Interactions with Infeed Subsystem
 	//=====================================================================================	
-	public void infeedArms_SpinCube_CCW() 
-	{
+	public void infeedArms_SpinCube_CCW() {
 		_infeed.infeedWheels_SpinCube_CCW();
 	}
 	
-	public void infeedArms_SpinCube_CW() 
-	{
+	public void infeedArms_SpinCube_CW() {
 		_infeed.infeedWheels_SpinCube_CW();
 	}
 	
-	// used by auton only
-	public void infeedArms_MoveToPresetPosition(INFEED_ARM_TARGET_POSITION presetTargetPostion)
-	{
-		switch(presetTargetPostion)
-		{
+	public void infeedArms_MoveToPresetPosition(INFEED_ARM_TARGET_POSITION presetTargetPostion) { // used by auton only
+		switch(presetTargetPostion)	{
 			case SQUEEZE:
 				infeedArms_moveToSqueezePosition();
 				break;
@@ -314,59 +251,40 @@ public class CubeHandler implements Subsystem {
 		}
 	}
 	
-	public void infeedArms_moveToSqueezePosition() 
-	{
-		// TODO: Intercept
-		if(_elevator.isElevatorAtInfeedPosition()) 
-		{
+	public void infeedArms_moveToSqueezePosition() {
+		if(_elevator.isElevatorAtInfeedPosition()) {
 			_infeed.moveArmsToSqueezeInfeedPosition();
 		}
-		else 
-		{
+		else {
 			DriverStation.reportError("Elevator must be at Infeed Position!", false);
 		}
 	}
 	
-	public void infeedArms_moveToStorePosition() 
-	{
+	public void infeedArms_moveToStorePosition() {
 		_infeed.storeArms();
 	}	
 	
-	public void infeedArms_moveToWidePosition() 
-	{
+	public void infeedArms_moveToWidePosition() {
 		_infeed.moveArmsToWideInfeedPosition();
 	}
 	
-	public void infeedArms_SqueezeAngle_BumpNarrower() 
-	{
+	public void infeedArms_SqueezeAngle_BumpNarrower() {
 		_infeed.infeedArms_SqueezeAngle_BumpNarrower();
 	}
 	
-	public void infeedArms_SqueezeAngle_BumpWider() 
-	{
+	public void infeedArms_SqueezeAngle_BumpWider() {
 		_infeed.infeedArms_SqueezeAngle_BumpWider();
 	}
 	
-	public void infeedArms_Rezero() 
-	{
+	public void infeedArms_Rezero() {
 		_infeed.reZeroArms();
 	}
 	
-	public void infeedArms_SafeStartup()
-	{
-		if(_infeed.getInfeedArmState() == INFEED_ARM_STATE.MOVE_TO_POSITION_AND_HOLD)
-		{
-			//_infeed.reZeroArms();
-		}
-	}
-	
-	public void infeedWheels_VBusCmd_BumpUp() 
-	{
+	public void infeedWheels_VBusCmd_BumpUp() {
 		_infeed.infeedWheels_VBusCmd_BumpUp();
 	}
 	
-	public void infeedWheels_VBusCmd_BumpDown() 
-	{		
+	public void infeedWheels_VBusCmd_BumpDown() {		
 		_infeed.infeedWheels_VBusCmd_BumpDown();
 	}
 	
@@ -385,54 +303,41 @@ public class CubeHandler implements Subsystem {
 		_carriage.carriageWheels_FeedIn_VBusCmd_BumpUp();
 	}
 	
-	//public void carriage_FeedOut_VBusCmd_BumpDown() 
-	//{
-	//	_carriage.carriageWheels_FeedOut_VBusCmd_BumpDown();
-	//}
-	
-	//public void carriage_FeedOut_VBusCmd_BumpUp() 
-	//{
-	//	_carriage.carriageWheels_FeedOut_VBusCmd_BumpUp();
-	//}
-	
-	public void carriage_FeedOut_VBusCmd_IndexBumpUp()
-	{
+	public void carriage_FeedOut_VBusCmd_IndexBumpUp() {
 		_carriage.carriageWheels_FeedOut_VBusCmd_IndexBumpUp();
 	}
 	
-	public void carriage_FeedOut_VBusCmd_IndexBumpDown()
-	{
+	public void carriage_FeedOut_VBusCmd_IndexBumpDown() {
 		_carriage.carriage_FeedOut_VBusCmd_IndexBumpDown();	
+	}
+	
+	public void carriage_MoveSolenoidToSqueeze() {
+		_carriage.moveCarriageToSqueezeWidth();
+	}
+	
+	public void carriage_MoveSolenoidToWide() {
+		_carriage.moveCarriageToWideWidth();
 	}
 	
 	public boolean isCubeInCarriage() {
 		return _carriage.isCubeInCarriage();
 	}
 	
-	//public void ejectCube(double joystickCommand) 
-	//{
-	//	_carriage.feedOut(joystickCommand);
-	//}
-	
 	//=====================================================================================	
 	// Utility Methods
 	//=====================================================================================	
 	@Override
-	public void outputToShuffleboard() 
-	{
+	public void outputToShuffleboard() {
 		SmartDashboard.putString("Cube Handler:State:", _cubeHandlerState.toString() );
 	}
 
 	@Override
-	public void updateLogData(LogDataBE logData) 
-	{
+	public void updateLogData(LogDataBE logData) {
 		logData.AddData("CubeHandler:State", _cubeHandlerState.toString());
 	}
 	
-	private void ReportStateChg(String message) 
-	{
-		if(IS_VERBOSE_LOGGING_ENABLED) 
-		{
+	private void ReportStateChg(String message) {
+		if(IS_VERBOSE_LOGGING_ENABLED) {
 			System.out.println(message);
 		}
 	}

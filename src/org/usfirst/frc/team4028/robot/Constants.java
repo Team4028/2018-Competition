@@ -41,24 +41,22 @@ public class Constants {
 	public static final SPI.Port NAVX_PORT = Port.kMXP;
 	public static final double MAX_PITCH_POSITIVE = 25.0;
 	public static final double MAX_PITCH_NEGATIVE = -25.0;
-	  
-	// Analog In Ports on RoboRIO
-	public static final int ULTRASONIC_PORT = 0;
 	
 	// PWM Ports on RoboRIO
 	public static final int CLIMBER_SERVO_PWM_ADDRESS = 0;
 	
 	// PCM Ports
-	public static final int SHIFTER_RETRACT_PCM_PORT = 7;
+	public static final int CARRIAGE_SQUEEZE_PCM_PORT = 0;
+	public static final int CARRIAGE_WIDE_PCM_PORT = 1;
 	public static final int SHIFTER_EXTEND_PCM_PORT = 3;
-	public static final int CUBE_CLAMP_PCM_PORT = 0;
-	public static final int CUBE_UNCLAMP_PCM_PORT = 1;
+	public static final int SHIFTER_RETRACT_PCM_PORT = 7;
 	
 	// Solenoid Positions
 	public static final Value SHIFTER_LOW_GEAR_POS = DoubleSolenoid.Value.kReverse;
 	public static final Value SHIFTER_HIGH_GEAR_POS = DoubleSolenoid.Value.kForward;
-	public static final Value CUBE_CLAMP = DoubleSolenoid.Value.kReverse;
-	public static final Value CUBE_UNCLAMP = DoubleSolenoid.Value.kForward;
+
+	public static final Value CARRIAGE_SQUEEZE_POS = DoubleSolenoid.Value.kForward;
+	public static final Value CARRIAGE_WIDE_POS = DoubleSolenoid.Value.kReverse;
 	
 	// Infeed Position Constants
 	public static final double INFEED_POSITION = 2300;

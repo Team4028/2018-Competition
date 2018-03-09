@@ -35,6 +35,13 @@ public class Chassis implements Subsystem {
 		return _instance;
 	}
 	
+	private enum ChassisState {
+		PERCENT_VBUS, 
+		AUTO_TURN, 
+		FOLLOW_PATH,
+		DRIVE_SET_DISTANCE
+	}
+	
 	private TalonSRX _leftMaster, _leftSlave, _rightMaster, _rightSlave;
 	private DoubleSolenoid _shifter;
 	
@@ -61,13 +68,6 @@ public class Chassis implements Subsystem {
     
     private static final int[] MOTION_MAGIC_TURN_VEL_ACC = {80 * 150, 150 * 150};
     private static final int[] MOTION_MAGIC_STRAIGHT_VEL_ACC = {80 * 150, 140 * 150};
-	
-	private enum ChassisState {
-		PERCENT_VBUS, 
-		AUTO_TURN, 
-		FOLLOW_PATH,
-		DRIVE_SET_DISTANCE
-	}
 	
 	private Chassis() {
 		_leftMaster = new TalonSRX(Constants.LEFT_DRIVE_MASTER_CAN_ADDR);
