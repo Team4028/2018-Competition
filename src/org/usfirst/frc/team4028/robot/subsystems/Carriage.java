@@ -454,7 +454,8 @@ public class Carriage implements Subsystem {
 
 	@Override
 	public void updateLogData(LogDataBE logData) {
-		logData.AddData("Carriage:LimitSwitch", String.valueOf(isCubeInCarriage()));
+		logData.AddData("Carriage: LimitSwitch", String.valueOf(isCubeInCarriage()));
+		logData.AddData("Carriage: VBus Cmd", String.valueOf(getCurrentCarriageWheelsFeedOutVBusCmd()));
 	}
 	
 	// private helper method to control how we write to the drivers station

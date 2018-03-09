@@ -651,13 +651,13 @@ public class Elevator implements Subsystem {
 	// add data elements to be logged  to the input param (which is passed by ref)
 	@Override
 	public void updateLogData(LogDataBE logData) {
-		logData.AddData("Elevator:PostionNu", String.valueOf(_actualPositionNU));	
-		logData.AddData("Elevator:VelocityNu", String.valueOf(_actualVelocityNU_100mS));	
-		logData.AddData("Elevator:AccelNu", String.valueOf(_actualAccelerationNU_100mS_mS));	
-		logData.AddData("Elevator:State", _elevatorState.toString());
-		logData.AddData("Is Elevator At Target Position?", String.valueOf(IsAtTargetPosition()));
-		logData.AddData("Elevator Target Position:", String.valueOf(_targetElevatorPositionNU));
-		logData.AddData("Elevator Scale Height Bump Amount:", String.valueOf(_elevatorAtScaleOffsetNU));
+		logData.AddData("Elevator: PostionNu", String.valueOf(_actualPositionNU));	
+		logData.AddData("Elevator: VelocityNu", String.valueOf(_actualVelocityNU_100mS));	
+		logData.AddData("Elevator: AccelNu", String.valueOf(_actualAccelerationNU_100mS_mS));	
+		logData.AddData("Elevator: State", _elevatorState.toString());
+		logData.AddData("Elevator: At Target Position?", String.valueOf(IsAtTargetPosition()));
+		logData.AddData("Elevator: Target Position:", String.valueOf(_targetElevatorPositionNU));
+		logData.AddData("Elevator: Scale Height Bump Amount:", String.valueOf(_elevatorAtScaleOffsetNU));
 	}
 	
 	// private helper method to control how we write to the drivers station

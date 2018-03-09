@@ -640,12 +640,12 @@ public class Infeed  implements Subsystem {
 	
 	// add data elements to be logged  to the input param (which is passed by ref)
 	public void updateLogData(LogDataBE logData) {			
-		logData.AddData("Left Infeed Position:", String.valueOf(getCurrentLeftInfeedPosition()));
-		logData.AddData("Right Infeed Position:", String.valueOf(getCurrentRightInfeedPosition()));
-		logData.AddData("Is Left Infeed Arm Homed?", String.valueOf(_hasLeftArmBeenHomed));
-		logData.AddData("Is Right Infeed Arm Homed?", String.valueOf(_hasLeftArmBeenHomed));
-		logData.AddData("Infeed State:", _infeedArmState.toString());
-		logData.AddData("Infeed Arm Position:", String.valueOf(_targetInfeedArmPosition));
+		logData.AddData("Infeed: L Position", String.valueOf(getCurrentLeftInfeedPosition()));
+		logData.AddData("Infeed: R Position:", String.valueOf(getCurrentRightInfeedPosition()));
+		logData.AddData("Infeed: L Arm Homed?", String.valueOf(_hasLeftArmBeenHomed));
+		logData.AddData("Infeed: R Arm Homed?", String.valueOf(_hasLeftArmBeenHomed));
+		logData.AddData("Infeed: State", _infeedArmState.toString());
+		logData.AddData("Infeed: Target Arm Position", String.valueOf(_targetInfeedArmPosition));
 	} 
 	
 	// private helper method to control how we write to the drivers station
