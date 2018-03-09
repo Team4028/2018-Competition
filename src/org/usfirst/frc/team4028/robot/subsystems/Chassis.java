@@ -75,63 +75,16 @@ public class Chassis implements Subsystem {
 		_rightMaster = new TalonSRX(Constants.RIGHT_DRIVE_MASTER_CAN_ADDR);
 		_rightSlave = new TalonSRX(Constants.RIGHT_DRIVE_SLAVE_CAN_ADDR);
 		
-		_leftMaster.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0);
-		_leftMaster.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 5, 0);
-		_rightMaster.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0);
-		_rightMaster.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 5, 0);
-		
 		_leftSlave.set(ControlMode.Follower, Constants.LEFT_DRIVE_MASTER_CAN_ADDR);
 		_rightSlave.set(ControlMode.Follower, Constants.RIGHT_DRIVE_MASTER_CAN_ADDR);
-
-		_leftMaster.setInverted(true);
-		_leftSlave.setInverted(true);
-		_rightMaster.setInverted(false);
-		_rightSlave.setInverted(false);
 		
-		_leftMaster.configForwardLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
-		_rightMaster.configForwardLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
-		_leftSlave.configForwardLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
-		_rightSlave.configForwardLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
-		_leftMaster.configReverseLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
-		_rightMaster.configReverseLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
-		_leftSlave.configReverseLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
-		_rightSlave.configReverseLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
-	
-        _leftMaster.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_10Ms, 0);
-        _leftMaster.configVelocityMeasurementWindow(32, 0);
-        _rightMaster.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_10Ms, 0);
-        _rightMaster.configVelocityMeasurementWindow(32, 0);
+		configMasterMotors(_leftMaster);
+		configMasterMotors(_rightMaster);
         
-        _leftMaster.enableCurrentLimit(false);
-        _leftSlave.enableCurrentLimit(false);
-        _rightMaster.enableCurrentLimit(false);
-        _rightSlave.enableCurrentLimit(false);
-        
-        _leftMaster.configOpenloopRamp(0.5, 10);
-        _rightMaster.configOpenloopRamp(0.5, 10);
-        
-        _leftMaster.configClosedloopRamp(0.0, 0);
-        _rightMaster.configClosedloopRamp(0.0, 0);
-        
-        _leftMaster.configPeakOutputForward(1.0, 10);
-        _leftMaster.configPeakOutputReverse(-1.0, 10);
-        _leftSlave.configPeakOutputForward(1.0, 10);
-        _leftSlave.configPeakOutputReverse(-1.0, 10);
-        _rightMaster.configPeakOutputForward(1.0, 10);
-        _rightMaster.configPeakOutputReverse(-1.0, 10);
-        _rightSlave.configPeakOutputForward(1.0, 10);
-        _rightSlave.configPeakOutputReverse(-1.0, 10);
-        _leftMaster.configNominalOutputForward(0, 10);
-        _leftSlave.configNominalOutputForward(0, 10);
-        _rightMaster.configNominalOutputForward(0, 10);
-        _rightSlave.configNominalOutputForward(0, 10);
-        _leftMaster.configNominalOutputReverse(0, 10);
-        _leftSlave.configNominalOutputReverse(0, 10);
-        _rightMaster.configNominalOutputReverse(0, 10);
-        _leftMaster.configContinuousCurrentLimit(Constants.BIG_NUMBER, 10);
-        _leftSlave.configContinuousCurrentLimit(Constants.BIG_NUMBER, 10);
-        _rightMaster.configContinuousCurrentLimit(Constants.BIG_NUMBER, 10);
-        _rightSlave.configContinuousCurrentLimit(Constants.BIG_NUMBER, 10);
+        configDriveMotors(_leftMaster);
+        configDriveMotors(_rightMaster);
+        configDriveMotors(_leftSlave);
+        configDriveMotors(_rightSlave);
 
 		_shifter = new DoubleSolenoid(Constants.PCM_CAN_ADDR, Constants.SHIFTER_EXTEND_PCM_PORT, Constants.SHIFTER_RETRACT_PCM_PORT);
 	}
@@ -243,8 +196,8 @@ public class Chassis implements Subsystem {
 	
 	/* ===== Chassis State: DRIVE SET DISTANCE ===== */
 	public synchronized void setTargetPos(double targetPos) {
-		_leftTargetPos = inchesToNativeUnits(getLeftPosInches() + targetPos);
-		_rightTargetPos = inchesToNativeUnits(getRightPosInches() + targetPos);
+		_leftTargetPos = inchesToNU(getLeftPosInches() + targetPos);
+		_rightTargetPos = inchesToNU(getRightPosInches() + targetPos);
 		setHighGear(false);
 		setMotionMagicStraightGains();
 		_chassisState = ChassisState.DRIVE_SET_DISTANCE;
@@ -256,7 +209,7 @@ public class Chassis implements Subsystem {
 	}
 	
 	public synchronized boolean atTargetPos() {
-		return (Math.abs(_leftTargetPos - inchesToNativeUnits(getLeftPosInches())) < 2500) && (Math.abs(_rightTargetPos - inchesToNativeUnits(getRightPosInches())) < 2500);
+		return (Math.abs(_leftTargetPos - inchesToNU(getLeftPosInches())) < 2500) && (Math.abs(_rightTargetPos - inchesToNU(getRightPosInches())) < 2500);
 	} 
 
 	/* ===== Chassis State: FOLLOW PATH ===== */
@@ -281,8 +234,8 @@ public class Chassis implements Subsystem {
 			Kinematics.DriveVelocity setpoint = Kinematics.inverseKinematics(command);
 			final double max_desired = Math.max(Math.abs(setpoint.left), Math.abs(setpoint.right));
             final double scale = max_desired > Constants.DRIVE_VELOCITY_MAX_SETPOINT ? Constants.DRIVE_VELOCITY_MAX_SETPOINT / max_desired : 1.0;
-            _leftMaster.set(ControlMode.Velocity, inchesPerSecondToNativeUnits(setpoint.left * scale));
-            _rightMaster.set(ControlMode.Velocity, inchesPerSecondToNativeUnits(setpoint.right * scale));
+            _leftMaster.set(ControlMode.Velocity, inchesPerSecToNU(setpoint.left * scale));
+            _rightMaster.set(ControlMode.Velocity, inchesPerSecToNU(setpoint.right * scale));
 			_leftTargetVelocity = setpoint.left;
 			_rightTargetVelocity = setpoint.right;
 		} else {
@@ -370,19 +323,19 @@ public class Chassis implements Subsystem {
         return rpmToInchesPerSecond(getRightSpeed());
     }
     
-    private static double rotationsToInches(double rotations) {
-        return rotations * (Constants.DRIVE_WHEEL_DIAMETER_INCHES * Math.PI);
+    private static double rotationsToInches(double rot) {
+        return rot * (Constants.DRIVE_WHEEL_DIAMETER_INCHES * Math.PI);
     } 
     
     private static double rpmToInchesPerSecond(double rpm) {
         return rotationsToInches(rpm) / 60;
     }
     
-    private static double inchesToNativeUnits(double inches) {
+    private static double inchesToNU(double inches) {
     	return inches * 1540.95;
     }
 	
-	private static double inchesPerSecondToNativeUnits(double inches_per_second) {
+	private static double inchesPerSecToNU(double inches_per_second) {
         return inches_per_second * 148.2;
     }
 	
@@ -409,6 +362,32 @@ public class Chassis implements Subsystem {
         
 		setMotionMagicConstants(_leftMaster, MOTION_MAGIC_STRAIGHT_VEL_ACC);
 		setMotionMagicConstants(_rightMaster, MOTION_MAGIC_STRAIGHT_VEL_ACC);
+	}
+	
+	private void configMasterMotors(TalonSRX talon) {
+		talon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0);
+		talon.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 5, 0);
+	
+        talon.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_10Ms, 0);
+        talon.configVelocityMeasurementWindow(32, 0);
+        
+        talon.configOpenloopRamp(0.5, 10);
+        talon.configClosedloopRamp(0.0, 0);
+	}
+	
+	private void configDriveMotors(TalonSRX talon) {
+		talon.setInverted(true);
+		
+		talon.configForwardLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
+		talon.configReverseLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
+        
+        talon.enableCurrentLimit(false);
+        
+        talon.configPeakOutputForward(1.0, 10);
+        talon.configPeakOutputReverse(-1.0, 10);
+        talon.configNominalOutputForward(0, 10);
+        talon.configNominalOutputReverse(0, 10);
+        talon.configContinuousCurrentLimit(Constants.BIG_NUMBER, 10);
 	}
 
 	@Override

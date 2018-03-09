@@ -177,9 +177,7 @@ public class AdaptivePurePursuitController {
         return (cross < 0) ? -1 : 1; // if robot < pose turn left
     }
 
-    /**
-     * @return has the robot reached the end of the path
-     */
+    /** @return has the robot reached the end of the path */
     public boolean isFinished() {
         return atEndOfPath;
     }

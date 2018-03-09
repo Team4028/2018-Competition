@@ -51,10 +51,14 @@ public class Constants {
 	// PCM Ports
 	public static final int SHIFTER_RETRACT_PCM_PORT = 7;
 	public static final int SHIFTER_EXTEND_PCM_PORT = 3;
+	public static final int CUBE_CLAMP_PCM_PORT = 0;
+	public static final int CUBE_UNCLAMP_PCM_PORT = 1;
 	
 	// Solenoid Positions
 	public static final Value SHIFTER_LOW_GEAR_POS = DoubleSolenoid.Value.kReverse;
 	public static final Value SHIFTER_HIGH_GEAR_POS = DoubleSolenoid.Value.kForward;
+	public static final Value CUBE_CLAMP = DoubleSolenoid.Value.kReverse;
+	public static final Value CUBE_UNCLAMP = DoubleSolenoid.Value.kForward;
 	
 	// Infeed Position Constants
 	public static final double INFEED_POSITION = 2300;
