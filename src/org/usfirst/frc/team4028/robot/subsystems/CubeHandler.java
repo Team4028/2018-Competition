@@ -311,6 +311,14 @@ public class CubeHandler implements Subsystem {
 		_carriage.carriage_FeedOut_VBusCmd_IndexBumpDown();	
 	}
 	
+	public void carriage_MoveSolenoidToSqueeze() {
+		_carriage.moveCarriageToSqueezeWidth();
+	}
+	
+	public void carriage_MoveSolenoidToWide() {
+		_carriage.moveCarriageToWideWidth();
+	}
+	
 	public boolean isCubeInCarriage() {
 		return _carriage.isCubeInCarriage();
 	}

@@ -18,50 +18,49 @@ import edu.wpi.first.wpilibj.XboxController;
 		/* Table 1.1:
 		==== DRIVER ==========================================================
 		--- Driver Joysticks --------
-		DRIVER_LEFT_X_AXIS							xxxxxxxxxxxx
+		DRIVER_LEFT_X_AXIS							*************
 		DRIVER_LEFT_Y_AXIS							Throttle Cmd
-		DRIVER_LEFT_TRIGGER			
-		DRIVER_RIGHT_TRIGGER		
+		DRIVER_LEFT_TRIGGER							Infeed Cube
+		DRIVER_RIGHT_TRIGGER						Eject Cube
 		DRIVER_RIGHT_X_AXIS							Turn Cmd
-		DRIVER_RIGHT_Y_AXIS							xxxxxxxxxxxx
+		DRIVER_RIGHT_Y_AXIS							*************
 		
 		--- Driver Buttons --------
-		DRIVER_GREEN_BUTTON_A						Store Arms
-		DRIVER_RED_BUTTON_B			 				Stagger Infeed
-		DRIVER_BLUE_BUTTON_X						Wide Infeed
-		DRIVER_YELLOW_BUTTON_Y						Squeeze Infeed
-		DRIVER_LEFT_BUMPER							Infeed Cube
-		DRIVER_RIGHT_BUMPER							Auto Acquire
-		
-							ReZero Infeed
+		DRIVER_GREEN_BUTTON_A						Squeeze Arms
+		DRIVER_RED_BUTTON_B			 				Wide Infeed
+		DRIVER_BLUE_BUTTON_X						Store Infeed
+		DRIVER_YELLOW_BUTTON_Y						Rezero Infeed
+		DRIVER_LEFT_BUMPER							Spin Cube CW
+		DRIVER_RIGHT_BUMPER							Spin Cube CCW
+		DRIVER_BACK_BUTTON							*************
 		DRIVER_START_BUTTON							Shift Gear	
-		DRIVER_LEFT_THUMBSTICK
-		DRIVER_RIGHT_THUMBSTICK
+		DRIVER_LEFT_THUMBSTICK						*************
+		DRIVER_RIGHT_THUMBSTICK						*************
 								
 		==== OPERATOR ==========================================================
 			
 		--- Operator Joysticks --------
 		OPERATOR_LEFT_X_AXIS						*************
-		OPERATOR_LEFT_Y_AXIS						Elevator
-		OPERATOR_LEFT_TRIGGER			
-		OPERATOR_RIGHT_TRIGGER			
+		OPERATOR_LEFT_Y_AXIS						*************
+		OPERATOR_LEFT_TRIGGER						Carriage Squeeze
+		OPERATOR_RIGHT_TRIGGER						Carriage Wide
 		OPERATOR_RIGHT_X_AXIS						*************
-		OPERATOR_RIGHT_Y_AXIS						Carriage
+		OPERATOR_RIGHT_Y_AXIS						Climber
 		
 		--- Operator Buttons --------
-		OPERATOR_GREEN_BUTTON_A						Elevator Floor
-		OPERATOR_RED_BUTTON_B						Elevator Prymd
-		OPERATOR_BLUE_BUTTON_X						Elevator Switch
+		OPERATOR_GREEN_BUTTON_A						Elevator Floor/Infeed
+		OPERATOR_RED_BUTTON_B						Scale Hgt Bump Up
+		OPERATOR_BLUE_BUTTON_X						Scale Hgt Bump Down
 		OPERATOR_YELLOW_BUTTON_Y					Elevator Scale
-		OPERATOR_LEFT_BUMPER			
-		OPERATOR_RIGHT_BUMPER						Elevator Home
-		OPERATOR_BACK_BUTTON			
+		OPERATOR_LEFT_BUMPER						Toggle Climber Servo
+		OPERATOR_RIGHT_BUMPER						Elevator Switch
+		OPERATOR_BACK_BUTTON						Elevator Home
 		OPERATOR_START_BUTTON						Switch Camera
-		OPERATOR_LEFT_THUMBSTICK		
-		OPERATOR_RIGHT_THUMBSTICK	
+		OPERATOR_LEFT_THUMBSTICK					*************
+		OPERATOR_RIGHT_THUMBSTICK					*************
 													
 		==== ENGINEERING  ==========================================================
-					
+					 
 		--- Engineer Joysticks --------
 		ENGINEER_LEFT_X_AXIS			
 		ENGINEER_LEFT_Y_AXIS			
@@ -584,9 +583,17 @@ public class DriverOperatorStation {
 //			return  _operatorGamepad.getTriggerAxis(Hand.kLeft);
 //		}
 	
-		public double getOperator_EjectCube_JoystickCmd() {
-			return _operatorGamepad.getTriggerAxis(Hand.kRight);
-		}
+//		public double getOperator_RightTrigger_JoystickCmd() {
+//			return _operatorGamepad.getTriggerAxis(Hand.kRight);
+//		}
+	
+	public boolean getIsOperator_SqueezeCarriage_BtnPressed() {
+		return _operatorGamepad.getTriggerAxis(Hand.kLeft) >= 0.5;
+	}
+	
+	public boolean getIsOperator_WideCarriage_BtnPressed() {
+		return _operatorGamepad.getTriggerAxis(Hand.kRight) >= 0.5;
+	}
 	
 	// =========================================================================================================
 	// ENGINEER		ENGINEER	ENGINEER	ENGINEER	ENGINEER	ENGINEER	ENGINEER	ENGINEER	ENGINEER
