@@ -13,6 +13,7 @@ import com.ctre.phoenix.motorcontrol.RemoteLimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 //This class implements all functionality for the carriage Subsystem
@@ -51,6 +52,7 @@ public class Carriage implements Subsystem {
 	private TalonSRX _carriageRightMotor;
 	
 	private DigitalInput _carriageLimitSwitch;
+	private DoubleSolenoid _squeezeCylinder;
 	
 	private CARRIAGE_WHEELS_STATE _carriageWheelsState;
 	private CARRIAGE_WHEELS_OUT_VBUS_INDEX _currentCarriageWheelsFeedOutVBusIndex = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_60;
@@ -130,6 +132,10 @@ public class Carriage implements Subsystem {
 		//Setup Limit Switch
 		_carriageLimitSwitch = new DigitalInput(Constants.CARRIAGE_LIMIT_SWITCH_DIO_PORT);
 		
+		//Setup Solenoid for Cylinder
+		_squeezeCylinder = new DoubleSolenoid(Constants.PCM_CAN_ADDR, Constants.CARRIAGE_SQUEEZE_PCM_PORT, Constants.CARRIAGE_WIDE_PCM_PORT);
+		_squeezeCylinder.set(Constants.CARRIAGE_WIDE_POS);
+		
 		_carriageWheelsState = CARRIAGE_WHEELS_STATE.STOPPED;
 	}
 
@@ -141,6 +147,7 @@ public class Carriage implements Subsystem {
 		public void onStart(double timestamp) {
 			synchronized (Carriage.this) {
 				_carriageWheelsState = CARRIAGE_WHEELS_STATE.STOPPED; // reset to default startup start
+				_squeezeCylinder.set(Constants.CARRIAGE_WIDE_POS);
 			}
 		}
 		
@@ -360,19 +367,36 @@ public class Carriage implements Subsystem {
 		}
 	}
 	
-	@Override
-	public void zeroSensors() 
-	{
-		// N/A on this subsystem
+	//=== Handle Carriage Solenoid =================================================================
+	public void moveCarriageToSqueezeWidth() {
+		if(isCarriageInSqueezePosition()) {
+			System.out.println("Carriage Already In Thin Position");
+		} else {
+			_squeezeCylinder.set(Constants.CARRIAGE_SQUEEZE_POS);
+		}
 	}
+	
+	public void moveCarriageToWideWidth() {
+		if(isCarriageInSqueezePosition()) {
+			_squeezeCylinder.set(Constants.CARRIAGE_WIDE_POS);
+		} else {
+			System.out.println("Carriage Already In Wide Position");
+		}	
+	}
+	
+	@Override
+	public void zeroSensors() {}
 	
 	//=====================================================================================
 	// Property Accessors
 	//=====================================================================================
 	public boolean isCubeInCarriage() {
-		
 		return _carriageLimitSwitch.get(); // normally closed switch, input is pulled low
 	} 
+	
+	public boolean isCarriageInSqueezePosition() {
+		return _squeezeCylinder.get() == Constants.CARRIAGE_SQUEEZE_POS;
+	}
 	
 	private double getCarriageMotorCurrent() {
 		return _carriageLeftMotor.getOutputCurrent();
@@ -425,6 +449,7 @@ public class Carriage implements Subsystem {
 		SmartDashboard.putNumber("Carriage:Wheels Feed Out %VBus", getCurrentCarriageWheelsFeedOutVBusCmd());
 		SmartDashboard.putString("Carriage:State", _carriageWheelsState.toString());
 		SmartDashboard.putBoolean("Carriage:Is Cube In Carriage?", isCubeInCarriage());
+		SmartDashboard.putBoolean("Is Carriage Squeezed", isCarriageInSqueezePosition());
 	}
 
 	@Override

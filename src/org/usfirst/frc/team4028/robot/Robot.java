@@ -249,12 +249,18 @@ public class Robot extends IterativeRobot {
 			else if (Math.abs(_dos.getDriver_InfeedCube_JoystickCmd()) != 0) {
 				_cubeHandler.acquireCube_InfeedAndCarriage();
 			}			
-			else if ((Math.abs(_dos.getDriver_EjectCube_JoystickCmd()) != 0)
-						|| (Math.abs(_dos.getOperator_EjectCube_JoystickCmd()) != 0)) {
+			else if ((Math.abs(_dos.getDriver_EjectCube_JoystickCmd()) != 0)) {
 				_cubeHandler.ejectCube_InfeedAndCarriage();
 			}
 			else {
 				_cubeHandler.stop_InfeedAndCarriage();			
+			}
+			
+			if(_dos.getIsOperator_SqueezeCarriage_BtnPressed()) {
+				_cubeHandler.carriage_MoveSolenoidToSqueeze();
+			}
+			else if (_dos.getIsOperator_WideCarriage_BtnPressed()) {
+				_cubeHandler.carriage_MoveSolenoidToWide();
 			}
 		}
 		else if(_dos.IsEngineeringGamepadAAvailable()) {
