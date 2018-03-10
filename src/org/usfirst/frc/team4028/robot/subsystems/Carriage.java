@@ -398,10 +398,6 @@ public class Carriage implements Subsystem {
 		return _squeezeCylinder.get() == Constants.CARRIAGE_SQUEEZE_POS;
 	}
 	
-	private double getCarriageMotorCurrent() {
-		return _carriageLeftMotor.getOutputCurrent();
-	}
-	
 	private double getCurrentCarriageWheelsFeedOutVBusCmd() {
 		switch (_currentCarriageWheelsFeedOutVBusIndex)	{
 			case VBUS_100:
