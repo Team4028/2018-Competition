@@ -639,13 +639,12 @@ public class Infeed  implements Subsystem {
 	}
 	
 	// add data elements to be logged  to the input param (which is passed by ref)
-	public void updateLogData(LogDataBE logData) {			
-		logData.AddData("Infeed: L Position", String.valueOf(getCurrentLeftInfeedPosition()));
-		logData.AddData("Infeed: R Position:", String.valueOf(getCurrentRightInfeedPosition()));
-		logData.AddData("Infeed: L Arm Homed?", String.valueOf(_hasLeftArmBeenHomed));
-		logData.AddData("Infeed: R Arm Homed?", String.valueOf(_hasLeftArmBeenHomed));
-		logData.AddData("Infeed: State", _infeedArmState.toString());
-		logData.AddData("Infeed: Target Arm Position", String.valueOf(_targetInfeedArmPosition));
+	public void updateLogData(LogDataBE logData) {
+		logData.AddData("Infeed: Target Arm Position", String.valueOf(nativeUnitsToDegrees(_targetInfeedArmPosition)));			
+		logData.AddData("Infeed: L Position", String.valueOf(nativeUnitsToDegrees(getCurrentLeftInfeedPosition())));
+		logData.AddData("Infeed: R Position:", String.valueOf(nativeUnitsToDegrees(getCurrentRightInfeedPosition())));
+		logData.AddData("Infeed: L/R Arms Homed?", String.valueOf(_hasLeftArmBeenHomed) + " / " + String.valueOf(_hasRightArmBeenHomed));
+		logData.AddData("State: Infeed", _infeedArmState.toString());
 	} 
 	
 	// private helper method to control how we write to the drivers station

@@ -444,18 +444,18 @@ public class Carriage implements Subsystem {
 	//=====================================================================================
 	@Override
 	public void outputToShuffleboard() {
-		SmartDashboard.putNumber("Carriage:Motor Current:", getCarriageMotorCurrent());
-		SmartDashboard.putNumber("Carriage:Wheels Feed In %VBus", _currentCarriageWheelsFeedInVBusCmd);
-		SmartDashboard.putNumber("Carriage:Wheels Feed Out %VBus", getCurrentCarriageWheelsFeedOutVBusCmd());
-		SmartDashboard.putString("Carriage:State", _carriageWheelsState.toString());
-		SmartDashboard.putBoolean("Carriage:Is Cube In Carriage?", isCubeInCarriage());
-		SmartDashboard.putBoolean("Is Carriage Squeezed", isCarriageInSqueezePosition());
+		SmartDashboard.putNumber("Carriage: Wheels Feed In %VBus", _currentCarriageWheelsFeedInVBusCmd);
+		SmartDashboard.putNumber("Carriage: Wheels Feed Out %VBus", getCurrentCarriageWheelsFeedOutVBusCmd());
+		SmartDashboard.putBoolean("Carriage: Is Cube In Carriage?", isCubeInCarriage());
+		SmartDashboard.putBoolean("Carriage: Is Squeezed", isCarriageInSqueezePosition());
+		SmartDashboard.putString("State: Carriage", _carriageWheelsState.toString());
 	}
 
 	@Override
 	public void updateLogData(LogDataBE logData) {
 		logData.AddData("Carriage: LimitSwitch", String.valueOf(isCubeInCarriage()));
 		logData.AddData("Carriage: VBus Cmd", String.valueOf(getCurrentCarriageWheelsFeedOutVBusCmd()));
+		logData.AddData("State: Carriage", _carriageWheelsState.toString());
 	}
 	
 	// private helper method to control how we write to the drivers station

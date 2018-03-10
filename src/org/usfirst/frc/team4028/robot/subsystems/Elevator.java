@@ -645,19 +645,19 @@ public class Elevator implements Subsystem {
 		SmartDashboard.putNumber("Elevator:TargetPosition",_targetElevatorPositionNU);
 		SmartDashboard.putBoolean("Elevator:IsInPosition", IsAtTargetPosition());
 		SmartDashboard.putString("Elevator:State", _elevatorState.toString());
-		SmartDashboard.putNumber("Elevator:Scale Bump", GeneralUtilities.RoundDouble(NativeUnitsToInches(_elevatorAtScaleOffsetNU), 2));
+		SmartDashboard.putNumber("Elevator:Scale Bump", getElevatorScaleHeightBumpInches());
 	}
 	
 	// add data elements to be logged  to the input param (which is passed by ref)
 	@Override
 	public void updateLogData(LogDataBE logData) {
-		logData.AddData("Elevator: PostionNu", String.valueOf(_actualPositionNU));	
-		logData.AddData("Elevator: VelocityNu", String.valueOf(_actualVelocityNU_100mS));	
-		logData.AddData("Elevator: AccelNu", String.valueOf(_actualAccelerationNU_100mS_mS));	
-		logData.AddData("Elevator: State", _elevatorState.toString());
+		logData.AddData("Elevator: Target Position [in]", String.valueOf(NativeUnitsToInches(_targetElevatorPositionNU)));
+		logData.AddData("Elevator: Postion [in]", String.valueOf(NativeUnitsToInches(_actualPositionNU)));	
+		logData.AddData("Elevator: Velocity [in/sec]", String.valueOf(10 * NativeUnitsToInches(_actualVelocityNU_100mS)));	
+		logData.AddData("Elevator: AccelNu [in/sec^2]", String.valueOf(10 * 1000 * NativeUnitsToInches(_actualAccelerationNU_100mS_mS)));
 		logData.AddData("Elevator: At Target Position?", String.valueOf(IsAtTargetPosition()));
-		logData.AddData("Elevator: Target Position:", String.valueOf(_targetElevatorPositionNU));
-		logData.AddData("Elevator: Scale Height Bump Amount:", String.valueOf(_elevatorAtScaleOffsetNU));
+		logData.AddData("Elevator: Scale Height Bump Amount:", String.valueOf(getElevatorScaleHeightBumpInches()));	
+		logData.AddData("State: Elevator", _elevatorState.toString());
 	}
 	
 	// private helper method to control how we write to the drivers station

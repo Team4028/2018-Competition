@@ -107,6 +107,12 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void disabledPeriodic() {
 		stopAll();
+		
+		if (_dataLogger != null) {
+			_dataLogger.close();
+			_dataLogger = null;
+		}
+		
 		_dashboard.outputToDashboard();
 	}
 	
@@ -145,7 +151,7 @@ public class Robot extends IterativeRobot {
 		_chassis.zeroGyro();
 		_chassis.setBrakeMode(true);
 		
-		_dataLogger = GeneralUtilities.setupLogging("auton"); // init data logging
+		_dataLogger = GeneralUtilities.setupLogging("Auton"); // init data logging
 		
 		_lastDashboardWriteTimeMSec = new Date().getTime(); // snapshot time to control spamming
 		
@@ -184,7 +190,7 @@ public class Robot extends IterativeRobot {
 		
 		_dos.clearGamepadsCachedBtnPresses();
 		
-		_dataLogger = GeneralUtilities.setupLogging("auton"); // init data logging
+		_dataLogger = GeneralUtilities.setupLogging("Teleop"); // init data logging
 		
 		_lastDashboardWriteTimeMSec = new Date().getTime(); // snapshot time to control spamming
 	}
