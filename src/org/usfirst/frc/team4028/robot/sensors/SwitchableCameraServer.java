@@ -32,13 +32,25 @@ public class SwitchableCameraServer {
 	}
 
 	private SwitchableCameraServer() {
+		//640x480 10FPS ~5.4 MB/S OK
+		//640x480 20FPS ~14.44 MB/S OK
+		//320x240 20FPS BAD
+		//640x360 20FPS (GOT 15-20FPS) 10-12 MB/S OK
+		//432x240 20FPS BAD
+		//432x240 30FPS (25-30 FPS) ~9MBPS OK
+		//432x240 24FPS BAD
+		//432x240 15FPS BAD
+		//352x288 30FPS BAD
+		//352x288 24FPS BAD
+		//352x288 20FPS BAD
+		//352x288 15FPS BAD
 		// =============
 		// option 2: (
 		// =============
 		/* Open connection to USB Camera (video device 0 [/dev/video0]) */
-		int width = 640; // 160; // 320; //640;
-		int height = 480; //90; //180; //480;
-		int frames_per_sec = 10; //20; //15;
+		int width = 352; // 160; // 320; //640;
+		int height = 288; //90; //180; //480;
+		int frames_per_sec = 30; //10; //20; //15;
 		
 		_rawVideoServer = new MjpegServer("raw_video_server", CAMERA_TCP_PORT);    	
 		
