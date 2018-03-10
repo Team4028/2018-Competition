@@ -29,8 +29,6 @@ public class CubeHandler implements Subsystem {
 		STOPPED,
 		WANT_TO_MOVE_ELEVATOR_TO_PRESET,
 		SAFE_TO_MOVE_ELEVATOR_TO_PRESET,
-		WANT_TO_MOVE_ELEVATOR_JOYSTICK,		// Note: Separate state since the cmd method is different
-		SAFE_TO_MOVE_ELEVATOR_JOYSTICK		// Note: Separate state since the cmd method is different
 	}
 	
 	// Subsystems
@@ -41,7 +39,6 @@ public class CubeHandler implements Subsystem {
 	// define class level working variables
 	private CUBE_HANDLER_STATE _cubeHandlerState = CUBE_HANDLER_STATE.UNDEFINED;
 	private ELEVATOR_PRESET_POSITION _requestedPresetPosition;
-	private double _requestedElevatorSpeedCmd;
 	
 	// define class level constants
 	private static final boolean IS_VERBOSE_LOGGING_ENABLED = false;
@@ -100,21 +97,6 @@ public class CubeHandler implements Subsystem {
 						_elevator.MoveToPresetPosition(_requestedPresetPosition); // move elevator to requested position	
 						break;
 						
-					case WANT_TO_MOVE_ELEVATOR_JOYSTICK:
-						
-						if(!_infeed.areArmsInSafePosition()) {
-							_infeed.moveArmsToSafePosition(); // make sure arms are safe before moving elevator
-						}
-						else {
-							ReportStateChg("Infeed Arm (State) " + _cubeHandlerState.toString() + " ==> [SAFE_TO_MOVE_ELEVATOR_JOYSTICK]");
-							_cubeHandlerState = CUBE_HANDLER_STATE.SAFE_TO_MOVE_ELEVATOR_JOYSTICK;
-						}
-						break;
-					
-					case SAFE_TO_MOVE_ELEVATOR_JOYSTICK:
-						_elevator.JogAxis(_requestedElevatorSpeedCmd); // move elevator to requested position
-						break;
-							
 					default:
 						break;
 				}
@@ -150,12 +132,6 @@ public class CubeHandler implements Subsystem {
 	//=====================================================================================
 	//Methods for Handling Interactions with Elevator Subsystem
 	//=====================================================================================	
-	public void elevator_JogAxis(double speedCmd) {		
-		_requestedElevatorSpeedCmd = speedCmd;
-		ReportStateChg("Cube Handler (State) " + _cubeHandlerState.toString() + " ==> [WANT_TO_MOVE_ELEVATOR_JOYSTICK]");
-		_cubeHandlerState = CUBE_HANDLER_STATE.WANT_TO_MOVE_ELEVATOR_JOYSTICK;
-	}
-
 	public void elevator_MoveToPresetPosition(ELEVATOR_PRESET_POSITION presetPosition) {
 		_elevator.resetElevatorScaleHeightBump(); // always reset bump when we move to a position
 		_requestedPresetPosition = presetPosition;

@@ -139,6 +139,6 @@ public class Climber implements Subsystem
 
 	@Override
 	public void updateLogData(LogDataBE logData) {
-		logData.AddData("Climber:Current", String.valueOf(getClimberMotorCurrent()));
+		logData.AddData("Climber: Current", String.valueOf(getClimberMotorCurrent()));
 	}
 }

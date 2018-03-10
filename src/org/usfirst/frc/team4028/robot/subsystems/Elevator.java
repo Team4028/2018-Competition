@@ -47,7 +47,6 @@ public class Elevator implements Subsystem {
 		TIMEOUT,
 		GOTO_TARGET_POSITION,
 		HOLD_TARGET_POSITION,
-		JOG_AXIS,
 	}
 	
 	public enum ELEVATOR_PRESET_POSITION {
@@ -68,7 +67,6 @@ public class Elevator implements Subsystem {
 	private int _targetElevatorPositionNU;
 	
 	private int _elevatorAtScaleOffsetNU;
-	private double _targetElevatorVelocity;
 		
 	private double _actualPositionNU = 0;
 	private double _actualVelocityNU_100mS = 0;
@@ -76,12 +74,9 @@ public class Elevator implements Subsystem {
 	private long _lastScanTimeStamp = 0;
 	private double _lastScanActualVelocityNU_100mS = 0;
 	private int _pidSlotInUse = -1;
-	private boolean _isSoftLimitsEnabled = false;
 	
 	// =================================================================================================================
 	// hardcoded preset jogging velocities
-	private static final double JOG_UP_VELOCITY = 0.5;
-	private static final double JOG_DOWN_VELOCITY = -0.25;
 	private static final double ELEVATOR_MOVE_TO_HOME_VELOCITY_CMD = -0.20;   
 	private static final long ELEVATOR_MAXIMUM_MOVE_TO_HOME_TIME_IN_MSEC = 5000;	// 5 sec
 	
@@ -99,9 +94,6 @@ public class Elevator implements Subsystem {
 	private static final int CUBE_ON_FLOOR_POSITION = InchesToNativeUnits(0);
 	private static final int INFEED_POSITION = 0;
 	private static final int HOME_POSITION = 0;
-
-	private static final int UP_SOFT_LIMIT = InchesToNativeUnits(90.0);
-	private static final int DOWN_SOFT_LIMIT = InchesToNativeUnits(3.0);
 	
 	//Bump Position Up/Down on Elevator Constant
 	private static final int BUMP_AMOUNT_IN_NU = InchesToNativeUnits(3);
@@ -202,8 +194,6 @@ public class Elevator implements Subsystem {
 		// set initial elevator state
 		ReportStateChg("ElevatorAxis (State) [Startup] ==> [NEED_TO_HOME]");
 		_elevatorState = ELEVATOR_STATE.NEED_TO_HOME;
-		
-		DisableSoftLimits();
 	}
 	
 	// this is run by Looper typically at a 10mS interval (or 2x the RoboRio Scan time)
@@ -223,7 +213,6 @@ public class Elevator implements Subsystem {
 				switch(_elevatorState) {
 					case NEED_TO_HOME:
 						_elevatorHomeStartTime = System.currentTimeMillis(); // snapshot start time
-						DisableSoftLimits();
 						_elevatorMasterMotor.set(ControlMode.PercentOutput, 0);
 						
 						ReportStateChg("ElevatorAxis (State) " + _elevatorState.toString() + "==> [MOVING_TO_HOME]");
@@ -233,7 +222,6 @@ public class Elevator implements Subsystem {
 					case MOVING_TO_HOME:
 						if(!_elevatorMasterMotor.getSensorCollection().isRevLimitSwitchClosed()) { // are we on the rev (home) limit switch
 							ReportStateChg("ElevatorAxis (State) " + _elevatorState.toString() + "==> [AT_HOME]");
-							EnableSoftLimits();
 							_elevatorState = ELEVATOR_STATE.AT_HOME; // change state
 						} 
 						else {
@@ -244,7 +232,6 @@ public class Elevator implements Subsystem {
 		    					_elevatorState = ELEVATOR_STATE.TIMEOUT; // change state
 		    				} 
 		    				else {
-		    					DisableSoftLimits();
 		    					_elevatorMasterMotor.set(ControlMode.PercentOutput, ELEVATOR_MOVE_TO_HOME_VELOCITY_CMD); // drive axis down in % vbus mode
 		    				}
 						}
@@ -261,8 +248,7 @@ public class Elevator implements Subsystem {
 						break;
 											
 					case GOTO_TARGET_POSITION:
-						deltatime = (new Date().getTime()) - _lastScanTimeStamp;
-						DisableSoftLimits();
+						deltatime = (new Date().getTime()) - _lastScanTimeStamp;;
 						
 						if(IsAtTargetPosition(_targetElevatorPositionNU)) {							
 							ReportStateChg("ElevatorAxis (State) [" + _elevatorState.toString() + "] ==> [HOLD_TARGET_POSTION]:[" + _targetElevatorPositionNU +"]");
@@ -297,28 +283,6 @@ public class Elevator implements Subsystem {
 							_elevatorMasterMotor.set(ControlMode.MotionMagic, _targetElevatorPositionNU, 0);
 						}
 						
-						break;
-					
-					case JOG_AXIS:
-						deltatime = (new Date().getTime()) - _lastScanTimeStamp;
-						
-						EnableSoftLimits();
-						
-						_actualPositionNU = _elevatorMasterMotor.getSelectedSensorPosition(0);
-						_actualVelocityNU_100mS  = _elevatorMasterMotor.getSelectedSensorVelocity(0);
-						_actualAccelerationNU_100mS_mS = (_actualVelocityNU_100mS - _lastScanActualVelocityNU_100mS) / deltatime;
-						
-						_elevatorMasterMotor.set(ControlMode.PercentOutput, _targetElevatorVelocity);					
-						
-						_lastScanTimeStamp = new Date().getTime();
-						_lastScanActualVelocityNU_100mS = _actualVelocityNU_100mS;
-						
-						if(_isSoftLimitsEnabled && (_actualPositionNU >= UP_SOFT_LIMIT)) {
-							ReportStateChg("Elevator At Up Soft Limit!");
-						} 
-						else if (_isSoftLimitsEnabled && (_actualPositionNU <= DOWN_SOFT_LIMIT)) {
-							ReportStateChg("Elevator At Down Soft Limit!");
-						}
 						break;
 						
 					case TIMEOUT:
@@ -429,37 +393,7 @@ public class Elevator implements Subsystem {
 			}
 		}
 	}
-	
-	// support joystick like jogging but at a fixed velocity
-	public void JogAxis(double speedCmd) {
-		if(_elevatorState == ELEVATOR_STATE.GOTO_TARGET_POSITION 
-				|| _elevatorState == ELEVATOR_STATE.HOLD_TARGET_POSITION 
-				|| _elevatorState == ELEVATOR_STATE.AT_HOME
-				|| _elevatorState == ELEVATOR_STATE.JOG_AXIS) {
-			if(_elevatorState != ELEVATOR_STATE.JOG_AXIS) {
-				// change the state
-				ReportStateChg("ElevatorAxis (State) [" + _elevatorState.toString() + "] ==> [JOG_AXIS]");
-				_elevatorState = ELEVATOR_STATE.JOG_AXIS;
-			}
-			
-			if(_isSoftLimitsEnabled && ((_actualPositionNU >= UP_SOFT_LIMIT) || (_actualPositionNU <= DOWN_SOFT_LIMIT))) {
-				_targetElevatorVelocity = 0;
-			} else {
-				if(speedCmd > 0) {
-					// jog at a fixed rate in a + direction
-					_targetElevatorVelocity = JOG_UP_VELOCITY;
-				}
-				else if(speedCmd < 0) {
-					// jog at a fixed rate in a - direction
-					_targetElevatorVelocity = JOG_DOWN_VELOCITY;
-				}
-			}
-			
-		} else {
-			DriverStation.reportWarning("Wait until elevator is homed to jog", false);
-		}
-	}
-	
+		
 	// implemented as active hold in place for now (vs just turning motors off)
 	@Override
 	public void stop() {		
@@ -476,8 +410,6 @@ public class Elevator implements Subsystem {
 				ReportStateChg("ElevatorAxis (State) [" + _elevatorState.toString() + "] ==> [HOLD_TARGET_POSTION]");
 				_elevatorState = ELEVATOR_STATE.HOLD_TARGET_POSITION;
 			}
-			// cancel joystick cmd
-			_targetElevatorVelocity = 0.0;
 		}
 	}
 
@@ -517,23 +449,6 @@ public class Elevator implements Subsystem {
 		}
 	}
 	
-	private void EnableSoftLimits() {
-		_elevatorMasterMotor.configReverseSoftLimitThreshold(DOWN_SOFT_LIMIT, 0);
-		_elevatorMasterMotor.configForwardSoftLimitThreshold(UP_SOFT_LIMIT, 0);	
-		
-		_elevatorMasterMotor.configReverseSoftLimitEnable(true, 0);
-		_elevatorMasterMotor.configForwardSoftLimitEnable(true, 0);		
-		
-		_isSoftLimitsEnabled = true;
-	}
-	
-	private void DisableSoftLimits() {
-		_elevatorMasterMotor.configReverseSoftLimitEnable(false, 0);
-		_elevatorMasterMotor.configForwardSoftLimitEnable(false, 0);
-		
-		_isSoftLimitsEnabled = false;
-	}
-	
 	public void elevatorScaleHeightBumpPositionUp() {
 		if(NativeUnitsToInches(_elevatorAtScaleOffsetNU) < 8.9) {
 			_elevatorAtScaleOffsetNU = _elevatorAtScaleOffsetNU + BUMP_AMOUNT_IN_NU;
@@ -570,9 +485,6 @@ public class Elevator implements Subsystem {
             } else {
             	return false;
             }
-        } 
-        else if (_elevatorState == ELEVATOR_STATE.JOG_AXIS) {
-        	return false;
         } else {
         	return false;
         }
@@ -645,19 +557,19 @@ public class Elevator implements Subsystem {
 		SmartDashboard.putNumber("Elevator:TargetPosition",_targetElevatorPositionNU);
 		SmartDashboard.putBoolean("Elevator:IsInPosition", IsAtTargetPosition());
 		SmartDashboard.putString("Elevator:State", _elevatorState.toString());
-		SmartDashboard.putNumber("Elevator:Scale Bump", GeneralUtilities.RoundDouble(NativeUnitsToInches(_elevatorAtScaleOffsetNU), 2));
+		SmartDashboard.putNumber("Elevator:Scale Bump", getElevatorScaleHeightBumpInches());
 	}
 	
 	// add data elements to be logged  to the input param (which is passed by ref)
 	@Override
 	public void updateLogData(LogDataBE logData) {
-		logData.AddData("Elevator:PostionNu", String.valueOf(_actualPositionNU));	
-		logData.AddData("Elevator:VelocityNu", String.valueOf(_actualVelocityNU_100mS));	
-		logData.AddData("Elevator:AccelNu", String.valueOf(_actualAccelerationNU_100mS_mS));	
-		logData.AddData("Elevator:State", _elevatorState.toString());
-		logData.AddData("Is Elevator At Target Position?", String.valueOf(IsAtTargetPosition()));
-		logData.AddData("Elevator Target Position:", String.valueOf(_targetElevatorPositionNU));
-		logData.AddData("Elevator Scale Height Bump Amount:", String.valueOf(_elevatorAtScaleOffsetNU));
+		logData.AddData("Elevator: Target Position [in]", String.valueOf(NativeUnitsToInches(_targetElevatorPositionNU)));
+		logData.AddData("Elevator: Postion [in]", String.valueOf(NativeUnitsToInches(_actualPositionNU)));	
+		logData.AddData("Elevator: Velocity [in/sec]", String.valueOf(10 * NativeUnitsToInches(_actualVelocityNU_100mS)));	
+		logData.AddData("Elevator: AccelNu [in/sec^2]", String.valueOf(10 * 1000 * NativeUnitsToInches(_actualAccelerationNU_100mS_mS)));
+		logData.AddData("Elevator: At Target Position?", String.valueOf(IsAtTargetPosition()));
+		logData.AddData("Elevator: Scale Height Bump Amount:", String.valueOf(getElevatorScaleHeightBumpInches()));	
+		logData.AddData("State: Elevator", _elevatorState.toString());
 	}
 	
 	// private helper method to control how we write to the drivers station
