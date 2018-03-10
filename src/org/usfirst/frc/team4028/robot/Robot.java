@@ -267,39 +267,7 @@ public class Robot extends IterativeRobot {
 			}
 			else if (_dos.getIsOperator_WideCarriage_BtnPressed()) {
 				_cubeHandler.carriage_MoveSolenoidToWide();
-			}
-		}
-		else if(_dos.IsEngineeringGamepadAAvailable()) {
-			// =============================
-			// ENGR GamePad A is plugged In
-			// =============================
-			if (_dos.getIsEngineering_ReZeroInfeed_BtnJustPressed()) {
-				_cubeHandler.infeedArms_Rezero();
 			}		
-			else if (_dos.getIsEngineering_WideInfeed_BtnPressed()) {
-				_cubeHandler.infeedArms_moveToWidePosition();
-			}
-			else if (_dos.getIsEngineering_SqueezeInfeed_BtnPressed()) {
-				_cubeHandler.infeedArms_moveToSqueezePosition();
-			}
-			else if (_dos.getIsEngineering_StoreInfeed_BtnPressed()) {
-				_cubeHandler.infeedArms_moveToStorePosition();
-			}
-			
-			// ============= CARRIAGE =============
-			if (_dos.getIsEngineering_SpinCubeManuver_BtnPressed()){
-				_cubeHandler.infeedArms_SpinCube_CCW();
-			}
-			//else if (Math.abs(_dos.getEngineering_InfeedCube_JoystickCmd()) != 0) {
-			//	_cubeHandler.runCube_InfeedAndCarriage(_dos.getEngineering_InfeedCube_JoystickCmd());
-			//}
-			//else if (Math.abs(_dos.getEngineering_EjectCube_JoystickCmd()) != 0) {
-			//	_cubeHandler.ejectCube(_dos.getEngineering_EjectCube_JoystickCmd());
-			//} 
-			else {
-				_cubeHandler.stop_InfeedAndCarriage();			
-			}			
-
 		} 
 		else if(_dos.IsEngineeringGamepadBAvailable()) {
 			// =============================
@@ -324,22 +292,16 @@ public class Robot extends IterativeRobot {
 			
 			// adjust Carriage Wheel Speeds
 			if(_dos.getIsEngrB_Carriage_FeedIn_VBusBumpDown_BtnJustPressed()) {
-				//_carriage.engrGamepadB_CarriageVBUS_BumpDown();
 				_cubeHandler.carriage_FeedIn_VBusCmd_BumpDown();
 			}
 			else if(_dos.getIsEngrB_Carriage_FeedIn_VBusBumpUp_BtnJustPressed()) {
-				//_carriage.engrGamepadB_CarriageVBUS_BumpUp();
 				_cubeHandler.carriage_FeedIn_VBusCmd_BumpUp();
 			}
 			
 			if(_dos.getIsEngrB_Carriage_FeedOut_IndexBumpDown_BtnJustPressed()) {
-				//_carriage.engrGamepadB_CarriageVBUS_BumpDown();
-				//_cubeHandler.carriage_FeedOut_VBusCmd_BumpDown();
 				_cubeHandler.carriage_FeedOut_VBusCmd_IndexBumpDown();
 			}
 			else if(_dos.getIsEngrB_Carriage_FeedOut_IndexBumpUp_BtnJustPressed()) {
-				//_carriage.engrGamepadB_CarriageVBUS_BumpUp();
-				//_cubeHandler.carriage_FeedOut_VBusCmd_BumpUp();
 				_cubeHandler.carriage_FeedOut_VBusCmd_IndexBumpUp();
 			}
 			
@@ -365,41 +327,23 @@ public class Robot extends IterativeRobot {
 				_cubeHandler.infeedArms_SpinCube_CW();
 			}
 			else if (_dos.getEngrB_InfeedAndCarriage_JoystickCmd() == 1.0) {
-				// _cubeHandler2.engrGamepadB_FeedOut();
-				// _carriage.ejectCube();
 				_cubeHandler.ejectCube_InfeedAndCarriage();
 			}
 			else if (_dos.getEngrB_InfeedAndCarriage_JoystickCmd() == -1.0) {
-				// _cubeHandler2.engrGamepadB_FeedIn()
-				// _carriage.runCarriageMotors();
 				_cubeHandler.acquireCube_InfeedAndCarriage();
 			}
 			else {
-				//_cubeHandler2.stop();
-				//_carriage.stop();
 				_cubeHandler.stop_InfeedAndCarriage();
 			}
 		}
 		
 		// =============  ELEVATOR ============= 		
-		if (_dos.getOperator_Elevator_JoystickCmd() != 0) {
-			//_cubeHandler.elevator_JogAxis(_dos.getOperator_Elevator_JoystickCmd());
-		}
-//		else if (_dos.getEngineering_Elevator_JoystickCmd() != 0) {
-//			_cubeHandler.elevator_JogAxis(_dos.getEngineering_Elevator_JoystickCmd());
-//		}
-		else if (_dos.getIsOperator_ElevatorInfeedHgt_BtnJustPressed() || _dos.getIsEngineering_ElevatorCubeOnFloorHgt_BtnJustPressed()) {
+		if (_dos.getIsOperator_ElevatorInfeedHgt_BtnJustPressed() || _dos.getIsEngineering_ElevatorCubeOnFloorHgt_BtnJustPressed()) {
 			_cubeHandler.elevator_MoveToPresetPosition(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT);
-		}	
-//		else if (_dos.getIsOperator_ElevatorHighScaleHgt_BtnJustPressed() || _dos.getIsEngineering_ElevatorScaleHgt_BtnJustPressed()) {
-//			_cubeHandler.elevator_MoveToPresetPosition(ELEVATOR_PRESET_POSITION.HIGH_SCALE_HEIGHT);
-//		} 
+		}
 		else if (_dos.getIsOperator_ElevatorSwitchHeight_BtnJustPressed() || _dos.getIsEngineering_ElevatorSwitchHgt_BtnJustPressed()) {
 			_cubeHandler.elevator_MoveToPresetPosition(ELEVATOR_PRESET_POSITION.SWITCH_HEIGHT);
 		}
-//		else if (_dos.getIsOperator_ElevatorLowScaleHgt_BtnJustPressed() || _dos.getIsEngineering_ElevatorPyramidHgt_BtnJustPressed()) {
-//			_cubeHandler.elevator_MoveToPresetPosition(ELEVATOR_PRESET_POSITION.LOW_SCALE_HEIGHT);
-//		}
 		else if (_dos.getIsOperator_ElevatorNeutralScaleHgt_BtnJustPressed()) {
 			_cubeHandler.elevator_MoveToPresetPosition(ELEVATOR_PRESET_POSITION.NEUTRAL_SCALE_HEIGHT);
 		}

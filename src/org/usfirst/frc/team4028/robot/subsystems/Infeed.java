@@ -117,7 +117,7 @@ public class Infeed  implements Subsystem {
 	// Infeed Drive Wheel Constant
 	private static final double INFEED_DRIVE_WHEELS_VBUS_COMMAND_BUMP = 0.05;
 	//Infeed Homing Speed
-	private static final double INFEED_HOMING_VBUS_COMMAND = 0.35;
+	private static final double INFEED_HOMING_VBUS_COMMAND = 0.15;
 	
 	//Conversion Constant
 	private static final double DEGREES_TO_NATIVE_UNITS_CONVERSION = (4096/360);
@@ -227,7 +227,9 @@ public class Infeed  implements Subsystem {
 		// called in Telop & Auton Init
 		@Override
 		public void onStart(double timestamp) {
-			synchronized (Infeed.this) {				
+			synchronized (Infeed.this) {
+				_hasLeftArmBeenHomed = false;
+				_hasRightArmBeenHomed = false;
 				_infeedArmState = INFEED_ARM_STATE.NEED_TO_HOME;
 				_infeedWheelsState = INFEED_WHEELS_STATE.STOPPED;
 			}
