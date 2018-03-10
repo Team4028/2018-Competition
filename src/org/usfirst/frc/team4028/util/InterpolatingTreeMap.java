@@ -1,6 +1,5 @@
 package org.usfirst.frc.team4028.util;
 
-import java.util.Map;
 import java.util.TreeMap;
 
 public class InterpolatingTreeMap<K extends InverseInterpolable<K> & Comparable<K>, V extends Interpolable<V>>
@@ -40,13 +39,7 @@ public class InterpolatingTreeMap<K extends InverseInterpolable<K> & Comparable<
         return value;
     }
     
-    @Override
-    public void putAll(Map<? extends K, ? extends V> map) {
-        System.out.println("Unimplemented Method");
-    }
-    
     /**
-    *
     * @param key
     *            Lookup for a value (does not have to exist)
     * @return V or null; V if it is Interpolable or exists, null if it is at a bound and cannot average
@@ -58,9 +51,7 @@ public class InterpolatingTreeMap<K extends InverseInterpolable<K> & Comparable<
            K topBound = ceilingKey(key);
            K bottomBound = floorKey(key);
 
-           /**
-            * If attempting interpolation at ends of tree, return the nearest data point
-            */
+           /** If attempting interpolation at ends of tree, return the nearest data point */
            if (topBound == null && bottomBound == null) {
                return null;
            } else if (topBound == null) {

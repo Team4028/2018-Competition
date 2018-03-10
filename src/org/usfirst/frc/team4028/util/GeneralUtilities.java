@@ -24,8 +24,6 @@ public class GeneralUtilities {
 	public static String WriteBuildInfoToDashboard(String robotName) {
 		String buildMsg = "?";
 		try {
-    		//DriverStation.reportError("** Team 4028 The Beak Squad **", false);
-    		
     		//get the path of the currently executing jar file
 			String currentJarFilePath = Robot.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();		
 			Path filePath = Paths.get(currentJarFilePath);
@@ -95,7 +93,7 @@ public class GeneralUtilities {
 	}
 	
     // This method rounds a double to the specified # of decimal places
-	public static double RoundDouble(Double originalValue, int decimalPlaces) {
+	public static double roundDouble(Double originalValue, int decimalPlaces) {
 		BigDecimal bd = new BigDecimal(originalValue).setScale(decimalPlaces, RoundingMode.HALF_EVEN);
 		
 		return bd.doubleValue();
@@ -117,17 +115,8 @@ public class GeneralUtilities {
     	talon.configMotionAcceleration(constants[1], 0);
     }
     
- // This method makes sure a value is between a max & min value
- 	public static int ClampValue(int originalValue, int minValue, int maxValue) {
- 		int clampedValue = originalValue;
- 		
- 		if (clampedValue > maxValue) {
- 			clampedValue = maxValue;
- 		}
- 		else if (clampedValue < minValue) {
- 			clampedValue = minValue;
- 		}
- 		
- 		return clampedValue;
+    /** This method makes sure a value is between a max & min value */
+ 	public static int ClampValue(int original, int min, int max) {
+ 		return Math.min(max, Math.max(min, original));
  	}
 }

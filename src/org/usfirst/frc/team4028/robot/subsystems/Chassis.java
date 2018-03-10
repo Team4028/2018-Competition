@@ -75,8 +75,8 @@ public class Chassis implements Subsystem {
 		_rightMaster = new TalonSRX(Constants.RIGHT_DRIVE_MASTER_CAN_ADDR);
 		_rightSlave = new TalonSRX(Constants.RIGHT_DRIVE_SLAVE_CAN_ADDR);
 		
-		_leftSlave.set(ControlMode.Follower, Constants.LEFT_DRIVE_MASTER_CAN_ADDR);
-		_rightSlave.set(ControlMode.Follower, Constants.RIGHT_DRIVE_MASTER_CAN_ADDR);
+		_leftSlave.follow(_leftMaster);
+		_rightSlave.follow(_rightMaster);
 		
 		configMasterMotors(_leftMaster);
 		configMasterMotors(_rightMaster);
@@ -146,12 +146,10 @@ public class Chassis implements Subsystem {
 		_chassisState = ChassisState.PERCENT_VBUS;
 		
 		if(_navX.isPitchPastThreshhold()) {
-			_leftMaster.set(ControlMode.PercentOutput, 0.0);
-			_rightMaster.set(ControlMode.PercentOutput, 0.0);
+			setLeftRightCommand(ControlMode.PercentOutput, 0.0, 0.0);
 			DriverStation.reportError("Tipping Threshold", false);
 		} else {
-			_leftMaster.set(ControlMode.PercentOutput, -throttle + 0.5 * turn);
-			_rightMaster.set(ControlMode.PercentOutput, -throttle - 0.5 * turn);
+			setLeftRightCommand(ControlMode.PercentOutput, -throttle + 0.5 * turn, -throttle - 0.5 * turn);
 		} 
 	}
 	
@@ -166,7 +164,8 @@ public class Chassis implements Subsystem {
 	} 
 	
 	/** Updates target position every cycle while using MotionMagic to turn to heading goal */
-	private synchronized void moveToTargetAngle() {
+	private void moveToTargetAngle() {
+		// TODO: This code needs to be simplified. Should convert angles to vectors and use dot product to get angle difference.
 		if((_navX.getYaw() >= 0 && _targetAngle >= 0 && _isTurnRight && _navX.getYaw() > _targetAngle) ||
 			(_navX.getYaw() >= 0 && _targetAngle < 0 && _isTurnRight) ||
 			(_navX.getYaw() < 0 && _targetAngle < 0 && _isTurnRight && Math.abs(_navX.getYaw()) < Math.abs(_targetAngle))) {
@@ -187,11 +186,10 @@ public class Chassis implements Subsystem {
 		}			
 		
 		double encoderError = ENCODER_ROTATIONS_PER_DEGREE * _angleError;		
-		double leftDriveTargetPosition = (getLeftPosInRot() + encoderError) * CODES_PER_REV;
-		double rightDriveTargetPosition = (getRightPosInRot() - encoderError) * CODES_PER_REV;
+		double leftDriveTargetPos = (getLeftPosInRot() + encoderError) * CODES_PER_REV;
+		double rightDriveTargetPos = (getRightPosInRot() - encoderError) * CODES_PER_REV;
 		
-		_leftMaster.set(ControlMode.MotionMagic, leftDriveTargetPosition);
-		_rightMaster.set(ControlMode.MotionMagic, rightDriveTargetPosition);
+		setLeftRightCommand(ControlMode.MotionMagic, leftDriveTargetPos, rightDriveTargetPos);
 	}
 	
 	/* ===== Chassis State: DRIVE SET DISTANCE ===== */
@@ -204,12 +202,12 @@ public class Chassis implements Subsystem {
 	}
 	
 	private synchronized void moveToTargetPos() {
-		_leftMaster.set(ControlMode.MotionMagic, _leftTargetPos);
-		_rightMaster.set(ControlMode.MotionMagic, _rightTargetPos);
+		setLeftRightCommand(ControlMode.MotionMagic, _leftTargetPos, _rightTargetPos);
 	}
 	
 	public synchronized boolean atTargetPos() {
-		return (Math.abs(_leftTargetPos - inchesToNU(getLeftPosInches())) < 2500) && (Math.abs(_rightTargetPos - inchesToNU(getRightPosInches())) < 2500);
+		return (Math.abs(_leftTargetPos - inchesToNU(getLeftPosInches())) < 2500)
+				&& (Math.abs(_rightTargetPos - inchesToNU(getRightPosInches())) < 2500);
 	} 
 
 	/* ===== Chassis State: FOLLOW PATH ===== */
@@ -234,13 +232,11 @@ public class Chassis implements Subsystem {
 			Kinematics.DriveVelocity setpoint = Kinematics.inverseKinematics(command);
 			final double max_desired = Math.max(Math.abs(setpoint.left), Math.abs(setpoint.right));
             final double scale = max_desired > Constants.DRIVE_VELOCITY_MAX_SETPOINT ? Constants.DRIVE_VELOCITY_MAX_SETPOINT / max_desired : 1.0;
-            _leftMaster.set(ControlMode.Velocity, inchesPerSecToNU(setpoint.left * scale));
-            _rightMaster.set(ControlMode.Velocity, inchesPerSecToNU(setpoint.right * scale));
+            setLeftRightCommand(ControlMode.Velocity, inchesPerSecToNU(setpoint.left * scale), inchesPerSecToNU(setpoint.right * scale));
 			_leftTargetVelocity = setpoint.left;
 			_rightTargetVelocity = setpoint.right;
 		} else {
-			_leftMaster.set(ControlMode.Velocity, 0.0);
-			_rightMaster.set(ControlMode.Velocity, 0.0);
+			setLeftRightCommand(ControlMode.Velocity, 0.0, 0.0);
 		}
 	}
 
@@ -389,6 +385,11 @@ public class Chassis implements Subsystem {
         talon.configNominalOutputReverse(0, 10);
         talon.configContinuousCurrentLimit(Constants.BIG_NUMBER, 10);
 	}
+	
+	private void setLeftRightCommand(ControlMode mode, double leftCommand, double rightCommand) {
+		_leftMaster.set(mode, leftCommand);
+		_rightMaster.set(mode, rightCommand);
+	}
 
 	@Override
 	public synchronized void stop() {
@@ -403,23 +404,23 @@ public class Chassis implements Subsystem {
 	
 	@Override
 	public void outputToShuffleboard() {
-		SmartDashboard.putNumber("Chassis: Left Velocity", GeneralUtilities.RoundDouble(getLeftVelocityInchesPerSec(), 2));
-		SmartDashboard.putNumber("Chassis: Right Velocity", GeneralUtilities.RoundDouble(getLeftVelocityInchesPerSec(), 2));
+		SmartDashboard.putNumber("Chassis: Left Velocity", GeneralUtilities.roundDouble(getLeftVelocityInchesPerSec(), 2));
+		SmartDashboard.putNumber("Chassis: Right Velocity", GeneralUtilities.roundDouble(getLeftVelocityInchesPerSec(), 2));
 		
-		SmartDashboard.putNumber("Chassis: Left Wheel Target Velocity", GeneralUtilities.RoundDouble(_leftTargetVelocity, 2));
-		SmartDashboard.putNumber("Chasiss: Right Wheel Target Velocity", GeneralUtilities.RoundDouble(_leftTargetVelocity, 2));
+		SmartDashboard.putNumber("Chassis: Left Wheel Target Velocity", GeneralUtilities.roundDouble(_leftTargetVelocity, 2));
+		SmartDashboard.putNumber("Chasiss: Right Wheel Target Velocity", GeneralUtilities.roundDouble(_leftTargetVelocity, 2));
 		
-		SmartDashboard.putNumber("Chassis: Angle", GeneralUtilities.RoundDouble(getHeading(), 2));
+		SmartDashboard.putNumber("Chassis: Angle", GeneralUtilities.roundDouble(getHeading(), 2));
 		SmartDashboard.putString("Chassis: Robot Pose", RobotState.getInstance().getLatestFieldToVehicle().getValue().toString());
 	}
 	
 	@Override
 	public void updateLogData(LogDataBE logData) {
-		logData.AddData("Left Actual Velocity [in/s]", String.valueOf(GeneralUtilities.RoundDouble(getLeftVelocityInchesPerSec(), 2)));
-		logData.AddData("Left Target Velocity [in/s]", String.valueOf(GeneralUtilities.RoundDouble(_leftTargetVelocity, 2)));
+		logData.AddData("Left Actual Velocity [in/s]", String.valueOf(GeneralUtilities.roundDouble(getLeftVelocityInchesPerSec(), 2)));
+		logData.AddData("Left Target Velocity [in/s]", String.valueOf(GeneralUtilities.roundDouble(_leftTargetVelocity, 2)));
 		
-		logData.AddData("Right Actual Velocity [in/s]", String.valueOf(GeneralUtilities.RoundDouble(-getRightVelocityInchesPerSec(), 2)));
-		logData.AddData("Right Target Velocity [in/s]", String.valueOf(GeneralUtilities.RoundDouble(_rightTargetVelocity, 2)));
-		logData.AddData("Chassis: Angle", String.valueOf(GeneralUtilities.RoundDouble(getHeading(), 2)));
+		logData.AddData("Right Actual Velocity [in/s]", String.valueOf(GeneralUtilities.roundDouble(-getRightVelocityInchesPerSec(), 2)));
+		logData.AddData("Right Target Velocity [in/s]", String.valueOf(GeneralUtilities.roundDouble(_rightTargetVelocity, 2)));
+		logData.AddData("Chassis: Angle", String.valueOf(GeneralUtilities.roundDouble(getHeading(), 2)));
 	}
 }

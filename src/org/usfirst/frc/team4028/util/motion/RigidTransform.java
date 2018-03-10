@@ -86,11 +86,7 @@ public class RigidTransform implements Interpolable<RigidTransform>{
                 _rotation.rotateBy(other._rotation));
     }
 
-    /**
-     * The inverse of this transform "undoes" the effect of translating by this transform.
-     * 
-     * @return The opposite of this transform.
-     */
+    /** The inverse of this transform "undoes" the effect of translating by this transform. */
     public RigidTransform inverse() {
         Rotation rotation_inverted = _rotation.inverse();
         return new RigidTransform(_translation.inverse().rotateBy(rotation_inverted), rotation_inverted);

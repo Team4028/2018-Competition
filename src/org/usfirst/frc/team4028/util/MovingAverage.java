@@ -16,7 +16,7 @@ public class MovingAverage {
         this.period = period;
     }
 
-    // add a sample (optional remove oldest entry if internal queue is already at target size)
+    /** add a sample (optional remove oldest entry if internal queue is already at target size) */
     public void add(BigDecimal num) {
         sum = sum.add(num);
         window.add(num);

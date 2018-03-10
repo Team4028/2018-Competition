@@ -17,8 +17,6 @@ public class RobotStateEstimator {
         return instance_;
     }
 
-    RobotStateEstimator() {}
-
     RobotState robotState = RobotState.getInstance();
     Chassis chassis = Chassis.getInstance();
     double leftEncoderPrevDistance = 0;

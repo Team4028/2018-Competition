@@ -22,10 +22,10 @@ public class LogDataBE {
 		_values.add(value);
 	}
 	
-	/** discard any data currently being held */
+	/** Discard any data currently being held */
 	public void ResetData() {
 		_names.clear();
-		_values .clear();	
+		_values.clear();	
 	}
 
 	/** Build a TSV (tab separated value) string for the header row */

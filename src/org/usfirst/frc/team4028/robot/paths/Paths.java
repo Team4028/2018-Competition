@@ -64,6 +64,7 @@ public class Paths {
 		R_SCALE,
 		
 		R_SCALE_OUTSIDE,
+		R_SWITCH_BEFORE_L_SCALE,
 		
 		// Second Cube
 		L_SCALE_TO_R_SWITCH,
@@ -368,7 +369,7 @@ public class Paths {
 	protected static ArrayList<Waypoint> getLeftSwitchBeforeRightScaleWaypoints(){
         ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
         sWaypoints.add(new Waypoint(20,46,0,0));
-        sWaypoints.add(new Waypoint(135,46,20,60));
+        sWaypoints.add(new Waypoint(150,46,15,60));
         sWaypoints.add(new Waypoint(150,63,0,60));
         return sWaypoints;
 	}
@@ -434,11 +435,11 @@ public class Paths {
 		ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
         sWaypoints.add(new Waypoint(20,278,0,0));
         sWaypoints.add(new Waypoint(191,278,0,120));
-        sWaypoints.add(new Waypoint(232,278,40,120));
-        sWaypoints.add(new Waypoint(232,228,0,120));
-        sWaypoints.add(new Waypoint(232,214,0,20));
-        sWaypoints.add(new Waypoint(232,109,0,100));
-        sWaypoints.add(new Waypoint(232,74,35,80));
+        sWaypoints.add(new Waypoint(242,278,40,120));
+        sWaypoints.add(new Waypoint(242,228,0,120));
+        sWaypoints.add(new Waypoint(242,214,0,20));
+        sWaypoints.add(new Waypoint(242,109,0,100));
+        sWaypoints.add(new Waypoint(242,74,35,80));
         sWaypoints.add(new Waypoint(268,74,0,40));
         return sWaypoints;
 	}
@@ -450,7 +451,27 @@ public class Paths {
         sWaypoints.add(new Waypoint(281,250,0,100));
     	return sWaypoints;
 	}
+	//Switch Then Scale
+	protected static ArrayList<Waypoint> getRightSwitchBeforeLeftScaleWaypoints() {
+		ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
+        sWaypoints.add(new Waypoint(20,278,0,0));
+        sWaypoints.add(new Waypoint(165,278,15,60));
+        sWaypoints.add(new Waypoint(165,261,0,60));
+
+        return sWaypoints;
+	}
 	
+	protected static ArrayList<Waypoint> getLeftScaleAfterRightSwitchWaypoints()
+	{
+
+	    ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
+        sWaypoints.add(new Waypoint(165,261,0,0));
+        sWaypoints.add(new Waypoint(165,281,15,120));
+        sWaypoints.add(new Waypoint(242,281,40,120));
+        sWaypoints.add(new Waypoint(242,80,0,60));
+
+	    return sWaypoints;
+	}
 	// Scale outside
 	protected static ArrayList<Waypoint> getRightScaleOutsideWaypoints() {
 		ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
