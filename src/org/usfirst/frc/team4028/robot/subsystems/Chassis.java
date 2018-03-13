@@ -1,10 +1,13 @@
 package org.usfirst.frc.team4028.robot.subsystems;
 
+import static org.usfirst.frc.team4028.util.GeneralUtilities.setMotionMagicConstants;
+import static org.usfirst.frc.team4028.util.GeneralUtilities.setPIDFGains;
+
 import org.usfirst.frc.team4028.robot.Constants;
-import org.usfirst.frc.team4028.util.Kinematics;
-import org.usfirst.frc.team4028.robot.sensors.RobotState;
 import org.usfirst.frc.team4028.robot.sensors.NavXGyro;
+import org.usfirst.frc.team4028.robot.sensors.RobotState;
 import org.usfirst.frc.team4028.util.GeneralUtilities;
+import org.usfirst.frc.team4028.util.Kinematics;
 import org.usfirst.frc.team4028.util.LogDataBE;
 import org.usfirst.frc.team4028.util.control.Path;
 import org.usfirst.frc.team4028.util.control.PathFollower;
@@ -24,9 +27,6 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
-import static org.usfirst.frc.team4028.util.GeneralUtilities.setPIDFGains;
-import static org.usfirst.frc.team4028.util.GeneralUtilities.setMotionMagicConstants;
 
 public class Chassis implements Subsystem {
 	private static Chassis _instance = new Chassis();
@@ -64,7 +64,7 @@ public class Chassis implements Subsystem {
 	private static final double[] MOTION_MAGIC_TURN_PIDF_GAINS = {0.3, 0.0, 40.0, 0.095};
 	private static final double[] MOTION_MAGIC_STRAIGHT_PIDF_GAINS = {0.15, 0.0, 20.0, 0.095};
 	private static final double[] LOW_GEAR_VELOCITY_PIDF_GAINS = {0.15, 0.0, 1.5, 0.085}; 
-	private static final double[] HIGH_GEAR_VELOCITY_PIDF_GAINS = {0.065, 0.0, 1.0, 0.044}; 
+	private static final double[] HIGH_GEAR_VELOCITY_PIDF_GAINS = {0.09, 0.0, 1.3, 0.044}; 
     
     private static final int[] MOTION_MAGIC_TURN_VEL_ACC = {80 * 150, 150 * 150};
     private static final int[] MOTION_MAGIC_STRAIGHT_VEL_ACC = {80 * 150, 140 * 150};
@@ -77,6 +77,11 @@ public class Chassis implements Subsystem {
 		
 		_leftSlave.follow(_leftMaster);
 		_rightSlave.follow(_rightMaster);
+		
+		_leftMaster.setInverted(true);
+		_leftSlave.setInverted(true);
+		_rightMaster.setInverted(false);
+		_rightSlave.setInverted(false);
 		
 		configMasterMotors(_leftMaster);
 		configMasterMotors(_rightMaster);
@@ -372,8 +377,6 @@ public class Chassis implements Subsystem {
 	}
 	
 	private void configDriveMotors(TalonSRX talon) {
-		talon.setInverted(true);
-		
 		talon.configForwardLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
 		talon.configReverseLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
         
@@ -418,9 +421,14 @@ public class Chassis implements Subsystem {
 	public void updateLogData(LogDataBE logData) {
 		logData.AddData("Left Actual Velocity [in/s]", String.valueOf(GeneralUtilities.roundDouble(getLeftVelocityInchesPerSec(), 2)));
 		logData.AddData("Left Target Velocity [in/s]", String.valueOf(GeneralUtilities.roundDouble(_leftTargetVelocity, 2)));
+		logData.AddData("Left Output Current", String.valueOf(GeneralUtilities.roundDouble(_leftMaster.getOutputCurrent(), 2)));
 		
 		logData.AddData("Right Actual Velocity [in/s]", String.valueOf(GeneralUtilities.roundDouble(-getRightVelocityInchesPerSec(), 2)));
 		logData.AddData("Right Target Velocity [in/s]", String.valueOf(GeneralUtilities.roundDouble(_rightTargetVelocity, 2)));
-		logData.AddData("Chassis: Angle", String.valueOf(GeneralUtilities.roundDouble(getHeading(), 2)));
+		logData.AddData("Right Output Current", String.valueOf(GeneralUtilities.roundDouble(_rightMaster.getOutputCurrent(), 2)));
+		
+		logData.AddData("Pose X", String.valueOf(RobotState.getInstance().getLatestFieldToVehicle().getValue().getTranslation().x()));
+		logData.AddData("Pose Y", String.valueOf(RobotState.getInstance().getLatestFieldToVehicle().getValue().getTranslation().y()));
+		logData.AddData("Pose Angle", String.valueOf(RobotState.getInstance().getLatestFieldToVehicle().getValue().getRotation().getDegrees()));
 	}
 }

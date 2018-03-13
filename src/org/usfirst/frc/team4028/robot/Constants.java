@@ -86,10 +86,10 @@ public class Constants {
     public static final double CENTER_TO_SIDE_BUMPER_DISTANCE = 20.0;
     
     // Path Following Constants
-    public static final double MIN_LOOKAHEAD = 12.0; // inches
+    public static final double MIN_LOOKAHEAD = 10.0; // inches
     public static final double MIN_LOOKAHEAD_SPEED = 9.0; // inches per second
-    public static final double MAX_LOOKAHEAD = 24.0; // inches
-    public static final double MAX_LOOKAHEAD_SPEED = 120.0; // inches per second
+    public static final double MAX_LOOKAHEAD = 20; // inches
+    public static final double MAX_LOOKAHEAD_SPEED = 150.0; // inches per second
     public static final double DELTA_LOOKAHEAD = MAX_LOOKAHEAD - MIN_LOOKAHEAD;
     public static final double DELTA_LOOKAHEAD_SPEED = MAX_LOOKAHEAD_SPEED - MIN_LOOKAHEAD_SPEED;
 
@@ -98,9 +98,9 @@ public class Constants {
     public static final double SEGMENT_COMPLETION_TOLERANCE = 0.1; // inches
     public static final double PATH_DEFAULT_ACCEL = 100.0; // inches per second^2
     public static final double PATH_DEFAULT_DECEL = 120.0;
-    public static final double PATH_FOLLOWING_MAX_VEL = 120.0; // inches per second
+    public static final double PATH_FOLLOWING_MAX_VEL = 180.0; // inches per second
     public static final double PATH_FOLLOWING_PROFILE_KP = 6.0; 
-    public static final double PATH_FOLLOWING_PROFILE_KI = 0.0;	//0.03;
+    public static final double PATH_FOLLOWING_PROFILE_KI = 0.01;	//0.03;
     public static final double PATH_FOLLOWING_PROFILE_KV = 0.02; //0.02;
     public static final double PATH_FOLLOWING_PROFILE_KFFV = 1.0;
     public static final double PATH_FOLLOWING_PROFILE_KFFA = 0.1;

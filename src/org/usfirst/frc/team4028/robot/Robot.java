@@ -484,10 +484,10 @@ public class Robot extends IterativeRobot {
 	    	
 	    	// ask each subsystem that exists to add its data
 	    	_chassis.updateLogData(logData);
-	    	_elevator.updateLogData(logData);
-	    	_infeed.updateLogData(logData);
-	    	_carriage.updateLogData(logData);
-	    	_cubeHandler.updateLogData(logData);
+	    	//_elevator.updateLogData(logData);
+	    	//_infeed.updateLogData(logData);
+	    	//_carriage.updateLogData(logData);
+	    	//_cubeHandler.updateLogData(logData);
 	    	
 	    	_dataLogger.WriteDataLine(logData);
     	}
