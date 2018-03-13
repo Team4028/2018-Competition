@@ -117,7 +117,7 @@ public class Infeed  implements Subsystem {
 	// Infeed Drive Wheel Constant
 	private static final double INFEED_DRIVE_WHEELS_VBUS_COMMAND_BUMP = 0.05;
 	//Infeed Homing Speed
-	private static final double INFEED_HOMING_VBUS_COMMAND = 0.35;
+	private static final double INFEED_HOMING_VBUS_COMMAND = 0.15;
 	
 	//Conversion Constant
 	private static final double DEGREES_TO_NATIVE_UNITS_CONVERSION = (4096/360);
@@ -227,7 +227,9 @@ public class Infeed  implements Subsystem {
 		// called in Telop & Auton Init
 		@Override
 		public void onStart(double timestamp) {
-			synchronized (Infeed.this) {				
+			synchronized (Infeed.this) {
+				_hasLeftArmBeenHomed = false;
+				_hasRightArmBeenHomed = false;
 				_infeedArmState = INFEED_ARM_STATE.NEED_TO_HOME;
 				_infeedWheelsState = INFEED_WHEELS_STATE.STOPPED;
 			}
@@ -639,13 +641,12 @@ public class Infeed  implements Subsystem {
 	}
 	
 	// add data elements to be logged  to the input param (which is passed by ref)
-	public void updateLogData(LogDataBE logData) {			
-		logData.AddData("Left Infeed Position:", String.valueOf(getCurrentLeftInfeedPosition()));
-		logData.AddData("Right Infeed Position:", String.valueOf(getCurrentRightInfeedPosition()));
-		logData.AddData("Is Left Infeed Arm Homed?", String.valueOf(_hasLeftArmBeenHomed));
-		logData.AddData("Is Right Infeed Arm Homed?", String.valueOf(_hasLeftArmBeenHomed));
-		logData.AddData("Infeed State:", _infeedArmState.toString());
-		logData.AddData("Infeed Arm Position:", String.valueOf(_targetInfeedArmPosition));
+	public void updateLogData(LogDataBE logData) {
+		logData.AddData("Infeed: Target Arm Position", String.valueOf(nativeUnitsToDegrees(_targetInfeedArmPosition)));			
+		logData.AddData("Infeed: L Position", String.valueOf(nativeUnitsToDegrees(getCurrentLeftInfeedPosition())));
+		logData.AddData("Infeed: R Position:", String.valueOf(nativeUnitsToDegrees(getCurrentRightInfeedPosition())));
+		logData.AddData("Infeed: L/R Arms Homed?", String.valueOf(_hasLeftArmBeenHomed) + " / " + String.valueOf(_hasRightArmBeenHomed));
+		logData.AddData("State: Infeed", _infeedArmState.toString());
 	} 
 	
 	// private helper method to control how we write to the drivers station
