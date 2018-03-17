@@ -33,12 +33,12 @@ public class SwitchableCameraServer {
 
 	private SwitchableCameraServer() {
 		//C920
-		//640x480 10FPS ~5.4 MB/S OK
-		//640x480 20FPS ~14.44 MB/S OK
+		//640x480 10FPS ~5.4 MB/S OK YELLOW
+		//640x480 20FPS ~14.44 MB/S OK RED
 		//320x240 20FPS BAD
-		//640x360 20FPS (GOT 15-20FPS) 10-12 MB/S OK
+		//640x360 20FPS (GOT 15-20FPS) 10-12 MB/S OK RED
 		//432x240 20FPS BAD
-		//432x240 30FPS (25-30 FPS) ~9MBPS OK
+		//432x240 30FPS (25-30 FPS) ~9MBPS OK RED
 		//432x240 24FPS BAD
 		//432x240 15FPS BAD
 		//352x288 30FPS BAD
@@ -48,9 +48,19 @@ public class SwitchableCameraServer {
 		
 		//ELP
 		//640x480 10FPS (6.6-7.1 MB/S) OK RED
-		//640x480 20FPS (7.6-8.3 MB/S) OK GREEN
-		//640x360 15FPS (~9.4 MB/S) OK YELLOW
-		//320x240 20PS (~5.0 MB/S) OK GREEN
+		//640x480 20FPS (7.6-8.3 MB/S) OK RED
+		//640x360 15FPS (~9.4 MB/S) OK RED
+		//320x240 20PS (~5.0 MB/S) OK RED
+		//320x240 15FPS ~5.0MB/S OK GREEN (NOT PERFECT GREEN)
+		//320x180 20FPS ~5.0MB/S OK YELLOW
+		
+		//LIFECAM 
+		//640x480 20FPS 9.52MB/S OK RED
+		//640x480 10FPS 6.7MB/S OK RED
+		//432x240 15FPS 3.9MB/S OK GREEN
+		//640x360 24FPS 9.76MB/S OK RED
+		//352x288 24FPS 7.6MB/S OK RED
+		//176x144 30FPS 2.68MB/S OK GREEN
 		// =============
 		// option 2: (
 		// =============
@@ -76,7 +86,7 @@ public class SwitchableCameraServer {
 			System.out.println ("		camera1 exists");
 			_camera1 = new UsbCamera(CAM1_NAME, 1);
 			_camera1.setVideoMode(VideoMode.PixelFormat.kMJPEG, width, height, frames_per_sec);
-			_camera1.setExposureManual(10);
+			_camera1.setExposureManual(80);
 			_camera1.setWhiteBalanceManual(50);
 			_camList.add(_camera1);
 		}
@@ -84,7 +94,7 @@ public class SwitchableCameraServer {
 			System.out.println ("		camera2 exists");
 			_camera2 = new UsbCamera(CAM2_NAME, 2);
 			_camera2.setVideoMode(VideoMode.PixelFormat.kMJPEG, width, height, frames_per_sec);
-			_camera2.setExposureManual(10);
+			_camera2.setExposureManual(80);
 			_camera2.setWhiteBalanceManual(50);
 			_camList.add(_camera2);
 		}
@@ -92,7 +102,7 @@ public class SwitchableCameraServer {
 			System.out.println ("		camera3 exists");
 			_camera3 = new UsbCamera(CAM3_NAME, 3);
 			_camera3.setVideoMode(VideoMode.PixelFormat.kMJPEG, width, height, frames_per_sec);
-			_camera3.setExposureManual(10);
+			_camera3.setExposureManual(80);
 			_camera3.setWhiteBalanceManual(50);
 			_camList.add(_camera3);
 		}
