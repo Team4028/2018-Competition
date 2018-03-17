@@ -41,10 +41,11 @@ public class Scale extends AutonBase{
 					new RunMotionProfileAction(toScale),
 					new SeriesAction(Arrays.asList(new Action[] {
 							new WaitAction(elevatorWaitTime),
-							new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.HIGH_SCALE_HEIGHT)
+							//new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.HIGH_SCALE_HEIGHT)
 					}))
 		})));
 		// Outfeed cube for 0.2s
+		/*
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 				new WaitAction(0.2),
 				new OutfeedCubeAction()
@@ -52,7 +53,7 @@ public class Scale extends AutonBase{
 		runAction(new PrintTimeFromStart(_startTime));
 		// Drive backwards 20in and move elevator to floor
 		runAction(new DriveSetDistanceAction(-10.0));
-		runAction(new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT));
+		runAction(new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT)); */
 		runAction(new PrintTimeFromStart(_startTime));
 	}
 }

@@ -51,8 +51,11 @@ public class Paths {
 		L_SCALE_TO_R_SWITCH,
 		R_SCALE_TO_L_SWITCH,
 		
-		L_SWITCH_TO_SIDE,
+		L_SWITCH_SIDE,
 		L_SWITCH_SIDE_TO_R_SCALE,
+		
+		L_SWITCH_SIDE_2,
+		L_SWITCH_SIDE_TO_R_SCALE_2,
 		
 		// Third Cube
 		L_SWITCH_TO_L_SCALE_SECOND_CUBE
@@ -264,21 +267,21 @@ public class Paths {
 				path.setIsReversed(false);
 				return path;	
 			case R_SCALE:
-				path = buildPathFromWaypoints(getRightScaleFromLeftWaypoints(), Constants.PATH_DEFAULT_ACCEL, Constants.PATH_DEFAULT_DECEL, 0.0045);
+				path = buildPathFromWaypoints(getRightScaleFromLeftWaypoints(), Constants.PATH_DEFAULT_ACCEL, Constants.PATH_DEFAULT_DECEL, 0.00);
 				path.setIsReversed(false);
 				return path;
 				
 			case L_SCALE_OUTSIDE:
-				path = buildPathFromWaypoints(getLeftScaleOutsideWaypoints(), Constants.PATH_DEFAULT_ACCEL,Constants.PATH_DEFAULT_DECEL, 0.0);
+				path = buildPathFromWaypoints(getLeftScaleOutsideWaypoints(), Constants.PATH_DEFAULT_ACCEL, Constants.PATH_DEFAULT_DECEL, 0.0);
 				path.setIsReversed(false);
 				return path;
 				
 			case L_SCALE_TO_R_SWITCH:
-				path = buildPathFromWaypoints(getLeftScaleToRightSwitchLeftSideWaypoints(), Constants.PATH_DEFAULT_ACCEL, Constants.PATH_DEFAULT_DECEL, 0.007);
+				path = buildPathFromWaypoints(getLeftScaleToRightSwitchLeftSideWaypoints(), Constants.PATH_DEFAULT_ACCEL, Constants.PATH_DEFAULT_DECEL, 0.00);
 				path.setIsReversed(false);
 				return path;
 			case R_SCALE_TO_L_SWITCH:
-				path = buildPathFromWaypoints(getRightScaletoLeftSwitchLeftSideWaypoints(), Constants.PATH_DEFAULT_ACCEL, Constants.PATH_DEFAULT_DECEL, 0.007);
+				path = buildPathFromWaypoints(getRightScaletoLeftSwitchLeftSideWaypoints(), Constants.PATH_DEFAULT_ACCEL, Constants.PATH_DEFAULT_DECEL, 0.00);
 				path.setIsReversed(false);
 				return path; 
 				
@@ -287,12 +290,21 @@ public class Paths {
 				path.setIsReversed(true);
 				return path;
 				
-			case L_SWITCH_TO_SIDE:
+			case L_SWITCH_SIDE:
 				path = buildPathFromWaypoints(getLeftSwitchBeforeRightScaleWaypoints(), Constants.PATH_DEFAULT_ACCEL, Constants.PATH_DEFAULT_DECEL, 0.0);
 				path.setIsReversed(false);
 				return path;
 			case L_SWITCH_SIDE_TO_R_SCALE:
 				path = buildPathFromWaypoints(getRightScaleFromLeftSwitchWaypoints(), Constants.PATH_DEFAULT_ACCEL, Constants.PATH_DEFAULT_DECEL, 0.0);
+				path.setIsReversed(true);
+				return path;
+				
+			case L_SWITCH_SIDE_2:
+				path = buildPathFromWaypoints(getLeftSwitchBeforeRightScaleWaypoints2(), Constants.PATH_DEFAULT_ACCEL, Constants.PATH_DEFAULT_DECEL, 0.0);
+				path.setIsReversed(false);
+				return path;
+			case L_SWITCH_SIDE_TO_R_SCALE_2:
+				path = buildPathFromWaypoints(getRightScaleFromLeftSwitchWaypoints2(), Constants.PATH_DEFAULT_ACCEL, Constants.PATH_DEFAULT_DECEL, 0.0);
 				path.setIsReversed(false);
 				return path;
 				
@@ -315,13 +327,13 @@ public class Paths {
 	protected static ArrayList<Waypoint> getRightScaleFromLeftWaypoints() {
 		ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
         sWaypoints.add(new Waypoint(20,46,0,0));
-        sWaypoints.add(new Waypoint(197,46,0,120));
-        sWaypoints.add(new Waypoint(242,46,40,120));
-        sWaypoints.add(new Waypoint(242,96,0,120));
-        sWaypoints.add(new Waypoint(242,110,0,30));
-        sWaypoints.add(new Waypoint(242,217,0,120));
-        sWaypoints.add(new Waypoint(242,252,35,80));
-        sWaypoints.add(new Waypoint(280,252,0,40));
+        sWaypoints.add(new Waypoint(198,46,0,120));
+        sWaypoints.add(new Waypoint(238,46,40,80));
+        sWaypoints.add(new Waypoint(238,86,0,80));
+        sWaypoints.add(new Waypoint(238,98,0,30));
+        sWaypoints.add(new Waypoint(238,205,0,120));
+        sWaypoints.add(new Waypoint(238,246,35,80));
+        sWaypoints.add(new Waypoint(274,246,0,40));
         return sWaypoints;
 	}
 	
@@ -370,16 +382,39 @@ public class Paths {
 	protected static ArrayList<Waypoint> getLeftSwitchBeforeRightScaleWaypoints(){
         ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
         sWaypoints.add(new Waypoint(20,46,0,0));
-        sWaypoints.add(new Waypoint(150,46,15,60));
-        sWaypoints.add(new Waypoint(150,63,0,60));
+        sWaypoints.add(new Waypoint(100,46,15,80));
+        sWaypoints.add(new Waypoint(140,40,15,80));
+        sWaypoints.add(new Waypoint(175,40,20,60));
+        sWaypoints.add(new Waypoint(175,63,0,60));
         return sWaypoints;
 	}
 	
 	protected static ArrayList<Waypoint> getRightScaleFromLeftSwitchWaypoints(){
+	    ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
+        sWaypoints.add(new Waypoint(175,63,0,0));
+	    sWaypoints.add(new Waypoint(175,43,15,60));
+	    sWaypoints.add(new Waypoint(245,43,40,60));
+	    sWaypoints.add(new Waypoint(245,103,0,60));
+	    sWaypoints.add(new Waypoint(245,133,0,20));
+	    sWaypoints.add(new Waypoint(245,242,0,100));
+        return sWaypoints;
+	}
+	
+	protected static ArrayList<Waypoint> getLeftSwitchBeforeRightScaleWaypoints2(){
         ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
-        sWaypoints.add(new Waypoint(150,63,0,0));
-        sWaypoints.add(new Waypoint(240,63,40,60));
-        sWaypoints.add(new Waypoint(240,235,0,60));
+        sWaypoints.add(new Waypoint(12,46,0,0));
+        sWaypoints.add(new Waypoint(126,46,15,80));
+        sWaypoints.add(new Waypoint(137,58,0,70));
+        return sWaypoints;
+	}
+	
+	protected static ArrayList<Waypoint> getRightScaleFromLeftSwitchWaypoints2(){
+	    ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
+	    sWaypoints.add(new Waypoint(140,61,0,0));
+        sWaypoints.add(new Waypoint(237,61,40,80));
+        sWaypoints.add(new Waypoint(237,102,0,80));
+        sWaypoints.add(new Waypoint(237,112,0,30));
+        sWaypoints.add(new Waypoint(237,246,0,120));
         return sWaypoints;
 	}
 	

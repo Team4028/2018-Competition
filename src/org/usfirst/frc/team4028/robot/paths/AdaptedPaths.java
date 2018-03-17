@@ -263,7 +263,7 @@ public class AdaptedPaths extends Paths {//oh God we're here
 			path.setIsReversed(true);
 			return path;
 			
-		case L_SWITCH_TO_SIDE:
+		case L_SWITCH_SIDE:
 			path = buildPathFromWaypoints(adaptLeftSwitchBeforeRightScale(), Constants.PATH_DEFAULT_ACCEL, Constants.PATH_DEFAULT_DECEL, 0.0);
 			path.setIsReversed(false);
 			return path;

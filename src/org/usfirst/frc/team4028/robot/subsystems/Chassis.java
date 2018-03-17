@@ -56,18 +56,18 @@ public class Chassis implements Subsystem {
 	private double _angleError = 180;
 	private boolean _isTurnRight;
 	private double _leftTargetPos, _rightTargetPos;
-	private double _leftTargetVelocity, _rightTargetVelocity;
+	private double _leftTargetVelocity, _rightTargetVelocity, _centerTargetVelocity;
 
 	private static final double CODES_PER_REV = 30725.425;
 	private static final double ENCODER_ROTATIONS_PER_DEGREE = 46.15/3600;
 	
-	private static final double[] MOTION_MAGIC_TURN_PIDF_GAINS = {0.3, 0.0, 40.0, 0.095};
+	private static final double[] MOTION_MAGIC_TURN_PIDF_GAINS = {0.25, 0.0, 30.0, 0.095};
 	private static final double[] MOTION_MAGIC_STRAIGHT_PIDF_GAINS = {0.15, 0.0, 20.0, 0.095};
 	private static final double[] LOW_GEAR_VELOCITY_PIDF_GAINS = {0.15, 0.0, 1.5, 0.085}; 
 	private static final double[] HIGH_GEAR_VELOCITY_PIDF_GAINS = {0.09, 0.0, 1.3, 0.044}; 
     
-    private static final int[] MOTION_MAGIC_TURN_VEL_ACC = {80 * 150, 150 * 150};
-    private static final int[] MOTION_MAGIC_STRAIGHT_VEL_ACC = {80 * 150, 140 * 150};
+    private static final int[] MOTION_MAGIC_TURN_VEL_ACC = {80 * 150, 170 * 150};
+    private static final int[] MOTION_MAGIC_STRAIGHT_VEL_ACC = {80 * 150, 170 * 150};
 	
 	private Chassis() {
 		_leftMaster = new TalonSRX(Constants.LEFT_DRIVE_MASTER_CAN_ADDR);
@@ -211,8 +211,8 @@ public class Chassis implements Subsystem {
 	}
 	
 	public synchronized boolean atTargetPos() {
-		return (Math.abs(_leftTargetPos - inchesToNU(getLeftPosInches())) < 2500)
-				&& (Math.abs(_rightTargetPos - inchesToNU(getRightPosInches())) < 2500);
+		return (Math.abs(_leftTargetPos - inchesToNU(getLeftPosInches())) < inchesToNU(2))
+				&& (Math.abs(_rightTargetPos - inchesToNU(getRightPosInches())) < inchesToNU(2));
 	} 
 
 	/* ===== Chassis State: FOLLOW PATH ===== */
@@ -224,8 +224,7 @@ public class Chassis implements Subsystem {
             _chassisState = ChassisState.FOLLOW_PATH;
             _currentPath = path;
         } else {
-        	_leftMaster.set(ControlMode.Velocity, 0.0);
-        	_rightMaster.set(ControlMode.Velocity, 0.0);
+        	setLeftRightCommand(ControlMode.Velocity, 0.0, 0.0);
         }
     }
     
@@ -235,9 +234,10 @@ public class Chassis implements Subsystem {
 		Twist command = _pathFollower.update(timestamp, _robotPose, RobotState.getInstance().getDistanceDriven(), RobotState.getInstance().getPredictedVelocity().dx);
 		if (!_pathFollower.isFinished()) {
 			Kinematics.DriveVelocity setpoint = Kinematics.inverseKinematics(command);
-			final double max_desired = Math.max(Math.abs(setpoint.left), Math.abs(setpoint.right));
-            final double scale = max_desired > Constants.DRIVE_VELOCITY_MAX_SETPOINT ? Constants.DRIVE_VELOCITY_MAX_SETPOINT / max_desired : 1.0;
+			final double maxDesired = Math.max(Math.abs(setpoint.left), Math.abs(setpoint.right));
+            final double scale = maxDesired > Constants.DRIVE_VELOCITY_MAX_SETPOINT ? Constants.DRIVE_VELOCITY_MAX_SETPOINT / maxDesired : 1.0;
             setLeftRightCommand(ControlMode.Velocity, inchesPerSecToNU(setpoint.left * scale), inchesPerSecToNU(setpoint.right * scale));
+            _centerTargetVelocity = command.dx;
 			_leftTargetVelocity = setpoint.left;
 			_rightTargetVelocity = setpoint.right;
 		} else {
@@ -430,5 +430,7 @@ public class Chassis implements Subsystem {
 		logData.AddData("Pose X", String.valueOf(RobotState.getInstance().getLatestFieldToVehicle().getValue().getTranslation().x()));
 		logData.AddData("Pose Y", String.valueOf(RobotState.getInstance().getLatestFieldToVehicle().getValue().getTranslation().y()));
 		logData.AddData("Pose Angle", String.valueOf(RobotState.getInstance().getLatestFieldToVehicle().getValue().getRotation().getDegrees()));
+		
+		logData.AddData("Center Target Velocity", String.valueOf(GeneralUtilities.roundDouble(_centerTargetVelocity, 2)));
 	}
 }
