@@ -6,6 +6,7 @@ import java.util.Date;
 
 import org.usfirst.frc.team4028.robot.auton.AutonExecuter;
 import org.usfirst.frc.team4028.robot.paths.AdaptedPaths;
+import org.usfirst.frc.team4028.robot.sensors.PressureSensor;
 import org.usfirst.frc.team4028.robot.sensors.RobotStateEstimator;
 import org.usfirst.frc.team4028.robot.sensors.SwitchableCameraServer;
 import org.usfirst.frc.team4028.robot.subsystems.*;
@@ -35,6 +36,7 @@ public class Robot extends IterativeRobot {
 	
 	// Sensors
 	private SwitchableCameraServer _switchableCameraServer = SwitchableCameraServer.getInstance();
+	private PressureSensor _pressureSensor = PressureSensor.getInstance();
 	
 	// Other
 	private DriverOperatorStation _dos = DriverOperatorStation.getInstance();
@@ -409,6 +411,7 @@ public class Robot extends IterativeRobot {
     		_carriage.outputToShuffleboard();
 	    	_cubeHandler.outputToShuffleboard();
 	    	_climber.outputToShuffleboard();
+	    	_pressureSensor.outputToShuffleboard();
 	    	
     		// write the overall robot dashboard info
 	    	SmartDashboard.putString("Robot Build", _buildMsg);
@@ -438,6 +441,7 @@ public class Robot extends IterativeRobot {
 	    	//_infeed.updateLogData(logData);
 	    	//_carriage.updateLogData(logData);
 	    	//_cubeHandler.updateLogData(logData);
+	    	//_pressure.updateLogData(logData);
 	    	
 	    	_dataLogger.WriteDataLine(logData);
     	}

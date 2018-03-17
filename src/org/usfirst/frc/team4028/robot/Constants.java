@@ -34,8 +34,11 @@ public class Constants {
 	public static final int LEFT_INFEED_DRIVE_CAN_ADDRESS = 11;
 	public static final int CLIMBER_CAN_ADDRESS = 12;
 	
-	//Limit Switch for telling if Cube is in Robot
+	// DIO Ports
 	public static final int CARRIAGE_LIMIT_SWITCH_DIO_PORT = 0;
+	
+	// Analog Ports
+	public static final int STORED_PRESSURE_SENSOR_AIO_PORT = 0;	
 	
 	// NavX (on Roborio)
 	public static final SPI.Port NAVX_PORT = Port.kMXP;

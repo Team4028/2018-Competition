@@ -142,7 +142,7 @@ public class Dashboard {
 				}
 				
 			case EXPERIMENTAL:
-				return new BeefSquadDLCTripleScaleMrBrunsDontReadSuperSecretEncrypted();
+				return new LeftSwitchtoRightScaleExperimental();
 				
 			case TEST_AUTON:
 				return new TestAuton();
