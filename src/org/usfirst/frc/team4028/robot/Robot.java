@@ -441,6 +441,7 @@ public class Robot extends IterativeRobot {
 	    	_infeed.updateLogData(logData);
 	    	_carriage.updateLogData(logData);
 	    	_cubeHandler.updateLogData(logData);
+	    	_pressureSensor.updateLogData(logData);
 	    	
 	    	_dataLogger.WriteDataLine(logData);
     	}

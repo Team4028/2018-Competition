@@ -56,6 +56,7 @@ public class Elevator implements Subsystem {
 		NEUTRAL_SCALE_HEIGHT,
 		HIGH_SCALE_HEIGHT,
 		SWITCH_HEIGHT,
+		AUTON_CUSTOM,
 		OTHER
 	}
 	
@@ -65,6 +66,7 @@ public class Elevator implements Subsystem {
 	private ELEVATOR_STATE _elevatorState;
 	private long _elevatorHomeStartTime;
 	private int _targetElevatorPositionNU;
+	private int _autonCustomPositionNU = 0;
 	
 	private int _elevatorAtScaleOffsetNU;
 		
@@ -203,6 +205,7 @@ public class Elevator implements Subsystem {
 			synchronized (Elevator.this) {}
 			_elevatorState = ELEVATOR_STATE.NEED_TO_HOME;
 			_elevatorAtScaleOffsetNU = 0;
+			_autonCustomPositionNU = 0;
 		}
 		
 		@Override
@@ -358,6 +361,16 @@ public class Elevator implements Subsystem {
 					_targetElevatorPositionNU = NEUTRAL_SCALE_HEIGHT_POSITION + _elevatorAtScaleOffsetNU;
 					break;
 					
+				case AUTON_CUSTOM:
+					if((_elevatorState !=ELEVATOR_STATE.GOTO_TARGET_POSITION && _elevatorState != ELEVATOR_STATE.HOLD_TARGET_POSITION)
+							|| _targetElevatorPositionNU != _autonCustomPositionNU )	{				
+						ReportStateChg("ElevatorAxis (State) [" + _elevatorState.toString() + "] ==> [GOTO_TARGET_POSTION]:[AUTON_CUSTOM]");
+						_elevatorState = ELEVATOR_STATE.GOTO_TARGET_POSITION;
+					}
+					
+					_targetElevatorPositionNU = _autonCustomPositionNU;
+					break;
+					
 				case HIGH_SCALE_HEIGHT:
 					if((_elevatorState !=ELEVATOR_STATE.GOTO_TARGET_POSITION && _elevatorState !=ELEVATOR_STATE.HOLD_TARGET_POSITION)
 							|| _targetElevatorPositionNU != HIGH_SCALE_HEIGHT_POSITION)	{
@@ -394,6 +407,11 @@ public class Elevator implements Subsystem {
 		}
 	}
 		
+	public void SetAutonCustomPositionInInches(double positionInInches)
+	{
+		_autonCustomPositionNU = InchesToNativeUnits(positionInInches);
+	}
+	
 	// implemented as active hold in place for now (vs just turning motors off)
 	@Override
 	public void stop() {		

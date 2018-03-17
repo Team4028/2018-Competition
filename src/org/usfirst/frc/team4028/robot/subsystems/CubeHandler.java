@@ -64,6 +64,7 @@ public class CubeHandler implements Subsystem {
 		@Override
 		public void onStart(double timestamp) {
 			synchronized (CubeHandler.this) {
+				_cubeHandlerState = CUBE_HANDLER_STATE.STOPPED;
 			}
 		}
 		
@@ -139,6 +140,16 @@ public class CubeHandler implements Subsystem {
 		_cubeHandlerState = CUBE_HANDLER_STATE.WANT_TO_MOVE_ELEVATOR_TO_PRESET;
 	}
 	
+	public void elevator_MoveToAutonCustomPosition(double positionInInches) {
+		// always reset bump when we move to a position
+		_elevator.resetElevatorScaleHeightBump(); 
+		// set custom position
+		_elevator.SetAutonCustomPositionInInches(positionInInches);
+		_requestedPresetPosition = ELEVATOR_PRESET_POSITION.AUTON_CUSTOM;
+		ReportStateChg("Cube Handler (State) " + _cubeHandlerState.toString() + " ==> [WANT_TO_MOVE_ELEVATOR_TO_AUTON_CUSTOM]");
+		_cubeHandlerState = CUBE_HANDLER_STATE.WANT_TO_MOVE_ELEVATOR_TO_PRESET;
+	}
+	
 	public boolean isElevatorAtTargetPos() {
 		return _elevator.IsAtTargetPosition();
 	}
@@ -179,12 +190,18 @@ public class CubeHandler implements Subsystem {
 	//Methods for Handling Interactions with Multiple Subsystem
 	//=====================================================================================	
 	public void acquireCube_InfeedAndCarriage() {
-		_infeed.feedIn();
+		// only run infeed wheels if we are not @ home or store
+		if((_infeed.getInfeedArmsTargetPosition() != INFEED_ARM_TARGET_POSITION.HOME) 
+				&&(_infeed.getInfeedArmsTargetPosition() != INFEED_ARM_TARGET_POSITION.STORE))
+		{
+			_infeed.feedIn();
+		}
 		_carriage.feedIn();
 	}
 	
 	public void ejectCube_InfeedAndCarriage() {
-		if(_infeed.getInfeedArmsTargetPosition() == INFEED_ARM_TARGET_POSITION.SQUEEZE) { // only run infeed wheels if we are at squeeze position
+		 // only run infeed wheels if we are at squeeze position
+		if(_infeed.getInfeedArmsTargetPosition() == INFEED_ARM_TARGET_POSITION.SQUEEZE) {
 			_infeed.feedOut();
 		}
 		_carriage.feedOut(); // always run carriage wheels
@@ -199,11 +216,21 @@ public class CubeHandler implements Subsystem {
 	//Methods for Handling Interactions with Infeed Subsystem
 	//=====================================================================================	
 	public void infeedArms_SpinCube_CCW() {
-		_infeed.infeedWheels_SpinCube_CCW();
+		// only run infeed wheels if we are not @ home or store
+		if((_infeed.getInfeedArmsTargetPosition() != INFEED_ARM_TARGET_POSITION.HOME) 
+				&&(_infeed.getInfeedArmsTargetPosition() != INFEED_ARM_TARGET_POSITION.STORE))
+		{
+			_infeed.infeedWheels_SpinCube_CCW();
+		}
 	}
 	
 	public void infeedArms_SpinCube_CW() {
-		_infeed.infeedWheels_SpinCube_CW();
+		// only run infeed wheels if we are not @ home or store
+		if((_infeed.getInfeedArmsTargetPosition() != INFEED_ARM_TARGET_POSITION.HOME) 
+				&&(_infeed.getInfeedArmsTargetPosition() != INFEED_ARM_TARGET_POSITION.STORE))
+		{
+			_infeed.infeedWheels_SpinCube_CW();
+		}
 	}
 	
 	public void infeedArms_MoveToPresetPosition(INFEED_ARM_TARGET_POSITION presetTargetPostion) { // used by auton only
