@@ -120,7 +120,7 @@ public class Dashboard {
 				if(_isScaleLeft == _isSwitchLeft) {
 					return new ScaleThenSwitchSameSide(_isScaleLeft, _isStartingLeft);
 				} else {
-					return new ScaleThenSwitchOppositeSide(_isScaleLeft, _isStartingLeft);
+					return new FarSwitchCloseScale(_isStartingLeft);
 				}
 			case DOUBLE_SCALE_THEN_SWITCH:
 				if (_isStartingLeft) {
@@ -128,8 +128,10 @@ public class Dashboard {
 						return new DoubleScaleAndSwitch(_isScaleLeft);
 					} else if (!_isScaleLeft && !_isSwitchLeft) {
 						return new ScaleThenSwitchSameSide(_isScaleLeft, _isStartingLeft);
+					} else if (_isScaleLeft && !_isSwitchLeft){
+						return new FarSwitchCloseScale(_isStartingLeft);
 					} else {
-						return new ScaleThenSwitchOppositeSide(_isScaleLeft, _isStartingLeft);
+						return new CloseSwitchFarScale();
 					}
 				} else {
 					if (!_isScaleLeft && !_isSwitchLeft) {
@@ -137,12 +139,12 @@ public class Dashboard {
 					} else if (_isScaleLeft && _isSwitchLeft) {
 						return new ScaleThenSwitchSameSide(_isScaleLeft, _isStartingLeft);
 					} else {
-						return new ScaleThenSwitchOppositeSide(_isScaleLeft, _isStartingLeft);
+						return new FarSwitchCloseScale(_isStartingLeft);
 					}
 				}
 				
 			case EXPERIMENTAL:
-				return new LeftSwitchtoRightScaleExperimental();
+				return new CloseSwitchFarScale();
 				
 			case TEST_AUTON:
 				return new TestAuton();

@@ -153,6 +153,8 @@ public class Chassis implements Subsystem {
 		if(_navX.isPitchPastThreshhold()) {
 			setLeftRightCommand(ControlMode.PercentOutput, 0.0, 0.0);
 			DriverStation.reportError("Tipping Threshold", false);
+		} else if ((Math.abs(getLeftVelocityInchesPerSec() - getRightVelocityInchesPerSec())) < 5.0) {
+			setLeftRightCommand(ControlMode.PercentOutput, -throttle + 0.7 * turn, -throttle - 0.7 * turn);
 		} else {
 			setLeftRightCommand(ControlMode.PercentOutput, -throttle + 0.5 * turn, -throttle - 0.5 * turn);
 		} 

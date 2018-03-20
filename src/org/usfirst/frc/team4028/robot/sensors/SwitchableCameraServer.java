@@ -25,25 +25,41 @@ public class SwitchableCameraServer {
     private static final int CAMERA_TCP_PORT = 1180;
 	
     private static SwitchableCameraServer _instance = new SwitchableCameraServer();
-	String _currentCamera;
 	
 	public static SwitchableCameraServer getInstance() {
 		return _instance;
 	}
 
 	private SwitchableCameraServer() {
-		//640x480 10FPS ~5.4 MB/S OK
-		//640x480 20FPS ~14.44 MB/S OK
+		//C920
+		//640x480 10FPS ~5.4 MB/S OK YELLOW
+		//640x480 20FPS ~14.44 MB/S OK RED
 		//320x240 20FPS BAD
-		//640x360 20FPS (GOT 15-20FPS) 10-12 MB/S OK
+		//640x360 20FPS (GOT 15-20FPS) 10-12 MB/S OK RED
 		//432x240 20FPS BAD
-		//432x240 30FPS (25-30 FPS) ~9MBPS OK
+		//432x240 30FPS (25-30 FPS) ~9MBPS OK RED
 		//432x240 24FPS BAD
 		//432x240 15FPS BAD
 		//352x288 30FPS BAD
 		//352x288 24FPS BAD
 		//352x288 20FPS BAD
 		//352x288 15FPS BAD
+		
+		//ELP
+		//640x480 10FPS (6.6-7.1 MB/S) OK RED
+		//640x480 20FPS (7.6-8.3 MB/S) OK RED
+		//640x360 15FPS (~9.4 MB/S) OK RED
+		//320x240 20PS (~5.0 MB/S) OK RED
+		//320x240 15FPS ~5.0MB/S OK GREEN (NOT PERFECT GREEN)
+		//320x180 20FPS ~5.0MB/S OK YELLOW
+		
+		//LIFECAM 
+		//640x480 20FPS 9.52MB/S OK RED
+		//640x480 10FPS 6.7MB/S OK RED
+		//432x240 15FPS 3.9MB/S OK GREEN
+		//640x360 24FPS 9.76MB/S OK RED
+		//352x288 24FPS 7.6MB/S OK RED
+		//176x144 30FPS 2.68MB/S OK GREEN
 		// =============
 		// option 2: (
 		// =============
@@ -51,8 +67,11 @@ public class SwitchableCameraServer {
 		int width = 320; // 160; // 320; //640;
 		int height = 240; //90; //180; //480;
 		int frames_per_sec = 15; //10; //20; //15;
+
 		_rawVideoServer = new MjpegServer("raw_video_server", CAMERA_TCP_PORT);    	
 		
+		/* Start raw Video Streaming Server */
+		_rawVideoServer.setSource(null);
 		// build list of available cameras
 		_camList = new CircularQueue<UsbCamera>();
 		
@@ -60,7 +79,7 @@ public class SwitchableCameraServer {
 			System.out.println ("		camera0 exists");
 			_camera0 = new UsbCamera(CAM0_NAME, 0);
 			_camera0.setVideoMode(VideoMode.PixelFormat.kMJPEG, width, height, frames_per_sec);
-			_camera0.setExposureManual(80);
+			_camera0.setExposureManual(15);
 			_camera0.setWhiteBalanceManual(50);
 			_camList.add(_camera0);
 		}
@@ -68,7 +87,7 @@ public class SwitchableCameraServer {
 			System.out.println ("		camera1 exists");
 			_camera1 = new UsbCamera(CAM1_NAME, 1);
 			_camera1.setVideoMode(VideoMode.PixelFormat.kMJPEG, width, height, frames_per_sec);
-			_camera1.setExposureManual(80);
+			_camera1.setExposureManual(15);
 			_camera1.setWhiteBalanceManual(50);
 			_camList.add(_camera1);
 		}
@@ -76,7 +95,7 @@ public class SwitchableCameraServer {
 			System.out.println ("		camera2 exists");
 			_camera2 = new UsbCamera(CAM2_NAME, 2);
 			_camera2.setVideoMode(VideoMode.PixelFormat.kMJPEG, width, height, frames_per_sec);
-			_camera2.setExposureManual(80);
+			_camera2.setExposureManual(15);
 			_camera2.setWhiteBalanceManual(50);
 			_camList.add(_camera2);
 		}
@@ -84,19 +103,17 @@ public class SwitchableCameraServer {
 			System.out.println ("		camera3 exists");
 			_camera3 = new UsbCamera(CAM3_NAME, 3);
 			_camera3.setVideoMode(VideoMode.PixelFormat.kMJPEG, width, height, frames_per_sec);
-			_camera3.setExposureManual(80);
+			_camera3.setExposureManual(15);
 			_camera3.setWhiteBalanceManual(50);
 			_camList.add(_camera3);
 		}
-		
+		if (_camList.size() > 0) {
+			_rawVideoServer.setSource(_camList.get(0));
+		} else {
+			_rawVideoServer.setSource(null);
+		}
 		/* Configure Camera */
 		/* Note:  Higher resolution & framerate is possible, depending upon processing cpu usage */
-	
-		/* Start raw Video Streaming Server */
-		_rawVideoServer.setSource(null);
-		_currentCamera = null; 
-
-		SwitchCamera();
 	}
 	
 	public void SwitchCamera() {

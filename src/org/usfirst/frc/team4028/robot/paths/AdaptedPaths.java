@@ -255,8 +255,6 @@ public class AdaptedPaths extends Paths {//oh God we're here
 			path = buildPathFromWaypoints(adaptLScaletoRSwitch(), Constants.PATH_DEFAULT_ACCEL, Constants.PATH_DEFAULT_DECEL, 0.007);
 			path.setIsReversed(false);
 			return path;
-		case R_SCALE_TO_L_SWITCH:
-			return getPath(LeftSide.R_SCALE_TO_L_SWITCH);
 			
 		case L_SWITCH_TO_L_SCALE_SECOND_CUBE:
 			path = buildPathFromWaypoints(adaptLSwitchtoLScaleforThirdCube(), Constants.PATH_DEFAULT_ACCEL, Constants.PATH_DEFAULT_DECEL, 0.0);
@@ -324,7 +322,7 @@ public class AdaptedPaths extends Paths {//oh God we're here
 	
 	public static ArrayList<Waypoint> adaptLeftSwitchBeforeRightScale() {
 		ArrayList<Waypoint> sWaypoints= new ArrayList<Waypoint>();
-		sWaypoints=getLeftSwitchBeforeRightScaleWaypoints();
+		sWaypoints = getLeftSwitchBeforeRightScaleWaypoints();
 		for(int point=0;point<sWaypoints.size();point++) {
 			if(_dashboard.isBlueAlliance()) {
 				sWaypoints.get(point).adjustWaypoint(Constants.BLUE_LEFT_SWITCH_FRONT_X_DELTA, Constants.BLUE_LEFT_SWITCH_FRONT_Y_DELTA);
@@ -354,7 +352,7 @@ public class AdaptedPaths extends Paths {//oh God we're here
 	
 	public static ArrayList<Waypoint> adaptLSwitchtoLScaleforThirdCube() {
 		ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
-		sWaypoints = getRightScaleFromLeftSwitchWaypoints();
+		sWaypoints = getLeftSwitchToLeftScaleThirdCubeWaypoints();
 		if(_dashboard.isBlueAlliance()) {
 			for(int point =0; point<sWaypoints.size(); point++) {
 				sWaypoints.get(point).adjustWaypoint(Constants.BLUE_LEFT_SCALE_X_DELTA, Constants.BLUE_LEFT_SCALE_Y_DELTA);
