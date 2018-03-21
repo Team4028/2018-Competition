@@ -477,7 +477,7 @@ public class Elevator implements Subsystem {
 	}
 	
 	public void elevatorScaleHeightBumpPositionDown() {
-		if(NativeUnitsToInches(_elevatorAtScaleOffsetNU) > -15.9) {
+		if(NativeUnitsToInches(_elevatorAtScaleOffsetNU) > -20.9) {
 			_elevatorAtScaleOffsetNU = _elevatorAtScaleOffsetNU - BUMP_AMOUNT_IN_NU;
 		}
 		else {

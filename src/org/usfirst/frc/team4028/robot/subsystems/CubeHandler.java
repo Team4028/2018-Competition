@@ -174,7 +174,7 @@ public class CubeHandler implements Subsystem {
 	
 	public void elevator_ScaleHeight_BumpPositionDown() {
 		if(_requestedPresetPosition == ELEVATOR_PRESET_POSITION.NEUTRAL_SCALE_HEIGHT) {
-			if(_elevator.getElevatorScaleHeightBumpInches() > -11.9) {
+			if(_elevator.getElevatorScaleHeightBumpInches() > -20.9) {
 				_elevator.elevatorScaleHeightBumpPositionDown();
 			}
 			else {
