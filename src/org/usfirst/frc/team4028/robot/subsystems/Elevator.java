@@ -98,7 +98,7 @@ public class Elevator implements Subsystem {
 	private static final int HOME_POSITION = 0;
 	
 	//Bump Position Up/Down on Elevator Constant
-	private static final int BUMP_AMOUNT_IN_NU = InchesToNativeUnits(3);
+	private static final int BUMP_AMOUNT_IN_NU = InchesToNativeUnits(1);
 	
 	private static final boolean IS_VERBOSE_LOGGING_ENABLED = false;
 	
@@ -477,7 +477,7 @@ public class Elevator implements Subsystem {
 	}
 	
 	public void elevatorScaleHeightBumpPositionDown() {
-		if(NativeUnitsToInches(_elevatorAtScaleOffsetNU) > -11.9) {
+		if(NativeUnitsToInches(_elevatorAtScaleOffsetNU) > -15.9) {
 			_elevatorAtScaleOffsetNU = _elevatorAtScaleOffsetNU - BUMP_AMOUNT_IN_NU;
 		}
 		else {
