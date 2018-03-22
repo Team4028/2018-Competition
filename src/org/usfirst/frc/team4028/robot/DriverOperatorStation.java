@@ -55,7 +55,7 @@ import edu.wpi.first.wpilibj.XboxController;
 		OPERATOR_LEFT_BUMPER						Toggle Climber Servo
 		OPERATOR_RIGHT_BUMPER						Elevator Switch
 		OPERATOR_BACK_BUTTON						Elevator Home
-		OPERATOR_START_BUTTON						Switch Camera
+		OPERATOR_START_BUTTON						Elevator Climb Height
 		OPERATOR_LEFT_THUMBSTICK					*************
 		OPERATOR_RIGHT_THUMBSTICK					*************
 													
@@ -390,7 +390,8 @@ public class DriverOperatorStation {
 		return _operatorGamepad.getBackButtonPressed();
 	}
 
-	public boolean getIsOperator_SwitchCamera_BtnJustPressed() {
+//	public boolean getIsOperator_SwitchCamera_BtnJustPressed() {
+	public boolean getIsOperator_ElevatorClimbHgt_BtnJustPressed() {
 		return _operatorGamepad.getStartButtonPressed();
 	}
 	

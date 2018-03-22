@@ -55,6 +55,7 @@ public class Elevator implements Subsystem {
 		LOW_SCALE_HEIGHT,
 		NEUTRAL_SCALE_HEIGHT,
 		HIGH_SCALE_HEIGHT,
+		CLIMB_SCALE_HEIGHT,
 		SWITCH_HEIGHT,
 		AUTON_CUSTOM,
 		OTHER
@@ -76,6 +77,7 @@ public class Elevator implements Subsystem {
 	private long _lastScanTimeStamp = 0;
 	private double _lastScanActualVelocityNU_100mS = 0;
 	private int _pidSlotInUse = -1;
+	private boolean _isClimbBumpValueEnabled = false;
 	
 	// =================================================================================================================
 	// hardcoded preset jogging velocities
@@ -92,13 +94,18 @@ public class Elevator implements Subsystem {
 	private static final int HIGH_SCALE_HEIGHT_POSITION = InchesToNativeUnits(80);
 	private static final int NEUTRAL_SCALE_HEIGHT_POSITION = InchesToNativeUnits(72.5);
 	private static final int LOW_SCALE_HEIGHT_POSITION = InchesToNativeUnits(65);
+	private static final int CLIMB_SCALE_HEIGHT  = InchesToNativeUnits(67);
 	private static final int SWITCH_HEIGHT_POSITION = InchesToNativeUnits(30);
 	private static final int CUBE_ON_FLOOR_POSITION = InchesToNativeUnits(0);
 	private static final int INFEED_POSITION = 0;
 	private static final int HOME_POSITION = 0;
 	
 	//Bump Position Up/Down on Elevator Constant
-	private static final int BUMP_AMOUNT_IN_NU = InchesToNativeUnits(3);
+	private static final int LARGE_BUMP_AMOUNT_IN_NU = InchesToNativeUnits(3);
+	private static final int SMALL_BUMP_AMOUNT_CLIMB_IN_NU = InchesToNativeUnits(1);
+	
+	private static final double MAX_BUMP_UP_AMOUNT = 11.9; 
+	private static final double MAX_BUMP_DOWN_AMOUNT = -20.9;
 	
 	private static final boolean IS_VERBOSE_LOGGING_ENABLED = false;
 	
@@ -331,6 +338,7 @@ public class Elevator implements Subsystem {
 						ReportStateChg("ElevatorAxis (State) [" + _elevatorState.toString() + "] ==> [GOTO_TARGET_POSTION]:[HOME_POSITION]");
 						_elevatorState = ELEVATOR_STATE.GOTO_TARGET_POSITION;
 					}
+					_isClimbBumpValueEnabled = false;
 					break;
 					
 				case INFEED_HEIGHT:
@@ -340,6 +348,7 @@ public class Elevator implements Subsystem {
 						ReportStateChg("ElevatorAxis (State) [" + _elevatorState.toString() + "] ==> [GOTO_TARGET_POSTION]:[INFEED_POSITION]");
 						_elevatorState = ELEVATOR_STATE.GOTO_TARGET_POSITION;
 					}
+					_isClimbBumpValueEnabled = false;
 					break;
 					
 				case LOW_SCALE_HEIGHT:
@@ -349,6 +358,7 @@ public class Elevator implements Subsystem {
 						ReportStateChg("ElevatorAxis (State) [" + _elevatorState.toString() + "] ==> [GOTO_TARGET_POSTION]:[LOW_SCALE_HEIGHT_POSITION]");
 						_elevatorState = ELEVATOR_STATE.GOTO_TARGET_POSITION;
 					}
+					_isClimbBumpValueEnabled = false;
 					break;
 										
 				case NEUTRAL_SCALE_HEIGHT:
@@ -357,8 +367,18 @@ public class Elevator implements Subsystem {
 						ReportStateChg("ElevatorAxis (State) [" + _elevatorState.toString() + "] ==> [GOTO_TARGET_POSTION]:[NEUTRAL_SCALE_HEIGHT_POSITION]");
 						_elevatorState = ELEVATOR_STATE.GOTO_TARGET_POSITION;
 					}
-					
+					_isClimbBumpValueEnabled = false;
 					_targetElevatorPositionNU = NEUTRAL_SCALE_HEIGHT_POSITION + _elevatorAtScaleOffsetNU;
+					break;
+				
+				case CLIMB_SCALE_HEIGHT:
+					if((_elevatorState !=ELEVATOR_STATE.GOTO_TARGET_POSITION && _elevatorState != ELEVATOR_STATE.HOLD_TARGET_POSITION)
+							|| _targetElevatorPositionNU != NEUTRAL_SCALE_HEIGHT_POSITION )	{				
+						ReportStateChg("ElevatorAxis (State) [" + _elevatorState.toString() + "] ==> [GOTO_TARGET_POSTION]:[CLIMB_SCALE_HEIGHT_POSITION]");
+						_elevatorState = ELEVATOR_STATE.GOTO_TARGET_POSITION;
+					}
+					_isClimbBumpValueEnabled = true;
+					_targetElevatorPositionNU = CLIMB_SCALE_HEIGHT + _elevatorAtScaleOffsetNU;
 					break;
 					
 				case AUTON_CUSTOM:
@@ -367,7 +387,7 @@ public class Elevator implements Subsystem {
 						ReportStateChg("ElevatorAxis (State) [" + _elevatorState.toString() + "] ==> [GOTO_TARGET_POSTION]:[AUTON_CUSTOM]");
 						_elevatorState = ELEVATOR_STATE.GOTO_TARGET_POSITION;
 					}
-					
+					_isClimbBumpValueEnabled = false;					
 					_targetElevatorPositionNU = _autonCustomPositionNU;
 					break;
 					
@@ -378,6 +398,7 @@ public class Elevator implements Subsystem {
 						ReportStateChg("ElevatorAxis (State) [" + _elevatorState.toString() + "] ==> [GOTO_TARGET_POSTION]:[HIGH_SCALE_HEIGHT_POSITION]");
 						_elevatorState = ELEVATOR_STATE.GOTO_TARGET_POSITION;
 					}
+					_isClimbBumpValueEnabled = false;
 					break;		
 					
 				case SWITCH_HEIGHT:
@@ -387,6 +408,7 @@ public class Elevator implements Subsystem {
 						ReportStateChg("ElevatorAxis (State) [" + _elevatorState.toString() + "] ==> [GOTO_TARGET_POSTION]:[SWITCH_HEIGHT_POSITION]");
 						_elevatorState = ELEVATOR_STATE.GOTO_TARGET_POSITION;
 					}
+					_isClimbBumpValueEnabled = false;
 					break;			
 					
 				case OTHER:
@@ -468,21 +490,27 @@ public class Elevator implements Subsystem {
 	}
 	
 	public void elevatorScaleHeightBumpPositionUp() {
-		if(NativeUnitsToInches(_elevatorAtScaleOffsetNU) < 8.9) {
-			_elevatorAtScaleOffsetNU = _elevatorAtScaleOffsetNU + BUMP_AMOUNT_IN_NU;
-		}
-		else {
+		if(_elevatorAtScaleOffsetNU < MAX_BUMP_UP_AMOUNT) {
+			if(_isClimbBumpValueEnabled) {
+				_elevatorAtScaleOffsetNU = _elevatorAtScaleOffsetNU + SMALL_BUMP_AMOUNT_CLIMB_IN_NU;
+			} else {
+				_elevatorAtScaleOffsetNU = _elevatorAtScaleOffsetNU + LARGE_BUMP_AMOUNT_IN_NU;
+			}
+		} else {
 			System.out.println("Elevator Scale Position Bump Tooooooo Large");
-		}
+		}		
 	}
 	
 	public void elevatorScaleHeightBumpPositionDown() {
-		if(NativeUnitsToInches(_elevatorAtScaleOffsetNU) > -11.9) {
-			_elevatorAtScaleOffsetNU = _elevatorAtScaleOffsetNU - BUMP_AMOUNT_IN_NU;
-		}
-		else {
-			System.out.println("Elevator Scale Position Bump Tooooooo Large");	
-		}
+		if(_elevatorAtScaleOffsetNU > MAX_BUMP_DOWN_AMOUNT) {
+			if(_isClimbBumpValueEnabled) {
+				_elevatorAtScaleOffsetNU = _elevatorAtScaleOffsetNU - SMALL_BUMP_AMOUNT_CLIMB_IN_NU;
+			} else {
+				_elevatorAtScaleOffsetNU = _elevatorAtScaleOffsetNU - LARGE_BUMP_AMOUNT_IN_NU;
+			}
+		} else {
+			System.out.println("Elevator Scale Position Bump Tooooooo Large");
+		}		
 	}
 	
 	//=====================================================================================
@@ -576,6 +604,7 @@ public class Elevator implements Subsystem {
 		SmartDashboard.putBoolean("Elevator:IsInPosition", IsAtTargetPosition());
 		SmartDashboard.putString("Elevator:State", _elevatorState.toString());
 		SmartDashboard.putNumber("Elevator:Scale Bump", getElevatorScaleHeightBumpInches());
+		SmartDashboard.putBoolean("Elevator: SmallBump?", _isClimbBumpValueEnabled);
 	}
 	
 	// add data elements to be logged  to the input param (which is passed by ref)
