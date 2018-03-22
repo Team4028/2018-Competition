@@ -29,8 +29,6 @@ public class AdaptivePurePursuitController {
     Path path;
     boolean atEndOfPath = false;
     final boolean reversed;
-    final Lookahead mLookahead = new Lookahead(Constants.MIN_LOOKAHEAD, Constants.MAX_LOOKAHEAD,
-            Constants.MIN_LOOKAHEAD_SPEED, Constants.MAX_LOOKAHEAD_SPEED);
 
     public AdaptivePurePursuitController(Path path, boolean reversed) {
         this.path = path;
@@ -50,7 +48,7 @@ public class AdaptivePurePursuitController {
                     pose.getRotation().rotateBy(Rotation.fromRadians(Math.PI)));
         }
 
-        final Path.TargetPointReport report = path.getTargetPoint(pose.getTranslation(), mLookahead);
+        final Path.TargetPointReport report = path.getTargetPoint(pose.getTranslation());
         if (isFinished()) {
             // Stop.
             return new Command(Twist.identity(), report.closest_point_distance, report.max_speed, 0.0,
@@ -177,9 +175,7 @@ public class AdaptivePurePursuitController {
         return (cross < 0) ? -1 : 1; // if robot < pose turn left
     }
 
-    /**
-     * @return has the robot reached the end of the path
-     */
+    /** @return has the robot reached the end of the path */
     public boolean isFinished() {
         return atEndOfPath;
     }

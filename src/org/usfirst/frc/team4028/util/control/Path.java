@@ -98,7 +98,7 @@ public class Path {
      *            Translation of the current robot pose.
      * @return report containing everything we might want to know about the target point.
      */
-    public TargetPointReport getTargetPoint(Translation robot, Lookahead lookahead) {
+    public TargetPointReport getTargetPoint(Translation robot) {
         TargetPointReport rv = new TargetPointReport();
         PathSegment currentSegment = segments.get(0);
         rv.closest_point = currentSegment.getClosestPoint(robot);
@@ -110,7 +110,7 @@ public class Path {
         }
         rv.closest_point_speed = currentSegment
                 .getSpeedByDistance(currentSegment.getLength() - rv.remaining_segment_distance);
-        double lookahead_distance = lookahead.getLookaheadForSpeed(rv.closest_point_speed) + rv.closest_point_distance;
+        double lookahead_distance = getLookaheadForSpeed(rv.closest_point_speed) + rv.closest_point_distance;
         if (rv.remaining_segment_distance < lookahead_distance && segments.size() > 1) {
             lookahead_distance -= rv.remaining_segment_distance;
             for (int i = 1; i < segments.size(); ++i) {
@@ -202,6 +202,12 @@ public class Path {
     public boolean hasPassedMarker(String marker) {
         return mMarkersCrossed.contains(marker);
     }
+    
+    /** Calculate the lookahead distance for the given speed */
+    private double getLookaheadForSpeed(double speed) {
+		double lookahead = Constants.DELTA_LOOKAHEAD * (speed - Constants.MIN_LOOKAHEAD_SPEED) / Constants.DELTA_LOOKAHEAD_SPEED + Constants.MIN_LOOKAHEAD;
+		return Double.isNaN(lookahead) ? Constants.MIN_LOOKAHEAD : Math.max(Constants.MIN_LOOKAHEAD, Math.min(Constants.MAX_LOOKAHEAD, lookahead));
+	}
 
     public String toString() {
         String str = "";

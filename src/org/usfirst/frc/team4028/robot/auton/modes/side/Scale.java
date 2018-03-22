@@ -18,7 +18,7 @@ public class Scale extends AutonBase{
 		if (isStartingLeft) {
 			if (isScaleLeft) {
 				toScale = Paths.getPath(LeftSide.L_SCALE);
-				elevatorWaitTime = 1.75;
+				elevatorWaitTime = 2.0;
 			} else {
 				toScale = Paths.getPath(LeftSide.R_SCALE);
 				elevatorWaitTime = 4.5;
@@ -29,7 +29,7 @@ public class Scale extends AutonBase{
 				elevatorWaitTime = 4.5;
 			} else {
 				toScale = Paths.getPath(RightSide.R_SCALE);
-				elevatorWaitTime = 4.0;
+				elevatorWaitTime = 2.0;
 			}
 		}
 	}
@@ -52,7 +52,7 @@ public class Scale extends AutonBase{
 		runAction(new PrintTimeFromStart(_startTime));
 		// Drive backwards 20in and move elevator to floor
 		runAction(new DriveSetDistanceAction(-10.0));
-		runAction(new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT));
+		runAction(new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT)); 
 		runAction(new PrintTimeFromStart(_startTime));
 	}
 }

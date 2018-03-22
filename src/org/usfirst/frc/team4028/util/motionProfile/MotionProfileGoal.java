@@ -37,9 +37,6 @@ public class MotionProfileGoal {
 	protected double posTolerance = 1E-3;
 	protected double velTolerance = 1E-2;
 	
-	public MotionProfileGoal() {
-	}
-	
 	public MotionProfileGoal(double pos) {
 		this.pos = pos;
 		this.maxAbsVel = 0.0;
@@ -67,10 +64,6 @@ public class MotionProfileGoal {
         this.posTolerance = pos_tolerance;
         this.velTolerance = vel_tolerance;
         sanityCheck();
-    }
-    
-    public MotionProfileGoal(MotionProfileGoal other) {
-        this(other.pos, other.maxAbsVel, other.completionBehavior, other.posTolerance, other.velTolerance);
     }
     
     /** @return A flipped MotionProfileGoal (where the position is negated, but all other attributes remain the same) */

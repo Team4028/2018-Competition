@@ -144,7 +144,7 @@ public class CubeHandler implements Subsystem {
 		// always reset bump when we move to a position
 		_elevator.resetElevatorScaleHeightBump(); 
 		// set custom position
-		_elevator.SetAutonCustomPositionInInches(positionInInches);
+		_elevator.setAutonCustomPositionInInches(positionInInches);
 		_requestedPresetPosition = ELEVATOR_PRESET_POSITION.AUTON_CUSTOM;
 		ReportStateChg("Cube Handler (State) " + _cubeHandlerState.toString() + " ==> [WANT_TO_MOVE_ELEVATOR_TO_AUTON_CUSTOM]");
 		_cubeHandlerState = CUBE_HANDLER_STATE.WANT_TO_MOVE_ELEVATOR_TO_PRESET;
@@ -159,7 +159,8 @@ public class CubeHandler implements Subsystem {
 	}
 	
 	public void elevator_ScaleHeight_BumpPositionUp() {
-		if(_requestedPresetPosition == ELEVATOR_PRESET_POSITION.NEUTRAL_SCALE_HEIGHT) {
+		if(_requestedPresetPosition == ELEVATOR_PRESET_POSITION.NEUTRAL_SCALE_HEIGHT
+				||_requestedPresetPosition == ELEVATOR_PRESET_POSITION.CLIMB_SCALE_HEIGHT) {
 			_elevator.elevatorScaleHeightBumpPositionUp();
 		} else {
 			System.out.println("Bump Up Only honored when requested position is Scale ");
@@ -167,7 +168,8 @@ public class CubeHandler implements Subsystem {
 	}
 	
 	public void elevator_ScaleHeight_BumpPositionDown() {
-		if(_requestedPresetPosition == ELEVATOR_PRESET_POSITION.NEUTRAL_SCALE_HEIGHT) {
+		if(_requestedPresetPosition == ELEVATOR_PRESET_POSITION.NEUTRAL_SCALE_HEIGHT
+				||_requestedPresetPosition == ELEVATOR_PRESET_POSITION.CLIMB_SCALE_HEIGHT) {
 			_elevator.elevatorScaleHeightBumpPositionDown();
 		} else {
 			System.out.println("Bump Down Only honored when requested position is Scale ");

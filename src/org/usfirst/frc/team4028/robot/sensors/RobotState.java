@@ -1,23 +1,12 @@
 package org.usfirst.frc.team4028.robot.sensors;
 
-import org.usfirst.frc.team4028.util.motion.RigidTransform;
-import org.usfirst.frc.team4028.util.motion.Rotation;
-import org.usfirst.frc.team4028.util.motion.Twist;
+import org.usfirst.frc.team4028.util.motion.*;
+import org.usfirst.frc.team4028.util.*;
 
 import java.util.Map;
 
-import org.usfirst.frc.team4028.util.*;
-
 /**
- * RobotState keeps track of the poses of various coordinate frames throughout the match. A coordinate frame is simply a
- * point and direction in space that defines an (x,y) coordinate system. Transforms (or poses) keep track of the spatial
- * relationship between different frames.
- *
- * Robot frames of interest:
- *
- * 1. Field frame: origin is where the robot is turned on
- *
- * 2. Vehicle frame: origin is the center of the robot wheelbase, facing forwards
+ * RobotState keeps track of the robot pose relative to its start point throughout the match for use in autonomous.
  *
  * Field-to-vehicle is tracked over time by integrating encoder and gyro measurements. It will inevitably
  * drift, but is usually accurate over short time periods.
@@ -34,21 +23,17 @@ public class RobotState {
     // FPGATimestamp -> RigidTransform2d or Rotation2d
     private InterpolatingTreeMap<InterpolatingDouble, RigidTransform> _fieldToVehicle;
     private Twist _vehicleVelocityPredicted;
-    private Twist _vehicleVelocityMeasured;
     private double _distanceDriven;
     
     private RobotState() {
         reset(0, new RigidTransform());
     }
 
-    /**
-     * Resets the field to robot transform (robot's position on the field)
-     */
+    /** Resets the field to robot transform (robot's position on the field) */
     public synchronized void reset(double start_time, RigidTransform initial_field_to_vehicle) {
         _fieldToVehicle = new InterpolatingTreeMap<>(kObservationBufferSize);
         _fieldToVehicle.put(new InterpolatingDouble(start_time), initial_field_to_vehicle);
         _vehicleVelocityPredicted = Twist.identity();
-        _vehicleVelocityMeasured = Twist.identity();
         _distanceDriven = 0.0;
     }
 
@@ -56,24 +41,11 @@ public class RobotState {
         _distanceDriven = 0.0;
     }
 
-    /**
-     * Returns the robot's position on the field at a certain time. Linearly interpolates between stored robot positions
-     * to fill in the gaps.
-     */
-    public synchronized RigidTransform getFieldToVehicle(double timestamp) {
-        return _fieldToVehicle.getInterpolated(new InterpolatingDouble(timestamp));
-    }
-
     public synchronized Map.Entry<InterpolatingDouble, RigidTransform> getLatestFieldToVehicle() {
         return _fieldToVehicle.lastEntry();
     }
 
-    public synchronized RigidTransform getPredictedFieldToVehicle(double lookahead_time) {
-        return getLatestFieldToVehicle().getValue()
-                .transformBy(RigidTransform.exp(_vehicleVelocityPredicted.scaled(lookahead_time)));
-    }
-
-    public synchronized void addFieldToVehicleObservation(double timestamp, RigidTransform observation) {
+    private synchronized void addFieldToVehicleObservation(double timestamp, RigidTransform observation) {
         _fieldToVehicle.put(new InterpolatingDouble(timestamp), observation);
     }
 
@@ -81,7 +53,6 @@ public class RobotState {
             Twist predicted_velocity) {
         addFieldToVehicleObservation(timestamp,
                 Kinematics.integrateForwardKinematics(getLatestFieldToVehicle().getValue(), measured_velocity));
-        _vehicleVelocityMeasured = measured_velocity;
         _vehicleVelocityPredicted = predicted_velocity;
     }
 
@@ -100,9 +71,5 @@ public class RobotState {
 
     public synchronized Twist getPredictedVelocity() {
         return _vehicleVelocityPredicted;
-    }
-
-    public synchronized Twist getMeasuredVelocity() {
-        return _vehicleVelocityMeasured;
     }
 }

@@ -636,8 +636,8 @@ public class Infeed  implements Subsystem {
 		SmartDashboard.putNumber("InfeedArms:Left Current PositionNU", getCurrentLeftInfeedPosition());
 		SmartDashboard.putNumber("InfeedArms:Right Current PositionNU:", getCurrentRightInfeedPosition());
 		
-		SmartDashboard.putNumber("InfeedArms:Left Current Angle", GeneralUtilities.RoundDouble(nativeUnitsToDegrees(getCurrentLeftInfeedPosition()), 1));
-		SmartDashboard.putNumber("InfeedArms:Right Current Angle:", GeneralUtilities.RoundDouble(nativeUnitsToDegrees(getCurrentRightInfeedPosition()), 1));
+		SmartDashboard.putNumber("InfeedArms:Left Current Angle", GeneralUtilities.roundDouble(nativeUnitsToDegrees(getCurrentLeftInfeedPosition()), 1));
+		SmartDashboard.putNumber("InfeedArms:Right Current Angle:", GeneralUtilities.roundDouble(nativeUnitsToDegrees(getCurrentRightInfeedPosition()), 1));
 	}
 	
 	// add data elements to be logged  to the input param (which is passed by ref)

@@ -56,11 +56,7 @@ public class MotionProfile {
         return true;
     }
 
-    /**
-     * Check if the profile is empty.
-     * 
-     * @return True if there are no segments.
-     */
+    /** Check if there are no segments in the profile. */
     public boolean isEmpty() {
         return mSegments.isEmpty();
     }
@@ -171,9 +167,7 @@ public class MotionProfile {
         mSegments.add(new MotionSegment(initial_state, initial_state));
     }
 
-    /**
-     * Remove redundant segments (segments whose start and end states are coincident).
-     */
+    /** Remove redundant segments (segments whose start and end states are coincident). */
     public void consolidate() {
         for (Iterator<MotionSegment> iterator = mSegments.iterator(); iterator.hasNext() && mSegments.size() > 1;) {
             MotionSegment s = iterator.next();

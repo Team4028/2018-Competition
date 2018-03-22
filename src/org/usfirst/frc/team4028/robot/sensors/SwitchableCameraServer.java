@@ -25,7 +25,6 @@ public class SwitchableCameraServer {
     private static final int CAMERA_TCP_PORT = 1180;
 	
     private static SwitchableCameraServer _instance = new SwitchableCameraServer();
-	String _currentCamera;
 	
 	public static SwitchableCameraServer getInstance() {
 		return _instance;
@@ -68,9 +67,11 @@ public class SwitchableCameraServer {
 		int width = 320; // 160; // 320; //640;
 		int height = 240; //90; //180; //480;
 		int frames_per_sec = 15; //10; //20; //15;
-		
+
 		_rawVideoServer = new MjpegServer("raw_video_server", CAMERA_TCP_PORT);    	
 		
+		/* Start raw Video Streaming Server */
+		_rawVideoServer.setSource(null);
 		// build list of available cameras
 		_camList = new CircularQueue<UsbCamera>();
 		
@@ -78,7 +79,7 @@ public class SwitchableCameraServer {
 			System.out.println ("		camera0 exists");
 			_camera0 = new UsbCamera(CAM0_NAME, 0);
 			_camera0.setVideoMode(VideoMode.PixelFormat.kMJPEG, width, height, frames_per_sec);
-			_camera0.setExposureManual(80);
+			_camera0.setExposureManual(15);
 			_camera0.setWhiteBalanceManual(50);
 			_camList.add(_camera0);
 		}
@@ -86,7 +87,7 @@ public class SwitchableCameraServer {
 			System.out.println ("		camera1 exists");
 			_camera1 = new UsbCamera(CAM1_NAME, 1);
 			_camera1.setVideoMode(VideoMode.PixelFormat.kMJPEG, width, height, frames_per_sec);
-			_camera1.setExposureManual(80);
+			_camera1.setExposureManual(15);
 			_camera1.setWhiteBalanceManual(50);
 			_camList.add(_camera1);
 		}
@@ -94,7 +95,7 @@ public class SwitchableCameraServer {
 			System.out.println ("		camera2 exists");
 			_camera2 = new UsbCamera(CAM2_NAME, 2);
 			_camera2.setVideoMode(VideoMode.PixelFormat.kMJPEG, width, height, frames_per_sec);
-			_camera2.setExposureManual(80);
+			_camera2.setExposureManual(15);
 			_camera2.setWhiteBalanceManual(50);
 			_camList.add(_camera2);
 		}
@@ -102,19 +103,17 @@ public class SwitchableCameraServer {
 			System.out.println ("		camera3 exists");
 			_camera3 = new UsbCamera(CAM3_NAME, 3);
 			_camera3.setVideoMode(VideoMode.PixelFormat.kMJPEG, width, height, frames_per_sec);
-			_camera3.setExposureManual(80);
+			_camera3.setExposureManual(15);
 			_camera3.setWhiteBalanceManual(50);
 			_camList.add(_camera3);
 		}
-		
+		if (_camList.size() > 0) {
+			_rawVideoServer.setSource(_camList.get(0));
+		} else {
+			_rawVideoServer.setSource(null);
+		}
 		/* Configure Camera */
 		/* Note:  Higher resolution & framerate is possible, depending upon processing cpu usage */
-	
-		/* Start raw Video Streaming Server */
-		_rawVideoServer.setSource(null);
-		_currentCamera = null; 
-
-		SwitchCamera();
 	}
 	
 	public void SwitchCamera() {

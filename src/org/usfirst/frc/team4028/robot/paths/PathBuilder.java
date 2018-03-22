@@ -63,7 +63,6 @@ public class PathBuilder {
     	return reversedWaypoints;
     }
 
-
     /**
      * A waypoint along a path. Contains a position, radius (for creating curved paths), and speed. The information from
      * these waypoints is used by the PathBuilder class to generate Paths. Waypoints also contain an optional marker

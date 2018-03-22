@@ -26,14 +26,14 @@ public class DoubleScale extends AutonBase{
 		if (isLeftScale) {
 			if (isStartingLeft) {
 				toScale = Paths.getPath(LeftSide.L_SCALE);
-				toSwitchDistance = 42.0;
-				toScaleAgainDistance = -46.0;
-				targetTurnAngle = 160;
-				endTargetTurnAngle = 25;
-				finalTurnTargetAngle = 135;
+				toSwitchDistance = 36.0;
+				toScaleAgainDistance = -40.0;
+				targetTurnAngle = 163;
+				endTargetTurnAngle = 30;
+				finalTurnTargetAngle = 144;
 				elevatorWaitTime1 = 2.0;
 				elevatorWaitTime2 = 0.9;
-				isRightTurnToSwitch = false;
+				isRightTurnToSwitch = true;
 			} else {
 				toScale = Paths.getPath(RightSide.L_SCALE);
 				toSwitchDistance = 36.0;
@@ -89,7 +89,7 @@ public class DoubleScale extends AutonBase{
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 					new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT),
 					new SeriesAction(Arrays.asList(new Action[] {
-							new WaitAction(0.7),
+							new WaitAction(0.3),
 							new TurnAction(targetTurnAngle, isRightTurnToSwitch),
 							new SimultaneousAction(Arrays.asList(new Action[] {
 									new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.WIDE),
@@ -117,16 +117,25 @@ public class DoubleScale extends AutonBase{
 				new OutfeedCubeAction()
 		})));
 		runAction(new PrintTimeFromStart(_startTime));
-		runAction(new DriveSetDistanceAction(-10.0));
 		// Move elevator to floor
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 				new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT),
 				new SeriesAction(Arrays.asList(new Action[] {
-						new WaitAction(0.7),
+						new WaitAction(0.3),
 						new TurnAction(finalTurnTargetAngle, isRightTurnToSwitch),
-						new DriveSetDistanceAction(42.0)
+						new SimultaneousAction(Arrays.asList(new Action[] {
+								new DriveSetDistanceAction(50.0),
+								new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.WIDE)
+						}))
 				}))
 		})));
+		runAction(new InfeedCubeAction());
+		runAction(new PrintTimeFromStart(_startTime));
+		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
+					new DriveSetDistanceAction(-50.0),
+					new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.STORE)
+		})));
+		runAction(new TurnAction(0.0, false));
 		runAction(new PrintTimeFromStart(_startTime));
 	}
 }

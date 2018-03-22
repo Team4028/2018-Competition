@@ -68,11 +68,7 @@ public class Translation {
         return new Rotation(_x, _y, true);
     }
 
-    /**
-     * The inverse simply means a Translation that "undoes" this object.
-     * 
-     * @return Translation by -x and -y.
-     */
+    /** The inverse simply means a Translation that "undoes" this object. */
     public Translation inverse() {
         return new Translation(-_x, -_y);
     }

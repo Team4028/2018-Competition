@@ -32,9 +32,9 @@ public class Robot extends IterativeRobot {
 	private Carriage _carriage = Carriage.getInstance();
 	private CubeHandler _cubeHandler = CubeHandler.getInstance();
 	private Climber _climber = Climber.getInstance();
-	private PressureSensor _pressureSensor = PressureSensor.getInstance();
 	
 	// Sensors
+	private PressureSensor _pressureSensor = PressureSensor.getInstance();
 //	private SwitchableCameraServer _switchableCameraServer = SwitchableCameraServer.getInstance();
 	
 	// Other
@@ -75,6 +75,8 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putString("Scan Time (2 sec roll avg)", "0.0 mSec");
 		
 		outputAllToDashboard();
+		
+		System.out.println(payRespectsToRNGesus());
 	}
 
 	// ================================================================
@@ -159,6 +161,8 @@ public class Robot extends IterativeRobot {
 		_dashboard.outputToDashboard();
 		
 		_autonStartTime = System.currentTimeMillis();
+		
+		System.out.println(payRespectsToRNGesus());
 	}
 
 	/** Called each loop (approx every 20mS) in autonomous mode */
@@ -194,6 +198,8 @@ public class Robot extends IterativeRobot {
 		_dataLogger = GeneralUtilities.setupLogging("Teleop"); // init data logging
 		
 		_lastDashboardWriteTimeMSec = new Date().getTime(); // snapshot time to control spamming
+		
+		System.out.println(payRespectsToRNGesus());
 	}
 
 
@@ -217,7 +223,6 @@ public class Robot extends IterativeRobot {
 		}
 	
 		//=============  INFEED ============= 
-
 		if(!_dos.IsEngineeringGamepadBAvailable()
 				&& !_dos.IsEngineeringGamepadAAvailable()) {
 			// =============================
@@ -366,10 +371,8 @@ public class Robot extends IterativeRobot {
 		}
 				
 		// =============  CLIMBER ============= 
-
 		_climber.runMotor(_dos.getOperator_Climber_JoystickCmd());
 
-		
 		// =============  CLIMBER SERVO ============= 
 		if(_dos.getIsOperator_ToggleClimberServo_BtnJustPressed()) {
 			_climber.toggleClimberServo();
@@ -447,5 +450,9 @@ public class Robot extends IterativeRobot {
 	    	
 	    	_dataLogger.WriteDataLine(logData);
     	}
+	}
+	
+	private String payRespectsToRNGesus() {
+		return "RNGesus, please provide us with a favorable qualification schedule and ideal scoring plate assignment of LLL";
 	}
 }

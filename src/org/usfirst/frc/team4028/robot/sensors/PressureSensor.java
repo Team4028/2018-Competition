@@ -37,7 +37,7 @@ public class PressureSensor {
 	public double getPressure() {
 		double voltage = _pressureSensor.getAverageVoltage();
 		double pressure = 250*(voltage/4.9) -25;
-		return GeneralUtilities.RoundDouble(pressure, 2);
+		return GeneralUtilities.roundDouble(pressure, 2);
 	}
 	
 	//=====================================================================================

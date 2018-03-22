@@ -35,6 +35,7 @@ public class Dashboard {
 		DOUBLE_SCALE,
 		SCALE_THEN_SWITCH,
 		DOUBLE_SCALE_THEN_SWITCH,
+		EXPERIMENTAL,
 		TEST_AUTON
 	}
 	
@@ -49,16 +50,17 @@ public class Dashboard {
 	private boolean _isSwitchLeft, _isScaleLeft, _isStartingLeft = true;
 	
 	private Dashboard() {
-		_autonModeChooser.addObject("Do Nothing", AUTON_MODE.DO_NOTHING);
+		_autonModeChooser.addDefault("Do Nothing", AUTON_MODE.DO_NOTHING);
 		_autonModeChooser.addObject("Auto Run", AUTON_MODE.AUTO_RUN);
 		_autonModeChooser.addObject("Switch", AUTON_MODE.SWITCH);
-		_autonModeChooser.addDefault("Double Switch", AUTON_MODE.DOUBLE_SWITCH);
+		_autonModeChooser.addObject("Double Switch", AUTON_MODE.DOUBLE_SWITCH);
 		_autonModeChooser.addObject("Scale", AUTON_MODE.SCALE);
 		_autonModeChooser.addObject("Scale Outside", AUTON_MODE.SCALE_OUTSIDE);
 		_autonModeChooser.addObject("Double Scale", AUTON_MODE.DOUBLE_SCALE);
 		_autonModeChooser.addObject("Scale then Switch", AUTON_MODE.SCALE_THEN_SWITCH);
 		_autonModeChooser.addObject("Double Scale Then Switch", AUTON_MODE.DOUBLE_SCALE_THEN_SWITCH);
-		_autonModeChooser.addObject("Test Auton: DO NOT SELECT", AUTON_MODE.TEST_AUTON);
+		_autonModeChooser.addObject("DO NOT SELECT", AUTON_MODE.EXPERIMENTAL);
+		_autonModeChooser.addObject("ALSO DO NOT SELECT", AUTON_MODE.TEST_AUTON);
 		SmartDashboard.putData("AUTON MODE: ", _autonModeChooser);
 		
 		_autonStartingSideChooser.addDefault("LEFT", STARTING_SIDE.LEFT);
@@ -118,7 +120,7 @@ public class Dashboard {
 				if(_isScaleLeft == _isSwitchLeft) {
 					return new ScaleThenSwitchSameSide(_isScaleLeft, _isStartingLeft);
 				} else {
-					return new ScaleThenSwitchOppositeSide(_isScaleLeft, _isStartingLeft);
+					return new FarSwitchCloseScale(_isStartingLeft);
 				}
 			case DOUBLE_SCALE_THEN_SWITCH:
 				if (_isStartingLeft) {
@@ -126,8 +128,10 @@ public class Dashboard {
 						return new DoubleScaleAndSwitch(_isScaleLeft);
 					} else if (!_isScaleLeft && !_isSwitchLeft) {
 						return new ScaleThenSwitchSameSide(_isScaleLeft, _isStartingLeft);
+					} else if (_isScaleLeft && !_isSwitchLeft){
+						return new FarSwitchCloseScale(_isStartingLeft);
 					} else {
-						return new ScaleThenSwitchOppositeSide(_isScaleLeft, _isStartingLeft);
+						return new CloseSwitchFarScale();
 					}
 				} else {
 					if (!_isScaleLeft && !_isSwitchLeft) {
@@ -135,9 +139,12 @@ public class Dashboard {
 					} else if (_isScaleLeft && _isSwitchLeft) {
 						return new ScaleThenSwitchSameSide(_isScaleLeft, _isStartingLeft);
 					} else {
-						return new ScaleThenSwitchOppositeSide(_isScaleLeft, _isStartingLeft);
+						return new FarSwitchCloseScale(_isStartingLeft);
 					}
 				}
+				
+			case EXPERIMENTAL:
+				return new CloseSwitchFarScale();
 				
 			case TEST_AUTON:
 				return new TestAuton();

@@ -429,7 +429,7 @@ public class Elevator implements Subsystem {
 		}
 	}
 		
-	public void SetAutonCustomPositionInInches(double positionInInches)
+	public void setAutonCustomPositionInInches(double positionInInches)
 	{
 		_autonCustomPositionNU = InchesToNativeUnits(positionInInches);
 	}
@@ -510,7 +510,7 @@ public class Elevator implements Subsystem {
 			}
 		} else {
 			System.out.println("Elevator Scale Position Bump Tooooooo Large");
-		}		
+		}
 	}
 	
 	//=====================================================================================
@@ -554,7 +554,7 @@ public class Elevator implements Subsystem {
 	}
 	
 	public double getElevatorScaleHeightBumpInches() {
-		return GeneralUtilities.RoundDouble(NativeUnitsToInches(_elevatorAtScaleOffsetNU), 2);
+		return GeneralUtilities.roundDouble(NativeUnitsToInches(_elevatorAtScaleOffsetNU), 2);
 	}
 	
 	public boolean isElevatorAtUnsafeHeight() {
@@ -596,9 +596,9 @@ public class Elevator implements Subsystem {
 		SmartDashboard.putNumber("Elevator:VoltageActual", _elevatorMasterMotor.getMotorOutputVoltage());
 		
 		SmartDashboard.putNumber("Elevator:Position", actualPosition);
-		SmartDashboard.putNumber("Elevator:Position(in)", GeneralUtilities.RoundDouble((NativeUnitsToInches(_actualPositionNU)),2));
-		SmartDashboard.putNumber("Elevator:Velocity", GeneralUtilities.RoundDouble(actualVelocity, 2));
-		SmartDashboard.putNumber("Elevator:Acceleration", GeneralUtilities.RoundDouble(actualAcceleration, 2));
+		SmartDashboard.putNumber("Elevator:Position(in)", GeneralUtilities.roundDouble((NativeUnitsToInches(_actualPositionNU)),2));
+		SmartDashboard.putNumber("Elevator:Velocity", GeneralUtilities.roundDouble(actualVelocity, 2));
+		SmartDashboard.putNumber("Elevator:Acceleration", GeneralUtilities.roundDouble(actualAcceleration, 2));
 
 		SmartDashboard.putNumber("Elevator:TargetPosition",_targetElevatorPositionNU);
 		SmartDashboard.putBoolean("Elevator:IsInPosition", IsAtTargetPosition());

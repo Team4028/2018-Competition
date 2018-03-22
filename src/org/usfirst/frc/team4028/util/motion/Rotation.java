@@ -100,11 +100,7 @@ public class Rotation {
         return new Rotation(-sinAngle, cosAngle, false);
     }
 
-    /**
-     * The inverse of a Rotation2d "undoes" the effect of this rotation.
-     * 
-     * @return The opposite of this rotation.
-     */
+    /** The inverse of a Rotation2d "undoes" the effect of this rotation. */
     public Rotation inverse() {
         return new Rotation(cosAngle, -sinAngle, false);
     }
