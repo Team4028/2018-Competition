@@ -8,7 +8,6 @@ import org.usfirst.frc.team4028.robot.auton.AutonExecuter;
 import org.usfirst.frc.team4028.robot.paths.AdaptedPaths;
 import org.usfirst.frc.team4028.robot.sensors.PressureSensor;
 import org.usfirst.frc.team4028.robot.sensors.RobotStateEstimator;
-import org.usfirst.frc.team4028.robot.sensors.SwitchableCameraServer;
 import org.usfirst.frc.team4028.robot.subsystems.*;
 import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_PRESET_POSITION;
 import org.usfirst.frc.team4028.util.DataLogger;
@@ -36,7 +35,7 @@ public class Robot extends IterativeRobot {
 	private PressureSensor _pressureSensor = PressureSensor.getInstance();
 	
 	// Sensors
-	private SwitchableCameraServer _switchableCameraServer = SwitchableCameraServer.getInstance();
+//	private SwitchableCameraServer _switchableCameraServer = SwitchableCameraServer.getInstance();
 	
 	// Other
 	private DriverOperatorStation _dos = DriverOperatorStation.getInstance();
@@ -351,6 +350,9 @@ public class Robot extends IterativeRobot {
 		}
 		else if (_dos.getIsOperator_ElevatorReHome_BtnJustPressed()) {
 			_cubeHandler.elevator_MoveToPresetPosition(ELEVATOR_PRESET_POSITION.HOME);
+		} 
+		else if (_dos.getIsOperator_ElevatorClimbHgt_BtnJustPressed()){
+			_cubeHandler.elevator_MoveToPresetPosition(ELEVATOR_PRESET_POSITION.CLIMB_SCALE_HEIGHT);
 		} else {
 			_cubeHandler.stopElevator();
 		} 
@@ -374,9 +376,9 @@ public class Robot extends IterativeRobot {
 		}
 		
 		// ============= Camera Switch ============= 
-		if (_dos.getIsOperator_SwitchCamera_BtnJustPressed() == true) {
-			_switchableCameraServer.SwitchCamera();
-		}
+//		if (_dos.getIsOperator_SwitchCamera_BtnJustPressed() == true) {
+//			_switchableCameraServer.SwitchCamera();
+//		}
 		
 		// ============= Refresh Dashboard =============
 		outputAllToDashboard();
