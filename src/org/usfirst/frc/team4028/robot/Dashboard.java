@@ -59,8 +59,7 @@ public class Dashboard {
 		_autonModeChooser.addObject("Double Scale", AUTON_MODE.DOUBLE_SCALE);
 		_autonModeChooser.addObject("Scale then Switch", AUTON_MODE.SCALE_THEN_SWITCH);
 		_autonModeChooser.addObject("Double Scale Then Switch", AUTON_MODE.DOUBLE_SCALE_THEN_SWITCH);
-		_autonModeChooser.addObject("DO NOT SELECT", AUTON_MODE.EXPERIMENTAL);
-		_autonModeChooser.addObject("ALSO DO NOT SELECT", AUTON_MODE.TEST_AUTON);
+		_autonModeChooser.addObject("DO NOT SELECT", AUTON_MODE.TEST_AUTON);
 		SmartDashboard.putData("AUTON MODE: ", _autonModeChooser);
 		
 		_autonStartingSideChooser.addDefault("LEFT", STARTING_SIDE.LEFT);
@@ -70,7 +69,6 @@ public class Dashboard {
 	
 	public boolean isGameDataReceived() {
 		String gameData = DriverStation.getInstance().getGameSpecificMessage();
-		//String gameData = "RRR";
 		
 		if (gameData.length() > 0) {
 			_isSwitchLeft = (gameData.charAt(0) == 'L');
@@ -95,7 +93,7 @@ public class Dashboard {
 	
 	/** Returns the autonBase object associated with the auton selected on the dashboard */
 	public AutonBase getSelectedAuton() {
-		_isStartingLeft = (_autonStartingSideChooser.getSelected() == STARTING_SIDE.LEFT);
+		_isStartingLeft = true; //(_autonStartingSideChooser.getSelected() == STARTING_SIDE.LEFT);
 		
 		switch(_autonModeChooser.getSelected()) {
 			case DO_NOTHING:
@@ -119,6 +117,8 @@ public class Dashboard {
 			case SCALE_THEN_SWITCH:
 				if(_isScaleLeft == _isSwitchLeft) {
 					return new ScaleThenSwitchSameSide(_isScaleLeft, _isStartingLeft);
+				} else if (!_isScaleLeft && _isSwitchLeft){
+					return new CloseSwitchFarScale();
 				} else {
 					return new FarSwitchCloseScale(_isStartingLeft);
 				}

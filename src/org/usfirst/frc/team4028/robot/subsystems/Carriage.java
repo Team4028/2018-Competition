@@ -55,7 +55,7 @@ public class Carriage implements Subsystem {
 	private DoubleSolenoid _squeezeCylinder;
 	
 	private CARRIAGE_WHEELS_STATE _carriageWheelsState;
-	private CARRIAGE_WHEELS_OUT_VBUS_INDEX _currentCarriageWheelsFeedOutVBusIndex = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_60;
+	private CARRIAGE_WHEELS_OUT_VBUS_INDEX _currentCarriageWheelsFeedOutVBusIndex = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_50;
 	private double _currentCarriageWheelsFeedInVBusCmd = .45;
 	private double _currentCarriageWheelsJoystickVBusCmd = 0;
 	

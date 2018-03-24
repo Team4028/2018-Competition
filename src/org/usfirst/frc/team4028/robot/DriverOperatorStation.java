@@ -386,12 +386,12 @@ public class DriverOperatorStation {
 	// ===================================
 	// == Operator Just Pressed buttons ==
 	// ===================================
-	public boolean getIsOperator_ElevatorReHome_BtnJustPressed() {
+	public boolean getIsOperator_ElevatorClimbHgt_BtnJustPressed() {
 		return _operatorGamepad.getBackButtonPressed();
 	}
 
-//	public boolean getIsOperator_SwitchCamera_BtnJustPressed() {
-	public boolean getIsOperator_ElevatorClimbHgt_BtnJustPressed() {
+	public boolean getIsOperator_SwitchCamera_BtnJustPressed() {
+//	public boolean getIsOperator_ElevatorClimbHgt_BtnJustPressed() {
 		return _operatorGamepad.getStartButtonPressed();
 	}
 	
@@ -415,7 +415,7 @@ public class DriverOperatorStation {
 		return _operatorGamepad.getBumperPressed(Hand.kLeft);
 	}
 
-	public boolean getIsOperator_ElevatorSwitchHeight_BtnJustPressed() {
+	public boolean getIsOperator_ElevatorSwitchHgt_BtnJustPressed() {
 		return _operatorGamepad.getBumperPressed(Hand.kRight);
 	}
 	
@@ -552,10 +552,10 @@ public class DriverOperatorStation {
 	// ======== Operator Joysticks =========
 	// ===================================
 
-	public double getOperator_Elevator_JoystickCmd() {
-		if(Math.abs(_operatorGamepad.getY(Hand.kLeft)) >= JOYSTICK_DEADBAND){
+	public double getOperator_EjectCube_JoystickCmd() {
+		if(Math.abs(_operatorGamepad.getY(Hand.kLeft)) >= .5){
 			// flip the sign, pushing the joystick up is a # < 0
-			return _operatorGamepad.getY(Hand.kLeft) * -1.0;
+			return 1.0;
 		} 
 		else {
 			return 0.0;

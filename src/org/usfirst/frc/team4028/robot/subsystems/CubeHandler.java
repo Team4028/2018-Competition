@@ -74,17 +74,13 @@ public class CubeHandler implements Subsystem {
 		//		before allowing the elevator to move to the infeed position)
 		//=====================================================================================
 		@Override
-		public void onLoop(double timestamp) 
-		{
-			synchronized (CubeHandler.this) 
-			{	
-				switch(_cubeHandlerState) 
-				{
+		public void onLoop(double timestamp) {
+			synchronized (CubeHandler.this) {	
+				switch(_cubeHandlerState) {
 					case STOPPED:
 						break;
 						
 					case WANT_TO_MOVE_ELEVATOR_TO_PRESET:
-						
 						if(!_infeed.areArmsInSafePosition()) {							
 							_infeed.moveArmsToSafePosition(); // make sure arms are safe before moving elevator
 						}
@@ -279,6 +275,10 @@ public class CubeHandler implements Subsystem {
 	
 	public void infeedWheels_VBusCmd_BumpDown() {		
 		_infeed.infeedWheels_VBusCmd_BumpDown();
+	}
+	
+	public void infeedArm_moveRightInfeedArmToClimbPosition() {
+		_infeed.moveArmsToClimbInfeedPosition();
 	}
 	
 	//=====================================================================================	
