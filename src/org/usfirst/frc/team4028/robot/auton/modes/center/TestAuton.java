@@ -12,7 +12,7 @@ public class TestAuton extends AutonBase {
 	@Override
 	public void routine() {
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-				new WaitAction(4.0),
+				new WaitAction(1.0),
 				new SeriesAction(Arrays.asList(new Action[] {
 						new WaitAction(2.0),
 						new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.HIGH_SCALE_HEIGHT)

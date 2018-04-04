@@ -94,7 +94,7 @@ public class Elevator implements Subsystem {
 	private static final int HIGH_SCALE_HEIGHT_POSITION = InchesToNativeUnits(80);
 	private static final int NEUTRAL_SCALE_HEIGHT_POSITION = InchesToNativeUnits(72.5);
 	private static final int LOW_SCALE_HEIGHT_POSITION = InchesToNativeUnits(65);
-	private static final int CLIMB_SCALE_HEIGHT  = InchesToNativeUnits(67);
+	private static final int CLIMB_SCALE_HEIGHT_POSITION  = InchesToNativeUnits(67);
 	private static final int SWITCH_HEIGHT_POSITION = InchesToNativeUnits(30);
 	private static final int CUBE_ON_FLOOR_POSITION = InchesToNativeUnits(0);
 	private static final int INFEED_POSITION = 0;
@@ -104,8 +104,8 @@ public class Elevator implements Subsystem {
 	private static final int LARGE_BUMP_AMOUNT_IN_NU = InchesToNativeUnits(3);
 	private static final int SMALL_BUMP_AMOUNT_CLIMB_IN_NU = InchesToNativeUnits(1);
 	
-	private static final double MAX_BUMP_UP_AMOUNT = 11.9; 
-	private static final double MAX_BUMP_DOWN_AMOUNT = -20.9;
+	private static final double MAX_BUMP_UP_AMOUNT = InchesToNativeUnits(8.9); 
+	private static final double MAX_BUMP_DOWN_AMOUNT = InchesToNativeUnits(-20.9);
 	
 	private static final boolean IS_VERBOSE_LOGGING_ENABLED = false;
 	
@@ -113,7 +113,7 @@ public class Elevator implements Subsystem {
 	private static final int MOVING_UP_PID_SLOT_INDEX = 1;
 	private static final int MOVING_DOWN_PID_SLOT_INDEX = 0;
 	
-	// define PID Constants
+  	// define PID Constants
 	public static final int UP_CRUISE_VELOCITY = 4061; // native units per 100 mSec 50% of max
 	public static final int UP_ACCELERATION = 4500;	// native units per 100 mSec per sec
 	
@@ -233,15 +233,13 @@ public class Elevator implements Subsystem {
 						if(!_elevatorMasterMotor.getSensorCollection().isRevLimitSwitchClosed()) { // are we on the rev (home) limit switch
 							ReportStateChg("ElevatorAxis (State) " + _elevatorState.toString() + "==> [AT_HOME]");
 							_elevatorState = ELEVATOR_STATE.AT_HOME; // change state
-						} 
-						else {
+						} else {
 		    				// check for timeout
 		    				long elapsedTime = System.currentTimeMillis() - _elevatorHomeStartTime;
 		    				if (elapsedTime >= ELEVATOR_MAXIMUM_MOVE_TO_HOME_TIME_IN_MSEC) {
 		    					ReportStateChg("ElevatorAxis (State) " + _elevatorState.toString() + "==> [TIMEOUT]");
 		    					_elevatorState = ELEVATOR_STATE.TIMEOUT; // change state
-		    				} 
-		    				else {
+		    				} else {
 		    					_elevatorMasterMotor.set(ControlMode.PercentOutput, ELEVATOR_MOVE_TO_HOME_VELOCITY_CMD); // drive axis down in % vbus mode
 		    				}
 						}
@@ -263,16 +261,14 @@ public class Elevator implements Subsystem {
 						if(IsAtTargetPosition(_targetElevatorPositionNU)) {							
 							ReportStateChg("ElevatorAxis (State) [" + _elevatorState.toString() + "] ==> [HOLD_TARGET_POSTION]:[" + _targetElevatorPositionNU +"]");
 	    					_elevatorState = ELEVATOR_STATE.HOLD_TARGET_POSITION; // change state
-						} 
-						else {
+						} else {
 							_actualPositionNU = _elevatorMasterMotor.getSelectedSensorPosition(0);
 							_actualVelocityNU_100mS  = _elevatorMasterMotor.getSelectedSensorVelocity(0);
 							_actualAccelerationNU_100mS_mS = (_actualVelocityNU_100mS - _lastScanActualVelocityNU_100mS) / deltatime;
 		
 							if(_targetElevatorPositionNU > _actualPositionNU) { // set appropriate gain slot to use
 								SetPidSlotToUse("GotoUp", MOVING_UP_PID_SLOT_INDEX);
-							}
-							else {
+							} else {
 								SetPidSlotToUse("GotoDown", MOVING_DOWN_PID_SLOT_INDEX);
 							}
 							
@@ -287,8 +283,7 @@ public class Elevator implements Subsystem {
 						if(!IsAtTargetPosition(_targetElevatorPositionNU)) {
 							ReportStateChg("ElevatorAxis (State) " + _elevatorState.toString() + " ==> [GOTO_TARGET_POSTION]:[" + _targetElevatorPositionNU  +"]");
 	    					_elevatorState = ELEVATOR_STATE.GOTO_TARGET_POSITION; // change state
-						}
-						else {    	
+						} else {    	
 							SetPidSlotToUse("Hold", HOLDING_PID_SLOT_INDEX); // set appropriate gain slot to use	
 							_elevatorMasterMotor.set(ControlMode.MotionMagic, _targetElevatorPositionNU, 0);
 						}
@@ -323,12 +318,10 @@ public class Elevator implements Subsystem {
 	
 	// Support Operators Gamepad Buttons mapped to discrete positions
 	// Note: gets spammed by CubeHandler!
-	public void MoveToPresetPosition(ELEVATOR_PRESET_POSITION presetPosition) 
-	{
+	public void MoveToPresetPosition(ELEVATOR_PRESET_POSITION presetPosition) {
 		// ignore move requests while in homing process
 		if(_elevatorState != ELEVATOR_STATE.NEED_TO_HOME 
-				&& _elevatorState != ELEVATOR_STATE.MOVING_TO_HOME)
-		{	
+				&& _elevatorState != ELEVATOR_STATE.MOVING_TO_HOME) {	
 			switch(presetPosition) {
 				case HOME:
 					// limit spamming from CubeHandler
@@ -373,12 +366,12 @@ public class Elevator implements Subsystem {
 				
 				case CLIMB_SCALE_HEIGHT:
 					if((_elevatorState !=ELEVATOR_STATE.GOTO_TARGET_POSITION && _elevatorState != ELEVATOR_STATE.HOLD_TARGET_POSITION)
-							|| _targetElevatorPositionNU != NEUTRAL_SCALE_HEIGHT_POSITION )	{				
+							|| _targetElevatorPositionNU != CLIMB_SCALE_HEIGHT_POSITION)	{				
 						ReportStateChg("ElevatorAxis (State) [" + _elevatorState.toString() + "] ==> [GOTO_TARGET_POSTION]:[CLIMB_SCALE_HEIGHT_POSITION]");
 						_elevatorState = ELEVATOR_STATE.GOTO_TARGET_POSITION;
 					}
 					_isClimbBumpValueEnabled = true;
-					_targetElevatorPositionNU = CLIMB_SCALE_HEIGHT + _elevatorAtScaleOffsetNU;
+					_targetElevatorPositionNU = CLIMB_SCALE_HEIGHT_POSITION + _elevatorAtScaleOffsetNU;
 					break;
 					
 				case AUTON_CUSTOM:
@@ -421,16 +414,14 @@ public class Elevator implements Subsystem {
             if (currentError > ELEVATOR_POS_ALLOWABLE_ERROR_IN_NU) {
 				if(_targetElevatorPositionNU > _actualPositionNU) {
 					SetPidSlotToUse("MoveUp", MOVING_UP_PID_SLOT_INDEX);
-				}
-				else {
+				} else {
 					SetPidSlotToUse("MoveDown", MOVING_DOWN_PID_SLOT_INDEX);
 				}
 			}
 		}
 	}
 		
-	public void setAutonCustomPositionInInches(double positionInInches)
-	{
+	public void setAutonCustomPositionInInches(double positionInInches) {
 		_autonCustomPositionNU = InchesToNativeUnits(positionInInches);
 	}
 	
@@ -547,8 +538,7 @@ public class Elevator implements Subsystem {
 	public boolean isElevatorAtInfeedPosition() {
 		if(getElevatorActualPositionNU() < 100) {
 			return true;
-		}
-		else {
+		} else {
 			return false;
 		}
 	}

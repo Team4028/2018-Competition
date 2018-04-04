@@ -33,7 +33,7 @@ public class DoubleScaleAndSwitch extends AutonBase{
 			fromScaleToSwitchSecondCube = Paths.getPath(RightSide.R_SWITCH_TO_R_SCALE_SECOND_CUBE);
 			isRightTurnToSwitch = false;
 		}
-		elevatorWaitTime = 1.75;
+		elevatorWaitTime = 1.5;
 	}
 	
 	@Override
@@ -59,7 +59,7 @@ public class DoubleScaleAndSwitch extends AutonBase{
 							new TurnAction(targetTurnAngle, isRightTurnToSwitch),
 							new SimultaneousAction(Arrays.asList(new Action[] {
 									new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.WIDE),
-									new DriveSetDistanceAction(36.0)
+									new DriveSetDistanceAction(40.0)
 							}))
 					}))	
 		})));
@@ -86,14 +86,12 @@ public class DoubleScaleAndSwitch extends AutonBase{
 							new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.WIDE)
 					}))
 		})));
-		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-					new DriveSetDistanceAction(14.0),
-					new InfeedCubeAction()
-		})));
+		runAction(new DriveSetDistanceAction(14.0));
+		runAction(new InfeedCubeAction());
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 					new TurnAction(-37.0, false),
 					new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.STORE),
-					new MoveElevatorToPosAction(36)
+					new MoveElevatorToPosAction(30)
 		})));
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 					new RunMotionProfileAction(fromScaleToSwitchSecondCube),

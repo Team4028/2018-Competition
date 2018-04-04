@@ -44,6 +44,7 @@ public class Infeed  implements Subsystem {
 		INFEED,
 		WIDE,
 		SQUEEZE,
+		CLIMB,
 		STORE,
 	}
 		
@@ -68,7 +69,8 @@ public class Infeed  implements Subsystem {
 	
 	private boolean _hasLeftArmBeenHomed;
 	private boolean _hasRightArmBeenHomed;
-	private double _targetInfeedArmPosition;
+	private double _targetLeftInfeedArmPosition;
+	private double _targetRightInfeedArmPosition;
 	
 	// supports bumping
 	private double _currentInFeedArmSqueezeTargetAngle = INFEED_POSITION_ANGLE; // 198;
@@ -107,6 +109,7 @@ public class Infeed  implements Subsystem {
 	// Infeed Position Constants [THESE ARE ANGLE MEASURES IN DEGREES]
 	private static final double HOME_POSITION_ANGLE = 0; //Is Home
     private static final double INFEED_POSITION_ANGLE = 200; //160;	
+    private static final double INFEED_RIGHT_ARM_CLIMB_ANGLE = 219;
 	private static final double WIDE_INFEED_POSITION_ANGLE = 140;
 	private static final double STORE_POSITION_ANGLE = 20;
 	
@@ -316,22 +319,28 @@ public class Infeed  implements Subsystem {
 						_rightSwitchbladeArmMotor.configMotionAcceleration(INFEED_ARM_MOTION_MAGIC_MAX_ACC, 0);
 						
 						//set appropriate gain slot in use
-						if(_targetInfeedArmPosition == STORE_POSITION_ANGLE) {
+						if(_targetLeftInfeedArmPosition == STORE_POSITION_ANGLE) {
 							_leftSwitchbladeArmMotor.selectProfileSlot(STORING_ARMS_PID_SLOT_INDEX, 0);
-							_rightSwitchbladeArmMotor.selectProfileSlot(STORING_ARMS_PID_SLOT_INDEX, 0);
 						} else {
 							_leftSwitchbladeArmMotor.selectProfileSlot(INFEED_POSITIONS_PID_SLOT_INDEX, 0);
+						}
+						
+						if(_targetRightInfeedArmPosition == STORE_POSITION_ANGLE) {
+							_rightSwitchbladeArmMotor.selectProfileSlot(STORING_ARMS_PID_SLOT_INDEX, 0);
+						} else {
 							_rightSwitchbladeArmMotor.selectProfileSlot(INFEED_POSITIONS_PID_SLOT_INDEX, 0);
 						}
 						
 						// set target angle for both infeed arms
 						if(_infeedArmTargetPosition == INFEED_ARM_TARGET_POSITION.SQUEEZE) {
 							// update _targetInfeedArmPosition since it might have been bumped
-							_targetInfeedArmPosition = _currentInFeedArmSqueezeTargetAngle;
+							_targetLeftInfeedArmPosition = _currentInFeedArmSqueezeTargetAngle;
+							_targetRightInfeedArmPosition = _currentInFeedArmSqueezeTargetAngle;
+
 						}
 							
-						_leftSwitchbladeArmMotor.set(ControlMode.MotionMagic, degreesToNativeUnits(_targetInfeedArmPosition));
-						_rightSwitchbladeArmMotor.set(ControlMode.MotionMagic, degreesToNativeUnits(_targetInfeedArmPosition));
+						_leftSwitchbladeArmMotor.set(ControlMode.MotionMagic, degreesToNativeUnits(_targetLeftInfeedArmPosition));
+						_rightSwitchbladeArmMotor.set(ControlMode.MotionMagic, degreesToNativeUnits(_targetRightInfeedArmPosition));
 					 	break;
 						
 					case TIMEOUT:
@@ -398,20 +407,29 @@ public class Infeed  implements Subsystem {
 		_infeedArmTargetPosition = presetPosition;
 		switch(presetPosition) {
 			case HOME:
-				_targetInfeedArmPosition = HOME_POSITION_ANGLE;
+				_targetLeftInfeedArmPosition = HOME_POSITION_ANGLE;
+				_targetRightInfeedArmPosition = HOME_POSITION_ANGLE;
 				break;
 			case INFEED:
-				 _targetInfeedArmPosition = INFEED_POSITION_ANGLE;
+				 _targetLeftInfeedArmPosition = INFEED_POSITION_ANGLE;
+				_targetRightInfeedArmPosition = INFEED_POSITION_ANGLE;
 				 break;
 			case WIDE:
-				 _targetInfeedArmPosition = WIDE_INFEED_POSITION_ANGLE;
+				 _targetLeftInfeedArmPosition = WIDE_INFEED_POSITION_ANGLE;
+				_targetRightInfeedArmPosition = WIDE_INFEED_POSITION_ANGLE;
 				 break;
 			case SQUEEZE:
-				 _targetInfeedArmPosition = _currentInFeedArmSqueezeTargetAngle;
+				 _targetLeftInfeedArmPosition = _currentInFeedArmSqueezeTargetAngle;
+				_targetRightInfeedArmPosition = _currentInFeedArmSqueezeTargetAngle;
 				 break;
 			case STORE:
-				 _targetInfeedArmPosition = STORE_POSITION_ANGLE;
+				 _targetLeftInfeedArmPosition = STORE_POSITION_ANGLE;
+				_targetRightInfeedArmPosition = STORE_POSITION_ANGLE;
 				 break;
+			case CLIMB:
+				_targetLeftInfeedArmPosition = STORE_POSITION_ANGLE;
+				_targetRightInfeedArmPosition = INFEED_RIGHT_ARM_CLIMB_ANGLE;
+				break;
 		}
 		
 		// change state
@@ -448,6 +466,14 @@ public class Infeed  implements Subsystem {
 	public void moveArmsToSqueezeInfeedPosition() {
 		if (_hasLeftArmBeenHomed && _hasRightArmBeenHomed) {
 			MoveToPresetPosition(INFEED_ARM_TARGET_POSITION.SQUEEZE);
+		} else {
+			DriverStation.reportWarning("Function Not Avaliable until Arms are Homed", false);
+		}
+	}
+	
+	public void moveArmsToClimbInfeedPosition() {
+		if (_hasRightArmBeenHomed) {
+			MoveToPresetPosition(INFEED_ARM_TARGET_POSITION.CLIMB);
 		} else {
 			DriverStation.reportWarning("Function Not Avaliable until Arms are Homed", false);
 		}
@@ -538,15 +564,18 @@ public class Infeed  implements Subsystem {
 	//Method for determining if Arms are In Position
 	//=====================================================================================	
 	public boolean areArmsInPosition() {
-		double currentErrorL = Math.abs(nativeUnitsToDegrees(getCurrentLeftInfeedPosition()) - _targetInfeedArmPosition);
-		double currentErrorR = Math.abs(nativeUnitsToDegrees(getCurrentRightInfeedPosition()) - _targetInfeedArmPosition);
+		double currentErrorL = Math.abs(nativeUnitsToDegrees(getCurrentLeftInfeedPosition()) - _targetLeftInfeedArmPosition);
+		double currentErrorR = Math.abs(nativeUnitsToDegrees(getCurrentRightInfeedPosition()) - _targetRightInfeedArmPosition);
 		
 		if(currentErrorL < INFEED_ALLOWED_ERROR_ANGLE && currentErrorR < INFEED_ALLOWED_ERROR_ANGLE
-				&& _targetInfeedArmPosition != HOME_POSITION_ANGLE
-				&& _targetInfeedArmPosition != STORE_POSITION_ANGLE) {
+				&& _targetLeftInfeedArmPosition != HOME_POSITION_ANGLE
+				&& _targetLeftInfeedArmPosition != STORE_POSITION_ANGLE
+				&& _targetRightInfeedArmPosition != HOME_POSITION_ANGLE
+				&& _targetRightInfeedArmPosition != STORE_POSITION_ANGLE) {
 			return true;
 		} 
-		else if(_targetInfeedArmPosition == _currentInFeedArmSqueezeTargetAngle) { 
+		else if(_targetLeftInfeedArmPosition == _currentInFeedArmSqueezeTargetAngle 
+				&& _targetRightInfeedArmPosition == _currentInFeedArmSqueezeTargetAngle) { 
 			return true;
 		} else {
 			return false;
@@ -642,7 +671,8 @@ public class Infeed  implements Subsystem {
 	
 	// add data elements to be logged  to the input param (which is passed by ref)
 	public void updateLogData(LogDataBE logData) {
-		logData.AddData("Infeed: Target Arm Position", String.valueOf(nativeUnitsToDegrees(_targetInfeedArmPosition)));			
+		logData.AddData("Infeed: Left Target Arm Position", String.valueOf(nativeUnitsToDegrees(_targetLeftInfeedArmPosition)));
+		logData.AddData("Infeed: Right Target Arm Position", String.valueOf(nativeUnitsToDegrees(_targetRightInfeedArmPosition)));
 		logData.AddData("Infeed: L Position", String.valueOf(nativeUnitsToDegrees(getCurrentLeftInfeedPosition())));
 		logData.AddData("Infeed: R Position:", String.valueOf(nativeUnitsToDegrees(getCurrentRightInfeedPosition())));
 		logData.AddData("Infeed: L/R Arms Homed?", String.valueOf(_hasLeftArmBeenHomed) + " / " + String.valueOf(_hasRightArmBeenHomed));

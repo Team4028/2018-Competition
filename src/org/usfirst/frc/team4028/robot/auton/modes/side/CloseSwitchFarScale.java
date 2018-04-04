@@ -43,7 +43,7 @@ public class CloseSwitchFarScale extends AutonBase {
 		runAction(new TurnAction(-162, true));
 		// Drive to cube and infeed it
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-					new DriveSetDistanceAction(4.0),
+					new DriveSetDistanceAction(3.0),
 					new SeriesAction(Arrays.asList(new Action[] {
 							new WaitAction(0.5),
 							new InfeedCubeAction()
