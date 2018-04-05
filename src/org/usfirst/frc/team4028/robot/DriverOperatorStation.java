@@ -1,6 +1,7 @@
 package org.usfirst.frc.team4028.robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.XboxController;
 
@@ -378,6 +379,15 @@ public class DriverOperatorStation {
 	
 	public double getDriver_EjectCube_JoystickCmd() {
 		return _driverGamepad.getTriggerAxis(Hand.kRight);
+	}
+	
+	//====================================
+	//=======Driver Rumble Function=======
+	//====================================
+	
+	public void rumbleDriveController() {
+		_driverGamepad.setRumble(GenericHID.RumbleType.kLeftRumble, .5);
+		_driverGamepad.setRumble(GenericHID.RumbleType.kRightRumble, .5);
 	}
 	
 	// =========================================================================================================

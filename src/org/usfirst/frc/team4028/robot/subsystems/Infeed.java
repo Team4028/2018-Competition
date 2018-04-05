@@ -411,7 +411,7 @@ public class Infeed  implements Subsystem {
 				 _targetInfeedArmPosition = STORE_POSITION_ANGLE;
 				 break;
 		}
-		
+	
 		// change state
 		_infeedArmState = INFEED_ARM_STATE.MOVE_TO_POSITION_AND_HOLD;
 	}
