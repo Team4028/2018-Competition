@@ -1,31 +1,134 @@
 package org.usfirst.frc.team4028.robot.auton.actions;
 
+import org.usfirst.frc.team4028.robot.sensors.NavXGyro;
+import org.usfirst.frc.team4028.robot.subsystems.Chassis;
 import org.usfirst.frc.team4028.robot.subsystems.CubeHandler;
+import org.usfirst.frc.team4028.robot.subsystems.Infeed;
 import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_ARM_TARGET_POSITION;
 
 import edu.wpi.first.wpilibj.Timer;
 
+@SuppressWarnings("unused")
 public class InfeedCubeAction implements Action {
 	CubeHandler _cubeHandler = CubeHandler.getInstance();
-	double _startTime;
+	//Infeed _infeed = Infeed.getInstance();
+
+	Chassis _chassis = Chassis.getInstance();
+	private double _startTime, _startAngle, _otherTime;
+	private boolean _isComplete;
+	private enum INFEED_CUBE_AUTON_STATE
+	{
+		EVERYTHING_HAS_GONE_ACCORDING_TO_PLAN,
+		JAM_CENTER,
+		LEFT_OR_RIGHT,
+		SHORT,
+		UNDEFINED
+	}
+	private INFEED_CUBE_AUTON_STATE _infeedCubeState;
 	
 	@Override
 	public void start() {
 		_startTime = Timer.getFPGATimestamp();
+		_startAngle = _chassis.getHeading();
 	}
 
 	@Override
 	public void update() {
-		if ((Timer.getFPGATimestamp() - _startTime) < 1) {
+		switch(_infeedCubeState)
+		{
+		case EVERYTHING_HAS_GONE_ACCORDING_TO_PLAN:
 			_cubeHandler.acquireCube_InfeedAndCarriage();
 			_cubeHandler.infeedArms_MoveToPresetPosition(INFEED_ARM_TARGET_POSITION.SQUEEZE);
-		} 
-		else if ((Timer.getFPGATimestamp() - _startTime) < 1.5) {
-			_cubeHandler.stop_InfeedAndCarriage();
-			_cubeHandler.infeedArms_MoveToPresetPosition(INFEED_ARM_TARGET_POSITION.SQUEEZE);
-		} else {
-			_startTime = Timer.getFPGATimestamp();
+			_isComplete = true;
+			break;
+		
+		case JAM_CENTER:
+			if(Timer.getFPGATimestamp()-_startTime<1.45)
+			{
+				_cubeHandler.infeedWheels_SpinAuton();
+				_isComplete = false;
+			}
+			else
+			{
+				_startTime= Timer.getFPGATimestamp();
+				_isComplete = true;
+			}
+			break;
+			
+		case LEFT_OR_RIGHT:
+			if(Timer.getFPGATimestamp()-_startTime<1.1)
+			{
+				_chassis.arcadeDrive(.5, 0);
+				_isComplete=false;
+			}
+			else
+			{
+				_startTime = Timer.getFPGATimestamp();
+				_chassis.stop();
+				_isComplete = true;
+			}
+			break;
+		case SHORT:
+			if(Timer.getFPGATimestamp()-_startTime<1.5)
+			{
+				_chassis.arcadeDrive(-.5, 0);
+				_isComplete=false;
+			}
+			else
+			{
+				_startTime = Timer.getFPGATimestamp();
+				_chassis.stop();
+				_isComplete = true;
+			}
+			break;			
+			
+		case UNDEFINED:
+			break;
 		}
+		
+		
+		
+		if ((Timer.getFPGATimestamp() - _startTime) < 1) 
+		{
+			_infeedCubeState= INFEED_CUBE_AUTON_STATE.EVERYTHING_HAS_GONE_ACCORDING_TO_PLAN;
+		} 
+		else 
+		{
+			if(_isComplete)
+			{
+				//System.out.println("We made it");
+				if(Math.abs(_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getLeftInfeedArmPos()))<190 && 
+					Math.abs(_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getLeftInfeedArmPos()))>150 &&
+					Math.abs(_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getRightInfeedArmPos()))<185 &&
+					Math.abs(_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getRightInfeedArmPos()))>145)
+				{
+					_infeedCubeState = INFEED_CUBE_AUTON_STATE.JAM_CENTER;				
+				}
+			
+				else if(Math.abs(_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getRightInfeedArmPos()))<150 &&
+						Math.abs(_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getRightInfeedArmPos()))>100 &&
+						Math.abs(_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getLeftInfeedArmPos()))>190 ||
+						Math.abs(_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getRightInfeedArmPos()))>190 &&
+						Math.abs(_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getLeftInfeedArmPos()))<150 &&
+						Math.abs(_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getLeftInfeedArmPos()))>100)
+				{
+					_infeedCubeState = INFEED_CUBE_AUTON_STATE.LEFT_OR_RIGHT;
+				}
+				
+				else if(_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getLeftInfeedArmPos())>190 && 
+						_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getRightInfeedArmPos())>190)
+				{
+					_infeedCubeState=INFEED_CUBE_AUTON_STATE.SHORT;		
+				}
+				
+				else 
+				{
+					_infeedCubeState= INFEED_CUBE_AUTON_STATE.EVERYTHING_HAS_GONE_ACCORDING_TO_PLAN;
+					_startTime = Timer.getFPGATimestamp();
+				}
+			}
+		}
+			
 	}
 
 	@Override

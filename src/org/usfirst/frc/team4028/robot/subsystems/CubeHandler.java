@@ -253,6 +253,11 @@ public class CubeHandler implements Subsystem {
 		_infeed.storeArms();
 	}	
 	
+	public void infeedWheels_SpinAuton()
+	{
+		_infeed.infeedWheels_SpinCube_Auton();
+	}
+	
 	public void infeedArms_moveToWidePosition() {
 		_infeed.moveArmsToWideInfeedPosition();
 	}
@@ -279,6 +284,10 @@ public class CubeHandler implements Subsystem {
 	
 	public void infeedArm_moveRightInfeedArmToClimbPosition() {
 		_infeed.moveArmsToClimbInfeedPosition();
+	}
+	public double infeedArm_nativeUnitstoDegrees(double NativeUnits)
+	{
+		return _infeed.nativeUnitsToDegrees(NativeUnits);
 	}
 	
 	//=====================================================================================	
@@ -316,6 +325,13 @@ public class CubeHandler implements Subsystem {
 		return _carriage.isCubeInCarriage();
 	}
 	
+	public double getLeftInfeedArmPos() {
+		return _infeed.getCurrentLeftInfeedPosition();
+	}
+	
+	public double getRightInfeedArmPos() {
+		return _infeed.getCurrentRightInfeedPosition();
+	}
 	//=====================================================================================	
 	// Utility Methods
 	//=====================================================================================	
