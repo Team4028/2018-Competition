@@ -164,6 +164,8 @@ public class Robot extends IterativeRobot {
 		_autonStartTime = System.currentTimeMillis();
 		
 		System.out.println(payRespectsToRNGesus());
+		
+		_cubeHandler.elevator_SetAutonAccelerationConstant();
 	}
 
 	/** Called each loop (approx every 20mS) in autonomous mode */
@@ -195,6 +197,8 @@ public class Robot extends IterativeRobot {
 		_chassis.stop();
 		
 		_dos.clearGamepadsCachedBtnPresses();
+		
+		_cubeHandler.elevator_SetTeleopAccelerationConstant();
 		
 		_dataLogger = GeneralUtilities.setupLogging("Teleop"); // init data logging
 		

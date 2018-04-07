@@ -172,6 +172,14 @@ public class CubeHandler implements Subsystem {
 		}
 	}
 	
+	public void elevator_SetAutonAccelerationConstant() {
+		_elevator.setAutonElevatorAccelerationConstant();
+	}
+	
+	public void elevator_SetTeleopAccelerationConstant() {
+		_elevator.setTeleopElevatorAccelerationConstant();
+	}
+	
 	//=====================================================================================
 	//Methods for Handling Interactions with Multiple Subsystem
 	//=====================================================================================	
