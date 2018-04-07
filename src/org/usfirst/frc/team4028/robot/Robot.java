@@ -8,6 +8,7 @@ import org.usfirst.frc.team4028.robot.auton.AutonExecuter;
 import org.usfirst.frc.team4028.robot.paths.AdaptedPaths;
 import org.usfirst.frc.team4028.robot.sensors.PressureSensor;
 import org.usfirst.frc.team4028.robot.sensors.RobotStateEstimator;
+import org.usfirst.frc.team4028.robot.sensors.SwitchableCameraServer;
 import org.usfirst.frc.team4028.robot.subsystems.*;
 import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_PRESET_POSITION;
 import org.usfirst.frc.team4028.util.DataLogger;
@@ -35,7 +36,7 @@ public class Robot extends IterativeRobot {
 	
 	// Sensors
 	private PressureSensor _pressureSensor = PressureSensor.getInstance();
-//	private SwitchableCameraServer _switchableCameraServer = SwitchableCameraServer.getInstance();
+	private SwitchableCameraServer _switchableCameraServer = SwitchableCameraServer.getInstance();
 	
 	// Other
 	private DriverOperatorStation _dos = DriverOperatorStation.getInstance();
@@ -261,7 +262,7 @@ public class Robot extends IterativeRobot {
 			else if (Math.abs(_dos.getDriver_InfeedCube_JoystickCmd()) != 0) {
 				_cubeHandler.acquireCube_InfeedAndCarriage();
 			}			
-			else if ((Math.abs(_dos.getDriver_EjectCube_JoystickCmd()) != 0)) {
+			else if ((Math.abs(_dos.getDriver_EjectCube_JoystickCmd()) != 0) || _dos.getOperator_EjectCube_JoystickCmd() != 0) {
 				_cubeHandler.ejectCube_InfeedAndCarriage();
 			}
 			else {
@@ -344,25 +345,25 @@ public class Robot extends IterativeRobot {
 		}
 		
 		// =============  ELEVATOR ============= 		
-		if (_dos.getIsOperator_ElevatorInfeedHgt_BtnJustPressed() || _dos.getIsEngineering_ElevatorCubeOnFloorHgt_BtnJustPressed()) {
+		if (_dos.getIsOperator_ElevatorInfeedHgt_BtnJustPressed()) {
 			_cubeHandler.elevator_MoveToPresetPosition(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT);
 		}
-		else if (_dos.getIsOperator_ElevatorSwitchHeight_BtnJustPressed() || _dos.getIsEngineering_ElevatorSwitchHgt_BtnJustPressed()) {
+		else if (_dos.getIsOperator_ElevatorSwitchHgt_BtnJustPressed()) {
 			_cubeHandler.elevator_MoveToPresetPosition(ELEVATOR_PRESET_POSITION.SWITCH_HEIGHT);
 		}
 		else if (_dos.getIsOperator_ElevatorNeutralScaleHgt_BtnJustPressed()) {
 			_cubeHandler.elevator_MoveToPresetPosition(ELEVATOR_PRESET_POSITION.NEUTRAL_SCALE_HEIGHT);
 		}
-		else if (_dos.getIsOperator_ElevatorReHome_BtnJustPressed()) {
-			_cubeHandler.elevator_MoveToPresetPosition(ELEVATOR_PRESET_POSITION.HOME);
-		} 
+//		else if (_dos.getIsOperator_ElevatorReHome_BtnJustPressed()) {
+//			_cubeHandler.elevator_MoveToPresetPosition(ELEVATOR_PRESET_POSITION.HOME);
+//		} 
 		else if (_dos.getIsOperator_ElevatorClimbHgt_BtnJustPressed()){
 			_cubeHandler.elevator_MoveToPresetPosition(ELEVATOR_PRESET_POSITION.CLIMB_SCALE_HEIGHT);
 		} else {
 			_cubeHandler.stopElevator();
 		} 
 		
-		// Neutral Scale Height Bumps
+		// Neutral Scale Height / Climb Scale Height Bumps
 		if(_dos.getIsOperator_ElevatorScaleHeightBumpUp_BtnJustPressed()) {
 			_cubeHandler.elevator_ScaleHeight_BumpPositionUp();
 		}
@@ -376,12 +377,13 @@ public class Robot extends IterativeRobot {
 		// =============  CLIMBER SERVO ============= 
 		if(_dos.getIsOperator_ToggleClimberServo_BtnJustPressed()) {
 			_climber.toggleClimberServo();
+			_cubeHandler.infeedArm_moveRightInfeedArmToClimbPosition();
 		}
 		
 		// ============= Camera Switch ============= 
-//		if (_dos.getIsOperator_SwitchCamera_BtnJustPressed() == true) {
-//			_switchableCameraServer.SwitchCamera();
-//		}
+		if (_dos.getIsOperator_SwitchCamera_BtnJustPressed() == true) {
+			_switchableCameraServer.SwitchCamera();
+		}
 		
 		// ============= Refresh Dashboard =============
 		outputAllToDashboard();

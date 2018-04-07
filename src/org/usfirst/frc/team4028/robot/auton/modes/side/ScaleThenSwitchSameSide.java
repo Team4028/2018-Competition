@@ -21,13 +21,13 @@ public class ScaleThenSwitchSameSide extends AutonBase {
 			if (isStartingLeft) {
 				toScale = Paths.getPath(LeftSide.L_SCALE);
 				targetTurnAngle = 163;
-				elevatorWaitTime = 2.0;
-				driveToSwitchDistance = 36.0;
+				elevatorWaitTime = 1.5;
+				driveToSwitchDistance = 40.0;
 				isTurnRight = true;
 			} else {
 				toScale = Paths.getPath(RightSide.L_SCALE);
 				targetTurnAngle = 168;
-				elevatorWaitTime = 4.25;
+				elevatorWaitTime = 4.0;
 				driveToSwitchDistance = 32.0;
 				isTurnRight = false;
 			}
@@ -35,13 +35,13 @@ public class ScaleThenSwitchSameSide extends AutonBase {
 			if (isStartingLeft) {
 				toScale = Paths.getPath(LeftSide.R_SCALE);
 				targetTurnAngle = -166;
-				elevatorWaitTime = 4.25;	
-				driveToSwitchDistance = 39.0;
+				elevatorWaitTime = 4.0;	
+				driveToSwitchDistance = 37.0;
 				isTurnRight = true;
 			} else {
 				toScale = Paths.getPath(RightSide.R_SCALE);
 				targetTurnAngle = -165;
-				elevatorWaitTime = 1.75;
+				elevatorWaitTime = 1.5;
 				driveToSwitchDistance = 32.0;
 				isTurnRight = false;
 			}
@@ -89,8 +89,8 @@ public class ScaleThenSwitchSameSide extends AutonBase {
 					new OutfeedCubeAction()
 		}))); 
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-			new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT),
-			new DriveSetDistanceAction(-20.0)
+					new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT),
+					new DriveSetDistanceAction(-20.0)
 		})));
 		runAction(new PrintTimeFromStart(_startTime));
 	}
