@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.Timer;
 @SuppressWarnings("unused")
 public class InfeedCubeAction implements Action {
 	CubeHandler _cubeHandler = CubeHandler.getInstance();
-	//Infeed _infeed = Infeed.getInstance();
+	//Infeed _infeed = Infeed.getInstance();	conform to society and use cube handler everywhere
 
 	Chassis _chassis = Chassis.getInstance();
 	private double _startTime, _startAngle, _otherTime;
@@ -30,60 +30,64 @@ public class InfeedCubeAction implements Action {
 	public void start() {
 		_startTime = Timer.getFPGATimestamp();
 		_startAngle = _chassis.getHeading();
+		_infeedCubeState = INFEED_CUBE_AUTON_STATE.EVERYTHING_HAS_GONE_ACCORDING_TO_PLAN;
 	}
 
 	@Override
 	public void update() {
 		switch(_infeedCubeState)
 		{
-		case EVERYTHING_HAS_GONE_ACCORDING_TO_PLAN:
-			_cubeHandler.acquireCube_InfeedAndCarriage();
-			_cubeHandler.infeedArms_MoveToPresetPosition(INFEED_ARM_TARGET_POSITION.SQUEEZE);
-			_isComplete = true;
-			break;
-		
-		case JAM_CENTER:
-			if(Timer.getFPGATimestamp()-_startTime<1.45)
-			{
-				_cubeHandler.infeedWheels_SpinAuton();
-				_isComplete = false;
-			}
-			else
-			{
-				_startTime= Timer.getFPGATimestamp();
+			case EVERYTHING_HAS_GONE_ACCORDING_TO_PLAN:
+				//System.out.println("Test");
+				_cubeHandler.acquireCube_InfeedAndCarriage();
+				_cubeHandler.infeedArms_MoveToPresetPosition(INFEED_ARM_TARGET_POSITION.SQUEEZE);
 				_isComplete = true;
-			}
-			break;
+				break;
 			
-		case LEFT_OR_RIGHT:
-			if(Timer.getFPGATimestamp()-_startTime<1.1)
-			{
-				_chassis.arcadeDrive(.5, 0);
-				_isComplete=false;
-			}
-			else
-			{
-				_startTime = Timer.getFPGATimestamp();
-				_chassis.stop();
-				_isComplete = true;
-			}
-			break;
-		case SHORT:
-			if(Timer.getFPGATimestamp()-_startTime<1.5)
-			{
-				_chassis.arcadeDrive(-.5, 0);
-				_isComplete=false;
-			}
-			else
-			{
-				_startTime = Timer.getFPGATimestamp();
-				_chassis.stop();
-				_isComplete = true;
-			}
-			break;			
-			
-		case UNDEFINED:
-			break;
+			case JAM_CENTER:
+				if(Timer.getFPGATimestamp()-_startTime<1.45)
+				{
+					_cubeHandler.infeedWheels_SpinAuton();
+					_isComplete = false;
+				}
+				else
+				{
+					_startTime= Timer.getFPGATimestamp();
+					_isComplete = true;
+				}
+				break;
+				
+			case LEFT_OR_RIGHT:
+				if(Timer.getFPGATimestamp()-_startTime<1.3)
+				{
+					_chassis.arcadeDrive(.5, 0);
+					_isComplete=false;
+					//System.out.println("Dabalabalabalabalabalab");
+				}
+				else
+				{
+					_startTime = Timer.getFPGATimestamp();
+					_chassis.stop();
+					_isComplete = true;
+				}
+				break;
+			case SHORT:
+				if(Timer.getFPGATimestamp()-_startTime<1.3)
+				{
+					_cubeHandler.infeedArms_MoveToPresetPosition(INFEED_ARM_TARGET_POSITION.WIDE);
+					_chassis.arcadeDrive(-1, 0);
+					_isComplete=false;
+				}
+				else
+				{
+					_startTime = Timer.getFPGATimestamp();
+					_chassis.stop();
+					_isComplete = true;
+				}
+				break;			
+				
+			case UNDEFINED:
+				break;
 		}
 		
 		
