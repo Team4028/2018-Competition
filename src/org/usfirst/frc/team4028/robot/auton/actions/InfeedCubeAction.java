@@ -45,6 +45,14 @@ public class InfeedCubeAction implements Action {
 				break;
 			
 			case JAM_CENTER:
+				if(Timer.getFPGATimestamp()-_startTime<1.1)
+				{
+					_cubeHandler.infeedArms_MoveToPresetPosition(INFEED_ARM_TARGET_POSITION.WIDE);
+				}
+				else
+				{
+					_cubeHandler.infeedArms_MoveToPresetPosition(INFEED_ARM_TARGET_POSITION.SQUEEZE);
+				}
 				if(Timer.getFPGATimestamp()-_startTime<1.45)
 				{
 					_cubeHandler.infeedWheels_SpinAuton();
