@@ -3,21 +3,22 @@ package org.usfirst.frc.team4028.robot.paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.usfirst.frc.team4028.robot.Constants;
 import org.usfirst.frc.team4028.util.control.Path;
 import org.usfirst.frc.team4028.util.control.PathSegment;
 import org.usfirst.frc.team4028.util.motion.RigidTransform;
 import org.usfirst.frc.team4028.util.motion.Rotation;
 import org.usfirst.frc.team4028.util.motion.Translation;
 
+import static org.usfirst.frc.team4028.util.motion.Translation.getAngle;
+
 public class PathBuilder {
 	private static final double kEpsilon = 1E-9;
     private static final double kReallyBigNumber = 1E9;
     private static double maxAccel, maxDecel;
 
-    public static Path buildPathFromWaypoints(List<Waypoint> w, double max_Accel, double max_Decel, double inertiaSteeringGain) {
-        Path p = new Path();
-        maxAccel = max_Accel;
-        maxDecel = max_Decel;
+    public static Path buildPathFromWaypoints(double maxAccel, double maxDecel, double inertiaGain, boolean isReversed, List<Waypoint> w) {
+        Path p = new Path(maxAccel, maxDecel, inertiaGain, isReversed);
         if (w.size() < 2)
             throw new Error("Path must contain at least 2 waypoints");
         int i = 0;
@@ -28,17 +29,38 @@ public class PathBuilder {
             } while (i < w.size() - 2);
         }
         new Line(w.get(w.size() - 2), w.get(w.size() - 1)).addToPath(p, 0);
+        p.setStartingAngle(getAngle(w.get(0).pos, w.get(1).pos).getDegrees());
         p.extrapolateLast();
         p.verifySpeeds();
-        p.setAccDec(maxAccel, maxDecel);
-        p.setInertiaGain(inertiaSteeringGain);
         return p;
+    }
+    
+    public static Path buildPathFromWaypoints(double inertiaGain, boolean isReversed, List<Waypoint> w) {
+    	return buildPathFromWaypoints(Constants.PATH_DEFAULT_ACCEL, Constants.PATH_DEFAULT_DECEL, inertiaGain, isReversed, w);
+    }
+    
+    public static Path buildPathFromWaypoints(double inertiaGain, List<Waypoint> w) {
+    	return buildPathFromWaypoints(inertiaGain, false, w);
+    }
+    
+    public static Path buildPathFromWaypoints(boolean isReversed, List<Waypoint> w) {
+    	return buildPathFromWaypoints(0.0, isReversed, w);
+    }
+    
+    public static Path buildPathFromWaypoints(List<Waypoint> w) {
+    	return buildPathFromWaypoints(false, w);
+    }
+    
+    public static Path buildStraightPath(Translation startPose, double startAngle, double distance) {
+    	Translation endPose = startPose.extrapolate(Rotation.fromDegrees(startAngle).toTranslation(), distance);
+    	ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
+    	sWaypoints.add(new Waypoint(startPose, 0, 0));
+    	sWaypoints.add(new Waypoint(endPose, 0, 100));
+    	return buildPathFromWaypoints(sWaypoints);
     }
 
     private static Waypoint getPoint(List<Waypoint> w, int i) {
-        if (i > w.size())
-            return w.get(w.size() - 1);
-        return w.get(i);
+        return i > w.size() ? w.get(w.size() - 1) : w.get(i);
     }
     
     public static ArrayList<Waypoint> flipPath(ArrayList<Waypoint> sWaypoints) {
@@ -114,8 +136,7 @@ public class PathBuilder {
 
     /** A Line object is formed by two Waypoints. Contains a start and end position, slope, and speed. */
     static class Line {
-        Waypoint a;
-        Waypoint b;
+        Waypoint a, b;
         Translation start;
         Translation end;
         Translation slope;
@@ -126,6 +147,19 @@ public class PathBuilder {
             this.b = b;
             slope = new Translation(a.pos, b.pos);
             speed = b.speed;
+            
+            if ((a.radius + b.radius) > slope.norm()) {
+            	if ((a.radius > slope.norm()/2) && (b.radius > slope.norm()/2)) {
+            		a.radius = 0.5 * slope.norm();
+            		b.radius = 0.5 * slope.norm();
+            	}
+            	else if ((a.radius > slope.norm()/2) && (b.radius < slope.norm()/2)) {
+            		a.radius = slope.norm() - b.radius;
+            	}
+            	else if ((a.radius < slope.norm()/2) && (b.radius > slope.norm()/2)) {
+            		b.radius = slope.norm() - a.radius;
+            	}
+            }
             start = a.pos.translateBy(slope.scale(a.radius / slope.norm()));
             end = b.pos.translateBy(slope.scale(-b.radius / slope.norm()));
         }
@@ -146,8 +180,7 @@ public class PathBuilder {
 
     /** An Arc object is formed by two Lines that share a common Waypoint. Contains a center position, radius, and speed. */
     static class Arc {
-        Line a;
-        Line b;
+        Line a, b;
         Translation center;
         double radius;
         double speed;

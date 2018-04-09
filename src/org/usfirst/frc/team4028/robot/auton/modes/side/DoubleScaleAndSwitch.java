@@ -5,8 +5,8 @@ import java.util.Arrays;
 import org.usfirst.frc.team4028.robot.auton.AutonBase;
 import org.usfirst.frc.team4028.robot.auton.actions.*;
 import org.usfirst.frc.team4028.robot.paths.Paths;
-import org.usfirst.frc.team4028.robot.paths.Paths.LeftSide;
-import org.usfirst.frc.team4028.robot.paths.Paths.RightSide;
+import org.usfirst.frc.team4028.robot.paths.Paths.Left;
+import org.usfirst.frc.team4028.robot.paths.Paths.Right;
 import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_PRESET_POSITION;
 import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_ARM_TARGET_POSITION;
 import org.usfirst.frc.team4028.util.control.Path;
@@ -21,16 +21,16 @@ public class DoubleScaleAndSwitch extends AutonBase{
 	
 	public DoubleScaleAndSwitch(boolean isLeftScale) {
 		if (isLeftScale) {
-			toScale = Paths.getPath(LeftSide.L_SCALE);
+			toScale = Paths.getPath(Left.L_SCALE);
 			targetTurnAngle = 163;
 			endTargetTurnAngle = 17;
-			fromScaleToSwitchSecondCube = Paths.getPath(LeftSide.L_SWITCH_TO_L_SCALE_SECOND_CUBE);
+			fromScaleToSwitchSecondCube = Paths.getPath(Left.L_SWITCH_TO_L_SCALE_THIRD_CUBE);
 			isRightTurnToSwitch = true;
 		} else {
-			toScale = Paths.getPath(LeftSide.R_SCALE);
+			toScale = Paths.getPath(Left.R_SCALE);
 			targetTurnAngle = -165;
 			endTargetTurnAngle = -25;
-			fromScaleToSwitchSecondCube = Paths.getPath(RightSide.R_SWITCH_TO_R_SCALE_SECOND_CUBE);
+			fromScaleToSwitchSecondCube = Paths.getPath(Right.R_SWITCH_TO_R_SCALE_THIRD_CUBE);
 			isRightTurnToSwitch = false;
 		}
 		elevatorWaitTime = 1.5;
@@ -47,10 +47,7 @@ public class DoubleScaleAndSwitch extends AutonBase{
 					}))
 		})));
 		// Outfeed cube for 0.2s
-		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-					new WaitAction(0.2),
-					new OutfeedCubeAction()
-		})));
+		runAction(new OutfeedCubeAction());
 		// Lower Elevator to Switch during turn, then drive to 2nd cube while setting infeed wide and continuing to lower elevator
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 					new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT),
@@ -72,10 +69,7 @@ public class DoubleScaleAndSwitch extends AutonBase{
 					new MoveElevatorToPosAction(30)
 		})));
 		// Outfeed cube for 0.2s
-		runAction(new SimultaneousAction(Arrays.asList(new Action[ ] {
-					new WaitAction(0.2),
-					new OutfeedCubeAction()
-		}))); 
+		runAction(new OutfeedCubeAction());
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 					new SeriesAction(Arrays.asList(new Action[] {
 							new DriveSetDistanceAction(-13.0),

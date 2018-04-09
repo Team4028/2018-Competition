@@ -6,6 +6,7 @@ import java.util.Date;
 
 import org.usfirst.frc.team4028.robot.auton.AutonExecuter;
 import org.usfirst.frc.team4028.robot.paths.AdaptedPaths;
+import org.usfirst.frc.team4028.robot.paths.Paths;
 import org.usfirst.frc.team4028.robot.sensors.PressureSensor;
 import org.usfirst.frc.team4028.robot.sensors.RobotStateEstimator;
 import org.usfirst.frc.team4028.robot.sensors.SwitchableCameraServer;
@@ -70,6 +71,8 @@ public class Robot extends IterativeRobot {
 		_enabledLooper.register(RobotStateEstimator.getInstance().getLoop());
 		
 		_dashboard.printStartupMessage();
+		
+		Paths.buildPaths();
 		
 		// Hold scan times moving average samples
 		_scanTimeSamples = new MovingAverage(100);
@@ -146,7 +149,7 @@ public class Robot extends IterativeRobot {
 		
 		_chassis.zeroGyro();
 		
-		AdaptedPaths.locateFlavorTownUSA();
+		//AdaptedPaths.locateFlavorTownUSA();
 		
 		_autonExecuter = new AutonExecuter();
 		_autonExecuter.setAutoMode(_dashboard.getSelectedAuton());
