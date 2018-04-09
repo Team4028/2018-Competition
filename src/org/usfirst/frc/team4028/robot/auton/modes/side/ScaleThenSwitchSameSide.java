@@ -5,8 +5,8 @@ import java.util.Arrays;
 import org.usfirst.frc.team4028.robot.auton.AutonBase;
 import org.usfirst.frc.team4028.robot.auton.actions.*;
 import org.usfirst.frc.team4028.robot.paths.Paths;
-import org.usfirst.frc.team4028.robot.paths.Paths.Left;
-import org.usfirst.frc.team4028.robot.paths.Paths.Right;
+import org.usfirst.frc.team4028.robot.paths.Paths.LeftSide;
+import org.usfirst.frc.team4028.robot.paths.Paths.RightSide;
 import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_PRESET_POSITION;
 import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_ARM_TARGET_POSITION;
 import org.usfirst.frc.team4028.util.control.Path;
@@ -19,13 +19,13 @@ public class ScaleThenSwitchSameSide extends AutonBase {
 	public ScaleThenSwitchSameSide(boolean isLeftScale, boolean isStartingLeft) {
 		if (isLeftScale) {
 			if (isStartingLeft) {
-				toScale = Paths.getPath(Left.L_SCALE);
+				toScale = Paths.getPath(LeftSide.L_SCALE);
 				targetTurnAngle = 163;
 				elevatorWaitTime = 1.5;
 				driveToSwitchDistance = 40.0;
 				isTurnRight = true;
 			} else {
-				toScale = Paths.getPath(Right.L_SCALE);
+				toScale = Paths.getPath(RightSide.L_SCALE);
 				targetTurnAngle = 168;
 				elevatorWaitTime = 4.0;
 				driveToSwitchDistance = 32.0;
@@ -33,13 +33,13 @@ public class ScaleThenSwitchSameSide extends AutonBase {
 			}
 		} else {
 			if (isStartingLeft) {
-				toScale = Paths.getPath(Left.R_SCALE);
+				toScale = Paths.getPath(LeftSide.R_SCALE);
 				targetTurnAngle = -166;
 				elevatorWaitTime = 4.0;	
 				driveToSwitchDistance = 37.0;
 				isTurnRight = true;
 			} else {
-				toScale = Paths.getPath(Right.R_SCALE);
+				toScale = Paths.getPath(RightSide.R_SCALE);
 				targetTurnAngle = -165;
 				elevatorWaitTime = 1.5;
 				driveToSwitchDistance = 32.0;
@@ -59,7 +59,10 @@ public class ScaleThenSwitchSameSide extends AutonBase {
 					}))
 		})));
 		// Outfeed cube for 0.2s
-		runAction(new OutfeedCubeAction());
+		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
+					new WaitAction(0.2),
+					new OutfeedCubeAction()
+		})));
 		// Lower Elevator to Switch during turn, then drive to 2nd cube while setting infeed wide and continuing to lower elevator
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 					new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT),
@@ -81,7 +84,10 @@ public class ScaleThenSwitchSameSide extends AutonBase {
 					new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SWITCH_HEIGHT)
 		})));
 		// Outfeed cube for 0.2s
-		runAction(new OutfeedCubeAction());
+		runAction(new SimultaneousAction(Arrays.asList(new Action[ ] {
+					new WaitAction(0.2),
+					new OutfeedCubeAction()
+		}))); 
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 					new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT),
 					new DriveSetDistanceAction(-20.0)

@@ -171,7 +171,6 @@ public class Chassis implements Subsystem {
 	} 
 	
 	/** Updates target position every cycle while using MotionMagic to turn to heading goal */
-	@SuppressWarnings("unused")
 	private void moveToTargetAngle() {
 		// TODO: This code needs to be simplified. Should convert angles to vectors and use dot product to get angle difference.
 		if((_navX.getYaw() >= 0 && _targetAngle >= 0 && _isTurnRight && _navX.getYaw() > _targetAngle) ||
@@ -186,7 +185,7 @@ public class Chassis implements Subsystem {
 				(_navX.getYaw() < 0 && _targetAngle < 0 && _isTurnRight && Math.abs(_navX.getYaw()) > Math.abs(_targetAngle)) ||
 				(_navX.getYaw() < 0 && _targetAngle < 0 && !_isTurnRight && Math.abs(_navX.getYaw()) < Math.abs(_targetAngle))) {
 			_angleError = _targetAngle - _navX.getYaw();
-		}	
+		}		
 		else if((_navX.getYaw() >= 0 && _targetAngle >= 0 && !_isTurnRight && _navX.getYaw() < _targetAngle)||
 				(_navX.getYaw() < 0 && _targetAngle < 0 && !_isTurnRight && Math.abs(_navX.getYaw()) > Math.abs(_targetAngle))||
 				(_navX.getYaw() < 0 && _targetAngle >= 0 && !_isTurnRight)) {

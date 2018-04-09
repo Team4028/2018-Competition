@@ -17,25 +17,33 @@ public class Path {
 	boolean isReversed;
 	public double maxAccel, maxDecel;
 	public double inertiaSteeringGain;
-	public double startingAngle;
 	
 	public void extrapolateLast() {
 		PathSegment last = segments.get(segments.size() - 1);
 		last.extrapolateLookahead(true);
 	}
 	
-	public Path(double maxAccel, double maxDecel, double inertiaGain, boolean isReversed) {
+	public Path() {
 		segments = new ArrayList<PathSegment>();
-		this.maxAccel = maxAccel;
-		this.maxDecel = maxDecel;
-		inertiaSteeringGain = inertiaGain;
-		this.isReversed = isReversed;
-		startingAngle = 0;
 	}
 	
-	/** Add a segment to the Path */
+	/**
+     * add a segment to the Path
+     * 
+     * @param segment
+     *            the segment to add
+     */
     public void addSegment(PathSegment segment) {
         segments.add(segment);
+    }
+    
+    public void setAccDec(double maxAccel, double maxDecel) {
+    	this.maxAccel = maxAccel;
+    	this.maxDecel = maxDecel;
+    }
+    
+    public void setInertiaGain(double inertiaGain) {
+    	inertiaSteeringGain = inertiaGain;
     }
 
     /** @return the last MotionState in the path */
@@ -51,15 +59,7 @@ public class Path {
     public RigidTransform getStartPose() {
 		return new RigidTransform(segments.get(0).getStart(), new Rotation(Rotation.fromDegrees(0.0)));
     }
-    
-    public void setStartingAngle(double startingAngle) {
-    	this.startingAngle = startingAngle;
-    }
 
-    public double getStartingAngle() {
-    	return startingAngle;
-    }
-    
     /**
      * get the remaining distance left for the robot to travel on the current segment
      * 
@@ -144,6 +144,10 @@ public class Path {
         return currentSegment.getSpeedByClosestPoint(robotPos);
     }
     
+    public void setIsReversed(boolean isReversed) {
+    	this.isReversed = isReversed;
+    }
+    
     public boolean isReversed() {
     	return isReversed;
     }
@@ -179,8 +183,10 @@ public class Path {
             maxStartSpeed += Math
                     .sqrt(maxStartSpeed * maxStartSpeed + 2 * maxAccel * segment.getLength());
             startSpeeds[i] = segment.getStartState().vel();
+            // System.out.println(maxStartSpeed + ", " + startSpeeds[i]);
             if (startSpeeds[i] > maxStartSpeed) {
                 startSpeeds[i] = maxStartSpeed;
+                // System.out.println("Segment starting speed is too high!");
             }
             maxStartSpeed = startSpeeds[i];
         }

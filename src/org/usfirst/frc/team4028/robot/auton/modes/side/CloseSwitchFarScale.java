@@ -4,16 +4,16 @@ import java.util.Arrays;
 
 import org.usfirst.frc.team4028.robot.auton.AutonBase;
 import org.usfirst.frc.team4028.robot.paths.Paths;
-import org.usfirst.frc.team4028.robot.paths.Paths.Left;
+import org.usfirst.frc.team4028.robot.paths.Paths.LeftSide;
 import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_PRESET_POSITION;
 import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_ARM_TARGET_POSITION;
 import org.usfirst.frc.team4028.util.control.Path;
 import org.usfirst.frc.team4028.robot.auton.actions.*;
 
 public class CloseSwitchFarScale extends AutonBase {
-	Path toLeftSwitchOnSide = Paths.getPath(Left.L_SWITCH_SIDE);
-	Path toRightScalefromLeftSwitchSide = Paths.getPath(Left.L_SWITCH_SIDE_TO_R_SCALE);
-	Path toRightScaleSecondCube = Paths.getPath(Left.TO_R_SCALE_SECOND_CUBE);
+	Path toLeftSwitchOnSide = Paths.getPath(LeftSide.L_SWITCH_SIDE);
+	Path toRightScalefromLeftSwitchSide = Paths.getPath(LeftSide.L_SWITCH_SIDE_TO_R_SCALE);
+	Path toRightScaleSecondCube = Paths.getPath(LeftSide.TO_R_SCALE_SECOND_CUBE);
 	double _firstWaitTime = 0.8;
 	
 	@Override
@@ -26,7 +26,10 @@ public class CloseSwitchFarScale extends AutonBase {
 				new RunTimedMotionProfileAction(toLeftSwitchOnSide, 2.6)
 		})));
 		// Outfeed cube for 0.2s
-		runAction(new OutfeedCubeAction());
+		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
+					new WaitAction(0.2),
+					new OutfeedCubeAction()
+		})));
 		runAction(new PrintTimeFromStart(_startTime));
 		// Turn to 0 degrees to be parallel to switch and lower infeed to floor
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
@@ -59,7 +62,10 @@ public class CloseSwitchFarScale extends AutonBase {
 				}))
 		})));
 		// Outfeed cube for 0.2s
-		runAction(new OutfeedCubeAction());
+		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
+					new WaitAction(0.2),
+					new OutfeedCubeAction()
+		}))); 
 		runAction(new PrintTimeFromStart(_startTime));
 		runAction(new DriveSetDistanceAction(-15.0));
 		runAction(new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT));
