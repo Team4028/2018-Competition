@@ -54,6 +54,7 @@ public class Infeed  implements Subsystem {
 		FEED_OUT,
 		SPIN_COUNTER_CLOCKWISE,
 		SPIN_CLOCKWISE,
+		SPIN_AUTON
 	}
 		
 	public enum INFEED_DRIVE_DIRECTION {
@@ -75,6 +76,7 @@ public class Infeed  implements Subsystem {
 	// supports bumping
 	private double _currentInFeedArmSqueezeTargetAngle = INFEED_POSITION_ANGLE; // 198;
 	private double _currentInFeedWheelsVBusCmd = .50; //.45;
+	private double _autonInfeedWheelsSpinCommand = 1.0;
 	
 	// motor controllers
 	TalonSRX _leftSwitchbladeArmMotor; 
@@ -376,6 +378,11 @@ public class Infeed  implements Subsystem {
 						_leftInfeedWheelMotor.set(ControlMode.PercentOutput, _currentInFeedWheelsVBusCmd);
 						_rightInfeedWheelMotor.set(ControlMode.PercentOutput, _currentInFeedWheelsVBusCmd);
 						break;
+					
+					case SPIN_AUTON:
+						_leftInfeedWheelMotor.set(ControlMode.PercentOutput, _autonInfeedWheelsSpinCommand);
+						_rightInfeedWheelMotor.set(ControlMode.PercentOutput, _autonInfeedWheelsSpinCommand);
+						break;
 				}
 			}
 		}
@@ -532,6 +539,15 @@ public class Infeed  implements Subsystem {
 		}
 	}
 	
+	public void infeedWheels_SpinCube_Auton()
+	{
+		if(_infeedWheelsState != INFEED_WHEELS_STATE.SPIN_AUTON) 
+		{
+			ReportStateChg("Infeed Arm (State) " + _infeedWheelsState.toString() + " ==> [ENGR_GAMEPAD_B_SPIN_RIGHT_MODE]");
+			_infeedWheelsState = INFEED_WHEELS_STATE.SPIN_AUTON;
+		}
+	}
+	
 	public void infeedWheels_VBusCmd_BumpUp() {
 		double newCmd = _currentInFeedWheelsVBusCmd + INFEED_DRIVE_WHEELS_VBUS_COMMAND_BUMP;
 		
@@ -617,11 +633,11 @@ public class Infeed  implements Subsystem {
 	//=====================================================================================
 	//Methods for Exposing Properties of Infeed Motors
 	//=====================================================================================
-	private double getCurrentLeftInfeedPosition() {
+	public double getCurrentLeftInfeedPosition() {
 		return _leftSwitchbladeArmMotor.getSelectedSensorPosition(0);
 	}
 	
-	private double getCurrentRightInfeedPosition() {
+	public double getCurrentRightInfeedPosition() {
 		return _rightSwitchbladeArmMotor.getSelectedSensorPosition(0);
 	}
 	
@@ -641,7 +657,7 @@ public class Infeed  implements Subsystem {
 		return nativeUnits;
 	}
 	
-	private double nativeUnitsToDegrees(double nativeUnitsMeasure) {
+	public double nativeUnitsToDegrees(double nativeUnitsMeasure) {
 		double degrees = nativeUnitsMeasure / DEGREES_TO_NATIVE_UNITS_CONVERSION;
 		return degrees;
 	}
