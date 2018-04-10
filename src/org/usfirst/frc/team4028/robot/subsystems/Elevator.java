@@ -114,7 +114,13 @@ public class Elevator implements Subsystem {
 	private static final int MOVING_DOWN_PID_SLOT_INDEX = 0;
 	
   	// define PID Constants
-	public static final int UP_CRUISE_VELOCITY = 4061; // native units per 100 mSec 50% of max
+	public static final int AUTON_UP_CRUISE_VELOCITY = 4061; // native units per 100 mSec 50% of max
+	public static final int AUTON_UP_ACCELERATION = 4500;	// native units per 100 mSec per sec
+	
+	public static final int AUTON_DOWN_CRUISE_VELOCITY = 3000; // native units per 100 mSec 50% of max
+	public static final int AUTON_DOWN_ACCELERATION = 2500; // native units per 100 mSec per sec
+	
+	public static final int UP_CRUISE_VELOCITY = 4000; // native units per 100 mSec 50% of max
 	public static final int UP_ACCELERATION = 4500;	// native units per 100 mSec per sec
 	
 	public static final int DOWN_CRUISE_VELOCITY = 3000; // native units per 100 mSec 50% of max
@@ -589,6 +595,8 @@ public class Elevator implements Subsystem {
 		SmartDashboard.putNumber("Elevator:Position(in)", GeneralUtilities.roundDouble((NativeUnitsToInches(_actualPositionNU)),2));
 		SmartDashboard.putNumber("Elevator:Velocity", GeneralUtilities.roundDouble(actualVelocity, 2));
 		SmartDashboard.putNumber("Elevator:Acceleration", GeneralUtilities.roundDouble(actualAcceleration, 2));
+		SmartDashboard.putNumber("Elevator: Velocity Constant Up", UP_CRUISE_VELOCITY);
+		SmartDashboard.putNumber("Elevator: Acceleration Constant Up", UP_ACCELERATION);
 
 		SmartDashboard.putNumber("Elevator:TargetPosition",_targetElevatorPositionNU);
 		SmartDashboard.putBoolean("Elevator:IsInPosition", IsAtTargetPosition());

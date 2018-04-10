@@ -414,13 +414,13 @@ public class Robot extends IterativeRobot {
     		// each subsystem should add a call to a outputToSmartDashboard method
     		// to push its data out to the dashboard
 
-    		_chassis.outputToShuffleboard(); 
+    		//_chassis.outputToShuffleboard(); 
     		_elevator.outputToShuffleboard();
-    		_infeed.outputToShuffleboard();
-    		_carriage.outputToShuffleboard();
-	    	_cubeHandler.outputToShuffleboard();
-	    	_climber.outputToShuffleboard();
-	    	_pressureSensor.outputToShuffleboard();
+    		//_infeed.outputToShuffleboard();
+    		//_carriage.outputToShuffleboard();
+	    	//_cubeHandler.outputToShuffleboard();
+	    	//_climber.outputToShuffleboard();
+	    	//_pressureSensor.outputToShuffleboard();
 	    	
     		// write the overall robot dashboard info
 	    	SmartDashboard.putString("Robot Build", _buildMsg);
