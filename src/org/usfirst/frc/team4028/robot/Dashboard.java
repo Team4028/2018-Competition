@@ -35,6 +35,7 @@ public class Dashboard {
 		DOUBLE_SCALE,
 		SCALE_THEN_SWITCH,
 		DOUBLE_SCALE_THEN_SWITCH,
+		TRIPLE_SCALE,
 		EXPERIMENTAL,
 		TEST_AUTON
 	}
@@ -142,6 +143,9 @@ public class Dashboard {
 						return new FarSwitchCloseScale(_isStartingLeft);
 					}
 				}
+				
+			case TRIPLE_SCALE:
+				return new TripleScale(_isStartingLeft);
 				
 			case EXPERIMENTAL:
 				return new CloseSwitchFarScale();

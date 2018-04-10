@@ -69,6 +69,8 @@ public class Robot extends IterativeRobot {
 		_enabledLooper.register(_cubeHandler.getLoop());
 		_enabledLooper.register(RobotStateEstimator.getInstance().getLoop());
 		
+		AdaptedPaths.buildPaths();
+		
 		_dashboard.printStartupMessage();
 		
 		// Hold scan times moving average samples
@@ -146,7 +148,7 @@ public class Robot extends IterativeRobot {
 		
 		_chassis.zeroGyro();
 		
-		AdaptedPaths.locateFlavorTownUSA();
+		//AdaptedPaths.locateFlavorTownUSA();
 		
 		_autonExecuter = new AutonExecuter();
 		_autonExecuter.setAutoMode(_dashboard.getSelectedAuton());

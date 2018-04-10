@@ -18,11 +18,11 @@ public class DoubleSwitch extends AutonBase {
 	public DoubleSwitch(boolean isLeftSwitch) {
 		if (isLeftSwitch) {
 			toSwitch = Paths.getPath(Center.L_SWITCH);
-			fromSwitchToFrontOfPyramidPath = Paths.getPath(Center.L_SWITCH_TO_FRONT_OF_PYRAMID);
+			fromSwitchToFrontOfPyramidPath = Paths.getPath(Center.L_SWITCH_TO_PYRAMID_FRONT);
 			sTurnToSwitch = Paths.getPath(Center.S_TURN_TO_L_SWITCH);
 		} else {
 			toSwitch = Paths.getPath(Center.R_SWITCH);
-			fromSwitchToFrontOfPyramidPath = Paths.getPath(Center.R_SWITCH_TO_FRONT_OF_PYRAMID);
+			fromSwitchToFrontOfPyramidPath = Paths.getPath(Center.R_SWITCH_TO_PYRAMID_FRONT);
 			sTurnToSwitch = Paths.getPath(Center.S_TURN_TO_R_SWITCH);
 		}
 		
@@ -45,10 +45,7 @@ public class DoubleSwitch extends AutonBase {
 		})));
 		runAction(new PrintTimeFromStart(_startTime));
 		// Outfeed cube for 0.2s
-		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-				new WaitAction(0.2),
-				new OutfeedCubeAction()
-		})));
+		runAction(new OutfeedCubeAction());
 		// Drive to front of pyramid while moving elevator to floor and swinging out infeeds
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 				new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT),	

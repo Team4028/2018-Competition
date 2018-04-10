@@ -5,8 +5,8 @@ import java.util.Arrays;
 import org.usfirst.frc.team4028.robot.auton.AutonBase;
 import org.usfirst.frc.team4028.robot.auton.actions.*;
 import org.usfirst.frc.team4028.robot.paths.Paths;
-import org.usfirst.frc.team4028.robot.paths.Paths.LeftSide;
-import org.usfirst.frc.team4028.robot.paths.Paths.RightSide;
+import org.usfirst.frc.team4028.robot.paths.Paths.Left;
+import org.usfirst.frc.team4028.robot.paths.Paths.Right;
 import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_PRESET_POSITION;
 import org.usfirst.frc.team4028.util.control.Path;
 
@@ -19,11 +19,11 @@ public class ScaleOutside extends AutonBase{
 	
 	public ScaleOutside(boolean isStartingLeft) {
 		if (isStartingLeft) {
-			toScale = Paths.getPath(LeftSide.L_SCALE_OUTSIDE);
+			toScale = Paths.getPath(Left.L_SCALE_OUTSIDE);
 			targetTurnAngle = 80;
 			isTurnRight = true;
 		} else {
-			toScale = Paths.getPath(RightSide.R_SCALE_OUTSIDE);
+			toScale = Paths.getPath(Right.R_SCALE_OUTSIDE);
 			targetTurnAngle = -80;
 			isTurnRight = false;
 		}
@@ -50,10 +50,7 @@ public class ScaleOutside extends AutonBase{
 		})));
 		runAction(new DriveSetDistanceAction(15.0));
 		// Outfeed cube for 0.2s
-		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-				new WaitAction(0.2),
-				new OutfeedCubeAction()
-		})));
+		runAction(new OutfeedCubeAction());
 		// Drive backwards 20in and move elevator to floor
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 				new DriveSetDistanceAction(-20.0),

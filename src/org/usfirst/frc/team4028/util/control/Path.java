@@ -23,8 +23,11 @@ public class Path {
 		last.extrapolateLookahead(true);
 	}
 	
-	public Path() {
+	public Path(double maxAccel, double maxDecel, double inertiaGain) {
 		segments = new ArrayList<PathSegment>();
+		this.maxAccel = maxAccel;
+		this.maxDecel = maxDecel;
+		inertiaSteeringGain = inertiaGain;
 	}
 	
 	/**
@@ -35,15 +38,6 @@ public class Path {
      */
     public void addSegment(PathSegment segment) {
         segments.add(segment);
-    }
-    
-    public void setAccDec(double maxAccel, double maxDecel) {
-    	this.maxAccel = maxAccel;
-    	this.maxDecel = maxDecel;
-    }
-    
-    public void setInertiaGain(double inertiaGain) {
-    	inertiaSteeringGain = inertiaGain;
     }
 
     /** @return the last MotionState in the path */
@@ -183,10 +177,8 @@ public class Path {
             maxStartSpeed += Math
                     .sqrt(maxStartSpeed * maxStartSpeed + 2 * maxAccel * segment.getLength());
             startSpeeds[i] = segment.getStartState().vel();
-            // System.out.println(maxStartSpeed + ", " + startSpeeds[i]);
             if (startSpeeds[i] > maxStartSpeed) {
                 startSpeeds[i] = maxStartSpeed;
-                // System.out.println("Segment starting speed is too high!");
             }
             maxStartSpeed = startSpeeds[i];
         }

@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 @SuppressWarnings("unused")// nailed it
 
 public class AdaptedPaths extends Paths {//oh God we're here
+	/*
 	public static Path getAdaptedPath(Center pathName) {
 		Path path;
 		
@@ -159,6 +160,7 @@ public class AdaptedPaths extends Paths {//oh God we're here
 		return sWaypoints;
 	}*/
 	
+	/*
 	public static ArrayList<Waypoint> adaptRightSwitch() {
 		ArrayList<Waypoint> sWaypoints= new ArrayList<Waypoint>();
 		sWaypoints=flipPath(getLeftSwitchWaypoints());
@@ -235,6 +237,7 @@ public class AdaptedPaths extends Paths {//oh God we're here
 		return sWaypoints;
 	}*/
 	
+	/*
 	public static Path getAdaptedPath(LeftSide pathName) {
 		Path path;
 		
@@ -403,4 +406,5 @@ public class AdaptedPaths extends Paths {//oh God we're here
 		String whatAreWeDoing = "Rolling Out to Find America's Greatest Diners, Drive-ins and Dives";
 		System.out.println("Flavor Town USA Located: " + flavorTownUSAX + ", " + flavorTownUSAY);
 	}
+	*/
 }

@@ -342,6 +342,11 @@ public class Chassis implements Subsystem {
         return inches_per_second * 148.2;
     }
 	
+	
+	public synchronized double getRemainingPathDistance() {
+		return _pathFollower.remainingPathLength();
+	}
+	
 	public synchronized void setBrakeMode(boolean isBrakeMode) {
 		NeutralMode mode = (isBrakeMode ? NeutralMode.Brake : NeutralMode.Coast);
 		
@@ -432,6 +437,7 @@ public class Chassis implements Subsystem {
 		logData.AddData("Pose X", String.valueOf(RobotState.getInstance().getLatestFieldToVehicle().getValue().getTranslation().x()));
 		logData.AddData("Pose Y", String.valueOf(RobotState.getInstance().getLatestFieldToVehicle().getValue().getTranslation().y()));
 		logData.AddData("Pose Angle", String.valueOf(RobotState.getInstance().getLatestFieldToVehicle().getValue().getRotation().getDegrees()));
+		logData.AddData("Remaining Distance", String.valueOf(getRemainingPathDistance()));
 		
 		logData.AddData("Center Target Velocity", String.valueOf(GeneralUtilities.roundDouble(_centerTargetVelocity, 2)));
 	}

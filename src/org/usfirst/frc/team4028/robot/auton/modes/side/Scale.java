@@ -5,8 +5,9 @@ import java.util.Arrays;
 import org.usfirst.frc.team4028.robot.auton.AutonBase;
 import org.usfirst.frc.team4028.robot.auton.actions.*;
 import org.usfirst.frc.team4028.robot.paths.Paths;
-import org.usfirst.frc.team4028.robot.paths.Paths.LeftSide;
-import org.usfirst.frc.team4028.robot.paths.Paths.RightSide;
+import org.usfirst.frc.team4028.robot.paths.Paths.Left;
+import org.usfirst.frc.team4028.robot.paths.Paths.Right;
+import org.usfirst.frc.team4028.robot.subsystems.Carriage;
 import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_PRESET_POSITION;
 import org.usfirst.frc.team4028.util.control.Path;
 
@@ -17,18 +18,18 @@ public class Scale extends AutonBase{
 	public Scale(boolean isScaleLeft, boolean isStartingLeft) {
 		if (isStartingLeft) {
 			if (isScaleLeft) {
-				toScale = Paths.getPath(LeftSide.L_SCALE);
-				elevatorWaitTime = 1.5;
+				toScale = Paths.getPath(Left.L_SCALE);
+				elevatorWaitTime = 1;
 			} else {
-				toScale = Paths.getPath(LeftSide.R_SCALE);
-				elevatorWaitTime = 4.0;
+				toScale = Paths.getPath(Left.R_SCALE);
+				elevatorWaitTime = 3.75;
 			}
 		} else {
 			if (isScaleLeft) {
-				toScale = Paths.getPath(RightSide.L_SCALE);
+				toScale = Paths.getPath(Right.L_SCALE);
 				elevatorWaitTime = 4.0;
 			} else {
-				toScale = Paths.getPath(RightSide.R_SCALE);
+				toScale = Paths.getPath(Right.R_SCALE);
 				elevatorWaitTime = 1.5;
 			}
 		}
@@ -41,13 +42,10 @@ public class Scale extends AutonBase{
 					new RunMotionProfileAction(toScale),
 					new SeriesAction(Arrays.asList(new Action[] {
 							new WaitAction(elevatorWaitTime),
-							new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.HIGH_SCALE_HEIGHT)
+							new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.HIGH_SCALE_HEIGHT),
+							new WaitUntilRemainingDistanceAction(18),
+							new OutfeedCubeAction(Carriage.CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_50)
 					}))
-		})));
-		// Outfeed cube for 0.2s
-		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-				new WaitAction(0.2),
-				new OutfeedCubeAction()
 		})));
 		runAction(new PrintTimeFromStart(_startTime));
 		// Drive backwards 20in and move elevator to floor

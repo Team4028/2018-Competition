@@ -3,16 +3,28 @@ package org.usfirst.frc.team4028.robot.auton.modes.side;
 import java.util.Arrays;
 
 import org.usfirst.frc.team4028.robot.auton.AutonBase;
-import org.usfirst.frc.team4028.robot.auton.actions.*;
+import org.usfirst.frc.team4028.robot.auton.actions.Action;
+import org.usfirst.frc.team4028.robot.auton.actions.DriveSetDistanceAction;
+import org.usfirst.frc.team4028.robot.auton.actions.InfeedCubeAction;
+import org.usfirst.frc.team4028.robot.auton.actions.MoveElevatorToPosAction;
+import org.usfirst.frc.team4028.robot.auton.actions.OutfeedCubeAction;
+import org.usfirst.frc.team4028.robot.auton.actions.PrintTimeFromStart;
+import org.usfirst.frc.team4028.robot.auton.actions.RunMotionProfileAction;
+import org.usfirst.frc.team4028.robot.auton.actions.SeriesAction;
+import org.usfirst.frc.team4028.robot.auton.actions.SetInfeedPosAction;
+import org.usfirst.frc.team4028.robot.auton.actions.SimultaneousAction;
+import org.usfirst.frc.team4028.robot.auton.actions.TurnAction;
+import org.usfirst.frc.team4028.robot.auton.actions.WaitAction;
+import org.usfirst.frc.team4028.robot.auton.actions.WaitUntilRemainingDistanceAction;
 import org.usfirst.frc.team4028.robot.paths.Paths;
 import org.usfirst.frc.team4028.robot.paths.Paths.Left;
 import org.usfirst.frc.team4028.robot.paths.Paths.Right;
-import org.usfirst.frc.team4028.robot.subsystems.Carriage.CARRIAGE_WHEELS_OUT_VBUS_INDEX;
+import org.usfirst.frc.team4028.robot.subsystems.Carriage;
 import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_PRESET_POSITION;
 import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_ARM_TARGET_POSITION;
 import org.usfirst.frc.team4028.util.control.Path;
 
-public class DoubleScale extends AutonBase{
+public class TripleScale extends AutonBase {
 	Path toScale;
 	
 	double toSwitchDistance, toScaleAgainDistance;
@@ -22,51 +34,27 @@ public class DoubleScale extends AutonBase{
 	
 	boolean isRightTurnToSwitch;
 	
-	public DoubleScale(boolean isLeftScale, boolean isStartingLeft) {
-		if (isLeftScale) {
-			if (isStartingLeft) {
-				toScale = Paths.getPath(Left.L_SCALE);
-				toSwitchDistance = 40.0;
-				toScaleAgainDistance = -41.0;
-				targetTurnAngle = 163;
-				endTargetTurnAngle = 30;
-				finalTurnTargetAngle = 144;
-				elevatorWaitTime1 = 1.25;
-				elevatorWaitTime2 = 0.9;
-				isRightTurnToSwitch = true;
-			} else {
-				toScale = Paths.getPath(Right.L_SCALE); 
-				toSwitchDistance = 37.0;
-				toScaleAgainDistance = -37.0;
-				targetTurnAngle = 168;
-				endTargetTurnAngle = 15;
-				finalTurnTargetAngle = 135;
-				elevatorWaitTime1 = 4.0;
-				elevatorWaitTime2 = 1.0;
-				isRightTurnToSwitch = false;
-			}
+	public TripleScale(boolean isStartingLeft) {
+		if (isStartingLeft) {
+			toScale = Paths.getPath(Left.L_SCALE);
+			toSwitchDistance = 40.0;
+			toScaleAgainDistance = -41.0;
+			targetTurnAngle = 163;
+			endTargetTurnAngle = 30;
+			finalTurnTargetAngle = 144;
+			elevatorWaitTime1 = 1.0;
+			elevatorWaitTime2 = 0.5;
+			isRightTurnToSwitch = true;
 		} else {
-			if (isStartingLeft) {
-				toScale = Paths.getPath(Left.R_SCALE);
-				toSwitchDistance = 37.0;
-				toScaleAgainDistance = -38.0;
-				targetTurnAngle = -166;
-				endTargetTurnAngle = -20.0;
-				finalTurnTargetAngle = -135;
-				elevatorWaitTime1 = 4.25;
-				elevatorWaitTime2 = 1.0;
-				isRightTurnToSwitch = true;
-			} else {
-				toScale = Paths.getPath(Right.R_SCALE);
-				toSwitchDistance = 40.0;
-				toScaleAgainDistance = -40.0;
-				targetTurnAngle = -165;
-				endTargetTurnAngle = -25;
-				finalTurnTargetAngle = -135;
-				elevatorWaitTime1 = 2.0;
-				elevatorWaitTime2 = 0.5;
-				isRightTurnToSwitch = false;
-			}
+			toScale = Paths.getPath(Right.R_SCALE);
+			toSwitchDistance = 40.0;
+			toScaleAgainDistance = -41.0;
+			targetTurnAngle = -163;
+			endTargetTurnAngle = -30;
+			finalTurnTargetAngle = -144;
+			elevatorWaitTime1 = 1.0;
+			elevatorWaitTime2 = 0.5;
+			isRightTurnToSwitch = false;
 		}
 	}
 
@@ -79,7 +67,7 @@ public class DoubleScale extends AutonBase{
 						new WaitAction(elevatorWaitTime1),
 						new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.HIGH_SCALE_HEIGHT),
 						new WaitUntilRemainingDistanceAction(18),
-						new OutfeedCubeAction(CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_50)
+						new OutfeedCubeAction(Carriage.CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_50)
 				}))
 		})));
 		// Outfeed cube for 0.2s
@@ -129,9 +117,14 @@ public class DoubleScale extends AutonBase{
 		runAction(new PrintTimeFromStart(_startTime));
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 					new DriveSetDistanceAction(-50.0),
-					new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.STORE)
+					new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.STORE),
+					new MoveElevatorToPosAction(40)
 		})));
-		runAction(new TurnAction(0.0, false));
+		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
+				new TurnAction(20, false),
+				new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.HIGH_SCALE_HEIGHT)
+		})));
+		runAction(new OutfeedCubeAction());
 		runAction(new PrintTimeFromStart(_startTime));
 	}
 }
