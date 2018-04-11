@@ -17,6 +17,7 @@ public class Path {
 	boolean isReversed;
 	public double maxAccel, maxDecel;
 	public double inertiaSteeringGain;
+	private double startingAngle;
 	
 	public void extrapolateLast() {
 		PathSegment last = segments.get(segments.size() - 1);
@@ -144,6 +145,14 @@ public class Path {
     
     public boolean isReversed() {
     	return isReversed;
+    }
+    
+    public void setStartingAngle(double angle) {
+    	startingAngle = angle;
+    }
+    
+    public double getStartingAngle() {
+    	return startingAngle;
     }
     
     /**

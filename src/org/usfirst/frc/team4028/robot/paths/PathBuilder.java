@@ -10,6 +10,8 @@ import org.usfirst.frc.team4028.util.motion.RigidTransform;
 import org.usfirst.frc.team4028.util.motion.Rotation;
 import org.usfirst.frc.team4028.util.motion.Translation;
 
+import static org.usfirst.frc.team4028.util.motion.Translation.getAngle;
+
 public class PathBuilder {
 	private static final double kEpsilon = 1E-9;
     private static final double kReallyBigNumber = 1E9;
@@ -29,6 +31,7 @@ public class PathBuilder {
             } while (i < w.size() - 2);
         }
         new Line(w.get(w.size() - 2), w.get(w.size() - 1)).addToPath(p, 0);
+        p.setStartingAngle(getAngle(w.get(0).pos, w.get(1).pos).getDegrees());
         p.extrapolateLast();
         p.verifySpeeds();
         p.setIsReversed(isReversed);
@@ -51,12 +54,13 @@ public class PathBuilder {
     	return buildPathFromWaypoints(false, w);
     }
     
-    public static Path buildStraightPath(Translation startPose, double startAngle, double distance) {
+    public static ArrayList<Waypoint> getStraightPathWaypoints(Translation startPose, double startAngle, double distance) {
     	Translation endPose = startPose.extrapolate(startPose.translateBy(Rotation.fromDegrees(startAngle).toTranslation()), distance);
+    	//System.out.println(endPose.toString());
     	ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
     	sWaypoints.add(new Waypoint(startPose, 0, 0));
-    	sWaypoints.add(new Waypoint(endPose, 0, 100));
-    	return buildPathFromWaypoints(sWaypoints);
+    	sWaypoints.add(new Waypoint(endPose, 0, 140));
+    	return sWaypoints;
     }
 
     private static Waypoint getPoint(List<Waypoint> w, int i) {

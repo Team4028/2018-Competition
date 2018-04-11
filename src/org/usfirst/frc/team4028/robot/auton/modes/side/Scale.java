@@ -19,7 +19,7 @@ public class Scale extends AutonBase{
 		if (isStartingLeft) {
 			if (isScaleLeft) {
 				toScale = Paths.getPath(Left.L_SCALE);
-				elevatorWaitTime = 1;
+				elevatorWaitTime = 1.25;
 			} else {
 				toScale = Paths.getPath(Left.R_SCALE);
 				elevatorWaitTime = 3.75;
@@ -41,10 +41,10 @@ public class Scale extends AutonBase{
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 					new RunMotionProfileAction(toScale),
 					new SeriesAction(Arrays.asList(new Action[] {
-							new WaitAction(elevatorWaitTime),
-							new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.HIGH_SCALE_HEIGHT),
-							new WaitUntilRemainingDistanceAction(18),
-							new OutfeedCubeAction(Carriage.CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_50)
+							//new WaitAction(elevatorWaitTime),
+							//new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.HIGH_SCALE_HEIGHT),
+							//new WaitUntilRemainingDistanceAction(18),
+							//new OutfeedCubeAction(Carriage.CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_50)
 					}))
 		})));
 		runAction(new PrintTimeFromStart(_startTime));

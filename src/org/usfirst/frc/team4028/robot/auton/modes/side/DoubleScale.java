@@ -14,6 +14,7 @@ import org.usfirst.frc.team4028.util.control.Path;
 
 public class DoubleScale extends AutonBase{
 	Path toScale;
+	Path scaleToSwitch, switchToScale;
 	
 	double toSwitchDistance, toScaleAgainDistance;
 	double targetTurnAngle, endTargetTurnAngle;
@@ -26,6 +27,8 @@ public class DoubleScale extends AutonBase{
 		if (isLeftScale) {
 			if (isStartingLeft) {
 				toScale = Paths.getPath(Left.L_SCALE);
+				scaleToSwitch = Paths.getPath(Left.L_SCALE_TO_L_SWITCH);
+				switchToScale = Paths.getPath(Left.L_SWITCH_TO_L_SCALE);
 				toSwitchDistance = 40.0;
 				toScaleAgainDistance = -41.0;
 				targetTurnAngle = 163;
@@ -48,9 +51,11 @@ public class DoubleScale extends AutonBase{
 		} else {
 			if (isStartingLeft) {
 				toScale = Paths.getPath(Left.R_SCALE);
+				scaleToSwitch = Paths.getPath(Left.R_SCALE_TO_R_SWITCH);
+				switchToScale = Paths.getPath(Left.R_SWITCH_TO_R_SCALE);
 				toSwitchDistance = 37.0;
 				toScaleAgainDistance = -38.0;
-				targetTurnAngle = -166;
+				targetTurnAngle = -160;
 				endTargetTurnAngle = -20.0;
 				finalTurnTargetAngle = -135;
 				elevatorWaitTime1 = 4.25;
@@ -92,7 +97,7 @@ public class DoubleScale extends AutonBase{
 							new TurnAction(targetTurnAngle, isRightTurnToSwitch),
 							new SimultaneousAction(Arrays.asList(new Action[] {
 									new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.WIDE),
-									new DriveSetDistanceAction(toSwitchDistance)
+									new RunMotionProfileAction(scaleToSwitch)
 							}))
 					}))
 		})));
@@ -102,7 +107,7 @@ public class DoubleScale extends AutonBase{
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 					new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.STORE),
 					new SeriesAction(Arrays.asList(new Action[] {
-							new DriveSetDistanceAction(toScaleAgainDistance),
+							new RunMotionProfileAction(switchToScale),
 							new TurnAction(endTargetTurnAngle, !isRightTurnToSwitch)
 					})),
 					new SeriesAction(Arrays.asList(new Action[] {
@@ -126,7 +131,6 @@ public class DoubleScale extends AutonBase{
 				}))
 		})));
 		runAction(new InfeedCubeAction());
-		runAction(new PrintTimeFromStart(_startTime));
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 					new DriveSetDistanceAction(-50.0),
 					new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.STORE)

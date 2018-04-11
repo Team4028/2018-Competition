@@ -60,6 +60,7 @@ public class Dashboard {
 		_autonModeChooser.addObject("Double Scale", AUTON_MODE.DOUBLE_SCALE);
 		_autonModeChooser.addObject("Scale then Switch", AUTON_MODE.SCALE_THEN_SWITCH);
 		_autonModeChooser.addObject("Double Scale Then Switch", AUTON_MODE.DOUBLE_SCALE_THEN_SWITCH);
+		_autonModeChooser.addObject("#EasyMoney8SecondTripleScale", AUTON_MODE.TRIPLE_SCALE);
 		_autonModeChooser.addObject("DO NOT SELECT", AUTON_MODE.TEST_AUTON);
 		SmartDashboard.putData("AUTON MODE: ", _autonModeChooser);
 		

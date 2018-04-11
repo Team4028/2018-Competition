@@ -20,6 +20,6 @@ public class WaitUntilRemainingDistanceAction implements Action {
 
 	@Override
 	public boolean isFinished() {
-		return Chassis.getInstance().getRemainingPathDistance() < _targetDistance;
+		return (Chassis.getInstance().getRemainingPathDistance() < _targetDistance) || Chassis.getInstance().isDoneWithPath();
 	}
 }

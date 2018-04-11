@@ -344,7 +344,10 @@ public class Chassis implements Subsystem {
 	
 	
 	public synchronized double getRemainingPathDistance() {
-		return _pathFollower.remainingPathLength();
+		if (_pathFollower != null) {
+			return _pathFollower.remainingPathLength();
+		} 
+		return 0;
 	}
 	
 	public synchronized void setBrakeMode(boolean isBrakeMode) {
