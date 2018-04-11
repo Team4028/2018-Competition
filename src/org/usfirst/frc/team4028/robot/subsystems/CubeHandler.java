@@ -180,6 +180,10 @@ public class CubeHandler implements Subsystem {
 		_elevator.setTeleopElevatorAccelerationConstant();
 	}
 	
+	public double elevator_getCurrentPosNU()
+	{
+		return _elevator.getElevatorActualPositionNU();
+	}
 	//=====================================================================================
 	//Methods for Handling Interactions with Multiple Subsystem
 	//=====================================================================================	

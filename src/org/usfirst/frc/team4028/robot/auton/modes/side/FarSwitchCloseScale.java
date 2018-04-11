@@ -63,11 +63,11 @@ public class FarSwitchCloseScale extends AutonBase {
 							new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.WIDE)
 					}))
 		})));
-		runAction(new DriveSetDistanceAction(9));
+		runAction(new DriveSetDistanceAction(18));
 		runAction(new InfeedCubeAction());
 		// Drive to switch while storing infeed and raising elevator
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-					new DriveSetDistanceAction(14),
+					new DriveSetDistanceAction(17),
 					new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.STORE),
 					new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SWITCH_HEIGHT)
 		})));
@@ -81,9 +81,9 @@ public class FarSwitchCloseScale extends AutonBase {
 		})));
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 					new TurnAction(-125, true),
-					new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.WIDE)
+					new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.SQUEEZE)
 		})));
-		runAction(new DriveSetDistanceAction(10));
+		runAction(new DriveSetDistanceAction(15));
 		runAction(new InfeedCubeAction());
 		runAction(new PrintTimeFromStart(_startTime));
 	}

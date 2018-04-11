@@ -117,7 +117,8 @@ public class Constants {
     public static final double NORMAL_SPEED = 60;
     public static final double FLOOR_IT_SPEED = 80;
     public static final double WARP_SPEED = 100;
-    public static final double KEEEEEEEEEEEEEEEEEEENS_SPEED = 120;
+    public static final double KEEEEEEEEEEEEEEEEEEENS_SPEED = 0;
+    public static final double PREDATOR_SPEED = 140;
     
     public static final double BLUE_LEFT_SWITCH_FRONT_X_DELTA = MiamiValleyField._leftSwitchFrontBlueX-PracticeField._leftSwitchFrontBlueX;
     public static final double BLUE_LEFT_SWITCH_FRONT_Y_DELTA = MiamiValleyField._leftSwitchFrontBlueY-PracticeField._leftSwitchFrontBlueY;

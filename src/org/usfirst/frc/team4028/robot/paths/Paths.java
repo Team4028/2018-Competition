@@ -257,10 +257,10 @@ public class Paths {
 		leftPaths.put(Left.R_SWITCH_TO_R_SCALE, rSwitchToRScalePathL);
 		
 		
-		lScaleToRSwitchPathL = buildPathFromWaypoints(0.001, Arrays.asList(
+		lScaleToRSwitchPathL = buildPathFromWaypoints(0.006, Arrays.asList(
 						new Waypoint(273,74,0,0),
-						new Waypoint(247,87,28,80),
-						new Waypoint(250,256,0,120)));
+						new Waypoint(247,87,28,80),//80
+						new Waypoint(250,256,0,120)));//120
 		leftPaths.put(Left.L_SCALE_TO_R_SWITCH, lScaleToRSwitchPathL);
 		
 		lSwitchSidePathL = buildPathFromWaypoints(Arrays.asList(

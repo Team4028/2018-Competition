@@ -551,7 +551,7 @@ public class Elevator implements Subsystem {
 		return IsAtTargetPosition(_targetElevatorPositionNU);
 	}
 	
-	private double getElevatorActualPositionNU() {
+	public double getElevatorActualPositionNU() {
 		return _elevatorMasterMotor.getSelectedSensorPosition(0);
 	}
 	
