@@ -78,7 +78,9 @@ public class Elevator implements Subsystem {
 	private double _lastScanActualVelocityNU_100mS = 0;
 	private int _pidSlotInUse = -1;
 	private boolean _isClimbBumpValueEnabled = false;
-	private int _currentAccelerationConstant = TELEOP_UP_ACCELERATION; 
+	
+	private int _currentUpAccelerationConstant = TELEOP_UP_ACCELERATION; 
+	private int _currentDownAccelerationConstant = TELEOP_DOWN_ACCELERATION;
 	
 	// =================================================================================================================
 	// hardcoded preset jogging velocities
@@ -114,14 +116,14 @@ public class Elevator implements Subsystem {
 	private static final int MOVING_UP_PID_SLOT_INDEX = 1;
 	private static final int MOVING_DOWN_PID_SLOT_INDEX = 0;
 	
-  	// define PID Constants
-	public static final int UP_CRUISE_VELOCITY = 4000; // native units per 100 mSec 50% of max
-	
+  	// define PID Constants	
 	public static final int TELEOP_UP_ACCELERATION = 4500;	// native units per 100 mSec per sec
 	public static final int AUTON_UP_ACCELERATION = 10000; // native units per 100 mSec per sec
+	public static final int TELEOP_DOWN_ACCELERATION = 2500; // native units per 100 mSec per sec
+	public static final int AUTON_DOWN_ACCELERATION = 6000; // native units per 100 mSec per sec
 	
-	public static final int DOWN_CRUISE_VELOCITY = 3000; // native units per 100 mSec 50% of max
-	public static final int DOWN_ACCELERATION = 2500; // native units per 100 mSec per sec
+	public static final int UP_CRUISE_VELOCITY = 4000; // native units per 100 mSec 50% of max
+	public static final int DOWN_CRUISE_VELOCITY = 4000; // native units per 100 mSec 50% of max
 	
 	/*		 VALUES FOR DIFFERENT GEAR BOXES:
 	|Gear Ratio|Velocity|Acceleration|Feed Forward|
@@ -483,11 +485,11 @@ public class Elevator implements Subsystem {
 			
 			if(pidSlot == MOVING_UP_PID_SLOT_INDEX) {
 				_elevatorMasterMotor.configMotionCruiseVelocity(UP_CRUISE_VELOCITY, 0);
-				_elevatorMasterMotor.configMotionAcceleration(_currentAccelerationConstant, 0);
+				_elevatorMasterMotor.configMotionAcceleration(_currentUpAccelerationConstant, 0);
 			}
 			else if(pidSlot == MOVING_DOWN_PID_SLOT_INDEX) {
 				_elevatorMasterMotor.configMotionCruiseVelocity(DOWN_CRUISE_VELOCITY, 0);
-				_elevatorMasterMotor.configMotionAcceleration(DOWN_ACCELERATION, 0);
+				_elevatorMasterMotor.configMotionAcceleration(_currentDownAccelerationConstant, 0);
 			}
 		}
 	}
@@ -517,11 +519,13 @@ public class Elevator implements Subsystem {
 	}
 	
 	public void setAutonElevatorAccelerationConstant() {
-		_currentAccelerationConstant = AUTON_UP_ACCELERATION;
+		_currentUpAccelerationConstant = AUTON_UP_ACCELERATION;
+		_currentDownAccelerationConstant = AUTON_DOWN_ACCELERATION;
 	}
 	
 	public void setTeleopElevatorAccelerationConstant() {
-		_currentAccelerationConstant = TELEOP_UP_ACCELERATION;
+		_currentUpAccelerationConstant = TELEOP_UP_ACCELERATION;
+		_currentDownAccelerationConstant = TELEOP_DOWN_ACCELERATION;
 	}
 	
 	//=====================================================================================
@@ -610,7 +614,7 @@ public class Elevator implements Subsystem {
 		SmartDashboard.putNumber("Elevator:Velocity", GeneralUtilities.roundDouble(actualVelocity, 2));
 		SmartDashboard.putNumber("Elevator:Acceleration", GeneralUtilities.roundDouble(actualAcceleration, 2));
 		SmartDashboard.putNumber("Elevator: Velocity Constant Up", UP_CRUISE_VELOCITY);
-		SmartDashboard.putNumber("Elevator: Acceleration Constant Up", _currentAccelerationConstant);
+		SmartDashboard.putNumber("Elevator: Acceleration Constant Up", _currentUpAccelerationConstant);
 
 		SmartDashboard.putNumber("Elevator:TargetPosition",_targetElevatorPositionNU);
 		SmartDashboard.putBoolean("Elevator:IsInPosition", IsAtTargetPosition());
