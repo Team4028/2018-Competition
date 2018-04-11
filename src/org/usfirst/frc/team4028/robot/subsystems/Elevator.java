@@ -532,7 +532,7 @@ public class Elevator implements Subsystem {
 	}
 	
 	// this property indicates if the elevator is w/i the position deadband of the target position
-	public boolean IsAtTargetPosition(int targetPosition) {
+	private boolean IsAtTargetPosition(int targetPosition) {
         if (_elevatorState == ELEVATOR_STATE.GOTO_TARGET_POSITION
         		|| _elevatorState == ELEVATOR_STATE.HOLD_TARGET_POSITION) {
         	int currentError = Math.abs(_elevatorMasterMotor.getSelectedSensorPosition(0) - targetPosition);
