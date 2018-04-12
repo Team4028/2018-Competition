@@ -147,7 +147,11 @@ public class CubeHandler implements Subsystem {
 	}
 	
 	public boolean isElevatorAtTargetPos() {
-		return _elevator.IsAtTargetPosition();
+		if(_cubeHandlerState != CUBE_HANDLER_STATE.SAFE_TO_MOVE_ELEVATOR_TO_PRESET) {
+			return false;
+		} else {
+			return _elevator.IsAtTargetPosition();
+		}
 	}
 	
 	public void stopElevator() {
@@ -350,6 +354,7 @@ public class CubeHandler implements Subsystem {
 	@Override
 	public void outputToShuffleboard() {
 		SmartDashboard.putString("Cube Handler:State:", _cubeHandlerState.toString() );
+		SmartDashboard.putBoolean("CHPos?", isElevatorAtTargetPos());
 	}
 
 	@Override
