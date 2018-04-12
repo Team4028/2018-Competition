@@ -346,6 +346,7 @@ public class CubeHandler implements Subsystem {
 	@Override
 	public void outputToShuffleboard() {
 		SmartDashboard.putString("Cube Handler:State:", _cubeHandlerState.toString() );
+		SmartDashboard.putBoolean("CHPos?", isElevatorAtTargetPos());
 	}
 
 	@Override

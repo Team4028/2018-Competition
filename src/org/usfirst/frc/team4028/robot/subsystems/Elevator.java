@@ -613,8 +613,6 @@ public class Elevator implements Subsystem {
 		SmartDashboard.putNumber("Elevator:Position(in)", GeneralUtilities.roundDouble((NativeUnitsToInches(_actualPositionNU)),2));
 		SmartDashboard.putNumber("Elevator:Velocity", GeneralUtilities.roundDouble(actualVelocity, 2));
 		SmartDashboard.putNumber("Elevator:Acceleration", GeneralUtilities.roundDouble(actualAcceleration, 2));
-		SmartDashboard.putNumber("Elevator: Velocity Constant Up", UP_CRUISE_VELOCITY);
-		SmartDashboard.putNumber("Elevator: Acceleration Constant Up", _currentUpAccelerationConstant);
 
 		SmartDashboard.putNumber("Elevator:TargetPosition",_targetElevatorPositionNU);
 		SmartDashboard.putBoolean("Elevator:IsInPosition", IsAtTargetPosition());

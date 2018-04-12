@@ -420,7 +420,7 @@ public class Robot extends IterativeRobot {
     		_elevator.outputToShuffleboard();
     		//_infeed.outputToShuffleboard();
     		//_carriage.outputToShuffleboard();
-	    	//_cubeHandler.outputToShuffleboard();
+	    	_cubeHandler.outputToShuffleboard();
 	    	//_climber.outputToShuffleboard();
 	    	//_pressureSensor.outputToShuffleboard();
 	    	
