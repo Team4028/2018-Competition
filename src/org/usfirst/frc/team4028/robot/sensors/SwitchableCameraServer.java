@@ -3,6 +3,9 @@ package org.usfirst.frc.team4028.robot.sensors;
 import edu.wpi.cscore.MjpegServer;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.cscore.VideoMode;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
@@ -25,6 +28,7 @@ public class SwitchableCameraServer {
     private static final int CAMERA_TCP_PORT = 1180;
 	
     private static SwitchableCameraServer _instance = new SwitchableCameraServer();
+	String _currentCamera;
 	
 	public static SwitchableCameraServer getInstance() {
 		return _instance;
@@ -67,11 +71,9 @@ public class SwitchableCameraServer {
 		int width = 320; // 160; // 320; //640;
 		int height = 240; //90; //180; //480;
 		int frames_per_sec = 15; //10; //20; //15;
-
+		
 		_rawVideoServer = new MjpegServer("raw_video_server", CAMERA_TCP_PORT);    	
 		
-		/* Start raw Video Streaming Server */
-		_rawVideoServer.setSource(null);
 		// build list of available cameras
 		_camList = new CircularQueue<UsbCamera>();
 		
@@ -79,7 +81,7 @@ public class SwitchableCameraServer {
 			System.out.println ("		camera0 exists");
 			_camera0 = new UsbCamera(CAM0_NAME, 0);
 			_camera0.setVideoMode(VideoMode.PixelFormat.kMJPEG, width, height, frames_per_sec);
-			_camera0.setExposureManual(3);
+			_camera0.setExposureManual(80);
 			_camera0.setWhiteBalanceManual(50);
 			_camList.add(_camera0);
 		}
@@ -87,7 +89,7 @@ public class SwitchableCameraServer {
 			System.out.println ("		camera1 exists");
 			_camera1 = new UsbCamera(CAM1_NAME, 1);
 			_camera1.setVideoMode(VideoMode.PixelFormat.kMJPEG, width, height, frames_per_sec);
-			_camera1.setExposureManual(3);
+			_camera1.setExposureManual(80);
 			_camera1.setWhiteBalanceManual(50);
 			_camList.add(_camera1);
 		}
@@ -95,7 +97,7 @@ public class SwitchableCameraServer {
 			System.out.println ("		camera2 exists");
 			_camera2 = new UsbCamera(CAM2_NAME, 2);
 			_camera2.setVideoMode(VideoMode.PixelFormat.kMJPEG, width, height, frames_per_sec);
-			_camera2.setExposureManual(3);
+			_camera2.setExposureManual(80);
 			_camera2.setWhiteBalanceManual(50);
 			_camList.add(_camera2);
 		}
@@ -103,17 +105,19 @@ public class SwitchableCameraServer {
 			System.out.println ("		camera3 exists");
 			_camera3 = new UsbCamera(CAM3_NAME, 3);
 			_camera3.setVideoMode(VideoMode.PixelFormat.kMJPEG, width, height, frames_per_sec);
-			_camera3.setExposureManual(3);
+			_camera3.setExposureManual(80);
 			_camera3.setWhiteBalanceManual(50);
 			_camList.add(_camera3);
 		}
-		if (_camList.size() > 0) {
-			_rawVideoServer.setSource(_camList.get(0));
-		} else {
-			_rawVideoServer.setSource(null);
-		}
+		
 		/* Configure Camera */
 		/* Note:  Higher resolution & framerate is possible, depending upon processing cpu usage */
+	
+		/* Start raw Video Streaming Server */
+		_rawVideoServer.setSource(null);
+		_currentCamera = null; 
+
+		SwitchCamera();
 	}
 	
 	public void SwitchCamera() {
@@ -127,4 +131,37 @@ public class SwitchableCameraServer {
 		}
 		_rawVideoServer.setSource(nextCamera);
 	}
+	{
+	//connect to Network Tables
+	NetworkTableInstance networkTables = NetworkTableInstance.getDefault();
+	if(networkTables == null)
+	{
+		System.out.println ("networkTables does not exist");
+	}
+	
+	//get the necessary table
+	NetworkTable table = networkTables.getTable("CameraPublisher/USB Camera 0");
+	if (table == null)
+	{
+		System.out.println ("table does not exist");
+	}
+	
+	//get the necessary entry
+	NetworkTableEntry entry = table.getEntry("streams");
+	if (entry == null)
+	{
+		System.out.println ("entry does not exist");
+	}
+	
+	//build camera address list
+	String[] urls = new String[]
+	{
+			//options for wired or tethered
+			//		mjpg:http://roboRIO-4028-FRC.local:1181/?action=stream
+			//		mjpg:http://10.0.1.55:1181/?action=stream
+			//		mjpg:http://172.22.11.2:1181/?action=stream
+					"mjpg:http://172.22.11.2:" + Integer.toString(CAMERA_TCP_PORT) + "/stream.mjpg",
+					"mjpg:http://10.40.28.2:" + Integer.toString(CAMERA_TCP_PORT) + "/stream.mjpg"
+	};
+			}
 }
