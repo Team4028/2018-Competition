@@ -22,6 +22,7 @@ public class InfeedCubeAction implements Action {
 		JAM_CENTER,
 		LEFT_OR_RIGHT,
 		SHORT,
+		THAT_ONE_OTHER_JAM_THAT_I_COULDNT_FIGURE_OUT_BEFORE_AND_HAS_NO_NAME,
 		UNDEFINED
 	}
 	private INFEED_CUBE_AUTON_STATE _infeedCubeState;
@@ -92,7 +93,22 @@ public class InfeedCubeAction implements Action {
 					_chassis.stop();
 					_isComplete = true;
 				}
-				break;			
+				break;	
+			
+			case THAT_ONE_OTHER_JAM_THAT_I_COULDNT_FIGURE_OUT_BEFORE_AND_HAS_NO_NAME:
+				if(Timer.getFPGATimestamp()- _startTime<1.2)
+				{
+					_cubeHandler.infeedArms_MoveToPresetPosition(INFEED_ARM_TARGET_POSITION.SQUEEZE);
+					_cubeHandler.ejectCube_InfeedAndCarriage();
+					_isComplete = false;
+				}
+				else
+				{
+					_startTime = Timer.getFPGATimestamp();
+					_isComplete = true;
+				}
+				break;
+				
 				
 			case UNDEFINED:
 				break;
@@ -133,6 +149,13 @@ public class InfeedCubeAction implements Action {
 					_infeedCubeState=INFEED_CUBE_AUTON_STATE.SHORT;		
 				}
 				
+				else if(_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getRightInfeedArmPos())>160 && 
+						_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getRightInfeedArmPos())<200 &&
+						_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getLeftInfeedArmPos())>140 && 
+						_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getLeftInfeedArmPos())<190)
+				{
+					_infeedCubeState = INFEED_CUBE_AUTON_STATE.THAT_ONE_OTHER_JAM_THAT_I_COULDNT_FIGURE_OUT_BEFORE_AND_HAS_NO_NAME;
+				}
 				else 
 				{
 					_infeedCubeState= INFEED_CUBE_AUTON_STATE.EVERYTHING_HAS_GONE_ACCORDING_TO_PLAN;
