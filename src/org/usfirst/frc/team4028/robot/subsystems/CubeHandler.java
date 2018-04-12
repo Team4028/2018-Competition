@@ -172,6 +172,14 @@ public class CubeHandler implements Subsystem {
 		}
 	}
 	
+	public void elevator_SetAutonAccelerationConstant() {
+		_elevator.setAutonElevatorAccelerationConstant();
+	}
+	
+	public void elevator_SetTeleopAccelerationConstant() {
+		_elevator.setTeleopElevatorAccelerationConstant();
+	}
+	
 	//=====================================================================================
 	//Methods for Handling Interactions with Multiple Subsystem
 	//=====================================================================================	
@@ -253,6 +261,11 @@ public class CubeHandler implements Subsystem {
 		_infeed.storeArms();
 	}	
 	
+	public void infeedWheels_SpinAuton()
+	{
+		_infeed.infeedWheels_SpinCube_Auton();
+	}
+	
 	public void infeedArms_moveToWidePosition() {
 		_infeed.moveArmsToWideInfeedPosition();
 	}
@@ -279,6 +292,10 @@ public class CubeHandler implements Subsystem {
 	
 	public void infeedArm_moveRightInfeedArmToClimbPosition() {
 		_infeed.moveArmsToClimbInfeedPosition();
+	}
+	public double infeedArm_nativeUnitstoDegrees(double NativeUnits)
+	{
+		return _infeed.nativeUnitsToDegrees(NativeUnits);
 	}
 	
 	//=====================================================================================	
@@ -316,12 +333,20 @@ public class CubeHandler implements Subsystem {
 		return _carriage.isCubeInCarriage();
 	}
 	
+	public double getLeftInfeedArmPos() {
+		return _infeed.getCurrentLeftInfeedPosition();
+	}
+	
+	public double getRightInfeedArmPos() {
+		return _infeed.getCurrentRightInfeedPosition();
+	}
 	//=====================================================================================	
 	// Utility Methods
 	//=====================================================================================	
 	@Override
 	public void outputToShuffleboard() {
 		SmartDashboard.putString("Cube Handler:State:", _cubeHandlerState.toString() );
+		SmartDashboard.putBoolean("CHPos?", isElevatorAtTargetPos());
 	}
 
 	@Override
