@@ -46,7 +46,7 @@ public class InfeedCubeAction implements Action {
 				break;
 			
 			case JAM_CENTER:
-				if(Timer.getFPGATimestamp()-_startTime<1.1)
+				if(Timer.getFPGATimestamp()-_startTime<1.2)
 				{
 					_cubeHandler.infeedArms_MoveToPresetPosition(INFEED_ARM_TARGET_POSITION.WIDE);
 				}
@@ -127,7 +127,7 @@ public class InfeedCubeAction implements Action {
 				//System.out.println("We made it");
 				if(Math.abs(_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getLeftInfeedArmPos()))<190 && 
 					Math.abs(_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getLeftInfeedArmPos()))>150 &&
-					Math.abs(_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getRightInfeedArmPos()))<185 &&
+					Math.abs(_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getRightInfeedArmPos()))<180 &&
 					Math.abs(_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getRightInfeedArmPos()))>145)
 				{
 					_infeedCubeState = INFEED_CUBE_AUTON_STATE.JAM_CENTER;				
@@ -143,19 +143,19 @@ public class InfeedCubeAction implements Action {
 					_infeedCubeState = INFEED_CUBE_AUTON_STATE.LEFT_OR_RIGHT;
 				}
 				
-				else if(_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getLeftInfeedArmPos())>190 && 
-						_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getRightInfeedArmPos())>190)
+				else if(_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getLeftInfeedArmPos())>185 && 
+						_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getRightInfeedArmPos())>185)
 				{
 					_infeedCubeState=INFEED_CUBE_AUTON_STATE.SHORT;		
 				}
 				
-				else if(_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getRightInfeedArmPos())>160 && 
+				/*else if(_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getRightInfeedArmPos())>160 && 
 						_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getRightInfeedArmPos())<200 &&
 						_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getLeftInfeedArmPos())>140 && 
 						_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getLeftInfeedArmPos())<190)
 				{
 					_infeedCubeState = INFEED_CUBE_AUTON_STATE.THAT_ONE_OTHER_JAM_THAT_I_COULDNT_FIGURE_OUT_BEFORE_AND_HAS_NO_NAME;
-				}
+				}*/
 				else 
 				{
 					_infeedCubeState= INFEED_CUBE_AUTON_STATE.EVERYTHING_HAS_GONE_ACCORDING_TO_PLAN;

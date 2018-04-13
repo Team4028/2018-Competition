@@ -58,14 +58,14 @@ public class DoubleScale extends AutonBase{
 				scaleToSwitch = Paths.getPath(Left.R_SCALE_TO_R_SWITCH);
 				switchToScale = Paths.getPath(Left.R_SWITCH_TO_R_SCALE);
 				_carriageVBUSCube1 = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_80;
-				carriageVBUSCube2 = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_60;
+				carriageVBUSCube2 = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_100;
 				toScaleRemainingDistance = 10;
 				toSwitchDistance = 37.0;
 				toScaleAgainDistance = -38.0;
 				targetTurnAngle = -160;
 				endTargetTurnAngle = -10.0;
 				finalTurnTargetAngle = -135;
-				elevatorWaitTime1 = 4.25;
+				elevatorWaitTime1 = 3.85;
 				elevatorWaitTime2 = 1.0;
 				isRightTurnToSwitch = true;
 			} else {
@@ -100,13 +100,12 @@ public class DoubleScale extends AutonBase{
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 					new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT),
 					new SeriesAction(Arrays.asList(new Action[] {
-							new WaitAction(0.1),
 							new TurnAction(targetTurnAngle, isRightTurnToSwitch),
 							new SimultaneousAction(Arrays.asList(new Action[] {
 									new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.WIDE),
 									new RunMotionProfileAction(scaleToSwitch),
 									new SeriesAction(Arrays.asList(new Action [] {
-											new WaitUntilRemainingDistanceAction(5),
+											new WaitAction(0.55),
 											new InfeedCubeAction()
 									}))
 							}))
