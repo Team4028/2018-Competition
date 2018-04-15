@@ -1,14 +1,12 @@
 package org.usfirst.frc.team4028.robot.auton.actions;
 
-import org.usfirst.frc.team4028.robot.sensors.NavXGyro;
 import org.usfirst.frc.team4028.robot.subsystems.Chassis;
 import org.usfirst.frc.team4028.robot.subsystems.CubeHandler;
-import org.usfirst.frc.team4028.robot.subsystems.Infeed;
 import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_ARM_TARGET_POSITION;
 
 import edu.wpi.first.wpilibj.Timer;
 
-@SuppressWarnings("unused")
+
 public class InfeedCubeAction implements Action {
 	CubeHandler _cubeHandler = CubeHandler.getInstance();
 	//Infeed _infeed = Infeed.getInstance();	conform to society and use cube handler everywhere

@@ -128,6 +128,10 @@ public class Climber implements Subsystem
 		return _climberMotor.getOutputCurrent();
 	}
 	
+	public boolean isClimberServoOpen() {
+		return _isClimberServoOpen;
+	}
+	
 	//=====================================================================================
 	// Utility Methods
 	//=====================================================================================

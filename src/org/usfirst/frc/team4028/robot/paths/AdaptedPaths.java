@@ -2,19 +2,12 @@ package org.usfirst.frc.team4028.robot.paths;
 
 import static org.usfirst.frc.team4028.robot.paths.PathBuilder.buildPathFromWaypoints;
 import static org.usfirst.frc.team4028.robot.paths.PathBuilder.flipPath;
-import static org.usfirst.frc.team4028.robot.paths.PathBuilder.reversePath;
-
 import java.util.*;
-import java.awt.datatransfer.FlavorMap;
-
 import org.usfirst.frc.team4028.robot.Constants;
 import org.usfirst.frc.team4028.robot.Dashboard;
 import org.usfirst.frc.team4028.robot.paths.PathBuilder.Waypoint;
 import org.usfirst.frc.team4028.util.control.Path;
 
-import edu.wpi.first.wpilibj.DriverStation;
-
-@SuppressWarnings("unused")// nailed it
 
 public class AdaptedPaths extends Paths {//oh God we're here
 	public static Path getAdaptedPath(Center pathName) {
@@ -399,8 +392,6 @@ public class AdaptedPaths extends Paths {//oh God we're here
 	public static void locateFlavorTownUSA() {
 		double flavorTownUSAX = Math.random()*360-180;
 		double flavorTownUSAY = Math.random()*360-180;
-		String ourLordAndSavior = "Guy Fieri";
-		String whatAreWeDoing = "Rolling Out to Find America's Greatest Diners, Drive-ins and Dives";
 		System.out.println("Flavor Town USA Located: " + flavorTownUSAX + ", " + flavorTownUSAY);
 	}
 }

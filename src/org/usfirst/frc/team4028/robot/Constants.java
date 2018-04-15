@@ -36,6 +36,9 @@ public class Constants {
 	
 	// DIO Ports
 	public static final int CARRIAGE_LIMIT_SWITCH_DIO_PORT = 0;
+	public static final int ARDUINO_DIO_PORT_SEVEN = 7;
+	public static final int ARDUINO_DIO_PORT_EIGHT = 8;
+	public static final int ARDUINO_DIO_PORT_NINE = 9;
 	
 	// Analog Ports
 	public static final int STORED_PRESSURE_SENSOR_AIO_PORT = 0;	
