@@ -31,7 +31,7 @@ public class DoubleScale extends AutonBase{
 				scaleToSwitch = Paths.getPath(Left.L_SCALE_TO_L_SWITCH);
 				switchToScale = Paths.getPath(Left.L_SWITCH_TO_L_SCALE);
 				_carriageVBUSCube1 = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_50;
-				carriageVBUSCube2 = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_100;
+				carriageVBUSCube2 = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_90;
 				toScaleRemainingDistance = 18;
 				toSwitchDistance = 40.0;
 				toScaleAgainDistance = -41.0;
@@ -57,15 +57,15 @@ public class DoubleScale extends AutonBase{
 				toScale = Paths.getPath(Left.R_SCALE);
 				scaleToSwitch = Paths.getPath(Left.R_SCALE_TO_R_SWITCH);
 				switchToScale = Paths.getPath(Left.R_SWITCH_TO_R_SCALE);
-				_carriageVBUSCube1 = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_80;
+				_carriageVBUSCube1 = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_60;
 				carriageVBUSCube2 = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_100;
-				toScaleRemainingDistance = 10;
+				toScaleRemainingDistance = 12;
 				toSwitchDistance = 37.0;
 				toScaleAgainDistance = -38.0;
 				targetTurnAngle = -160;
 				endTargetTurnAngle = -10.0;
 				finalTurnTargetAngle = -135;
-				elevatorWaitTime1 = 3.85;
+				elevatorWaitTime1 = 3.7;
 				elevatorWaitTime2 = 1.0;
 				isRightTurnToSwitch = true;
 			} else {
@@ -118,15 +118,24 @@ public class DoubleScale extends AutonBase{
 					new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.STORE),
 					new SeriesAction(Arrays.asList(new Action[] {
 							new RunMotionProfileAction(switchToScale),
-							new TurnAction(endTargetTurnAngle, !isRightTurnToSwitch)
+							new TurnAction(endTargetTurnAngle, !isRightTurnToSwitch),
+							//new PrintTimeFromStart(_startTime)
 					})),
 					new SeriesAction(Arrays.asList(new Action[] {
 							new WaitAction(elevatorWaitTime2),
-							new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.HIGH_SCALE_HEIGHT)
+							new SimultaneousAction(Arrays.asList(new Action[] {
+								new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.HIGH_SCALE_HEIGHT),
+								new SeriesAction(Arrays.asList(new Action[] {
+										new WaitAction(1.3),
+										//new PrintTimeFromStart(_startTime),
+										new OutfeedCubeAction(carriageVBUSCube2)
+								})),
+
+							})) 
 					}))
 		}))); 
 		// Outfeed cube for 0.2s
-		runAction(new OutfeedCubeAction(carriageVBUSCube2));
+		//runAction(new OutfeedCubeAction(carriageVBUSCube2));
 		runAction(new PrintTimeFromStart(_startTime));
 		// Move elevator to floor
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {

@@ -417,6 +417,7 @@ public class Chassis implements Subsystem {
 	
 	@Override
 	public void outputToShuffleboard() {
+		SmartDashboard.putBoolean("IsHighGear", isHighGear());
 		SmartDashboard.putNumber("Chassis: Left Velocity", GeneralUtilities.roundDouble(getLeftVelocityInchesPerSec(), 2));
 		SmartDashboard.putNumber("Chassis: Right Velocity", GeneralUtilities.roundDouble(getLeftVelocityInchesPerSec(), 2));
 		
