@@ -53,6 +53,8 @@ public class Constants {
 	public static final int CARRIAGE_WIDE_PCM_PORT = 1;
 	public static final int SHIFTER_EXTEND_PCM_PORT = 3;
 	public static final int SHIFTER_RETRACT_PCM_PORT = 7;
+	public static final int CARRIAGE_FLAP_UP_PCM_PORT = 4;
+	public static final int CARRIAGE_FLAP_DOWN_PCM_PORT = 5;
 	
 	// Solenoid Positions
 	public static final Value SHIFTER_LOW_GEAR_POS = DoubleSolenoid.Value.kReverse;
@@ -60,6 +62,9 @@ public class Constants {
 
 	public static final Value CARRIAGE_SQUEEZE_POS = DoubleSolenoid.Value.kForward;
 	public static final Value CARRIAGE_WIDE_POS = DoubleSolenoid.Value.kReverse;
+	
+	public static final Value CARRIAGE_FLAP_UP = DoubleSolenoid.Value.kForward;
+	public static final Value CARRIAGE_FLAP_DOWN = DoubleSolenoid.Value.kReverse;
 	
 	// Infeed Position Constants
 	public static final double INFEED_POSITION = 2300;

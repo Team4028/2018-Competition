@@ -306,6 +306,16 @@ public class CubeHandler implements Subsystem {
 		return _infeed.nativeUnitsToDegrees(NativeUnits);
 	}
 	
+	public void carriage_FlapUp()
+	{
+		_carriage.tiltCarriageUp();
+	}
+	
+	public void carriage_FlapDown()
+	{
+		_carriage.tiltCarriageDown();		
+	}
+	
 	//=====================================================================================	
 	//Methods for Handling Interactions with Carriage Subsystem
 	//=====================================================================================	

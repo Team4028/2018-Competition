@@ -53,6 +53,7 @@ public class Carriage implements Subsystem {
 	
 	private DigitalInput _carriageLimitSwitch;
 	private DoubleSolenoid _squeezeCylinder;
+	private DoubleSolenoid _tiltCylinder;
 	
 	private CARRIAGE_WHEELS_STATE _carriageWheelsState;
 	private CARRIAGE_WHEELS_OUT_VBUS_INDEX _currentCarriageWheelsFeedOutVBusIndex = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_50;
@@ -135,6 +136,10 @@ public class Carriage implements Subsystem {
 		//Setup Solenoid for Cylinder
 		_squeezeCylinder = new DoubleSolenoid(Constants.PCM_CAN_ADDR, Constants.CARRIAGE_SQUEEZE_PCM_PORT, Constants.CARRIAGE_WIDE_PCM_PORT);
 		_squeezeCylinder.set(Constants.CARRIAGE_WIDE_POS);
+		
+		//Setup Solenoid for Tilt
+		_tiltCylinder = new DoubleSolenoid(Constants.PCM_CAN_ADDR, Constants.CARRIAGE_FLAP_UP_PCM_PORT, Constants.CARRIAGE_FLAP_DOWN_PCM_PORT);
+		_tiltCylinder.set(Constants.CARRIAGE_FLAP_DOWN);
 		
 		_carriageWheelsState = CARRIAGE_WHEELS_STATE.STOPPED;
 	}
@@ -367,7 +372,7 @@ public class Carriage implements Subsystem {
 		}
 	}
 	
-	//=== Handle Carriage Solenoid =================================================================
+	//=== Handle Carriage Squeeze Solenoid =================================================================
 	public void moveCarriageToSqueezeWidth() {
 		if(isCarriageInSqueezePosition()) {
 			System.out.println("Carriage Already In Thin Position");
@@ -382,6 +387,15 @@ public class Carriage implements Subsystem {
 		} else {
 			System.out.println("Carriage Already In Wide Position");
 		}	
+	}
+	
+	//=== Handle Carriage Tilt Solenoid =================================================================
+	public void tiltCarriageUp() {
+		_tiltCylinder.set(Constants.CARRIAGE_FLAP_UP);
+	}
+	
+	public void tiltCarriageDown() {
+		_tiltCylinder.set(Constants.CARRIAGE_FLAP_DOWN);	
 	}
 	
 	@Override

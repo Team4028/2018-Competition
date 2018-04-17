@@ -268,9 +268,9 @@ public class Robot extends IterativeRobot {
 			else if (Math.abs(_dos.getDriver_InfeedCube_JoystickCmd()) != 0) {
 				_cubeHandler.acquireCube_InfeedAndCarriage();
 			}			
-			else if ((Math.abs(_dos.getDriver_EjectCube_JoystickCmd()) != 0) || _dos.getOperator_EjectCube_JoystickCmd() != 0) {
-				_cubeHandler.ejectCube_InfeedAndCarriage();
-			}
+			//else if ((Math.abs(_dos.getDriver_EjectCube_JoystickCmd()) != 0) || _dos.getOperator_EjectCube_JoystickCmd() != 0) {
+			//	_cubeHandler.ejectCube_InfeedAndCarriage();
+			//}
 			else {
 				_cubeHandler.stop_InfeedAndCarriage();			
 			}
@@ -281,6 +281,16 @@ public class Robot extends IterativeRobot {
 			else if (_dos.getIsOperator_WideCarriage_BtnPressed()) {
 				_cubeHandler.carriage_MoveSolenoidToWide();
 			}		
+			
+			if(_dos.getOperator_FlapUp_BtnPressed())
+			{
+				_cubeHandler.carriage_FlapUp();
+			}
+			else if (_dos.getOperator_FlapDown_BtnPressed())
+			{
+				_cubeHandler.carriage_FlapDown();
+			}
+
 		} 
 		else if(_dos.IsEngineeringGamepadBAvailable()) {
 			// =============================
