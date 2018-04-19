@@ -64,6 +64,10 @@ public class Carriage implements Subsystem {
 	
 	private static final boolean IS_VERBOSE_LOGGING_ENABLED = true;
 	
+	private boolean _isCubePresent = false;
+	private long _consecutiveScansCubeIsPresent = 0;
+	private static final int MIN_CONSECUTIVE_SCANS = 5;
+	
 	//=====================================================================================
 	//Define Singleton Pattern
 	//=====================================================================================
@@ -160,9 +164,12 @@ public class Carriage implements Subsystem {
 		//Looper and State Machine for Commanding Infeed Axis
 		//=====================================================================================
 		@Override
-		public void onLoop(double timestamp) {
-			synchronized (Carriage.this) {		
-				switch(_carriageWheelsState) {
+		public void onLoop(double timestamp) 
+		{
+			synchronized (Carriage.this) 
+			{		
+				switch(_carriageWheelsState) 
+				{
 					case STOPPED:
 						_carriageLeftMotor.set(ControlMode.PercentOutput, 0, 0);
 						_carriageRightMotor.set(ControlMode.PercentOutput, 0, 0);
@@ -182,6 +189,27 @@ public class Carriage implements Subsystem {
 						_carriageLeftMotor.set(ControlMode.PercentOutput, _currentCarriageWheelsJoystickVBusCmd, 0);
 						_carriageRightMotor.set(ControlMode.PercentOutput, _currentCarriageWheelsJoystickVBusCmd, 0);
 						break;
+				}
+				
+				// debounce limit switch
+				boolean isCubePresentThisScan = _carriageLimitSwitch.get(); // normally closed switch, input is pulled low
+				if(isCubePresentThisScan)
+				{
+					_consecutiveScansCubeIsPresent++;	
+					
+					if(_consecutiveScansCubeIsPresent >= MIN_CONSECUTIVE_SCANS)
+					{
+						_isCubePresent = true;
+					}
+					else
+					{
+						_isCubePresent = false;						
+					}
+				}
+				else
+				{
+					_consecutiveScansCubeIsPresent = 0;
+					_isCubePresent = false;
 				}
 			}
 		}
@@ -405,7 +433,8 @@ public class Carriage implements Subsystem {
 	// Property Accessors
 	//=====================================================================================
 	public boolean isCubeInCarriage() {
-		return _carriageLimitSwitch.get(); // normally closed switch, input is pulled low
+		//return _carriageLimitSwitch.get(); // normally closed switch, input is pulled low
+		return _isCubePresent;
 	} 
 	
 	public boolean isCarriageInSqueezePosition() {
