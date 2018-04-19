@@ -235,6 +235,10 @@ public class Robot extends IterativeRobot {
 				_cubeHandler.infeedArms_moveToStorePosition();
 				if (_infeed.areArmsInPosition() == false) {
 					_dos.rumbleDriveController();
+					System.out.println("Arms cannot reach target position");
+				}
+				else {
+					_dos.noRumbleDriveController();
 				}
 			}
 			

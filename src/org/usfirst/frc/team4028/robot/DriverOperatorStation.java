@@ -390,6 +390,11 @@ public class DriverOperatorStation {
 		_driverGamepad.setRumble(GenericHID.RumbleType.kRightRumble, .5);
 	}
 	
+	public void noRumbleDriveController() {
+		_driverGamepad.setRumble(GenericHID.RumbleType.kLeftRumble, 0);
+		_driverGamepad.setRumble(GenericHID.RumbleType.kRightRumble, 0);
+	}
+	
 	// =========================================================================================================
 	// OPERATOR		OPERATOR	OPERATOR	OPERATOR	OPERATOR	OPERATOR	OPERATOR	OPERATOR	
 	// =========================================================================================================
