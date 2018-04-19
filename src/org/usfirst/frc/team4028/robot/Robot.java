@@ -100,6 +100,8 @@ public class Robot extends IterativeRobot {
 			_dataLogger = null;
 		}
 		
+		AdaptedPaths.buildPaths();
+		
 		_chassis.setBrakeMode(false);
 		
 		stopAll();
@@ -147,8 +149,6 @@ public class Robot extends IterativeRobot {
 		}
 		
 		_chassis.zeroGyro();
-		
-		//AdaptedPaths.locateFlavorTownUSA();
 		
 		_autonExecuter = new AutonExecuter();
 		_autonExecuter.setAutoMode(_dashboard.getSelectedAuton());

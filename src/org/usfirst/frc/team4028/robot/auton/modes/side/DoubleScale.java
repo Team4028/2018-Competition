@@ -70,9 +70,11 @@ public class DoubleScale extends AutonBase{
 				isRightTurnToSwitch = true;
 			} else {
 				toScale = Paths.getPath(Right.R_SCALE);
+				scaleToSwitch = Paths.getPath(Left.R_SCALE_TO_R_SWITCH);
+				switchToScale = Paths.getPath(Left.R_SWITCH_TO_R_SCALE);
 				toSwitchDistance = 40.0;
 				toScaleAgainDistance = -40.0;
-				targetTurnAngle = -165;
+				targetTurnAngle = -160;
 				endTargetTurnAngle = -25;
 				finalTurnTargetAngle = -135;
 				elevatorWaitTime1 = 2.0;
@@ -87,27 +89,27 @@ public class DoubleScale extends AutonBase{
 		// Drive to scale while storing infeed and raising elevator
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 				new RunMotionProfileAction(toScale),
-				new SeriesAction(Arrays.asList(new Action[] {
+				/*new SeriesAction(Arrays.asList(new Action[] {
 						new WaitAction(elevatorWaitTime1),
 						new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.HIGH_SCALE_HEIGHT),
 						new WaitUntilRemainingDistanceAction(toScaleRemainingDistance),
 						new OutfeedCubeAction(_carriageVBUSCube1)
-				}))
+				}))*/
 		})));
 		// Outfeed cube for 0.2s
 		runAction(new PrintTimeFromStart(_startTime));
 		// Lower Elevator to Switch during turn, then drive to 2nd cube while setting infeed wide and continuing to lower elevator
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-					new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT),
+					//new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT),
 					new SeriesAction(Arrays.asList(new Action[] {
 							new TurnAction(targetTurnAngle, isRightTurnToSwitch),
 							new SimultaneousAction(Arrays.asList(new Action[] {
-									new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.WIDE),
+									//new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.WIDE),
 									new RunMotionProfileAction(scaleToSwitch),
-									new SeriesAction(Arrays.asList(new Action [] {
+									/*new SeriesAction(Arrays.asList(new Action [] {
 											new WaitAction(0.55),
 											new InfeedCubeAction()
-									}))
+									}))*/
 							}))
 					}))
 		})));
@@ -115,13 +117,13 @@ public class DoubleScale extends AutonBase{
 		//runAction(new InfeedCubeAction());
 		// Drive back to scale and turn while raising elevator to scale height
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-					new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.STORE),
+				//	new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.STORE),
 					new SeriesAction(Arrays.asList(new Action[] {
 							new RunMotionProfileAction(switchToScale),
 							new TurnAction(endTargetTurnAngle, !isRightTurnToSwitch),
 							//new PrintTimeFromStart(_startTime)
 					})),
-					new SeriesAction(Arrays.asList(new Action[] {
+					/*new SeriesAction(Arrays.asList(new Action[] {
 							new WaitAction(elevatorWaitTime2),
 							new SimultaneousAction(Arrays.asList(new Action[] {
 								new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.HIGH_SCALE_HEIGHT),
@@ -132,17 +134,17 @@ public class DoubleScale extends AutonBase{
 								})),
 
 							})) 
-					}))
+					}))*/
 		}))); 
 		// Outfeed cube for 0.2s
 		//runAction(new OutfeedCubeAction(carriageVBUSCube2));
 		runAction(new PrintTimeFromStart(_startTime));
 		// Move elevator to floor
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-				new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT),
+				//new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT),
 				new SeriesAction(Arrays.asList(new Action[] {
 						new WaitAction(0.3),
-						new TurnAction(finalTurnTargetAngle, isRightTurnToSwitch),
+						//new TurnAction(finalTurnTargetAngle, isRightTurnToSwitch),
 						/*new SimultaneousAction(Arrays.asList(new Action[] {
 								new DriveSetDistanceAction(50.0),
 								new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.WIDE)

@@ -136,10 +136,6 @@ public class Paths {
 	
 	private static void buildCenterPaths() {
 		// Auto Run
-		/*
-		autoRunPath = buildPathFromWaypoints(Arrays.asList(
-						new Waypoint(20,46,0,0),
-						new Waypoint(140,46,0,120))); */
 		autoRunPath = buildPathFromWaypoints(getStraightPathWaypoints(new Translation(20, 46), 0, 120));
 		centerPaths.put(Center.AUTO_RUN, autoRunPath);
 		
@@ -302,19 +298,19 @@ public class Paths {
 		// First Cube
 		lScalePathR = buildPathFromWaypoints(Arrays.asList(
 						new Waypoint(20,278,0,0),
-						new Waypoint(191,278,0,120),
-						new Waypoint(242,278,40,120),
-						new Waypoint(242,228,0,120),
-						new Waypoint(242,214,0,20),
-						new Waypoint(242,109,0,100),
-						new Waypoint(242,74,35,80),
-						new Waypoint(268,74,0,40)));
+						new Waypoint(194,278,0,120),
+						new Waypoint(246,278,40,80),
+						new Waypoint(246,228,0,80),
+						new Waypoint(246,220,0,80),
+						new Waypoint(246,114,0,120),
+						new Waypoint(246,74,35,100),
+						new Waypoint(280,74,0,80)));
 		rightPaths.put(Right.L_SCALE, lScalePathR);
 		
 		rScalePathR = buildPathFromWaypoints(Arrays.asList(
 						new Waypoint(20,278,0,0),
-						new Waypoint(229,278,30,120),
-						new Waypoint(281,250,0,100)));
+						new Waypoint(229,278,50,140),
+						new Waypoint(281,256,0,140)));
 		rightPaths.put(Right.R_SCALE, rScalePathR);
 		
 		rScaleOutsidePathR = buildPathFromWaypoints(Arrays.asList(
