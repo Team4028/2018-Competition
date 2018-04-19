@@ -163,5 +163,7 @@ public class SwitchableCameraServer {
 					"mjpg:http://172.22.11.2:" + Integer.toString(CAMERA_TCP_PORT) + "/stream.mjpg",
 					"mjpg:http://10.40.28.2:" + Integer.toString(CAMERA_TCP_PORT) + "/stream.mjpg"
 	};
+	//update entry in networkTables
+	entry.setStringArray(urls);
 			}
 }
