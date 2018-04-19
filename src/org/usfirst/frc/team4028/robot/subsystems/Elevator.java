@@ -97,7 +97,7 @@ public class Elevator implements Subsystem {
 	private static final int HIGH_SCALE_HEIGHT_POSITION = InchesToNativeUnits(80);
 	private static final int NEUTRAL_SCALE_HEIGHT_POSITION = InchesToNativeUnits(72.5);
 	private static final int LOW_SCALE_HEIGHT_POSITION = InchesToNativeUnits(65);
-	private static final int CLIMB_SCALE_HEIGHT_POSITION  = InchesToNativeUnits(67);
+	private static final int CLIMB_SCALE_HEIGHT_POSITION  = InchesToNativeUnits(60);
 	private static final int SWITCH_HEIGHT_POSITION = InchesToNativeUnits(30);
 	private static final int CUBE_ON_FLOOR_POSITION = InchesToNativeUnits(0);
 	private static final int INFEED_POSITION = 0;
