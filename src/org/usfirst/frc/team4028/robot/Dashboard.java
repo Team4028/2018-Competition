@@ -95,7 +95,7 @@ public class Dashboard {
 	
 	/** Returns the autonBase object associated with the auton selected on the dashboard */
 	public AutonBase getSelectedAuton() {
-		_isStartingLeft = true; //(_autonStartingSideChooser.getSelected() == STARTING_SIDE.LEFT);
+		_isStartingLeft = (_autonStartingSideChooser.getSelected() == STARTING_SIDE.LEFT);
 		
 		switch(_autonModeChooser.getSelected()) {
 			case DO_NOTHING:
