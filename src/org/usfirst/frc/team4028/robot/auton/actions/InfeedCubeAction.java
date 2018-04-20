@@ -1,6 +1,7 @@
 package org.usfirst.frc.team4028.robot.auton.actions;
 
 import org.usfirst.frc.team4028.robot.sensors.NavXGyro;
+import org.usfirst.frc.team4028.robot.subsystems.Carriage.CARRIAGE_WHEELS_OUT_VBUS_INDEX;
 import org.usfirst.frc.team4028.robot.subsystems.Chassis;
 import org.usfirst.frc.team4028.robot.subsystems.CubeHandler;
 import org.usfirst.frc.team4028.robot.subsystems.Infeed;
@@ -49,6 +50,7 @@ public class InfeedCubeAction implements Action {
 				if(Timer.getFPGATimestamp()-_startTime<1.2)
 				{
 					_cubeHandler.infeedArms_MoveToPresetPosition(INFEED_ARM_TARGET_POSITION.WIDE);
+					_cubeHandler.carriage_FeedOut(CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_60);
 				}
 				else
 				{
@@ -125,10 +127,10 @@ public class InfeedCubeAction implements Action {
 			if(_isComplete)
 			{
 				//System.out.println("We made it");
-				if(Math.abs(_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getLeftInfeedArmPos()))<190 && 
-					Math.abs(_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getLeftInfeedArmPos()))>150 &&
-					Math.abs(_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getRightInfeedArmPos()))<180 &&
-					Math.abs(_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getRightInfeedArmPos()))>145)
+				if(Math.abs(_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getLeftInfeedArmPos()))<191 && 
+					Math.abs(_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getLeftInfeedArmPos()))>130 &&
+					Math.abs(_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getRightInfeedArmPos()))<191 &&
+					Math.abs(_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getRightInfeedArmPos()))>130)
 				{
 					_infeedCubeState = INFEED_CUBE_AUTON_STATE.JAM_CENTER;				
 				}
@@ -143,8 +145,8 @@ public class InfeedCubeAction implements Action {
 					_infeedCubeState = INFEED_CUBE_AUTON_STATE.LEFT_OR_RIGHT;
 				}
 				
-				else if(_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getLeftInfeedArmPos())>185 && 
-						_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getRightInfeedArmPos())>185)
+				else if(_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getLeftInfeedArmPos())>192 && 
+						_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getRightInfeedArmPos())>192)
 				{
 					_infeedCubeState=INFEED_CUBE_AUTON_STATE.SHORT;		
 				}
