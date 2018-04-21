@@ -553,7 +553,7 @@ public class DriverOperatorStation {
 	// ===================================
 
 	public boolean getOperator_FlapUp_BtnPressed() {
-		if(Math.abs(_operatorGamepad.getY(Hand.kLeft)) >= .5){
+		if(_operatorGamepad.getY(Hand.kLeft) <= -.5){
 			// flip the sign, pushing the joystick up is a # < 0
 			return true;
 		}  
@@ -563,7 +563,7 @@ public class DriverOperatorStation {
 	}
 	
 	public boolean getOperator_FlapDown_BtnPressed() {
-		if(Math.abs(_operatorGamepad.getY(Hand.kLeft)) <= -.5){
+		if(_operatorGamepad.getY(Hand.kLeft) >= .5){
 			// flip the sign, pushing the joystick up is a # < 0
 			return true;
 		}  

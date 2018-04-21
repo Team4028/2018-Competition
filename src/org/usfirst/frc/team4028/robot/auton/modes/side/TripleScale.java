@@ -115,7 +115,7 @@ public class TripleScale extends AutonBase {
 										new SeriesAction(Arrays.asList(new Action[] {
 												new WaitAction(1.3),
 												//new PrintTimeFromStart(_startTime),
-												new OutfeedCubeAction(CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_90)
+												new OutfeedCubeAction(CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_100)
 										})),
 
 									})) 
@@ -133,11 +133,15 @@ public class TripleScale extends AutonBase {
 						new TurnAction(finalTurnTargetAngle, isRightTurnToSwitch),
 						new SimultaneousAction(Arrays.asList(new Action[] {
 								new RunMotionProfileAction(scaleToSwitchThirdCube),
-								new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.WIDE)
+								new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.WIDE),
+								new SeriesAction(Arrays.asList(new Action[] {
+										new WaitAction(.75),
+										new InfeedCubeAction()
+								}))
 						}))
 				}))
 		})));
-		runAction(new InfeedCubeAction());
+		//runAction(new InfeedCubeAction());
 		runAction(new PrintTimeFromStart(_startTime));
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 					new SeriesAction(Arrays.asList(new Action[] {
@@ -150,7 +154,7 @@ public class TripleScale extends AutonBase {
 					})),
 					new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.STORE),
 		})));
-		runAction(new OutfeedCubeAction());
+		runAction(new OutfeedCubeAction(CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_60));
 		runAction(new PrintTimeFromStart(_startTime));
 		runAction(new DriveSetDistanceAction(-20));
 		runAction(new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT));

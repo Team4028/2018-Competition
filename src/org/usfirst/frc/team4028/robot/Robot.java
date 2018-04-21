@@ -268,9 +268,9 @@ public class Robot extends IterativeRobot {
 			else if (Math.abs(_dos.getDriver_InfeedCube_JoystickCmd()) != 0) {
 				_cubeHandler.acquireCube_InfeedAndCarriage();
 			}			
-			//else if ((Math.abs(_dos.getDriver_EjectCube_JoystickCmd()) != 0) || _dos.getOperator_EjectCube_JoystickCmd() != 0) {
-			//	_cubeHandler.ejectCube_InfeedAndCarriage();
-			//}
+			else if ((Math.abs(_dos.getDriver_EjectCube_JoystickCmd()) != 0) || _dos.getDriver_EjectCube_JoystickCmd() != 0) {
+				_cubeHandler.ejectCube_InfeedAndCarriage();
+			}
 			else {
 				_cubeHandler.stop_InfeedAndCarriage();			
 			}
@@ -430,11 +430,11 @@ public class Robot extends IterativeRobot {
 
     		_chassis.outputToShuffleboard(); 
     		_elevator.outputToShuffleboard();
-    		//_infeed.outputToShuffleboard();
+    		_infeed.outputToShuffleboard();
     		_carriage.outputToShuffleboard();
 	    	_cubeHandler.outputToShuffleboard();
-	    	//_climber.outputToShuffleboard();
-	    	//_pressureSensor.outputToShuffleboard();
+	    	_climber.outputToShuffleboard();
+	    	_pressureSensor.outputToShuffleboard();
 	    	
     		// write the overall robot dashboard info
 	    	SmartDashboard.putString("Robot Build", _buildMsg);
