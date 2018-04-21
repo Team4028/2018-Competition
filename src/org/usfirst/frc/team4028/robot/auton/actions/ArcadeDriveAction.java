@@ -5,6 +5,7 @@ import org.usfirst.frc.team4028.robot.subsystems.Chassis;
 import edu.wpi.first.wpilibj.Timer;
 
 public class ArcadeDriveAction implements Action {
+	private Chassis _chassis = Chassis.getInstance();
 	private double _throttle;
 	private double _startTime, _waitTime;
 	
@@ -20,12 +21,16 @@ public class ArcadeDriveAction implements Action {
 
 	@Override
 	public void update() {
-		Chassis.getInstance().arcadeDrive(-_throttle, 0);
+		if ((Timer.getFPGATimestamp() - _startTime) > _waitTime) {
+			_chassis.stop();
+		} else {
+			_chassis.arcadeDrive(-_throttle, 0);
+		}
 	}
 
 	@Override
 	public void done() {
-		Chassis.getInstance().stop();
+		_chassis.stop();
 	}
 
 	@Override

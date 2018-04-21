@@ -146,16 +146,16 @@ public class Paths {
 		centerPaths.put(Center.AUTO_RUN, autoRunPath);
 		
 		// First Cube
-		lSwitchPath = buildPathFromWaypoints(Arrays.asList(
+		lSwitchPath = buildPathFromWaypoints(0.001, Arrays.asList(
 						new Waypoint(20,166,0,0),
-						new Waypoint(50,166,25,80),
+						new Waypoint(50,166,25,60),
 						new Waypoint(90,107,30,70),
 						new Waypoint(128,107,0,70)));
 		centerPaths.put(Center.L_SWITCH, lSwitchPath);
 		
 		rSwitchPath = buildPathFromWaypoints(0.0025, Arrays.asList(
 						new Waypoint(20,166,0,0),
-						new Waypoint(50,166,25,80),
+						new Waypoint(50,166,25,60),
 						new Waypoint(90,217,30,70),
 						new Waypoint(128,217,0,70)));
 		centerPaths.put(Center.R_SWITCH, rSwitchPath);
