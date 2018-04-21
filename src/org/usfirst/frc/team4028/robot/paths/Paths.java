@@ -53,6 +53,8 @@ public class Paths {
 	private static Path pyramidAgainFromLeftPath, pyramidAgainFromRightPath;
 	
 	public enum Left {
+		TO_BACK_CENTER,
+		
 		// First Cube
 		L_SCALE,
 		R_SCALE,
@@ -80,6 +82,7 @@ public class Paths {
 		L_SWITCH_TO_L_SCALE_THIRD_CUBE
 	}
 	
+	private static Path toBackCenterL;
 	private static Path lScalePathL, rScalePathL;
 	private static Path lScaleOutsidePathL;
 	private static Path lScaleToLSwitchPathL, lSwitchToLScalePathL;
@@ -91,6 +94,8 @@ public class Paths {
 	private static Path lScaleToLSwitchThirdCube, lSwitchToLScaleThirdCube;
 	
 	public enum Right {
+		TO_BACK_CENTER,
+		
 		// First Cube
 		L_SCALE,
 		R_SCALE,
@@ -109,6 +114,7 @@ public class Paths {
 		R_SWITCH_TO_R_SCALE_THIRD_CUBE
 	}
 	
+	private static Path toBackCenterR;
 	private static Path lScalePathR, rScalePathR;
 	private static Path rScaleOutsidePathR;
 	private static Path rScaleToLSwitchPathR;
@@ -214,6 +220,12 @@ public class Paths {
 	}
 	
 	private static void buildLeftPaths() {
+		toBackCenterL = buildPathFromWaypoints(Arrays.asList(
+						new Waypoint(12,46,0,0),
+				        new Waypoint(240,46,50,60),
+				        new Waypoint(240,120,0,60)));
+		leftPaths.put(Left.TO_BACK_CENTER, toBackCenterL);
+		
 		// First Cube
 		lScalePathL = buildPathFromWaypoints(Arrays.asList(
 						new Waypoint(20,46,0,0),
@@ -295,6 +307,11 @@ public class Paths {
 	}
 	
 	private static void buildRightPaths() {
+		toBackCenterR = buildPathFromWaypoints(Arrays.asList(
+						new Waypoint(12,278,0,0),
+				        new Waypoint(240,278,50,60),
+				        new Waypoint(240,204,0,60)));
+		rightPaths.put(Right.TO_BACK_CENTER, toBackCenterR);
 		// First Cube
 		lScalePathR = buildPathFromWaypoints(Arrays.asList(
 						new Waypoint(20,278,0,0),
