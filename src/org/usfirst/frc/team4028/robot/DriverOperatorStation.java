@@ -1,5 +1,7 @@
 package org.usfirst.frc.team4028.robot;
 
+import org.usfirst.frc.team4028.robot.subsystems.Infeed;
+
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
@@ -92,6 +94,7 @@ public class DriverOperatorStation {
 	private XboxController _engineeringGamepadB;
 		
 	private DriverStation _driverStation;
+	private Infeed _infeed;
 	
 	private static final double JOYSTICK_DEADBAND = 0.05;
 	
@@ -386,13 +389,18 @@ public class DriverOperatorStation {
 	//====================================
 	
 	public void rumbleDriveController() {
-		_driverGamepad.setRumble(GenericHID.RumbleType.kLeftRumble, .5);
-		_driverGamepad.setRumble(GenericHID.RumbleType.kRightRumble, .5);
-	}
-	
-	public void noRumbleDriveController() {
-		_driverGamepad.setRumble(GenericHID.RumbleType.kLeftRumble, 0);
-		_driverGamepad.setRumble(GenericHID.RumbleType.kRightRumble, 0);
+		if (_infeed.isLeftInPosition() == false) {
+			_driverGamepad.setRumble(GenericHID.RumbleType.kLeftRumble, .5);
+			System.out.println("Left Arm cannot reach target position");
+		}
+		if (_infeed.isRightInPosition() == false) {
+			_driverGamepad.setRumble(GenericHID.RumbleType.kRightRumble, .5);
+			System.out.println("Right Arm cannot reach target position");
+		}
+		else {
+			_driverGamepad.setRumble(GenericHID.RumbleType.kLeftRumble, 0);
+			_driverGamepad.setRumble(GenericHID.RumbleType.kRightRumble, 0);
+		}
 	}
 	
 	// =========================================================================================================

@@ -218,28 +218,19 @@ public class Robot extends IterativeRobot {
 			// =============================
 			if (_dos.getIsDriver_RezeroInfeed_BtnJustPressed()) {
 				_cubeHandler.infeedArms_Rezero();
+				_dos.rumbleDriveController();
 			}		
 			else if (_dos.getIsDriver_WideInfeed_BtnJustPressed()) {
 				_cubeHandler.infeedArms_moveToWidePosition();
-				if (_infeed.areArmsInPosition() == false) {
-					_dos.rumbleDriveController();
-				}
+				_dos.rumbleDriveController();
 			}
 			else if (_dos.getIsDriver_SqueezeInfeed_BtnJustPressed()) {
 				_cubeHandler.infeedArms_moveToSqueezePosition();
-				if (_infeed.areArmsInPosition() == false) {
-					_dos.rumbleDriveController();
-					}
-				}
+				_dos.rumbleDriveController();
+			}
 			else if (_dos.getIsDriver_StoreInfeed_BtnJustPressed()) {
 				_cubeHandler.infeedArms_moveToStorePosition();
-				if (_infeed.areArmsInPosition() == false) {
-					_dos.rumbleDriveController();
-					System.out.println("Arms cannot reach target position");
-				}
-				else {
-					_dos.noRumbleDriveController();
-				}
+				_dos.rumbleDriveController();
 			}
 			
 			// ============= CARRIAGE =============

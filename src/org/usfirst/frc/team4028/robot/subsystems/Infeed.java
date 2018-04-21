@@ -535,10 +535,9 @@ public class Infeed  implements Subsystem {
 	//=====================================================================================
 	//Method for determining if Arms are In Position
 	//=====================================================================================	
+	double currentErrorL = Math.abs(nativeUnitsToDegrees(getCurrentLeftInfeedPosition()) - _targetInfeedArmPosition);
+	double currentErrorR = Math.abs(nativeUnitsToDegrees(getCurrentRightInfeedPosition()) - _targetInfeedArmPosition);
 	public boolean areArmsInPosition() {
-		double currentErrorL = Math.abs(nativeUnitsToDegrees(getCurrentLeftInfeedPosition()) - _targetInfeedArmPosition);
-		double currentErrorR = Math.abs(nativeUnitsToDegrees(getCurrentRightInfeedPosition()) - _targetInfeedArmPosition);
-		
 		if(currentErrorL < INFEED_ALLOWED_ERROR_ANGLE && currentErrorR < INFEED_ALLOWED_ERROR_ANGLE
 				&& _targetInfeedArmPosition != HOME_POSITION_ANGLE
 				&& _targetInfeedArmPosition != STORE_POSITION_ANGLE) {
@@ -548,6 +547,24 @@ public class Infeed  implements Subsystem {
 			return true;
 		} else {
 			return false;
+		}
+	} 
+	
+	public boolean isLeftInPosition() {
+		if (currentErrorL > INFEED_ALLOWED_ERROR_ANGLE) {
+			return false;
+		}
+		else {
+			return true;
+		} 
+	}
+	
+	public boolean isRightInPosition() {
+		if (currentErrorR > INFEED_ALLOWED_ERROR_ANGLE) {
+			return false;
+		}
+		else {
+			return true;
 		}
 	}
 	
