@@ -102,6 +102,7 @@ public class Elevator implements Subsystem {
 	private static final int CUBE_ON_FLOOR_POSITION = InchesToNativeUnits(0);
 	private static final int INFEED_POSITION = 0;
 	private static final int HOME_POSITION = 0;
+	private static final int FLAP_DOWN_BELOW_HEIGHT_POSITION_IN_NU = InchesToNativeUnits(54);
 	
 	//Bump Position Up/Down on Elevator Constant
 	private static final int LARGE_BUMP_AMOUNT_IN_NU = InchesToNativeUnits(3);
@@ -573,6 +574,10 @@ public class Elevator implements Subsystem {
 	
 	public boolean isElevatorAtUnsafeHeight() {
 		return _actualPositionNU > LOW_SCALE_HEIGHT_POSITION;
+	}
+	
+	public boolean isFlapUpEnabledHeight() {
+		return _actualPositionNU >= FLAP_DOWN_BELOW_HEIGHT_POSITION_IN_NU;
 	}
 	
 	// ===============================================================================================================

@@ -97,6 +97,12 @@ public class CubeHandler implements Subsystem {
 					default:
 						break;
 				}
+				
+				// auto flap down if below max height
+				if(!_elevator.isFlapUpEnabledHeight() && _carriage.IsCarriageTiltedUp())
+				{
+					carriage_FlapDown();
+				}
 			}
 		}
 		
@@ -308,7 +314,14 @@ public class CubeHandler implements Subsystem {
 	
 	public void carriage_FlapUp()
 	{
-		_carriage.tiltCarriageUp();
+		if(_elevator.isFlapUpEnabledHeight())
+		{
+			_carriage.tiltCarriageUp();
+		}
+		else
+		{
+			ReportStateChg("Elevator TOO low to flap up");
+		}
 	}
 	
 	public void carriage_FlapDown()

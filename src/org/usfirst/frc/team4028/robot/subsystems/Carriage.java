@@ -65,6 +65,7 @@ public class Carriage implements Subsystem {
 	private static final boolean IS_VERBOSE_LOGGING_ENABLED = true;
 	
 	private boolean _isCubePresent = false;
+	private boolean _isFlapInUpPosition = false;
 	private long _consecutiveScansCubeIsPresent = 0;
 	private static final int MIN_CONSECUTIVE_SCANS = 5;
 	
@@ -143,7 +144,7 @@ public class Carriage implements Subsystem {
 		
 		//Setup Solenoid for Tilt
 		_tiltCylinder = new DoubleSolenoid(Constants.PCM_CAN_ADDR, Constants.CARRIAGE_FLAP_UP_PCM_PORT, Constants.CARRIAGE_FLAP_DOWN_PCM_PORT);
-		_tiltCylinder.set(Constants.CARRIAGE_FLAP_DOWN);
+		this.tiltCarriageDown();
 		
 		_carriageWheelsState = CARRIAGE_WHEELS_STATE.STOPPED;
 	}
@@ -420,10 +421,17 @@ public class Carriage implements Subsystem {
 	//=== Handle Carriage Tilt Solenoid =================================================================
 	public void tiltCarriageUp() {
 		_tiltCylinder.set(Constants.CARRIAGE_FLAP_UP);
+		_isFlapInUpPosition = true;
 	}
 	
 	public void tiltCarriageDown() {
 		_tiltCylinder.set(Constants.CARRIAGE_FLAP_DOWN);	
+		_isFlapInUpPosition = false;
+	}
+	
+	public boolean IsCarriageTiltedUp()
+	{
+		return _isFlapInUpPosition;
 	}
 	
 	@Override
