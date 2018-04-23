@@ -583,6 +583,10 @@ public class Elevator implements Subsystem {
 		return _actualPositionNU >= FLAP_DOWN_BELOW_HEIGHT_POSITION_IN_NU;
 	}
 	
+	public boolean isClimberServoEnabledHeight() {
+		return _actualPositionNU >= CLIMB_SCALE_HEIGHT_POSITION;
+	}
+	
 	// ===============================================================================================================
 	// General Purpose Utility Methods
 	// ===============================================================================================================

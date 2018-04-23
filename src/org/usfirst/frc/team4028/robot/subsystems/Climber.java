@@ -25,7 +25,7 @@ public class Climber implements Subsystem
 	// define class level working variables
 	private TalonSRX _climberMotor; 
 	private Servo _climberServo;
-	
+	private Elevator _elevator = Elevator.getInstance();
 	
 	private double _targetServoPosition = 0.0;
 	private boolean _isClimberServoOpen = false;
@@ -102,7 +102,7 @@ public class Climber implements Subsystem
 	
 	public void toggleClimberServo() {
 		double servoCurrentPosition = _climberServo.get();
-		if(servoCurrentPosition <= 0.5) {
+		if(servoCurrentPosition <= 0.5  && _elevator.isClimberServoEnabledHeight()) {
 			_targetServoPosition = SERVO_OPEN_POSITION;
 			_isClimberServoOpen = true;
 		}
