@@ -254,9 +254,9 @@ public class Paths {
 		
 		lScaleOutsidePathL = buildPathFromWaypoints(Arrays.asList(
 						new Waypoint(12,46,0,0),
-						new Waypoint(120,46,40,160),
-						new Waypoint(220,36,40,160),
-						new Waypoint(320,36,0,160)));
+						new Waypoint(120,46,40,100),
+						new Waypoint(220,34,40,100),
+						new Waypoint(320,34,0,100)));
 		leftPaths.put(Left.L_SCALE_OUTSIDE, lScaleOutsidePathL);
 		
 		// Second Cube
