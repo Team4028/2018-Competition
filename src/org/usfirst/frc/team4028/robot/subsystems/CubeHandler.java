@@ -3,6 +3,7 @@ package org.usfirst.frc.team4028.robot.subsystems;
 import org.usfirst.frc.team4028.robot.subsystems.Carriage.CARRIAGE_WHEELS_OUT_VBUS_INDEX;
 import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_PRESET_POSITION;
 import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_ARM_TARGET_POSITION;
+import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_WHEELS_STATE;
 import org.usfirst.frc.team4028.util.LogDataBE;
 import org.usfirst.frc.team4028.util.loops.Loop;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -297,9 +298,26 @@ public class CubeHandler implements Subsystem {
 	public void infeedArm_moveRightInfeedArmToClimbPosition() {
 		_infeed.moveArmsToClimbInfeedPosition();
 	}
+	
 	public double infeedArm_nativeUnitstoDegrees(double NativeUnits)
 	{
 		return _infeed.nativeUnitsToDegrees(NativeUnits);
+	}
+		
+	public double getLeftInfeedArmPos() {
+		return _infeed.getCurrentLeftInfeedPosition();
+	}
+	
+	public double getRightInfeedArmPos() {
+		return _infeed.getCurrentRightInfeedPosition();
+	}
+	
+	public boolean areInfeedArmsInfeeding() {
+		if(_infeed.getInfeedWheelsState() == INFEED_WHEELS_STATE.FEED_IN) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	//=====================================================================================	
@@ -337,13 +355,6 @@ public class CubeHandler implements Subsystem {
 		return _carriage.isCubeInCarriage();
 	}
 	
-	public double getLeftInfeedArmPos() {
-		return _infeed.getCurrentLeftInfeedPosition();
-	}
-	
-	public double getRightInfeedArmPos() {
-		return _infeed.getCurrentRightInfeedPosition();
-	}
 	//=====================================================================================	
 	// Utility Methods
 	//=====================================================================================	

@@ -299,9 +299,9 @@ public class DriverOperatorStation {
 	// === Driver Is Pressed buttons =====
 	// ===================================
 
-//		public boolean getIsDriver_Back_BtnPressed() {
-//			return _driverGamepad.getBackButton();
-//		}
+		public boolean getIsDriver_Strobe_BtnPressed() {
+			return _driverGamepad.getBackButton();
+		}
 	
 //		public boolean getIsDriver_Start_BtnPressed() {
 //			return _driverGamepad.getStartButton();

@@ -154,6 +154,7 @@ public class SwitchableCameraServer {
 	}
 	
 	//build camera address list
+	@SuppressWarnings("unused")
 	String[] urls = new String[]
 	{
 			//options for wired or tethered

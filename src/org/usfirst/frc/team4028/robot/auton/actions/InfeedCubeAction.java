@@ -12,6 +12,7 @@ public class InfeedCubeAction implements Action {
 	//Infeed _infeed = Infeed.getInstance();	conform to society and use cube handler everywhere
 
 	Chassis _chassis = Chassis.getInstance();
+	@SuppressWarnings("unused")
 	private double _startTime, _startAngle, _otherTime;
 	private boolean _isComplete;
 	private enum INFEED_CUBE_AUTON_STATE

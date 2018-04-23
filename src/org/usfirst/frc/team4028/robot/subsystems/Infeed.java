@@ -649,6 +649,10 @@ public class Infeed  implements Subsystem {
 		return _infeedArmTargetPosition;
 	}
 	
+	public INFEED_WHEELS_STATE getInfeedWheelsState() {
+		return _infeedWheelsState;
+	}
+	
 	//=====================================================================================
 	//Methods for Conversions between Native Units and Degrees
 	//=====================================================================================

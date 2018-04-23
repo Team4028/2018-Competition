@@ -6,6 +6,7 @@ import java.util.Date;
 
 import org.usfirst.frc.team4028.robot.auton.AutonExecuter;
 import org.usfirst.frc.team4028.robot.paths.AdaptedPaths;
+import org.usfirst.frc.team4028.robot.sensors.LEDs;
 import org.usfirst.frc.team4028.robot.sensors.PressureSensor;
 import org.usfirst.frc.team4028.robot.sensors.RobotStateEstimator;
 import org.usfirst.frc.team4028.robot.sensors.SwitchableCameraServer;
@@ -33,6 +34,7 @@ public class Robot extends IterativeRobot {
 	private Carriage _carriage = Carriage.getInstance();
 	private CubeHandler _cubeHandler = CubeHandler.getInstance();
 	private Climber _climber = Climber.getInstance();
+	private LEDs _leds = LEDs.getInstance();
 	
 	// Sensors
 	private PressureSensor _pressureSensor = PressureSensor.getInstance();
@@ -211,6 +213,7 @@ public class Robot extends IterativeRobot {
 	/** Called each loop (approx every 20mS) in telop mode */
 	@Override
 	public void teleopPeriodic() {
+		_leds.commandLEDToLight();
 		// =============  CHASSIS ============= 
 		if ((Math.abs(_dos.getDriver_Throttle_JoystickCmd()) != 0) || (Math.abs(_dos.getDriver_Turn_JoystickCmd()) != 0)) {
 			if (_elevator.isElevatorAtUnsafeHeight()) {
@@ -423,6 +426,7 @@ public class Robot extends IterativeRobot {
 	    	_cubeHandler.outputToShuffleboard();
 	    	//_climber.outputToShuffleboard();
 	    	//_pressureSensor.outputToShuffleboard();
+	    	_leds.outputToShuffleboard();
 	    	
     		// write the overall robot dashboard info
 	    	SmartDashboard.putString("Robot Build", _buildMsg);
@@ -453,7 +457,7 @@ public class Robot extends IterativeRobot {
 	    	_carriage.updateLogData(logData);
 	    	_cubeHandler.updateLogData(logData);
 	    	_pressureSensor.updateLogData(logData);
-	    	
+	    		    	
 	    	_dataLogger.WriteDataLine(logData);
     	}
 	}
