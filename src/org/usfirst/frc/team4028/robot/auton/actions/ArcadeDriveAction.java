@@ -17,6 +17,7 @@ public class ArcadeDriveAction implements Action {
 	@Override
 	public void start() {
 		_startTime = Timer.getFPGATimestamp();
+		_chassis.setHighGear(false);
 	}
 
 	@Override
@@ -37,5 +38,4 @@ public class ArcadeDriveAction implements Action {
 	public boolean isFinished() {
 		return (Timer.getFPGATimestamp() - _startTime) > _waitTime;
 	}
-	
 }

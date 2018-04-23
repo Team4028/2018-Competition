@@ -327,7 +327,7 @@ public class Chassis implements Subsystem {
     }
     
     private static double rotationsToInches(double rot) {
-        return rot * (Constants.DRIVE_WHEEL_DIAMETER_INCHES * Math.PI);
+        return rot * (Constants.DRIVE_WHEEL_DIAMETER_IN * Math.PI);
     } 
     
     private static double rpmToInchesPerSecond(double rpm) {
@@ -335,11 +335,11 @@ public class Chassis implements Subsystem {
     }
     
     private static double inchesToNU(double inches) {
-    	return inches * 1540.95;
+    	return inches * CODES_PER_REV / (Constants.DRIVE_WHEEL_DIAMETER_IN * Math.PI);
     }
 	
 	private static double inchesPerSecToNU(double inches_per_second) {
-        return inches_per_second * 148.2;
+        return inches_per_second * CODES_PER_REV / (Constants.DRIVE_WHEEL_DIAMETER_IN * Math.PI * 10);
     }
 	
 	
@@ -382,7 +382,7 @@ public class Chassis implements Subsystem {
         talon.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_10Ms, 0);
         talon.configVelocityMeasurementWindow(32, 0);
         
-        talon.configOpenloopRamp(0.5, 10);
+        talon.configOpenloopRamp(0.4, 10);
         talon.configClosedloopRamp(0.0, 0);
 	}
 	

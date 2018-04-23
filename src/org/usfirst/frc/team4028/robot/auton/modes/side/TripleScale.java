@@ -19,7 +19,6 @@ import org.usfirst.frc.team4028.robot.auton.actions.WaitUntilRemainingDistanceAc
 import org.usfirst.frc.team4028.robot.paths.Paths;
 import org.usfirst.frc.team4028.robot.paths.Paths.Left;
 import org.usfirst.frc.team4028.robot.paths.Paths.Right;
-import org.usfirst.frc.team4028.robot.subsystems.Carriage;
 import org.usfirst.frc.team4028.robot.subsystems.Elevator;
 import org.usfirst.frc.team4028.robot.subsystems.Carriage.CARRIAGE_WHEELS_OUT_VBUS_INDEX;
 import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_PRESET_POSITION;
@@ -86,7 +85,6 @@ public class TripleScale extends AutonBase {
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 					new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT),
 					new SeriesAction(Arrays.asList(new Action[] {
-							//new WaitAction(0.3),
 							new TurnAction(targetTurnAngle, isRightTurnToSwitch),
 							new SimultaneousAction(Arrays.asList(new Action[] {
 									new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.WIDE),
@@ -98,8 +96,6 @@ public class TripleScale extends AutonBase {
 							}))
 					}))
 		})));
-		// Infeed cube while sitting in place
-		//runAction(new InfeedCubeAction());
 		// Drive back to scale and turn while raising elevator to scale height
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 					new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.STORE),
@@ -114,22 +110,18 @@ public class TripleScale extends AutonBase {
 										new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.HIGH_SCALE_HEIGHT),
 										new SeriesAction(Arrays.asList(new Action[] {
 												new WaitAction(1.3),
-												//new PrintTimeFromStart(_startTime),
-												new OutfeedCubeAction(CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_100)
+												new OutfeedCubeAction(CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_70)
 										})),
 
 									})) 
 							}))
 					}))
 		}))); 
-		// Outfeed cube for 0.2s
-		//runAction(new OutfeedCubeAction(CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_80));
 		runAction(new PrintTimeFromStart(_startTime));
 		// Move elevator to floor
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 				new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT),
 				new SeriesAction(Arrays.asList(new Action[] {
-						//new WaitAction(0.3),
 						new TurnAction(finalTurnTargetAngle, isRightTurnToSwitch),
 						new SimultaneousAction(Arrays.asList(new Action[] {
 								new RunMotionProfileAction(scaleToSwitchThirdCube),
@@ -141,7 +133,6 @@ public class TripleScale extends AutonBase {
 						}))
 				}))
 		})));
-		//runAction(new InfeedCubeAction());
 		runAction(new PrintTimeFromStart(_startTime));
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 					new SeriesAction(Arrays.asList(new Action[] {

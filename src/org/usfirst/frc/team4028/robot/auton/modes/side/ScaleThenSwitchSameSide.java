@@ -24,7 +24,7 @@ public class ScaleThenSwitchSameSide extends AutonBase {
 				toScale = Paths.getPath(Left.L_SCALE);
 				scaleToSwitch = Paths.getPath(Left.L_SCALE_TO_L_SWITCH);
 				targetTurnAngle = 163;
-				elevatorWaitTime = 1.25;
+				elevatorWaitTime = 1.2;
 				isTurnRight = true;
 			} else {
 				toScale = Paths.getPath(Right.L_SCALE);
@@ -71,15 +71,17 @@ public class ScaleThenSwitchSameSide extends AutonBase {
 							new TurnAction(targetTurnAngle, isTurnRight),
 							new SimultaneousAction(Arrays.asList(new Action[] {
 									new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.WIDE),
-									new RunMotionProfileAction(scaleToSwitch)
+									new RunMotionProfileAction(scaleToSwitch),
+									new SeriesAction(Arrays.asList(new Action[] {
+											new WaitAction(0.55),
+											new InfeedCubeAction()
+									}))
 							}))
 					}))	
 		})));
-		// Infeed cube while sitting in place
-		runAction(new InfeedCubeAction());
 		// Drive to switch while storing infeed and raising elevator
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-					new DriveSetDistanceAction(14),
+					new ArcadeDriveAction(0.7, 0.4),
 					new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.STORE),
 					new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SWITCH_HEIGHT),
 		})));

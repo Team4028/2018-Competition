@@ -83,7 +83,7 @@ public class Constants {
     
 	/* Robot Physical Constants */
 	// Wheels
-	public static final double DRIVE_WHEEL_DIAMETER_INCHES = 6.35;
+	public static final double DRIVE_WHEEL_DIAMETER_IN = 6.258;
 	public static final double TRACK_WIDTH_INCHES = 24.25;
 	public static final double TRACK_SCRUBBING_FACTOR = 0.9;
 	

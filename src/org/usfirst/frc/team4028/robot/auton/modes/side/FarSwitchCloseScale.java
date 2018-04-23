@@ -24,7 +24,7 @@ public class FarSwitchCloseScale extends AutonBase {
 			fromScaleToSwitch = Paths.getPath(Left.L_SCALE_TO_R_SWITCH);
 			turnTargetAngle = 150;
 			isTurnRight = true;
-			elevatorWaitTime = 1.0;
+			elevatorWaitTime = 1.2;
 		} else {
 			toScale = Paths.getPath(Right.R_SCALE);
 			fromScaleToSwitch = Paths.getPath(Right.R_SCALE_TO_L_SWITCH);
@@ -50,7 +50,6 @@ public class FarSwitchCloseScale extends AutonBase {
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 					new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT),
 					new SeriesAction(Arrays.asList(new Action[] {
-							new WaitAction(0.3),
 							new TurnAction(turnTargetAngle, true),
 							new RunMotionProfileAction(fromScaleToSwitch)
 					}))
@@ -63,11 +62,16 @@ public class FarSwitchCloseScale extends AutonBase {
 							new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.WIDE)
 					}))
 		})));
-		runAction(new DriveSetDistanceAction(18));
-		runAction(new InfeedCubeAction());
+		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
+					new DriveSetDistanceAction(18),
+					new SeriesAction(Arrays.asList(new Action[] {
+							new WaitAction(0.3),
+							new InfeedCubeAction()
+					}))
+		})));
 		// Drive to switch while storing infeed and raising elevator
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-					new DriveSetDistanceAction(17),
+					new ArcadeDriveAction(0.7, 0.4),
 					new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.STORE),
 					new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SWITCH_HEIGHT)
 		})));

@@ -14,13 +14,12 @@ public class CloseSwitchFarScale extends AutonBase {
 	Path toLeftSwitchOnSide = Paths.getPath(Left.L_SWITCH_SIDE);
 	Path toRightScalefromLeftSwitchSide = Paths.getPath(Left.L_SWITCH_SIDE_TO_R_SCALE);
 	Path toRightScaleSecondCube = Paths.getPath(Left.TO_R_SCALE_SECOND_CUBE);
-	double _firstWaitTime = 0.8;
 	
 	@Override
 	public void routine() {
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 				new SeriesAction(Arrays.asList(new Action[] {
-						new WaitAction(_firstWaitTime),
+						new WaitAction(0.8),
 						new MoveElevatorToPosAction(40)
 				})),
 				new RunTimedMotionProfileAction(toLeftSwitchOnSide, 2.6)
@@ -53,10 +52,8 @@ public class CloseSwitchFarScale extends AutonBase {
 		})));
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 				new RunMotionProfileAction(toRightScaleSecondCube),
-				new SeriesAction(Arrays.asList(new Action[] {
-						new WaitAction(0.0),
-						new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.HIGH_SCALE_HEIGHT)
-				}))
+				new ActuateFlapJackAction(true),
+				new MoveElevatorToPosAction(76)
 		})));
 		// Outfeed cube for 0.2s
 		runAction(new OutfeedCubeAction());
