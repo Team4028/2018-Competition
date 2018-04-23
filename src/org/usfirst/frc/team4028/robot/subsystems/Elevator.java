@@ -501,7 +501,9 @@ public class Elevator implements Subsystem {
 		if(_elevatorAtScaleOffsetNU < MAX_BUMP_UP_AMOUNT) {
 			if(_isClimbBumpValueEnabled) {
 				//_elevatorAtScaleOffsetNU = _elevatorAtScaleOffsetNU + SMALL_BUMP_AMOUNT_CLIMB_IN_NU;
-				_elevatorAtScaleOffsetNU = CLIMB_CLICK_ON_BAR_HEIGHT_IN_NU;
+				if (getElevatorActualPositionNU() < 20000) {
+					_elevatorAtScaleOffsetNU = (CLIMB_CLICK_ON_BAR_HEIGHT_IN_NU - CLIMB_SCALE_HEIGHT_POSITION);
+				}
 			} else {
 				_elevatorAtScaleOffsetNU = _elevatorAtScaleOffsetNU + LARGE_BUMP_AMOUNT_IN_NU;
 			}
@@ -563,6 +565,9 @@ public class Elevator implements Subsystem {
 		return _elevatorMasterMotor.getSelectedSensorPosition(0);
 	}
 	
+	public double getElevatorActualPositionIn() {
+		return NativeUnitsToInches(_elevatorMasterMotor.getSelectedSensorPosition(0));
+	}
 	public boolean isElevatorAtInfeedPosition() {
 		if(getElevatorActualPositionNU() < 100) {
 			return true;

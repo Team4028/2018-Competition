@@ -47,18 +47,26 @@ public class InfeedCubeAction implements Action {
 				break;
 			
 			case JAM_CENTER:
-				if(Timer.getFPGATimestamp()-_startTime<1.2)
+				if(Timer.getFPGATimestamp()-_startTime<1.075)
+				{
+					_cubeHandler.ejectCube_InfeedAndCarriage();
+					_cubeHandler.infeedArms_MoveToPresetPosition(INFEED_ARM_TARGET_POSITION.SQUEEZE);
+				}
+				else if(Timer.getFPGATimestamp()-_startTime<1.2)
 				{
 					_cubeHandler.infeedArms_MoveToPresetPosition(INFEED_ARM_TARGET_POSITION.WIDE);
-					_cubeHandler.carriage_FeedOut(CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_60);
+					_cubeHandler.acquireCube_InfeedAndCarriage();
+					
+					//_cubeHandler.carriage_FeedOut(CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_60);
 				}
 				else
 				{
 					_cubeHandler.infeedArms_MoveToPresetPosition(INFEED_ARM_TARGET_POSITION.SQUEEZE);
 				}
-				if(Timer.getFPGATimestamp()-_startTime<1.45)
+				if(Timer.getFPGATimestamp()-_startTime<1.4)
 				{
 					_cubeHandler.infeedWheels_SpinAuton();
+					_cubeHandler.infeedArms_MoveToPresetPosition(INFEED_ARM_TARGET_POSITION.SQUEEZE);
 					_isComplete = false;
 				}
 				else
@@ -127,26 +135,24 @@ public class InfeedCubeAction implements Action {
 			if(_isComplete)
 			{
 				//System.out.println("We made it");
-				if(Math.abs(_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getLeftInfeedArmPos()))<191 && 
-					Math.abs(_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getLeftInfeedArmPos()))>130 &&
-					Math.abs(_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getRightInfeedArmPos()))<191 &&
-					Math.abs(_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getRightInfeedArmPos()))>130)
+				if(Math.abs(_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getLeftInfeedArmPos()))<=190 && 
+					Math.abs(_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getLeftInfeedArmPos()))>150 &&
+					Math.abs(_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getRightInfeedArmPos()))<=190 &&
+					Math.abs(_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getRightInfeedArmPos()))>150)
 				{
 					_infeedCubeState = INFEED_CUBE_AUTON_STATE.JAM_CENTER;				
 				}
 			
 				else if(Math.abs(_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getRightInfeedArmPos()))<150 &&
-						Math.abs(_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getRightInfeedArmPos()))>100 &&
-						Math.abs(_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getLeftInfeedArmPos()))>190 ||
-						Math.abs(_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getRightInfeedArmPos()))>190 &&
-						Math.abs(_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getLeftInfeedArmPos()))<150 &&
-						Math.abs(_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getLeftInfeedArmPos()))>100)
+						Math.abs(_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getLeftInfeedArmPos()))>170 ||
+						Math.abs(_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getRightInfeedArmPos()))>170 &&
+						Math.abs(_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getLeftInfeedArmPos()))<150)
 				{
 					_infeedCubeState = INFEED_CUBE_AUTON_STATE.LEFT_OR_RIGHT;
 				}
 				
-				else if(_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getLeftInfeedArmPos())>192 && 
-						_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getRightInfeedArmPos())>192)
+				else if(_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getLeftInfeedArmPos())>190 && 
+						_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getRightInfeedArmPos())>190)
 				{
 					_infeedCubeState=INFEED_CUBE_AUTON_STATE.SHORT;		
 				}

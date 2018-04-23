@@ -13,6 +13,7 @@ import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_ARM_TARGET_POSITI
 public class DoubleSwitch extends AutonBase {
 	Path toSwitch; // Cube 1
 	Path fromSwitchToFrontOfPyramidPath, toPyramid, fromPyramid, sTurnToSwitch; // Cube 2
+	Path awayFromSwitch, pyramidAgain;
 	double elevatorWaitTimeFirstCube, elevatorWaitTimeSecondCube;
 	
 	public DoubleSwitch(boolean isLeftSwitch) {
@@ -20,10 +21,14 @@ public class DoubleSwitch extends AutonBase {
 			toSwitch = Paths.getPath(Center.L_SWITCH);
 			fromSwitchToFrontOfPyramidPath = Paths.getPath(Center.L_SWITCH_TO_PYRAMID_FRONT);
 			sTurnToSwitch = Paths.getPath(Center.S_TURN_TO_L_SWITCH);
+			awayFromSwitch = Paths.getPath(Center.AWAY_FROM_L_SWITCH);
+			pyramidAgain = Paths.getPath(Center.PYRAMID_AGAIN_FROM_L);
 		} else {
 			toSwitch = Paths.getPath(Center.R_SWITCH);
 			fromSwitchToFrontOfPyramidPath = Paths.getPath(Center.R_SWITCH_TO_PYRAMID_FRONT);
 			sTurnToSwitch = Paths.getPath(Center.S_TURN_TO_R_SWITCH);
+			awayFromSwitch = Paths.getPath(Center.AWAY_FROM_R_SWITCH);
+			pyramidAgain = Paths.getPath(Center.PYRAMID_AGAIN_FROM_R);
 		}
 		
 		elevatorWaitTimeFirstCube = 1.0;
@@ -50,7 +55,6 @@ public class DoubleSwitch extends AutonBase {
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 				new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT),	
 				new RunMotionProfileAction(fromSwitchToFrontOfPyramidPath),	
-				//new WaitAction(3.0),
 				new SeriesAction(Arrays.asList(new Action[] {
 							new WaitAction(1.7),
 							new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.WIDE)
@@ -59,7 +63,6 @@ public class DoubleSwitch extends AutonBase {
 		// Drive into pyramid to acquire 2nd cube
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 					new RunMotionProfileAction(toPyramid),
-					//new WaitAction(1.5),
 					new SeriesAction(Arrays.asList(new Action[] {
 							new WaitAction(1),
 							new SimultaneousAction(Arrays.asList(new Action[] {
@@ -72,7 +75,6 @@ public class DoubleSwitch extends AutonBase {
 		// Drive back to switch while storing infeed and raising elevator
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 					new RunTimedMotionProfileAction(sTurnToSwitch, 2.7),
-					//new WaitAction(3.0),
 					new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.STORE),
 					new SeriesAction(Arrays.asList(new Action[] {
 							new WaitAction(elevatorWaitTimeSecondCube),
@@ -86,8 +88,12 @@ public class DoubleSwitch extends AutonBase {
 		})));
 		// Move elevator to floor
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-			new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT),
-			new DriveSetDistanceAction(-20.0)
+				new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT),
+				new RunMotionProfileAction(awayFromSwitch)
+		})));
+		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
+				new RunMotionProfileAction(pyramidAgain),
+				new InfeedCubeAction()
 		})));
 		runAction(new PrintTimeFromStart(_startTime));  
 	}

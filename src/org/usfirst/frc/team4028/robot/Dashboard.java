@@ -111,27 +111,29 @@ public class Dashboard {
 			case SCALE_OUTSIDE:
 				if (_isScaleLeft == _isStartingLeft) {
 					return new ScaleOutside(_isStartingLeft);
+				} else if (_isSwitchLeft == _isStartingLeft) {
+					return new ToSwitchThenBackCenter(_isStartingLeft);
 				} else {
-					return new AutoRun();
+					return new ToBackCenter(_isStartingLeft);
 				}
 			case DOUBLE_SCALE:
 				return new DoubleScale(_isScaleLeft, _isStartingLeft);
 			case SCALE_THEN_SWITCH:
 				if(_isScaleLeft == _isSwitchLeft) {
-					return new ScaleThenSwitchSameSide(_isScaleLeft, _isStartingLeft);
+					return new ScaleThenSwitchSameSide(_isScaleLeft);
 				} else if (!_isScaleLeft && _isSwitchLeft){
 					return new CloseSwitchFarScale();
 				} else {
-					return new FarSwitchCloseScale(_isStartingLeft);
+					return new FarSwitchCloseScale();
 				}
 			case DOUBLE_SCALE_THEN_SWITCH:
 				if (_isStartingLeft) {
 					if (_isScaleLeft && _isSwitchLeft) {
 						return new DoubleScaleAndSwitch(_isScaleLeft);
 					} else if (!_isScaleLeft && !_isSwitchLeft) {
-						return new ScaleThenSwitchSameSide(_isScaleLeft, _isStartingLeft);
+						return new ScaleThenSwitchSameSide(_isScaleLeft);
 					} else if (_isScaleLeft && !_isSwitchLeft){
-						return new FarSwitchCloseScale(_isStartingLeft);
+						return new FarSwitchCloseScale();
 					} else {
 						return new CloseSwitchFarScale();
 					}
@@ -139,9 +141,9 @@ public class Dashboard {
 					if (!_isScaleLeft && !_isSwitchLeft) {
 						return new DoubleScaleAndSwitch(_isScaleLeft);
 					} else if (_isScaleLeft && _isSwitchLeft) {
-						return new ScaleThenSwitchSameSide(_isScaleLeft, _isStartingLeft);
+						return new ScaleThenSwitchSameSide(_isScaleLeft);
 					} else {
-						return new FarSwitchCloseScale(_isStartingLeft);
+						return new FarSwitchCloseScale();
 					}
 				}
 				
