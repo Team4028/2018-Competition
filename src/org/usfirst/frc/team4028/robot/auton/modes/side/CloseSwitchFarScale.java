@@ -11,7 +11,7 @@ import org.usfirst.frc.team4028.util.control.Path;
 import org.usfirst.frc.team4028.robot.auton.actions.*;
 
 public class CloseSwitchFarScale extends AutonBase {
-	Path toLeftSwitchOnSide = Paths.getPath(Left.L_SWITCH_SIDE);
+	Path toLeftSwitchSide = Paths.getPath(Left.L_SWITCH_SIDE);
 	Path toRightScalefromLeftSwitchSide = Paths.getPath(Left.L_SWITCH_SIDE_TO_R_SCALE);
 	Path toRightScaleSecondCube = Paths.getPath(Left.TO_R_SCALE_SECOND_CUBE);
 	
@@ -22,7 +22,7 @@ public class CloseSwitchFarScale extends AutonBase {
 						new WaitAction(0.8),
 						new MoveElevatorToPosAction(40)
 				})),
-				new RunTimedMotionProfileAction(toLeftSwitchOnSide, 2.6)
+				new RunTimedMotionProfileAction(toLeftSwitchSide, 2.6)
 		})));
 		// Outfeed cube for 0.2s
 		runAction(new OutfeedCubeAction());
@@ -39,9 +39,9 @@ public class CloseSwitchFarScale extends AutonBase {
 		runAction(new TurnAction(-162, true));
 		// Drive to cube and infeed it
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-					new DriveSetDistanceAction(3.0),
+					new DriveSetDistanceAction(5.0),
 					new SeriesAction(Arrays.asList(new Action[] {
-							new WaitAction(0.5),
+							//new WaitAction(0.5),
 							new InfeedCubeAction()
 					}))
 		})));

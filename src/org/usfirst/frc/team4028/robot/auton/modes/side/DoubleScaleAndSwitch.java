@@ -88,8 +88,12 @@ public class DoubleScaleAndSwitch extends AutonBase{
 					}))
 		})));
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-				new DriveSetDistanceAction(12.0),
-				new InfeedCubeAction()
+				new DriveSetDistanceAction(15.0),
+				new SeriesAction(Arrays.asList(new Action[] {
+						new WaitAction(.4),
+						new InfeedCubeAction()
+				}))
+				
 		})));
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 					new TurnAction(-37.0, false),

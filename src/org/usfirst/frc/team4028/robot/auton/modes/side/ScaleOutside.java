@@ -27,7 +27,7 @@ public class ScaleOutside extends AutonBase{
 			targetTurnAngle = -80;
 			isTurnRight = false;
 		}
-		elevatorWaitTime = 3.0;
+		elevatorWaitTime = 1.0;
 	}
 	
 	@Override
@@ -42,13 +42,9 @@ public class ScaleOutside extends AutonBase{
 		})));
 		// Turn to scale while raising elevator
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-				new SeriesAction(Arrays.asList(new Action[] {
-						new WaitAction(0.7),
-						new TurnAction(targetTurnAngle, isTurnRight)
-				})),
+				new TurnAction(targetTurnAngle, isTurnRight),
 				new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.HIGH_SCALE_HEIGHT)
 		})));
-		runAction(new DriveSetDistanceAction(15.0));
 		// Outfeed cube for 0.2s
 		runAction(new OutfeedCubeAction());
 		// Drive backwards 20in and move elevator to floor

@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import org.usfirst.frc.team4028.robot.auton.AutonBase;
 import org.usfirst.frc.team4028.robot.auton.actions.Action;
+import org.usfirst.frc.team4028.robot.auton.actions.ActuateFlapJackAction;
 import org.usfirst.frc.team4028.robot.auton.actions.DriveSetDistanceAction;
 import org.usfirst.frc.team4028.robot.auton.actions.InfeedCubeAction;
 import org.usfirst.frc.team4028.robot.auton.actions.MoveElevatorToPosAction;
@@ -90,7 +91,7 @@ public class TripleScale extends AutonBase {
 									new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.WIDE),
 									new RunMotionProfileAction(scaleToSwitch),
 									new SeriesAction(Arrays.asList(new Action [] {
-											new WaitAction(0.55),
+											new WaitAction(0.4),
 											new InfeedCubeAction()
 									}))
 							}))
@@ -109,8 +110,12 @@ public class TripleScale extends AutonBase {
 									new SimultaneousAction(Arrays.asList(new Action[] {
 										new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.HIGH_SCALE_HEIGHT),
 										new SeriesAction(Arrays.asList(new Action[] {
-												new WaitAction(1.3),
-												new OutfeedCubeAction(CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_70)
+												new WaitAction(1.1),
+												new SimultaneousAction(Arrays.asList(new Action[] {
+														new ActuateFlapJackAction(true),
+														new OutfeedCubeAction(CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_60)
+												}))
+												
 										})),
 
 									})) 
@@ -121,6 +126,7 @@ public class TripleScale extends AutonBase {
 		// Move elevator to floor
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 				new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT),
+				new ActuateFlapJackAction(false),
 				new SeriesAction(Arrays.asList(new Action[] {
 						new TurnAction(finalTurnTargetAngle, isRightTurnToSwitch),
 						new SimultaneousAction(Arrays.asList(new Action[] {
@@ -141,12 +147,16 @@ public class TripleScale extends AutonBase {
 					})),
 					new SeriesAction(Arrays.asList(new Action[] {
 							new WaitAction(elevatorWaitTime3),
-							new MoveElevatorToPosAction(Elevator.ELEVATOR_PRESET_POSITION.HIGH_SCALE_HEIGHT)
+							new SimultaneousAction(Arrays.asList(new Action[] {
+									new ActuateFlapJackAction(true),
+									new MoveElevatorToPosAction(Elevator.ELEVATOR_PRESET_POSITION.HIGH_SCALE_HEIGHT)
+							}))
 					})),
 					new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.STORE),
 		})));
-		runAction(new OutfeedCubeAction(CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_60));
+		runAction(new OutfeedCubeAction(CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_60));		
 		runAction(new PrintTimeFromStart(_startTime));
+		runAction(new ActuateFlapJackAction(false));
 		runAction(new DriveSetDistanceAction(-20));
 		runAction(new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT));
 		runAction(new PrintTimeFromStart(_startTime));

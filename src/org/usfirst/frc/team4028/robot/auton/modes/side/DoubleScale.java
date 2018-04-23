@@ -24,6 +24,7 @@ public class DoubleScale extends AutonBase{
 	CARRIAGE_WHEELS_OUT_VBUS_INDEX carriageVBUSCube1, carriageVBUSCube2;
 	
 	boolean isRightTurnToSwitch;
+	boolean actuateFlapJack;
 	
 	public DoubleScale(boolean isLeftScale, boolean isStartingLeft) {
 		if (isLeftScale) {
@@ -31,48 +32,57 @@ public class DoubleScale extends AutonBase{
 				toScale = Paths.getPath(Left.L_SCALE);
 				carriageVBUSCube1 = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_50;
 				carriageVBUSCube2 = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_70;
+				scaleToSwitch = Paths.getPath(Left.L_SCALE_TO_L_SWITCH);
+				switchToScale = Paths.getPath(Left.L_SWITCH_TO_L_SCALE);
+				scaleToSwitchThirdCube = Paths.getPath(Left.L_SCALE_TO_L_SWITCH_THIRD_CUBE);
+				switchToScaleThirdCube = Paths.getPath(Left.L_SWITCH_TO_L_SCALE_THIRD_CUBE);
 				toScaleRemainingDistance = 18;
 				elevatorWaitTime1 = 1.25;
-				elevatorWaitTime2 = 0.9;
+				elevatorWaitTime2 = 0.7;
 				isRightTurnToSwitch = true;
+				actuateFlapJack = false;
 			} else {
 				toScale = Paths.getPath(Right.L_SCALE); 
+				carriageVBUSCube1 = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_60;
+				carriageVBUSCube2 = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_100;
+				scaleToSwitch = Paths.getPath(Right.L_SCALE_TO_L_SWITCH);
+				switchToScale = Paths.getPath(Right.L_SWITCH_TO_L_SCALE);
+				scaleToSwitchThirdCube = Paths.getPath(Left.L_SCALE_TO_L_SWITCH_THIRD_CUBE);
+				switchToScaleThirdCube = Paths.getPath(Left.L_SWITCH_TO_L_SCALE_THIRD_CUBE);
 				toScaleRemainingDistance = 12;
-				elevatorWaitTime1 = 3.75;
+				elevatorWaitTime1 = 3.2;
 				elevatorWaitTime2 = 0.9;
 				isRightTurnToSwitch = false;
 			}
-			scaleToSwitch = Paths.getPath(Left.L_SCALE_TO_L_SWITCH);
-			switchToScale = Paths.getPath(Left.L_SWITCH_TO_L_SCALE);
-			scaleToSwitchThirdCube = Paths.getPath(Left.L_SCALE_TO_L_SWITCH_THIRD_CUBE);
-			switchToScaleThirdCube = Paths.getPath(Left.L_SWITCH_TO_L_SCALE_THIRD_CUBE);
 			targetTurnAngle = 163;
 			endTargetTurnAngle = 30;
 			finalTurnTargetAngle = 144;
 		} else {
 			if (isStartingLeft) {
 				toScale = Paths.getPath(Left.R_SCALE);
-				scaleToSwitch = Paths.getPath(Left.R_SCALE_TO_R_SWITCH);
-				switchToScale = Paths.getPath(Left.R_SWITCH_TO_R_SCALE);
 				carriageVBUSCube1 = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_60;
 				carriageVBUSCube2 = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_100;
+				scaleToSwitch = Paths.getPath(Left.R_SCALE_TO_R_SWITCH);
+				switchToScale = Paths.getPath(Left.R_SWITCH_TO_R_SCALE);
+				scaleToSwitchThirdCube = Paths.getPath(Right.R_SCALE_TO_R_SWITCH_THIRD_CUBE);
+				switchToScaleThirdCube = Paths.getPath(Right.R_SWITCH_TO_R_SCALE_THIRD_CUBE);
 				toScaleRemainingDistance = 12;
 				targetTurnAngle = -160;
 				endTargetTurnAngle = -10.0;
-				finalTurnTargetAngle = -135;
-				elevatorWaitTime1 = 3.7;
+				finalTurnTargetAngle = -144;
+				elevatorWaitTime1 = 3.2;
 				elevatorWaitTime2 = 0.9;
 				isRightTurnToSwitch = true;
 			} else {
 				toScale = Paths.getPath(Right.R_SCALE);
+				carriageVBUSCube1 = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_50;
+				carriageVBUSCube2 = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_70;
 				scaleToSwitch = Paths.getPath(Left.R_SCALE_TO_R_SWITCH);
 				switchToScale = Paths.getPath(Left.R_SWITCH_TO_R_SCALE);
-				toSwitchDistance = 40.0;
-				toScaleAgainDistance = -40.0;
 				targetTurnAngle = -160;
 				endTargetTurnAngle = -25;
 				finalTurnTargetAngle = -135;
-				elevatorWaitTime1 = 2.0;
+				elevatorWaitTime1 = 1.25;
 				elevatorWaitTime2 = 0.5;
 				isRightTurnToSwitch = false;
 			}
@@ -118,14 +128,11 @@ public class DoubleScale extends AutonBase{
 							new WaitAction(elevatorWaitTime2),
 							new SimultaneousAction(Arrays.asList(new Action[] {
 								new MoveElevatorToPosAction(76),
-								new ActuateFlapJackAction(true),
-								new SeriesAction(Arrays.asList(new Action[] {
-										new WaitAction(1.4),
-										new OutfeedCubeAction(carriageVBUSCube2)
-								}))
+								new ActuateFlapJackAction(true)
 							})) 
 					}))
 		}))); 
+		runAction(new OutfeedCubeAction());
 		// Outfeed cube for 0.2s
 		runAction(new PrintTimeFromStart(_startTime));
 		// Move elevator to floor
@@ -136,14 +143,14 @@ public class DoubleScale extends AutonBase{
 						new WaitAction(0.3),
 						new TurnAction(finalTurnTargetAngle, isRightTurnToSwitch),
 						new SimultaneousAction(Arrays.asList(new Action[] {
-								new DriveSetDistanceAction(50.0),
+								new RunMotionProfileAction(scaleToSwitchThirdCube),
 								new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.WIDE)
 						}))
 				}))
 		})));
 		runAction(new InfeedCubeAction());
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-					new DriveSetDistanceAction(-50.0),
+					new RunMotionProfileAction(switchToScaleThirdCube),
 					new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.STORE)
 		})));
 		runAction(new TurnAction(0.0, false));

@@ -6,7 +6,6 @@ import org.usfirst.frc.team4028.robot.auton.AutonBase;
 import org.usfirst.frc.team4028.robot.auton.actions.*;
 import org.usfirst.frc.team4028.robot.paths.Paths;
 import org.usfirst.frc.team4028.robot.paths.Paths.Left;
-import org.usfirst.frc.team4028.robot.paths.Paths.Right;
 import org.usfirst.frc.team4028.robot.subsystems.Carriage.CARRIAGE_WHEELS_OUT_VBUS_INDEX;
 import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_PRESET_POSITION;
 import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_ARM_TARGET_POSITION;
@@ -16,37 +15,24 @@ public class ScaleThenSwitchSameSide extends AutonBase {
 	Path toScale;
 	Path scaleToSwitch;
 	double targetTurnAngle, elevatorWaitTime, driveToSwitchDistance;
+	double remainingDistance;
 	boolean isTurnRight;
 	
-	public ScaleThenSwitchSameSide(boolean isLeftScale, boolean isStartingLeft) {
+	public ScaleThenSwitchSameSide(boolean isLeftScale) {
 		if (isLeftScale) {
-			if (isStartingLeft) {
-				toScale = Paths.getPath(Left.L_SCALE);
-				scaleToSwitch = Paths.getPath(Left.L_SCALE_TO_L_SWITCH);
-				targetTurnAngle = 163;
-				elevatorWaitTime = 1.2;
-				isTurnRight = true;
-			} else {
-				toScale = Paths.getPath(Right.L_SCALE);
-				targetTurnAngle = 168;
-				elevatorWaitTime = 4.0;
-				driveToSwitchDistance = 32.0;
-				isTurnRight = false;
-			}
+			toScale = Paths.getPath(Left.L_SCALE);
+			scaleToSwitch = Paths.getPath(Left.L_SCALE_TO_L_SWITCH);
+			targetTurnAngle = 163;
+			elevatorWaitTime = 1.2;
+			remainingDistance = 18;
+			isTurnRight = true;
 		} else {
-			if (isStartingLeft) {
-				toScale = Paths.getPath(Left.R_SCALE);
-				scaleToSwitch = Paths.getPath(Left.R_SCALE_TO_R_SWITCH);
-				targetTurnAngle = -160;
-				elevatorWaitTime = 3.75;	
-				isTurnRight = true;
-			} else {
-				toScale = Paths.getPath(Right.R_SCALE);
-				targetTurnAngle = -165;
-				elevatorWaitTime = 1.5;
-				driveToSwitchDistance = 32.0;
-				isTurnRight = false;
-			}
+			toScale = Paths.getPath(Left.R_SCALE);
+			scaleToSwitch = Paths.getPath(Left.R_SCALE_TO_R_SWITCH);
+			targetTurnAngle = -160;
+			elevatorWaitTime = 2.8;	
+			remainingDistance = 12;
+			isTurnRight = true; 
 		}
 	}
 	
@@ -58,8 +44,8 @@ public class ScaleThenSwitchSameSide extends AutonBase {
 				new SeriesAction(Arrays.asList(new Action[] {
 						new WaitAction(elevatorWaitTime),
 						new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.HIGH_SCALE_HEIGHT),
-						new WaitUntilRemainingDistanceAction(18),
-						new OutfeedCubeAction(CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_50)
+						new WaitUntilRemainingDistanceAction(remainingDistance),
+						new OutfeedCubeAction(CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_50, 0.3)
 				}))
 		})));
 		runAction(new PrintTimeFromStart(_startTime));
@@ -67,7 +53,6 @@ public class ScaleThenSwitchSameSide extends AutonBase {
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 					new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT),
 					new SeriesAction(Arrays.asList(new Action[] {
-							new WaitAction(0.3),
 							new TurnAction(targetTurnAngle, isTurnRight),
 							new SimultaneousAction(Arrays.asList(new Action[] {
 									new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.WIDE),
