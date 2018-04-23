@@ -27,7 +27,7 @@ public class FarSwitchCloseScale extends AutonBase {
 			elevatorWaitTime = 1.2;
 		} else {
 			toScale = Paths.getPath(Right.R_SCALE);
-			fromScaleToSwitch = Paths.getPath(Right.R_SCALE_TO_L_SWITCH);
+			//fromScaleToSwitch = Paths.getPath(Right.R_SCALE_TO_L_SWITCH);
 			turnTargetAngle = -150;
 			isTurnRight = false;
 			elevatorWaitTime = 1.5;

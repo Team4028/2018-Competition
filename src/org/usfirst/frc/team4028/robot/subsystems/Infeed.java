@@ -380,8 +380,8 @@ public class Infeed  implements Subsystem {
 						break;
 					
 					case SPIN_AUTON:
-						_leftInfeedWheelMotor.set(ControlMode.PercentOutput, _autonInfeedWheelsSpinCommand);
-						_rightInfeedWheelMotor.set(ControlMode.PercentOutput, _autonInfeedWheelsSpinCommand);
+						_leftInfeedWheelMotor.set(ControlMode.PercentOutput, -_autonInfeedWheelsSpinCommand);
+						_rightInfeedWheelMotor.set(ControlMode.PercentOutput, -_autonInfeedWheelsSpinCommand);
 						break;
 				}
 			}
