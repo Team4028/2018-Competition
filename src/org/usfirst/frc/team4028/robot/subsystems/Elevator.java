@@ -97,11 +97,14 @@ public class Elevator implements Subsystem {
 	private static final int HIGH_SCALE_HEIGHT_POSITION = InchesToNativeUnits(80);
 	private static final int NEUTRAL_SCALE_HEIGHT_POSITION = InchesToNativeUnits(72.5);
 	private static final int LOW_SCALE_HEIGHT_POSITION = InchesToNativeUnits(65);
-	private static final int CLIMB_SCALE_HEIGHT_POSITION  = InchesToNativeUnits(67);
 	private static final int SWITCH_HEIGHT_POSITION = InchesToNativeUnits(30);
 	private static final int CUBE_ON_FLOOR_POSITION = InchesToNativeUnits(0);
 	private static final int INFEED_POSITION = 0;
 	private static final int HOME_POSITION = 0;
+	private static final int FLAP_DOWN_BELOW_HEIGHT_POSITION_IN_NU = InchesToNativeUnits(54);
+	private static final int CLIMB_SCALE_HEIGHT_POSITION  = 14684; //InchesToNativeUnits(60);
+	private static final int CLIMB_CLICK_ON_BAR_HEIGHT_IN_NU = 22273;
+	
 	
 	//Bump Position Up/Down on Elevator Constant
 	private static final int LARGE_BUMP_AMOUNT_IN_NU = InchesToNativeUnits(3);
@@ -497,7 +500,10 @@ public class Elevator implements Subsystem {
 	public void elevatorScaleHeightBumpPositionUp() {
 		if(_elevatorAtScaleOffsetNU < MAX_BUMP_UP_AMOUNT) {
 			if(_isClimbBumpValueEnabled) {
-				_elevatorAtScaleOffsetNU = _elevatorAtScaleOffsetNU + SMALL_BUMP_AMOUNT_CLIMB_IN_NU;
+				//_elevatorAtScaleOffsetNU = _elevatorAtScaleOffsetNU + SMALL_BUMP_AMOUNT_CLIMB_IN_NU;
+				if (getElevatorActualPositionNU() < 20000) {
+					_elevatorAtScaleOffsetNU = (CLIMB_CLICK_ON_BAR_HEIGHT_IN_NU - CLIMB_SCALE_HEIGHT_POSITION);
+				}
 			} else {
 				_elevatorAtScaleOffsetNU = _elevatorAtScaleOffsetNU + LARGE_BUMP_AMOUNT_IN_NU;
 			}
@@ -555,10 +561,13 @@ public class Elevator implements Subsystem {
 		return IsAtTargetPosition(_targetElevatorPositionNU);
 	}
 	
-	private double getElevatorActualPositionNU() {
+	public double getElevatorActualPositionNU() {
 		return _elevatorMasterMotor.getSelectedSensorPosition(0);
 	}
 	
+	public double getElevatorActualPositionIn() {
+		return NativeUnitsToInches(_elevatorMasterMotor.getSelectedSensorPosition(0));
+	}
 	public boolean isElevatorAtInfeedPosition() {
 		if(getElevatorActualPositionNU() < 100) {
 			return true;
@@ -573,6 +582,14 @@ public class Elevator implements Subsystem {
 	
 	public boolean isElevatorAtUnsafeHeight() {
 		return _actualPositionNU > LOW_SCALE_HEIGHT_POSITION;
+	}
+	
+	public boolean isFlapUpEnabledHeight() {
+		return _actualPositionNU >= FLAP_DOWN_BELOW_HEIGHT_POSITION_IN_NU;
+	}
+	
+	public boolean isClimberServoEnabledHeight() {
+		return _actualPositionNU >= CLIMB_SCALE_HEIGHT_POSITION;
 	}
 	
 	// ===============================================================================================================

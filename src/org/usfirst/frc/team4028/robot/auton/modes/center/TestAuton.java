@@ -19,10 +19,7 @@ public class TestAuton extends AutonBase {
 				}))
 		})));
 		// Outfeed cube for 0.2s
-		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-					new WaitAction(0.2),
-					new OutfeedCubeAction(CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_90)
-		})));
+		runAction(new OutfeedCubeAction(CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_90));
 		// Lower Elevator to Switch during turn, then drive to 2nd cube while setting infeed wide and continuing to lower elevator
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 					new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT),
@@ -49,10 +46,7 @@ public class TestAuton extends AutonBase {
 					}))
 		}))); 
 		// Outfeed cube for 0.2s
-		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-				new WaitAction(0.2),
-				new OutfeedCubeAction()
-		})));
+		runAction(new OutfeedCubeAction());
 		runAction(new PrintTimeFromStart(_startTime));
 		//runAction(new DriveSetDistanceAction(-10.0));
 		// Move elevator to floor
