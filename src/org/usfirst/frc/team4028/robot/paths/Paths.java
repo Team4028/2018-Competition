@@ -97,6 +97,7 @@ public class Paths {
 	
 	public enum Right {
 		TO_BACK_CENTER,
+		TO_BACK_RIGHT,
 		
 		// First Cube
 		L_SCALE,
@@ -120,7 +121,7 @@ public class Paths {
 		R_SWITCH_TO_R_SCALE_THIRD_CUBE
 	}
 	
-	private static Path toBackCenterR;
+	private static Path toBackCenterR, toBackR;
 	private static Path lScalePathR, rScalePathR;
 	private static Path rScaleOutsidePathR;
 	private static Path lScaleToLSwitchPathR, lSwitchToLScalePathR;
@@ -366,10 +367,17 @@ public class Paths {
 		rightPaths.put(Right.R_SWITCH_TO_R_SCALE, rSwitchToRScalePathR);
 		
 		rSwitchSidePathR = buildPathFromWaypoints(Arrays.asList(
-						new Waypoint(20,278,0,0),
-						new Waypoint(165,278,15,60),
-						new Waypoint(165,261,0,60)));
+					new Waypoint(12,278,0,0),
+					new Waypoint(126,278,15,80),
+					new Waypoint(137,260,0,70)));
         rightPaths.put(Right.R_SWITCH_SIDE, rSwitchSidePathR);
+        
+        toBackR = buildPathFromWaypoints(Arrays.asList(
+				new Waypoint(137,265,0,0),
+			    new Waypoint(201,265,30,100),
+			    new Waypoint(236,237,0,100)));
+        rightPaths.put(Right.TO_BACK_RIGHT, toBackR);
+        
 		
 		// Third Cube
 		rSwitchToRScaleThirdCubeR = buildPathFromWaypoints(Arrays.asList(

@@ -14,13 +14,26 @@ import org.usfirst.frc.team4028.util.control.Path;
 public class ToSwitchThenBackCenter extends AutonBase{
 	Path toSwitchSide;
 	Path toBackSide;
+	boolean isFirstTurnRight;
+	double firstTurnAngle, secondTurnAngle, finalAngle, driveForwardAction;
 	
 	public ToSwitchThenBackCenter(boolean isStartingLeft) {
 		if (isStartingLeft) {
 			toSwitchSide = Paths.getPath(Left.L_SWITCH_SIDE);
 			toBackSide = Paths.getPath(Left.TO_BACK_LEFT);
+			isFirstTurnRight = false;
+			firstTurnAngle = 165;
+			secondTurnAngle = 120;
+			finalAngle = 80;
+			driveForwardAction = 14;
 		} else {
 			toSwitchSide = Paths.getPath(Right.R_SWITCH_SIDE);
+			toBackSide = Paths.getPath(Right.TO_BACK_RIGHT);
+			isFirstTurnRight = true;
+			firstTurnAngle = -165;
+			secondTurnAngle = -120;
+			finalAngle = -80;
+			driveForwardAction = 18;
 		}
 	}
 	
@@ -37,13 +50,13 @@ public class ToSwitchThenBackCenter extends AutonBase{
 		runAction(new PrintTimeFromStart(_startTime));
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 				new SeriesAction(Arrays.asList(new Action[] {
-						new TurnAction(0, false),
+						new TurnAction(0, isFirstTurnRight),
 						new RunMotionProfileAction(toBackSide)
 				})),
 				new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT)
 		})));
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-				new TurnAction(165, true),
+				new TurnAction(firstTurnAngle, !isFirstTurnRight),
 				new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.WIDE)
 		})));
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
@@ -54,7 +67,7 @@ public class ToSwitchThenBackCenter extends AutonBase{
 				}))
 		})));
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-				new DriveSetDistanceAction(14),
+				new DriveSetDistanceAction(driveForwardAction),
 				new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.STORE),
 				new MoveElevatorToPosAction(30)
 		})));
@@ -65,7 +78,7 @@ public class ToSwitchThenBackCenter extends AutonBase{
 					new SeriesAction(Arrays.asList(new Action[] {
 							new DriveSetDistanceAction(-13.0),
 							new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.WIDE),
-							new TurnAction(120.0, false)
+							new TurnAction(secondTurnAngle, isFirstTurnRight)
 					})),
 					new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT)
 		})));
@@ -78,7 +91,7 @@ public class ToSwitchThenBackCenter extends AutonBase{
 				
 		})));
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-				new TurnAction(80.0,false),
+				new TurnAction(finalAngle,isFirstTurnRight),
 				new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.STORE)
 		})));
 		runAction(new DriveSetDistanceAction(15));
