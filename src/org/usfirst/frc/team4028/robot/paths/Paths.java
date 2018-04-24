@@ -156,9 +156,9 @@ public class Paths {
 		// First Cube
 		lSwitchPath = buildPathFromWaypoints(0.0015, Arrays.asList(
 						new Waypoint(20,166,0,0),
-						new Waypoint(50,166,25,60),
-						new Waypoint(90,107,30,60),
-						new Waypoint(128,107,0,60)));
+						new Waypoint(50,166,25,80),
+						new Waypoint(90,107,30,80),
+						new Waypoint(128,107,0,80)));
 		centerPaths.put(Center.L_SWITCH, lSwitchPath);
 		
 		rSwitchPath = buildPathFromWaypoints(0.0030, Arrays.asList(
@@ -185,7 +185,7 @@ public class Paths {
 		
 		ArrayList<Waypoint> toPyramidWaypoints = new ArrayList<Waypoint>();
 		toPyramidWaypoints.add(new Waypoint(45,162,0,0));
-		toPyramidWaypoints.add(new Waypoint(82,162,0,60));
+		toPyramidWaypoints.add(new Waypoint(82,162,0,40));
 		toPyramidPath = buildPathFromWaypoints(toPyramidWaypoints);
 		centerPaths.put(Center.TO_PYRAMID, toPyramidPath);
 		
@@ -209,7 +209,7 @@ public class Paths {
 		// Third Cube
 		ArrayList<Waypoint> awayFromLSwitchWaypoints = new ArrayList<Waypoint>();
 		awayFromLSwitchWaypoints.add(new Waypoint(122,115,0,0));
-		awayFromLSwitchWaypoints.add(new Waypoint(60,115,0,40));
+		awayFromLSwitchWaypoints.add(new Waypoint(60,115,0,80));
 		awayFromLSwitchPath = buildPathFromWaypoints(true, awayFromLSwitchWaypoints);
 		centerPaths.put(Center.AWAY_FROM_L_SWITCH, awayFromLSwitchPath);
 		
@@ -218,12 +218,15 @@ public class Paths {
 		
 		ArrayList<Waypoint> pyramidAgainFromLeftWaypoints = new ArrayList<Waypoint>();
 		pyramidAgainFromLeftWaypoints.add(new Waypoint(60,115,0,0));
-		pyramidAgainFromLeftWaypoints.add(new Waypoint(77,115,15,40));
-		pyramidAgainFromLeftWaypoints.add(new Waypoint(102,140,0,40));
+		pyramidAgainFromLeftWaypoints.add(new Waypoint(77,115,15,60));
+		pyramidAgainFromLeftWaypoints.add(new Waypoint(102,140,0,60));
 		pyramidAgainFromLeftPath = buildPathFromWaypoints(pyramidAgainFromLeftWaypoints);
 		centerPaths.put(Center.PYRAMID_AGAIN_FROM_L, pyramidAgainFromLeftPath);
 		
-		pyramidAgainFromRightPath= buildPathFromWaypoints(flipPath(pyramidAgainFromLeftWaypoints));
+		pyramidAgainFromRightPath= buildPathFromWaypoints(Arrays.asList(
+				new Waypoint(60,209,0,0),
+				new Waypoint(77,209,15,60),
+				new Waypoint(106,184,0,60)));
 		centerPaths.put(Center.PYRAMID_AGAIN_FROM_R, pyramidAgainFromRightPath);
 	}
 	
