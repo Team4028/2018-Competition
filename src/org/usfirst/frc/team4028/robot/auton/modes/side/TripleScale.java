@@ -43,27 +43,27 @@ public class TripleScale extends AutonBase {
 			toScale = Paths.getPath(Left.L_SCALE);
 			scaleToSwitch = Paths.getPath(Left.L_SCALE_TO_L_SWITCH);
 			switchToScale = Paths.getPath(Left.L_SWITCH_TO_L_SCALE);
-			toSwitchDistance = 40.0;
-			toScaleAgainDistance = -41.0;
+			scaleToSwitchThirdCube = Paths.getPath(Left.L_SCALE_TO_L_SWITCH_THIRD_CUBE);
+			switchToScaleThirdCube = Paths.getPath(Left.L_SWITCH_TO_L_SCALE_THIRD_CUBE);
 			targetTurnAngle = 163;
 			endTargetTurnAngle = 30;
 			finalTurnTargetAngle = 144;
 			elevatorWaitTime1 = 1.25;
 			elevatorWaitTime2 = 0.9;
-			isRightTurnToSwitch = true;
-			scaleToSwitchThirdCube = Paths.getPath(Left.L_SCALE_TO_L_SWITCH_THIRD_CUBE);
-			switchToScaleThirdCube = Paths.getPath(Left.L_SWITCH_TO_L_SCALE_THIRD_CUBE);
 			elevatorWaitTime3 = 0.5;
 			isRightTurnToSwitch = true;
 		} else {
 			toScale = Paths.getPath(Right.R_SCALE);
-			toSwitchDistance = 40.0;
-			toScaleAgainDistance = -41.0;
+			scaleToSwitch = Paths.getPath(Right.R_SCALE_TO_R_SWITCH);
+			switchToScale = Paths.getPath(Right.R_SWITCH_TO_R_SCALE);
+			scaleToSwitchThirdCube = Paths.getPath(Right.R_SCALE_TO_R_SWITCH_THIRD_CUBE);
+			switchToScaleThirdCube = Paths.getPath(Right.R_SWITCH_TO_R_SCALE_THIRD_CUBE);
 			targetTurnAngle = -163;
 			endTargetTurnAngle = -30;
 			finalTurnTargetAngle = -144;
-			elevatorWaitTime1 = 1.0;
-			elevatorWaitTime2 = 0.5;
+			elevatorWaitTime1 = 1.25;
+			elevatorWaitTime2 = 0.9;
+			elevatorWaitTime3 = 0.5;
 			isRightTurnToSwitch = false;
 		}
 	}

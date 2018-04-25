@@ -33,7 +33,7 @@ public class ToSwitchThenBackCenter extends AutonBase{
 			firstTurnAngle = -165;
 			secondTurnAngle = -120;
 			finalAngle = -80;
-			driveForwardAction = 18;
+			driveForwardAction = 14;
 		}
 	}
 	
