@@ -71,6 +71,8 @@ public class Robot extends IterativeRobot {
 		
 		AdaptedPaths.buildPaths();
 		
+		_switchableCameraServer.SwitchCamera();
+		
 		_dashboard.printStartupMessage();
 		
 		// Hold scan times moving average samples
@@ -101,6 +103,8 @@ public class Robot extends IterativeRobot {
 		}
 		
 		AdaptedPaths.buildPaths();
+		
+		_switchableCameraServer.SwitchCamera();
 		
 		_chassis.setBrakeMode(false);
 		
@@ -471,6 +475,7 @@ public class Robot extends IterativeRobot {
 	}
 	
 	private String payRespectsToRNGesus() {
-		return "RNGesus, please provide us with a favorable qualification schedule and ideal scoring plate assignment of LLL";
+		return "RNGesus, please provide us with a favorable qualification schedule and ideal scoring plate assignment of LLL if we start from the Left. However, if you would be so kind it would "
+				+ "be appreciated if you could pull some strings (literally) to have it be RRR given that we start from the right. Thanks";
 	}
 }

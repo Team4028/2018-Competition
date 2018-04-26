@@ -143,7 +143,7 @@ public class TripleScale extends AutonBase {
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 					new SeriesAction(Arrays.asList(new Action[] {
 							new RunMotionProfileAction(switchToScaleThirdCube),
-							new TurnAction(30, false)
+							new TurnAction(30, !isRightTurnToSwitch)
 					})),
 					new SeriesAction(Arrays.asList(new Action[] {
 							new WaitAction(elevatorWaitTime3),

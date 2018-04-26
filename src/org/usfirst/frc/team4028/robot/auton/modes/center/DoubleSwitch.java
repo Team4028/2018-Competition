@@ -45,7 +45,7 @@ public class DoubleSwitch extends AutonBase {
 					new RunTimedMotionProfileAction(toSwitch, 2.6),
 					new SeriesAction(Arrays.asList(new Action[] {
 							new WaitAction(elevatorWaitTimeFirstCube),
-							//new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SWITCH_HEIGHT)
+							new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SWITCH_HEIGHT)
 					}))
 		})));
 		runAction(new PrintTimeFromStart(_startTime));
@@ -53,11 +53,11 @@ public class DoubleSwitch extends AutonBase {
 		runAction(new OutfeedCubeAction());
 		// Drive to front of pyramid while moving elevator to floor and swinging out infeeds
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-				//new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT),	
+				new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT),	
 				new RunMotionProfileAction(fromSwitchToFrontOfPyramidPath),	
 				new SeriesAction(Arrays.asList(new Action[] {
 							new WaitAction(1.7),
-					//		new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.WIDE)
+							new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.WIDE)
 					}))
 		})));
 		// Drive into pyramid to acquire 2nd cube
@@ -66,7 +66,7 @@ public class DoubleSwitch extends AutonBase {
 					new SeriesAction(Arrays.asList(new Action[] {
 							new WaitAction(1),
 							new SimultaneousAction(Arrays.asList(new Action[] {
-					//				new InfeedCubeAction()
+									new InfeedCubeAction()
 							}))
 					}))
 		})));
@@ -75,25 +75,25 @@ public class DoubleSwitch extends AutonBase {
 		// Drive back to switch while storing infeed and raising elevator
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 					new RunTimedMotionProfileAction(sTurnToSwitch, 2.7),
-					//new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.STORE),
+					new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.STORE),
 					new SeriesAction(Arrays.asList(new Action[] {
 							new WaitAction(elevatorWaitTimeSecondCube),
-						//	new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SWITCH_HEIGHT),
+							new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SWITCH_HEIGHT),
 					}))
 		}))); 
 		// Outfeed cube for 0.2s
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 				new WaitAction(0.2),
-				//new OutfeedCubeAction()
+				new OutfeedCubeAction()
 		})));
 		// Move elevator to floor
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-				//new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT),
+				new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT),
 				new RunMotionProfileAction(awayFromSwitch)
 		})));
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 				new RunMotionProfileAction(pyramidAgain),
-				//new InfeedCubeAction()
+				new InfeedCubeAction()
 		})));
 		runAction(new PrintTimeFromStart(_startTime));  
 	}
