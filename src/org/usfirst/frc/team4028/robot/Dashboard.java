@@ -36,6 +36,7 @@ public class Dashboard {
 		SCALE_THEN_SWITCH,
 		DOUBLE_SCALE_THEN_SWITCH,
 		TRIPLE_SCALE,
+		TRIPLE_SCALE_SAME_SIDE,
 		EXPERIMENTAL,
 		TEST_AUTON
 	}
@@ -61,6 +62,7 @@ public class Dashboard {
 		_autonModeChooser.addObject("Scale then Switch", AUTON_MODE.SCALE_THEN_SWITCH);
 		_autonModeChooser.addObject("Double Scale Then Switch", AUTON_MODE.DOUBLE_SCALE_THEN_SWITCH);
 		_autonModeChooser.addObject("#EasyMoney8SecondTripleScale", AUTON_MODE.TRIPLE_SCALE);
+		_autonModeChooser.addObject("Triple Scale SAME SIDE ONLY", AUTON_MODE.TRIPLE_SCALE_SAME_SIDE);
 		_autonModeChooser.addObject("DO NOT SELECT", AUTON_MODE.TEST_AUTON);
 		SmartDashboard.putData("AUTON MODE: ", _autonModeChooser);
 		
@@ -148,7 +150,20 @@ public class Dashboard {
 				}
 				
 			case TRIPLE_SCALE:
-				return new TripleScale(_isStartingLeft);
+				if (_isStartingLeft == _isScaleLeft) {
+					return new TripleScale(_isStartingLeft);
+				} else {
+					return new DoubleScale(_isScaleLeft, _isStartingLeft);
+				}
+				
+			case TRIPLE_SCALE_SAME_SIDE:
+				if (_isScaleLeft == _isStartingLeft) {
+					return new TripleScale(_isStartingLeft);
+				} else if (_isSwitchLeft == _isStartingLeft) {
+					return new ToSwitchThenBackCenter(_isStartingLeft);
+				} else {
+					return new ToBackCenter(_isStartingLeft);
+				}
 				
 			case EXPERIMENTAL:
 				return new CloseSwitchFarScale();

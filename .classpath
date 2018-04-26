@@ -10,9 +10,6 @@
 	<classpathentry kind="var" path="wpiutil" sourcepath="wpiutil.sources"/>
 	<classpathentry kind="var" path="USERLIBS_DIR/CTRE_Phoenix-sources.jar"/>
 	<classpathentry kind="var" path="USERLIBS_DIR/CTRE_Phoenix.jar" sourcepath="/CTRE_Phoenix,sources"/>
-	<classpathentry kind="var" path="USERLIBS_DIR/commons-lang3-3.2.1.jar"/>
-	<classpathentry kind="var" path="USERLIBS_DIR/jadb-v1.0.1.jar"/>
-	<classpathentry kind="var" path="USERLIBS_DIR/libusb4java-1.2.0-linux-arm.jar"/>
-	<classpathentry kind="var" path="USERLIBS_DIR/usb4java-1.2.0.jar"/>
+	<classpathentry kind="var" path="USERLIBS_DIR/CTRLib.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

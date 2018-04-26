@@ -54,7 +54,7 @@ public class DoubleScale extends AutonBase{
 				elevatorWaitTime2 = 0.9;
 				isRightTurnToSwitch = false;
 			}
-			targetTurnAngle = 163;
+			targetTurnAngle = 160;
 			endTargetTurnAngle = 30;
 			finalTurnTargetAngle = 144;
 		} else {
@@ -111,7 +111,7 @@ public class DoubleScale extends AutonBase{
 									new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.WIDE),
 									new RunMotionProfileAction(scaleToSwitch),
 									new SeriesAction(Arrays.asList(new Action [] {
-											new WaitAction(0.55),
+											new WaitAction(0.7),
 											new InfeedCubeAction()
 									}))
 							}))

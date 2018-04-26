@@ -102,8 +102,8 @@ public class Elevator implements Subsystem {
 	private static final int INFEED_POSITION = 0;
 	private static final int HOME_POSITION = 0;
 	private static final int FLAP_DOWN_BELOW_HEIGHT_POSITION_IN_NU = InchesToNativeUnits(54);
-	private static final int CLIMB_SCALE_HEIGHT_POSITION  = 14684; //InchesToNativeUnits(60);
-	private static final int CLIMB_CLICK_ON_BAR_HEIGHT_IN_NU = 22273;
+	private static final int CLIMB_SCALE_HEIGHT_POSITION  = InchesToNativeUnits(40.5); //InchesToNativeUnits(60);
+	private static final int CLIMB_CLICK_ON_BAR_HEIGHT_IN_NU = InchesToNativeUnits(63);
 	
 	
 	//Bump Position Up/Down on Elevator Constant

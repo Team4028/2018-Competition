@@ -43,27 +43,27 @@ public class TripleScale extends AutonBase {
 			toScale = Paths.getPath(Left.L_SCALE);
 			scaleToSwitch = Paths.getPath(Left.L_SCALE_TO_L_SWITCH);
 			switchToScale = Paths.getPath(Left.L_SWITCH_TO_L_SCALE);
-			toSwitchDistance = 40.0;
-			toScaleAgainDistance = -41.0;
-			targetTurnAngle = 163;
+			scaleToSwitchThirdCube = Paths.getPath(Left.L_SCALE_TO_L_SWITCH_THIRD_CUBE);
+			switchToScaleThirdCube = Paths.getPath(Left.L_SWITCH_TO_L_SCALE_THIRD_CUBE);
+			targetTurnAngle = 160;
 			endTargetTurnAngle = 30;
 			finalTurnTargetAngle = 144;
 			elevatorWaitTime1 = 1.25;
-			elevatorWaitTime2 = 0.9;
-			isRightTurnToSwitch = true;
-			scaleToSwitchThirdCube = Paths.getPath(Left.L_SCALE_TO_L_SWITCH_THIRD_CUBE);
-			switchToScaleThirdCube = Paths.getPath(Left.L_SWITCH_TO_L_SCALE_THIRD_CUBE);
+			elevatorWaitTime2 = 0.5;
 			elevatorWaitTime3 = 0.5;
 			isRightTurnToSwitch = true;
 		} else {
 			toScale = Paths.getPath(Right.R_SCALE);
-			toSwitchDistance = 40.0;
-			toScaleAgainDistance = -41.0;
+			scaleToSwitch = Paths.getPath(Right.R_SCALE_TO_R_SWITCH);
+			switchToScale = Paths.getPath(Right.R_SWITCH_TO_R_SCALE);
+			scaleToSwitchThirdCube = Paths.getPath(Right.R_SCALE_TO_R_SWITCH_THIRD_CUBE);
+			switchToScaleThirdCube = Paths.getPath(Right.R_SWITCH_TO_R_SCALE_THIRD_CUBE);
 			targetTurnAngle = -163;
 			endTargetTurnAngle = -30;
 			finalTurnTargetAngle = -144;
-			elevatorWaitTime1 = 1.0;
+			elevatorWaitTime1 = 1.25;
 			elevatorWaitTime2 = 0.5;
+			elevatorWaitTime3 = 0.5;
 			isRightTurnToSwitch = false;
 		}
 	}
@@ -91,7 +91,7 @@ public class TripleScale extends AutonBase {
 									new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.WIDE),
 									new RunMotionProfileAction(scaleToSwitch),
 									new SeriesAction(Arrays.asList(new Action [] {
-											new WaitAction(0.4),
+											new WaitAction(0.7),
 											new InfeedCubeAction()
 									}))
 							}))
@@ -110,7 +110,7 @@ public class TripleScale extends AutonBase {
 									new SimultaneousAction(Arrays.asList(new Action[] {
 										new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.HIGH_SCALE_HEIGHT),
 										new SeriesAction(Arrays.asList(new Action[] {
-												new WaitAction(1.1),
+												new WaitAction(1.5),
 												new SimultaneousAction(Arrays.asList(new Action[] {
 														new ActuateFlapJackAction(true),
 														new OutfeedCubeAction(CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_60)
