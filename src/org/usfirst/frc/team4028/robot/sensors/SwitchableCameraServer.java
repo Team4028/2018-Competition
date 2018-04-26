@@ -114,8 +114,9 @@ public class SwitchableCameraServer {
 		/* Note:  Higher resolution & framerate is possible, depending upon processing cpu usage */
 	
 		/* Start raw Video Streaming Server */
-		_rawVideoServer.setSource(null);
-		_currentCamera = null; 
+		
+		_rawVideoServer.setSource(_camList.get(0));
+		_currentCamera = _camList.get(0).toString(); 
 
 		SwitchCamera();
 	}

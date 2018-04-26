@@ -150,7 +150,11 @@ public class Dashboard {
 				}
 				
 			case TRIPLE_SCALE:
-				return new TripleScale(_isStartingLeft);
+				if (_isStartingLeft == _isScaleLeft) {
+					return new TripleScale(_isStartingLeft);
+				} else {
+					return new DoubleScale(_isScaleLeft, _isStartingLeft);
+				}
 				
 			case TRIPLE_SCALE_SAME_SIDE:
 				if (_isScaleLeft == _isStartingLeft) {
