@@ -113,7 +113,7 @@ public class TripleScale extends AutonBase {
 												new WaitAction(1.5),
 												new SimultaneousAction(Arrays.asList(new Action[] {
 														new ActuateFlapJackAction(true),
-														new OutfeedCubeAction(CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_60)
+														new OutfeedCubeAction(CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_50, 0.25)
 												}))
 												
 										})),

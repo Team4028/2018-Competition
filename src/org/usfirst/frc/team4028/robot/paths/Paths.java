@@ -292,10 +292,10 @@ public class Paths {
         
         lSwitchSideToRScalePathL = buildPathFromWaypoints(0.001, Arrays.asList(
         				new Waypoint(140,61,0,0),
-        				new Waypoint(228,61,40,80),
-        				new Waypoint(228,102,0,80),
-        				new Waypoint(228,114,0,25),
-        				new Waypoint(228,263,0,120)));
+        				new Waypoint(240,61,40,80),
+        				new Waypoint(240,102,0,80),
+        				new Waypoint(240,114,0,25),
+        				new Waypoint(240,263,0,120)));
 		leftPaths.put(Left.L_SWITCH_SIDE_TO_R_SCALE, lSwitchSideToRScalePathL);
 		
 		toRScaleSecondCubeL = buildPathFromWaypoints(Arrays.asList(
