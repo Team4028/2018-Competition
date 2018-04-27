@@ -252,8 +252,8 @@ public class Paths {
 						new Waypoint(240,104,0,80),//40
 						new Waypoint(240,202,0,140),//120
 						new Waypoint(240,210,0,60),
-						new Waypoint(240,252,35,80),//60
-						new Waypoint(276,252,0,40)));
+						new Waypoint(240,252,34,80),//60
+						new Waypoint(275,252,0,40)));
 		leftPaths.put(Left.R_SCALE, rScalePathL);
 		
 		lScaleOutsidePathL = buildPathFromWaypoints(Arrays.asList(
@@ -271,11 +271,11 @@ public class Paths {
 		lSwitchToLScalePathL = buildPathFromWaypoints(true, getStraightPathWaypoints(new Translation(lScaleToLSwitchWaypoints.get(1).pos), 160, -37));
 		leftPaths.put(Left.L_SWITCH_TO_L_SCALE, lSwitchToLScalePathL);
 		
-		ArrayList<Waypoint> rScaleToRSwitchWaypoints = getStraightPathWaypoints(new Translation(278, 252), -160, 42);
+		ArrayList<Waypoint> rScaleToRSwitchWaypoints = getStraightPathWaypoints(new Translation(278, 252), -160, 44);
 		rScaleToRSwitchPathL = buildPathFromWaypoints(rScaleToRSwitchWaypoints);
 		leftPaths.put(Left.R_SCALE_TO_R_SWITCH, rScaleToRSwitchPathL);
 		
-		rSwitchToRScalePathL = buildPathFromWaypoints(true, getStraightPathWaypoints(new Translation(rScaleToRSwitchWaypoints.get(1).pos), -160, -40));
+		rSwitchToRScalePathL = buildPathFromWaypoints(true, getStraightPathWaypoints(new Translation(rScaleToRSwitchWaypoints.get(1).pos), -160, -42));
 		leftPaths.put(Left.R_SWITCH_TO_R_SCALE, rSwitchToRScalePathL);
 		
 		lScaleToRSwitchPathL = buildPathFromWaypoints(0.006, Arrays.asList(
