@@ -72,8 +72,8 @@ public class Dashboard {
 	}
 	
 	public boolean isGameDataReceived() {
-		//String gameData = DriverStation.getInstance().getGameSpecificMessage();
-		String gameData = "RLR";
+		String gameData = DriverStation.getInstance().getGameSpecificMessage();
+		//String gameData = "LLL";
 		
 		if (gameData.length() > 0) {
 			_isSwitchLeft = (gameData.charAt(0) == 'L');

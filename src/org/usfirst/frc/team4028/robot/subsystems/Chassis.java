@@ -35,7 +35,7 @@ public class Chassis implements Subsystem {
 		return _instance;
 	}
 	
-	private enum ChassisState {
+	public enum ChassisState {
 		PERCENT_VBUS, 
 		AUTO_TURN, 
 		FOLLOW_PATH,
@@ -143,6 +143,10 @@ public class Chassis implements Subsystem {
 	
 	public Loop getLoop() {
 		return _loop;
+	}
+	
+	public ChassisState getState() {
+		return _chassisState;
 	}
 	
 	/* ===== Chassis State: PERCENT VBUS ===== */

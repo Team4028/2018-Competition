@@ -55,9 +55,9 @@ public class FarSwitchCloseScale extends AutonBase {
 					}))
 		})));
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-					new DriveSetDistanceAction(18),
+					new DriveSetDistanceAction(20),
 					new SeriesAction(Arrays.asList(new Action[] {
-							new WaitAction(0.3),
+							new WaitAction(0.8),
 							new InfeedCubeAction()
 					}))
 		})));

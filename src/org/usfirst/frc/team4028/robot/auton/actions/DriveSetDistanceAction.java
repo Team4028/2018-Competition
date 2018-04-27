@@ -1,6 +1,7 @@
 package org.usfirst.frc.team4028.robot.auton.actions;
 
 import org.usfirst.frc.team4028.robot.subsystems.Chassis;
+import org.usfirst.frc.team4028.robot.subsystems.Chassis.ChassisState;
 
 public class DriveSetDistanceAction implements Action{
 	Chassis _chassis = Chassis.getInstance();
@@ -25,6 +26,6 @@ public class DriveSetDistanceAction implements Action{
 
 	@Override
 	public boolean isFinished() {
-		return _chassis.atTargetPos();
+		return _chassis.atTargetPos() || (_chassis.getState() == ChassisState.PERCENT_VBUS);
 	}
 }
