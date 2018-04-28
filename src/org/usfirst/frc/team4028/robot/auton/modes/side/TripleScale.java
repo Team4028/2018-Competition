@@ -47,7 +47,7 @@ public class TripleScale extends AutonBase {
 			switchToScaleThirdCube = Paths.getPath(Left.L_SWITCH_TO_L_SCALE_THIRD_CUBE);
 			targetTurnAngle = 160;
 			endTargetTurnAngle = 33;
-			secondTurnTargetAngle = 144;
+			secondTurnTargetAngle = 140;
 			endSecondTurnTargetAngle = 35;
 			elevatorWaitTime1 = 1.25;
 			elevatorWaitTime2 = 0.5;
@@ -61,7 +61,7 @@ public class TripleScale extends AutonBase {
 			switchToScaleThirdCube = Paths.getPath(Right.R_SWITCH_TO_R_SCALE_THIRD_CUBE);
 			targetTurnAngle = -163;
 			endTargetTurnAngle = -33;
-			secondTurnTargetAngle = -144;
+			secondTurnTargetAngle = -140;
 			endSecondTurnTargetAngle = -35;
 			elevatorWaitTime1 = 1.25;
 			elevatorWaitTime2 = 0.5;
@@ -79,7 +79,7 @@ public class TripleScale extends AutonBase {
 						new WaitAction(elevatorWaitTime1),
 						new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.HIGH_SCALE_HEIGHT),
 						new WaitUntilRemainingDistanceAction(18),
-						new OutfeedCubeAction(CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_60, 0.25)
+						new OutfeedCubeAction(CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_50, 0.3)
 				}))
 		})));
 		// Outfeed cube for 0.2s

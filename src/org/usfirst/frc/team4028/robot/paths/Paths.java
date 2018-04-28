@@ -241,7 +241,7 @@ public class Paths {
 		lScalePathL = buildPathFromWaypoints(Arrays.asList(
 						new Waypoint(20,46,0,0),
 						new Waypoint(220,46,50,140),
-						new Waypoint(277,72,0,140)));
+						new Waypoint(277,73,0,140)));
 		leftPaths.put(Left.L_SCALE, lScalePathL);
 		
 		rScalePathL = buildPathFromWaypoints(0.002, Arrays.asList(
@@ -317,11 +317,11 @@ public class Paths {
 						new Waypoint(273,80,0,70)));
 		leftPaths.put(Left.L_SWITCH_TO_L_SCALE_SECOND_CUBE, lSwitchToLScaleSecondCubeL);
 		
-		ArrayList<Waypoint> lScaleToLSwitchThirdCubeWaypoints = getStraightPathWaypoints(new Translation(278, 68), 144, 52);
+		ArrayList<Waypoint> lScaleToLSwitchThirdCubeWaypoints = getStraightPathWaypoints(new Translation(278, 68), 140, 52);
 		lScaleToLSwitchThirdCube = buildPathFromWaypoints(lScaleToLSwitchThirdCubeWaypoints);
 		leftPaths.put(Left.L_SCALE_TO_L_SWITCH_THIRD_CUBE, lScaleToLSwitchThirdCube);
 		
-		lSwitchToLScaleThirdCube = buildPathFromWaypoints(true, getStraightPathWaypoints(new Translation(lScaleToLSwitchThirdCubeWaypoints.get(1).pos), 144, -52));
+		lSwitchToLScaleThirdCube = buildPathFromWaypoints(true, getStraightPathWaypoints(new Translation(lScaleToLSwitchThirdCubeWaypoints.get(1).pos), 140, -52));
 		leftPaths.put(Left.L_SWITCH_TO_L_SCALE_THIRD_CUBE, lSwitchToLScaleThirdCube);
 	}
 	
