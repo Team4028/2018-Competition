@@ -76,7 +76,7 @@ public class Infeed  implements Subsystem {
 	// supports bumping
 	private double _currentInFeedArmSqueezeTargetAngle = INFEED_POSITION_ANGLE; // 198;
 	private double _currentInFeedWheelsVBusCmd = .50; //.45;
-	private double _autonInfeedWheelsSpinCommand = 1.0;
+	private double _autonInfeedWheelsSpinCommand = 0.9;
 	
 	// motor controllers
 	TalonSRX _leftSwitchbladeArmMotor; 

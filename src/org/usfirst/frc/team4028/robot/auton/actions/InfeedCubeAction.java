@@ -77,7 +77,7 @@ public class InfeedCubeAction implements Action {
 				break;
 				
 			case LEFT_OR_RIGHT:
-				if(Timer.getFPGATimestamp()-_startTime<1.55)
+				if(Timer.getFPGATimestamp()-_startTime<1.45)
 				{
 					_chassis.arcadeDrive(1, 0);
 					_isComplete=false;
