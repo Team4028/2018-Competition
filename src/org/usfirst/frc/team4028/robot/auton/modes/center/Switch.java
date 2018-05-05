@@ -33,15 +33,12 @@ public class Switch extends AutonBase {
 					}))
 		})));
 		// Outfeed cube for 0.2s
-		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-				new WaitAction(0.2),
-				new OutfeedCubeAction()
-		})));
+		runAction(new OutfeedCubeAction());
+		runAction(new PrintTimeFromStart(_startTime));
 		// Move Elevator back to floor
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 				new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT),
 				new DriveSetDistanceAction(-20.0)
 		})));
-		runAction(new PrintTimeFromStart(_startTime));
 	}
 }

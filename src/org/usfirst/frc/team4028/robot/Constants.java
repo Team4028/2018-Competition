@@ -56,6 +56,8 @@ public class Constants {
 	public static final int CARRIAGE_WIDE_PCM_PORT = 1;
 	public static final int SHIFTER_EXTEND_PCM_PORT = 3;
 	public static final int SHIFTER_RETRACT_PCM_PORT = 7;
+	public static final int CARRIAGE_FLAP_UP_PCM_PORT = 4;
+	public static final int CARRIAGE_FLAP_DOWN_PCM_PORT = 5;
 	
 	// Solenoid Positions
 	public static final Value SHIFTER_LOW_GEAR_POS = DoubleSolenoid.Value.kReverse;
@@ -63,6 +65,9 @@ public class Constants {
 
 	public static final Value CARRIAGE_SQUEEZE_POS = DoubleSolenoid.Value.kForward;
 	public static final Value CARRIAGE_WIDE_POS = DoubleSolenoid.Value.kReverse;
+	
+	public static final Value CARRIAGE_FLAP_UP = DoubleSolenoid.Value.kForward;
+	public static final Value CARRIAGE_FLAP_DOWN = DoubleSolenoid.Value.kReverse;
 	
 	// Infeed Position Constants
 	public static final double INFEED_POSITION = 2300;
@@ -81,7 +86,7 @@ public class Constants {
     
 	/* Robot Physical Constants */
 	// Wheels
-	public static final double DRIVE_WHEEL_DIAMETER_INCHES = 6.35;
+	public static final double DRIVE_WHEEL_DIAMETER_IN = 6.258;
 	public static final double TRACK_WIDTH_INCHES = 24.25;
 	public static final double TRACK_SCRUBBING_FACTOR = 0.9;
 	
@@ -120,7 +125,8 @@ public class Constants {
     public static final double NORMAL_SPEED = 60;
     public static final double FLOOR_IT_SPEED = 80;
     public static final double WARP_SPEED = 100;
-    public static final double KEEEEEEEEEEEEEEEEEEENS_SPEED = 120;
+    public static final double KEEEEEEEEEEEEEEEEEEENS_SPEED = 0;
+    public static final double PREDATOR_SPEED = 140;
     
     public static final double BLUE_LEFT_SWITCH_FRONT_X_DELTA = MiamiValleyField._leftSwitchFrontBlueX-PracticeField._leftSwitchFrontBlueX;
     public static final double BLUE_LEFT_SWITCH_FRONT_Y_DELTA = MiamiValleyField._leftSwitchFrontBlueY-PracticeField._leftSwitchFrontBlueY;

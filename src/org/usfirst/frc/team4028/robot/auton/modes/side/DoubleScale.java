@@ -5,8 +5,9 @@ import java.util.Arrays;
 import org.usfirst.frc.team4028.robot.auton.AutonBase;
 import org.usfirst.frc.team4028.robot.auton.actions.*;
 import org.usfirst.frc.team4028.robot.paths.Paths;
-import org.usfirst.frc.team4028.robot.paths.Paths.LeftSide;
-import org.usfirst.frc.team4028.robot.paths.Paths.RightSide;
+import org.usfirst.frc.team4028.robot.paths.Paths.Left;
+import org.usfirst.frc.team4028.robot.paths.Paths.Right;
+import org.usfirst.frc.team4028.robot.subsystems.Elevator;
 import org.usfirst.frc.team4028.robot.subsystems.Carriage.CARRIAGE_WHEELS_OUT_VBUS_INDEX;
 import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_PRESET_POSITION;
 import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_ARM_TARGET_POSITION;
@@ -14,58 +15,80 @@ import org.usfirst.frc.team4028.util.control.Path;
 
 public class DoubleScale extends AutonBase{
 	Path toScale;
+	Path scaleToSwitch, switchToScale;
+	Path scaleToSwitchThirdCube, switchToScaleThirdCube;
 	
-	double toSwitchDistance, toScaleAgainDistance;
+	double toScaleRemainingDistance, toSwitchDistance, toScaleAgainDistance;
 	double targetTurnAngle, endTargetTurnAngle;
 	double finalTurnTargetAngle;
 	double elevatorWaitTime1, elevatorWaitTime2;
+	CARRIAGE_WHEELS_OUT_VBUS_INDEX carriageVBUSCube1, carriageVBUSCube2;
 	
 	boolean isRightTurnToSwitch;
+	boolean actuateFlapJack;
 	
 	public DoubleScale(boolean isLeftScale, boolean isStartingLeft) {
 		if (isLeftScale) {
 			if (isStartingLeft) {
-				toScale = Paths.getPath(LeftSide.L_SCALE);
-				toSwitchDistance = 40.0;
-				toScaleAgainDistance = -41.0;
-				targetTurnAngle = 163;
-				endTargetTurnAngle = 30;
-				finalTurnTargetAngle = 144;
-				elevatorWaitTime1 = 1.5;
-				elevatorWaitTime2 = 0.9;
+				toScale = Paths.getPath(Left.L_SCALE);
+				carriageVBUSCube1 = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_50;
+				carriageVBUSCube2 = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_70;
+				scaleToSwitch = Paths.getPath(Left.L_SCALE_TO_L_SWITCH);
+				switchToScale = Paths.getPath(Left.L_SWITCH_TO_L_SCALE);
+				scaleToSwitchThirdCube = Paths.getPath(Left.L_SCALE_TO_L_SWITCH_THIRD_CUBE);
+				switchToScaleThirdCube = Paths.getPath(Left.L_SWITCH_TO_L_SCALE_THIRD_CUBE);
+				toScaleRemainingDistance = 18;
+				elevatorWaitTime1 = 1.25;
+				elevatorWaitTime2 = 0.7;
 				isRightTurnToSwitch = true;
+				actuateFlapJack = false;
 			} else {
-				toScale = Paths.getPath(RightSide.L_SCALE); 
-				toSwitchDistance = 37.0;
-				toScaleAgainDistance = -37.0;
-				targetTurnAngle = 168;
-				endTargetTurnAngle = 15;
-				finalTurnTargetAngle = 135;
-				elevatorWaitTime1 = 4.0;
-				elevatorWaitTime2 = 1.0;
+				toScale = Paths.getPath(Right.L_SCALE); 
+				carriageVBUSCube1 = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_60;
+				carriageVBUSCube2 = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_100;
+				scaleToSwitch = Paths.getPath(Right.L_SCALE_TO_L_SWITCH);
+				switchToScale = Paths.getPath(Right.L_SWITCH_TO_L_SCALE);
+				scaleToSwitchThirdCube = Paths.getPath(Left.L_SCALE_TO_L_SWITCH_THIRD_CUBE);
+				switchToScaleThirdCube = Paths.getPath(Left.L_SWITCH_TO_L_SCALE_THIRD_CUBE);
+				toScaleRemainingDistance = 12;
+				elevatorWaitTime1 = 3.2;
+				elevatorWaitTime2 = 0.9;
 				isRightTurnToSwitch = false;
+				actuateFlapJack = true;
 			}
+			targetTurnAngle = 160;
+			endTargetTurnAngle = 30;
+			finalTurnTargetAngle = 144;
 		} else {
 			if (isStartingLeft) {
-				toScale = Paths.getPath(LeftSide.R_SCALE);
-				toSwitchDistance = 37.0;
-				toScaleAgainDistance = -38.0;
-				targetTurnAngle = -166;
-				endTargetTurnAngle = -20.0;
-				finalTurnTargetAngle = -135;
-				elevatorWaitTime1 = 4.25;
-				elevatorWaitTime2 = 1.0;
+				toScale = Paths.getPath(Left.R_SCALE);
+				carriageVBUSCube1 = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_70;
+				carriageVBUSCube2 = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_100;
+				scaleToSwitch = Paths.getPath(Left.R_SCALE_TO_R_SWITCH);
+				switchToScale = Paths.getPath(Left.R_SWITCH_TO_R_SCALE);
+				scaleToSwitchThirdCube = Paths.getPath(Right.R_SCALE_TO_R_SWITCH_THIRD_CUBE);
+				switchToScaleThirdCube = Paths.getPath(Right.R_SWITCH_TO_R_SCALE_THIRD_CUBE);
+				toScaleRemainingDistance = 12;
+				targetTurnAngle = -160;
+				endTargetTurnAngle = -10.0;
+				finalTurnTargetAngle = -144;
+				elevatorWaitTime1 = 3.2;
+				elevatorWaitTime2 = 0.9;
 				isRightTurnToSwitch = true;
+				actuateFlapJack = true;
 			} else {
-				toScale = Paths.getPath(RightSide.R_SCALE);
-				toSwitchDistance = 40.0;
-				toScaleAgainDistance = -40.0;
-				targetTurnAngle = -165;
+				toScale = Paths.getPath(Right.R_SCALE);
+				carriageVBUSCube1 = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_50;
+				carriageVBUSCube2 = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_70;
+				scaleToSwitch = Paths.getPath(Left.R_SCALE_TO_R_SWITCH);
+				switchToScale = Paths.getPath(Left.R_SWITCH_TO_R_SCALE);
+				targetTurnAngle = -160;
 				endTargetTurnAngle = -25;
 				finalTurnTargetAngle = -135;
-				elevatorWaitTime1 = 2.0;
+				elevatorWaitTime1 = 1.25;
 				elevatorWaitTime2 = 0.5;
 				isRightTurnToSwitch = false;
+				actuateFlapJack = false;
 			}
 		}
 	}
@@ -74,65 +97,67 @@ public class DoubleScale extends AutonBase{
 	public void routine() {
 		// Drive to scale while storing infeed and raising elevator
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-					new RunMotionProfileAction(toScale),
-					new SeriesAction(Arrays.asList(new Action[] {
-							new WaitAction(elevatorWaitTime1),
-							new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.HIGH_SCALE_HEIGHT)
-					}))
+				new RunMotionProfileAction(toScale),
+				new SeriesAction(Arrays.asList(new Action[] {
+						new WaitAction(elevatorWaitTime1),
+						new SimultaneousAction(Arrays.asList(new Action[] {
+								new ActuateFlapJackAction(true),
+								new MoveElevatorToPosAction(Elevator.ELEVATOR_PRESET_POSITION.HIGH_SCALE_HEIGHT)
+						})),
+						new WaitUntilRemainingDistanceAction(toScaleRemainingDistance),
+						new OutfeedCubeAction(carriageVBUSCube1)
+				}))
 		})));
-		// Outfeed cube for 0.2s
-		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-					new WaitAction(0.2),
-					new OutfeedCubeAction(CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_90)
-		})));
+		runAction(new PrintTimeFromStart(_startTime));
 		// Lower Elevator to Switch during turn, then drive to 2nd cube while setting infeed wide and continuing to lower elevator
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 					new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT),
 					new SeriesAction(Arrays.asList(new Action[] {
-							new WaitAction(0.3),
 							new TurnAction(targetTurnAngle, isRightTurnToSwitch),
 							new SimultaneousAction(Arrays.asList(new Action[] {
 									new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.WIDE),
-									new DriveSetDistanceAction(toSwitchDistance)
+									new RunMotionProfileAction(scaleToSwitch),
+									new SeriesAction(Arrays.asList(new Action [] {
+											new WaitAction(0.7),
+											new InfeedCubeAction()
+									}))
 							}))
-					}))	
+					}))
 		})));
-		// Infeed cube while sitting in place
-		runAction(new InfeedCubeAction());
 		// Drive back to scale and turn while raising elevator to scale height
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 					new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.STORE),
 					new SeriesAction(Arrays.asList(new Action[] {
-							new DriveSetDistanceAction(toScaleAgainDistance),
+							new RunMotionProfileAction(switchToScale),
 							new TurnAction(endTargetTurnAngle, !isRightTurnToSwitch)
 					})),
 					new SeriesAction(Arrays.asList(new Action[] {
 							new WaitAction(elevatorWaitTime2),
-							new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.HIGH_SCALE_HEIGHT)
+							new SimultaneousAction(Arrays.asList(new Action[] {
+								new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.HIGH_SCALE_HEIGHT),
+								new ActuateFlapJackAction(true)
+							})) 
 					}))
 		}))); 
+		runAction(new OutfeedCubeAction());
 		// Outfeed cube for 0.2s
-		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-				new WaitAction(0.2),
-				new OutfeedCubeAction()
-		})));
 		runAction(new PrintTimeFromStart(_startTime));
 		// Move elevator to floor
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 				new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT),
+				new ActuateFlapJackAction(false),
 				new SeriesAction(Arrays.asList(new Action[] {
 						new WaitAction(0.3),
 						new TurnAction(finalTurnTargetAngle, isRightTurnToSwitch),
 						new SimultaneousAction(Arrays.asList(new Action[] {
-								new DriveSetDistanceAction(50.0),
+								new RunMotionProfileAction(scaleToSwitchThirdCube),
 								new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.WIDE)
 						}))
 				}))
 		})));
 		runAction(new InfeedCubeAction());
-		runAction(new PrintTimeFromStart(_startTime));
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-					new DriveSetDistanceAction(-50.0),
+					new RunMotionProfileAction(switchToScaleThirdCube),
 					new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.STORE)
 		})));
 		runAction(new TurnAction(0.0, false));

@@ -4,32 +4,28 @@ import java.util.Arrays;
 
 import org.usfirst.frc.team4028.robot.auton.AutonBase;
 import org.usfirst.frc.team4028.robot.paths.Paths;
-import org.usfirst.frc.team4028.robot.paths.Paths.LeftSide;
+import org.usfirst.frc.team4028.robot.paths.Paths.Left;
 import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_PRESET_POSITION;
 import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_ARM_TARGET_POSITION;
 import org.usfirst.frc.team4028.util.control.Path;
 import org.usfirst.frc.team4028.robot.auton.actions.*;
 
 public class CloseSwitchFarScale extends AutonBase {
-	Path toLeftSwitchOnSide = Paths.getPath(LeftSide.L_SWITCH_SIDE);
-	Path toRightScalefromLeftSwitchSide = Paths.getPath(LeftSide.L_SWITCH_SIDE_TO_R_SCALE);
-	Path toRightScaleSecondCube = Paths.getPath(LeftSide.TO_R_SCALE_SECOND_CUBE);
-	double _firstWaitTime = 0.8;
+	Path toLeftSwitchSide = Paths.getPath(Left.L_SWITCH_SIDE);
+	Path toRightScalefromLeftSwitchSide = Paths.getPath(Left.L_SWITCH_SIDE_TO_R_SCALE);
+	Path toRightScaleSecondCube = Paths.getPath(Left.TO_R_SCALE_SECOND_CUBE);
 	
 	@Override
 	public void routine() {
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 				new SeriesAction(Arrays.asList(new Action[] {
-						new WaitAction(_firstWaitTime),
+						new WaitAction(0.8),
 						new MoveElevatorToPosAction(40)
 				})),
-				new RunTimedMotionProfileAction(toLeftSwitchOnSide, 2.6)
+				new RunTimedMotionProfileAction(toLeftSwitchSide, 2.6)
 		})));
 		// Outfeed cube for 0.2s
-		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-					new WaitAction(0.2),
-					new OutfeedCubeAction()
-		})));
+		runAction(new OutfeedCubeAction());
 		runAction(new PrintTimeFromStart(_startTime));
 		// Turn to 0 degrees to be parallel to switch and lower infeed to floor
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
@@ -43,9 +39,9 @@ public class CloseSwitchFarScale extends AutonBase {
 		runAction(new TurnAction(-162, true));
 		// Drive to cube and infeed it
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-					new DriveSetDistanceAction(3.0),
+					new DriveSetDistanceAction(5.0),
 					new SeriesAction(Arrays.asList(new Action[] {
-							new WaitAction(0.5),
+							//new WaitAction(0.5),
 							new InfeedCubeAction()
 					}))
 		})));
@@ -56,16 +52,11 @@ public class CloseSwitchFarScale extends AutonBase {
 		})));
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 				new RunMotionProfileAction(toRightScaleSecondCube),
-				new SeriesAction(Arrays.asList(new Action[] {
-						new WaitAction(0.0),
-						new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.HIGH_SCALE_HEIGHT)
-				}))
+				new ActuateFlapJackAction(true),
+				new MoveElevatorToPosAction(76)
 		})));
 		// Outfeed cube for 0.2s
-		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-					new WaitAction(0.2),
-					new OutfeedCubeAction()
-		}))); 
+		runAction(new OutfeedCubeAction());
 		runAction(new PrintTimeFromStart(_startTime));
 		runAction(new DriveSetDistanceAction(-15.0));
 		runAction(new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT));

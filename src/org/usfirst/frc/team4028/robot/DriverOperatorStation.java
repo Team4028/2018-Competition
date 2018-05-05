@@ -552,22 +552,32 @@ public class DriverOperatorStation {
 	// ======== Operator Joysticks =========
 	// ===================================
 
-	public double getOperator_EjectCube_JoystickCmd() {
-		if(Math.abs(_operatorGamepad.getY(Hand.kLeft)) >= .5){
+	public boolean getOperator_FlapUp_BtnPressed() {
+		if(_operatorGamepad.getY(Hand.kLeft) <= -.5){
 			// flip the sign, pushing the joystick up is a # < 0
-			return 1.0;
-		} 
-		else {
-			return 0.0;
+			return true;
+		}  
+		else{
+			return false;
 		}
 	}
+	
+	public boolean getOperator_FlapDown_BtnPressed() {
+		if(_operatorGamepad.getY(Hand.kLeft) >= .5){
+			// flip the sign, pushing the joystick up is a # < 0
+			return true;
+		}  
+		else{
+			return false;
+		}
+	}	
 	
 //		public double getOperator_LeftX_JoystickCmd() {
 //			return _operatorGamepad.getX(Hand.kLeft);
 //		}
 	
 	public double getOperator_Climber_JoystickCmd() {
-		if(Math.abs(_operatorGamepad.getY(Hand.kRight)) >= JOYSTICK_DEADBAND){
+		if(Math.abs(_operatorGamepad.getY(Hand.kRight)) >= 0.5){
 			// flip the sign, pushing the joystick up is a # < 0
 			return _operatorGamepad.getY(Hand.kRight) * -1.0;
 		} 

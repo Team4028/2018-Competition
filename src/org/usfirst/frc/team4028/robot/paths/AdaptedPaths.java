@@ -10,6 +10,7 @@ import org.usfirst.frc.team4028.util.control.Path;
 
 
 public class AdaptedPaths extends Paths {//oh God we're here
+	/*
 	public static Path getAdaptedPath(Center pathName) {
 		Path path;
 		
@@ -152,6 +153,7 @@ public class AdaptedPaths extends Paths {//oh God we're here
 		return sWaypoints;
 	}*/
 	
+	/*
 	public static ArrayList<Waypoint> adaptRightSwitch() {
 		ArrayList<Waypoint> sWaypoints= new ArrayList<Waypoint>();
 		sWaypoints=flipPath(getLeftSwitchWaypoints());
@@ -228,6 +230,7 @@ public class AdaptedPaths extends Paths {//oh God we're here
 		return sWaypoints;
 	}*/
 	
+	/*
 	public static Path getAdaptedPath(LeftSide pathName) {
 		Path path;
 		
@@ -394,4 +397,5 @@ public class AdaptedPaths extends Paths {//oh God we're here
 		double flavorTownUSAY = Math.random()*360-180;
 		System.out.println("Flavor Town USA Located: " + flavorTownUSAX + ", " + flavorTownUSAY);
 	}
+	*/
 }
