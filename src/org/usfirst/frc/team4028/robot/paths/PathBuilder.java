@@ -10,6 +10,9 @@ import org.usfirst.frc.team4028.util.motion.RigidTransform;
 import org.usfirst.frc.team4028.util.motion.Rotation;
 import org.usfirst.frc.team4028.util.motion.Translation;
 
+import static java.lang.Math.atan2;
+import static java.lang.Math.cos;
+import static java.lang.Math.sin;
 import static org.usfirst.frc.team4028.util.motion.Translation.getAngle;
 
 public class PathBuilder {
@@ -98,8 +101,8 @@ public class PathBuilder {
      * @see WaitForPathMarkerAction
      */
     public static class Waypoint {
-        Translation pos;
-        double radius, speed;
+        public Translation pos;
+        public double radius, speed;
         String marker;
 
         public Waypoint(Waypoint other) {
@@ -130,6 +133,14 @@ public class PathBuilder {
           
         public void flipWaypoint() {
         	pos = new Translation(pos.x(), 324 - pos.y());
+        }
+        
+        public double x() {
+        	return pos.x();
+        }
+        
+        public double y() {
+        	return pos.y();
         }
         
         @Override
@@ -184,11 +195,13 @@ public class PathBuilder {
     }
 
     /** An Arc object is formed by two Lines that share a common Waypoint. Contains a center position, radius, and speed. */
-    static class Arc {
+    public static class Arc {
         Line a, b;
-        Translation center;
-        double radius;
-        double speed;
+        public Translation center;
+        public double radius;
+        public double speed;
+        public double tStart = 0;
+        public double tEnd = 1;
 
         public Arc(Waypoint a, Waypoint b, Waypoint c) {
             this(new Line(a, b), new Line(b, c));
@@ -200,6 +213,65 @@ public class PathBuilder {
             this.speed = (a.speed + b.speed) / 2;
             this.center = intersect(a, b);
             this.radius = new Translation(center, a.end).norm();
+        }
+        
+        public Arc(Translation a, Translation b, Translation c, double speed) {
+        	double quart = Math.PI / 2;
+    		
+    		double dx1 = b.x() - a.x(),
+    			   dy1 = b.y() - a.y(),
+    			   dx2 = c.x() - b.x(),
+    			   dy2 = c.y() - b.y();
+    		
+    		double dx1p = dx1 * cos(quart) - dy1 * sin(quart),
+    			   dy1p = dx1 * sin(quart) + dy1 * cos(quart),
+    		       dx2p = dx2 * cos(quart) - dy2 * sin(quart),
+    		       dy2p = dx2 * sin(quart) + dy2 * cos(quart);
+    		
+    		// chord midpoints
+    		double mx1 = (a.x() + b.x())/2,
+    			   my1 = (a.y() + b.y())/2,
+    			   mx2 = (b.x() + c.x())/2,
+    			   my2 = (b.y() + c.y())/2;
+    		
+    		// midpoint offsets
+    		double mx1n = mx1 + dx1p,
+    			   my1n = my1 + dy1p,
+    		       mx2n = mx2 + dx2p,
+    		       my2n = my2 + dy2p;
+    		
+    		center = getCenter(mx1, my1, mx1n, my1n, mx2, my2, mx2n, my2n);
+    		radius = getDist(center, a);
+    		this.speed = speed;
+    		
+    		// arc start/end values over mid point
+    		double s = atan2(a.y() - center.y(), a.x() - center.x()),
+    			   m = atan2(b.y() - center.y(), b.x() - center.x()),
+    			   e = atan2(c.y() - center.y(), c.x() - center.x()),
+    			   ph = 0;
+    		
+    		// determine arc direction (cw/ccw correction)
+    		if (s < e) {
+    			// if s<m<e, arc(s, e)
+    			// if m<s<e, arc(e, s + tau)
+    			// if s<e<m, arc(e, s + tau)
+    			if (s>m || m>e) 
+    				s += 2*Math.PI;
+    			
+    			if (s>e)
+    				ph=e; e=s; s=ph; // swap e and s
+    		} else {
+    			// if e<m<s, arc(e, s)
+    	        // if m<e<s, arc(s, e + tau)
+    	        // if e<s<m, arc(s, e + tau)
+    			if (e<m && m<s) {
+    				ph=e; e=s; s=ph;
+    			} else {
+    				e += 2*Math.PI;
+    			}
+    		}
+    		
+    		setInterval(s, e);
         }
 
         private void addToPath(Path p) {
@@ -215,5 +287,21 @@ public class PathBuilder {
             final RigidTransform lineB = new RigidTransform(l2.start, new Rotation(l2.slope, true).normal());
             return lineA.intersection(lineB);
         }
+        
+        public void setInterval(double s, double e) {
+        	tStart = s;
+        	tEnd = e;
+        }
+        
+        public Translation getCenter(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4) {
+			double nx=(x1*y2-y1*x2)*(x3-x4)-(x1-x2)*(x3*y4-y3*x4),
+			       ny=(x1*y2-y1*x2)*(y3-y4)-(y1-y2)*(x3*y4-y3*x4),
+			       d=(x1-x2)*(y3-y4)-(y1-y2)*(x3-x4);
+			return new Translation(nx/d, ny/d);
+		}
     }
+    
+    public static double getDist(Translation a, Translation b) {
+		return Math.hypot(b.x() - a.x(), b.y() - a.y());
+	}
 }
