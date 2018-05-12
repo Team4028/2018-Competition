@@ -69,7 +69,7 @@ public class DoubleScaleAndSwitch extends AutonBase{
 		})));
 		// Drive to switch while storing infeed and raising elevator
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-					new DriveSetDistanceAction(14),
+					new DriveSetDistanceAction(16),
 					new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.STORE),
 					new MoveElevatorToPosAction(30)
 		})));
@@ -79,12 +79,11 @@ public class DoubleScaleAndSwitch extends AutonBase{
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 					new SeriesAction(Arrays.asList(new Action[] {
 							new DriveSetDistanceAction(-13.0),
-							new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.WIDE),
+							new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.SQUEEZE),
 							new TurnAction(130.0, false)
 					})),
 					new SimultaneousAction(Arrays.asList(new Action[] {
 							new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT),
-							
 					}))
 		})));
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
@@ -93,7 +92,6 @@ public class DoubleScaleAndSwitch extends AutonBase{
 						new WaitAction(.4),
 						new InfeedCubeAction()
 				}))
-				
 		})));
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 					new TurnAction(-37.0, false),
@@ -102,6 +100,7 @@ public class DoubleScaleAndSwitch extends AutonBase{
 		})));
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 					new RunMotionProfileAction(fromSwitchToScaleSecondCube),
+					new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.STORE),
 					new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.HIGH_SCALE_HEIGHT)
 		})));
 		runAction(new OutfeedCubeAction());

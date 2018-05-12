@@ -55,16 +55,19 @@ public class FarSwitchCloseScale extends AutonBase {
 					}))
 		})));
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-					new DriveSetDistanceAction(18),
+					new DriveSetDistanceAction(20),
 					new SeriesAction(Arrays.asList(new Action[] {
-							new WaitAction(0.3),
+							new WaitAction(0.8),
 							new InfeedCubeAction()
 					}))
+		})));
+		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
+					new WaitAction(0.5),
+					new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.STORE)
 		})));
 		// Drive to switch while storing infeed and raising elevator
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 					new ArcadeDriveAction(0.7, 0.4),
-					new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.STORE),
 					new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.SWITCH_HEIGHT)
 		})));
 		// Outfeed cube for 0.2s

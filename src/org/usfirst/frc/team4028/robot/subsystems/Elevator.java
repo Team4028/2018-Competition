@@ -236,6 +236,7 @@ public class Elevator implements Subsystem {
 		public void onLoop(double timestamp) {
 			synchronized (Elevator.this) {
 				long deltatime = 0;
+				_actualPositionNU = _elevatorMasterMotor.getSelectedSensorPosition(0);	// tomb ADD AFTER 1ST MATCH
 				
 				switch(_elevatorState) {
 					case NEED_TO_HOME:
@@ -279,7 +280,7 @@ public class Elevator implements Subsystem {
 							ReportStateChg("ElevatorAxis (State) [" + _elevatorState.toString() + "] ==> [HOLD_TARGET_POSTION]:[" + _targetElevatorPositionNU +"]");
 	    					_elevatorState = ELEVATOR_STATE.HOLD_TARGET_POSITION; // change state
 						} else {
-							_actualPositionNU = _elevatorMasterMotor.getSelectedSensorPosition(0);
+							//_actualPositionNU = _elevatorMasterMotor.getSelectedSensorPosition(0);		// tOMb AFTER 1ST MATCH
 							_actualVelocityNU_100mS  = _elevatorMasterMotor.getSelectedSensorVelocity(0);
 							_actualAccelerationNU_100mS_mS = (_actualVelocityNU_100mS - _lastScanActualVelocityNU_100mS) / deltatime;
 		

@@ -47,12 +47,12 @@ public class InfeedCubeAction implements Action {
 				break;
 			
 			case JAM_CENTER:
-				if(Timer.getFPGATimestamp()-_startTime<1.075)
+				if(Timer.getFPGATimestamp()-_startTime<1.315)
 				{
 					_cubeHandler.ejectCube_InfeedAndCarriage();
 					_cubeHandler.infeedArms_MoveToPresetPosition(INFEED_ARM_TARGET_POSITION.SQUEEZE);
 				}
-				else if(Timer.getFPGATimestamp()-_startTime<1.2)
+				else if(Timer.getFPGATimestamp()-_startTime<1.45)
 				{
 					_cubeHandler.infeedArms_MoveToPresetPosition(INFEED_ARM_TARGET_POSITION.WIDE);
 					_cubeHandler.acquireCube_InfeedAndCarriage();
@@ -63,7 +63,7 @@ public class InfeedCubeAction implements Action {
 				{
 					_cubeHandler.infeedArms_MoveToPresetPosition(INFEED_ARM_TARGET_POSITION.SQUEEZE);
 				}
-				if(Timer.getFPGATimestamp()-_startTime<1.4)
+				if(Timer.getFPGATimestamp()-_startTime<1.65)
 				{
 					_cubeHandler.infeedWheels_SpinAuton();
 					_cubeHandler.infeedArms_MoveToPresetPosition(INFEED_ARM_TARGET_POSITION.SQUEEZE);
@@ -77,11 +77,10 @@ public class InfeedCubeAction implements Action {
 				break;
 				
 			case LEFT_OR_RIGHT:
-				if(Timer.getFPGATimestamp()-_startTime<1.3)
+				if(Timer.getFPGATimestamp()-_startTime<1.45)
 				{
-					_chassis.arcadeDrive(.5, 0);
+					_chassis.arcadeDrive(1, 0);
 					_isComplete=false;
-					//System.out.println("Dabalabalabalabalabalab");
 				}
 				else
 				{
@@ -91,7 +90,7 @@ public class InfeedCubeAction implements Action {
 				}
 				break;
 			case SHORT:
-				if(Timer.getFPGATimestamp()-_startTime<1.3)
+				if(Timer.getFPGATimestamp()-_startTime<1.55)
 				{
 					_cubeHandler.infeedArms_MoveToPresetPosition(INFEED_ARM_TARGET_POSITION.WIDE);
 					_chassis.arcadeDrive(-1, 0);
@@ -106,7 +105,7 @@ public class InfeedCubeAction implements Action {
 				break;	
 			
 			case THAT_ONE_OTHER_JAM_THAT_I_COULDNT_FIGURE_OUT_BEFORE_AND_HAS_NO_NAME:
-				if(Timer.getFPGATimestamp()- _startTime<1.2)
+				if(Timer.getFPGATimestamp()- _startTime<1.45)
 				{
 					_cubeHandler.infeedArms_MoveToPresetPosition(INFEED_ARM_TARGET_POSITION.SQUEEZE);
 					_cubeHandler.ejectCube_InfeedAndCarriage();
@@ -126,7 +125,7 @@ public class InfeedCubeAction implements Action {
 		
 		
 		
-		if ((Timer.getFPGATimestamp() - _startTime) < 1) 
+		if ((Timer.getFPGATimestamp() - _startTime) < 1.25) 
 		{
 			_infeedCubeState= INFEED_CUBE_AUTON_STATE.EVERYTHING_HAS_GONE_ACCORDING_TO_PLAN;
 		} 
@@ -146,13 +145,18 @@ public class InfeedCubeAction implements Action {
 				else if(Math.abs(_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getRightInfeedArmPos()))<150 &&
 						Math.abs(_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getLeftInfeedArmPos()))>170 ||
 						Math.abs(_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getRightInfeedArmPos()))>170 &&
-						Math.abs(_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getLeftInfeedArmPos()))<150)
+						Math.abs(_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getLeftInfeedArmPos()))<150
+						|| _cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getRightInfeedArmPos())>230
+						|| _cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getLeftInfeedArmPos())>230)
 				{
 					_infeedCubeState = INFEED_CUBE_AUTON_STATE.LEFT_OR_RIGHT;
 				}
 				
 				else if(_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getLeftInfeedArmPos())>190 && 
-						_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getRightInfeedArmPos())>190)
+						_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getLeftInfeedArmPos())<230 && 
+						_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getRightInfeedArmPos())>190 &&
+						_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getRightInfeedArmPos())<230
+						)
 				{
 					_infeedCubeState=INFEED_CUBE_AUTON_STATE.SHORT;		
 				}

@@ -7,6 +7,7 @@ import org.usfirst.frc.team4028.robot.auton.actions.*;
 import org.usfirst.frc.team4028.robot.paths.Paths;
 import org.usfirst.frc.team4028.robot.paths.Paths.Left;
 import org.usfirst.frc.team4028.robot.paths.Paths.Right;
+import org.usfirst.frc.team4028.robot.subsystems.Elevator;
 import org.usfirst.frc.team4028.robot.subsystems.Carriage.CARRIAGE_WHEELS_OUT_VBUS_INDEX;
 import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_PRESET_POSITION;
 import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_ARM_TARGET_POSITION;
@@ -53,6 +54,7 @@ public class DoubleScale extends AutonBase{
 				elevatorWaitTime1 = 3.2;
 				elevatorWaitTime2 = 0.9;
 				isRightTurnToSwitch = false;
+				actuateFlapJack = true;
 			}
 			targetTurnAngle = 160;
 			endTargetTurnAngle = 30;
@@ -60,7 +62,7 @@ public class DoubleScale extends AutonBase{
 		} else {
 			if (isStartingLeft) {
 				toScale = Paths.getPath(Left.R_SCALE);
-				carriageVBUSCube1 = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_60;
+				carriageVBUSCube1 = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_70;
 				carriageVBUSCube2 = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_100;
 				scaleToSwitch = Paths.getPath(Left.R_SCALE_TO_R_SWITCH);
 				switchToScale = Paths.getPath(Left.R_SWITCH_TO_R_SCALE);
@@ -73,6 +75,7 @@ public class DoubleScale extends AutonBase{
 				elevatorWaitTime1 = 3.2;
 				elevatorWaitTime2 = 0.9;
 				isRightTurnToSwitch = true;
+				actuateFlapJack = true;
 			} else {
 				toScale = Paths.getPath(Right.R_SCALE);
 				carriageVBUSCube1 = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_50;
@@ -85,6 +88,7 @@ public class DoubleScale extends AutonBase{
 				elevatorWaitTime1 = 1.25;
 				elevatorWaitTime2 = 0.5;
 				isRightTurnToSwitch = false;
+				actuateFlapJack = false;
 			}
 		}
 	}
@@ -96,7 +100,10 @@ public class DoubleScale extends AutonBase{
 				new RunMotionProfileAction(toScale),
 				new SeriesAction(Arrays.asList(new Action[] {
 						new WaitAction(elevatorWaitTime1),
-						new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.HIGH_SCALE_HEIGHT),
+						new SimultaneousAction(Arrays.asList(new Action[] {
+								new ActuateFlapJackAction(true),
+								new MoveElevatorToPosAction(Elevator.ELEVATOR_PRESET_POSITION.HIGH_SCALE_HEIGHT)
+						})),
 						new WaitUntilRemainingDistanceAction(toScaleRemainingDistance),
 						new OutfeedCubeAction(carriageVBUSCube1)
 				}))
@@ -127,7 +134,7 @@ public class DoubleScale extends AutonBase{
 					new SeriesAction(Arrays.asList(new Action[] {
 							new WaitAction(elevatorWaitTime2),
 							new SimultaneousAction(Arrays.asList(new Action[] {
-								new MoveElevatorToPosAction(76),
+								new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.HIGH_SCALE_HEIGHT),
 								new ActuateFlapJackAction(true)
 							})) 
 					}))
