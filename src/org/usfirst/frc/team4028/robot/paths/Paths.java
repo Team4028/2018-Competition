@@ -241,7 +241,7 @@ public class Paths {
 		lScalePathL = buildPathFromWaypoints(Arrays.asList(
 						new Waypoint(20,46,0,0),
 						new Waypoint(220,46,50,140),
-						new Waypoint(277,73,0,140)));
+						new Waypoint(275,73,0,140)));
 		leftPaths.put(Left.L_SCALE, lScalePathL);
 		
 		rScalePathL = buildPathFromWaypoints(0.002, Arrays.asList(
@@ -252,8 +252,8 @@ public class Paths {
 						new Waypoint(240,104,0,80),//40
 						new Waypoint(240,202,0,140),//120
 						new Waypoint(240,210,0,60),
-						new Waypoint(240,252,34,80),//60
-						new Waypoint(275,252,0,40)));
+						new Waypoint(240,257,34,80),//60
+						new Waypoint(275,257,0,40)));
 		leftPaths.put(Left.R_SCALE, rScalePathL);
 		
 		lScaleOutsidePathL = buildPathFromWaypoints(Arrays.asList(
@@ -264,11 +264,11 @@ public class Paths {
 		leftPaths.put(Left.L_SCALE_OUTSIDE, lScaleOutsidePathL);
 		
 		// Second Cube
-		ArrayList<Waypoint> lScaleToLSwitchWaypoints = getStraightPathWaypoints(new Translation(277, 72), 160, 37);
+		ArrayList<Waypoint> lScaleToLSwitchWaypoints = getStraightPathWaypoints(new Translation(277, 72), 160, 39);
 		lScaleToLSwitchPathL = buildPathFromWaypoints(lScaleToLSwitchWaypoints);
 		leftPaths.put(Left.L_SCALE_TO_L_SWITCH, lScaleToLSwitchPathL);
 		
-		lSwitchToLScalePathL = buildPathFromWaypoints(true, getStraightPathWaypoints(new Translation(lScaleToLSwitchWaypoints.get(1).pos), 160, -37));
+		lSwitchToLScalePathL = buildPathFromWaypoints(true, getStraightPathWaypoints(new Translation(lScaleToLSwitchWaypoints.get(1).pos), 160, -39));
 		leftPaths.put(Left.L_SWITCH_TO_L_SCALE, lSwitchToLScalePathL);
 		
 		ArrayList<Waypoint> rScaleToRSwitchWaypoints = getStraightPathWaypoints(new Translation(278, 252), -160, 44);
@@ -281,7 +281,7 @@ public class Paths {
 		lScaleToRSwitchPathL = buildPathFromWaypoints(0.006, Arrays.asList(
 						new Waypoint(273,74,0,0),
 						new Waypoint(247,87,28,80),//80
-						new Waypoint(250,256,0,120)));//120
+						new Waypoint(250,260,0,120)));//120
 		leftPaths.put(Left.L_SCALE_TO_R_SWITCH, lScaleToRSwitchPathL);
 		
 		lSwitchSidePathL = buildPathFromWaypoints(Arrays.asList(

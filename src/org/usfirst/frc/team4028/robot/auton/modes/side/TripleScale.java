@@ -79,7 +79,7 @@ public class TripleScale extends AutonBase {
 						new WaitAction(elevatorWaitTime1),
 						new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.HIGH_SCALE_HEIGHT),
 						new WaitUntilRemainingDistanceAction(18),
-						new OutfeedCubeAction(CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_60, 0.3)
+						new OutfeedCubeAction(CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_50, 0.3)
 				}))
 		})));
 		// Outfeed cube for 0.2s
