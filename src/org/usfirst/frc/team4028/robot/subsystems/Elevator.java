@@ -415,11 +415,11 @@ public class Elevator implements Subsystem {
 				case SWITCH_HEIGHT:
 					if((_elevatorState !=ELEVATOR_STATE.GOTO_TARGET_POSITION && _elevatorState !=ELEVATOR_STATE.HOLD_TARGET_POSITION)
 							|| _targetElevatorPositionNU != SWITCH_HEIGHT_POSITION)	{
-						_targetElevatorPositionNU = SWITCH_HEIGHT_POSITION;
 						ReportStateChg("ElevatorAxis (State) [" + _elevatorState.toString() + "] ==> [GOTO_TARGET_POSTION]:[SWITCH_HEIGHT_POSITION]");
 						_elevatorState = ELEVATOR_STATE.GOTO_TARGET_POSITION;
 					}
-					_isClimbBumpValueEnabled = true;
+					_isClimbBumpValueEnabled = false;
+					_targetElevatorPositionNU = SWITCH_HEIGHT_POSITION + _elevatorAtScaleOffsetNU;
 					break;			
 					
 				case OTHER:
