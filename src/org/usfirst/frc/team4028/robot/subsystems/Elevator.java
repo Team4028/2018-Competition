@@ -419,7 +419,7 @@ public class Elevator implements Subsystem {
 						ReportStateChg("ElevatorAxis (State) [" + _elevatorState.toString() + "] ==> [GOTO_TARGET_POSTION]:[SWITCH_HEIGHT_POSITION]");
 						_elevatorState = ELEVATOR_STATE.GOTO_TARGET_POSITION;
 					}
-					_isClimbBumpValueEnabled = false;
+					_isClimbBumpValueEnabled = true;
 					break;			
 					
 				case OTHER:
