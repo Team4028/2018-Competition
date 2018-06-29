@@ -81,7 +81,7 @@ public class SwitchableCameraServer {
 			System.out.println ("		camera0 exists");
 			_camera0 = new UsbCamera(CAM0_NAME, 0);
 			_camera0.setVideoMode(VideoMode.PixelFormat.kMJPEG, width, height, frames_per_sec);
-			_camera0.setExposureManual(5);
+			_camera0.setExposureManual(60);
 			_camera0.setWhiteBalanceManual(50);
 			_camList.add(_camera0);
 		}
@@ -97,7 +97,7 @@ public class SwitchableCameraServer {
 			System.out.println ("		camera2 exists");
 			_camera2 = new UsbCamera(CAM2_NAME, 2);
 			_camera2.setVideoMode(VideoMode.PixelFormat.kMJPEG, width, height, frames_per_sec);
-			_camera2.setExposureManual(5);
+			_camera2.setExposureManual(60);
 			_camera2.setWhiteBalanceManual(50);
 			_camList.add(_camera2);
 		}
