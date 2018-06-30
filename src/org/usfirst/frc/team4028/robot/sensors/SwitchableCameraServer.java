@@ -13,28 +13,43 @@ import java.nio.file.Paths;
 
 import org.usfirst.frc.team4028.util.CircularQueue;
 
-public class SwitchableCameraServer {
-	private static final String CAM0_NAME = "ceiling camera";
-	private static final String CAM1_NAME = "mechanical camera";
-	private static final String CAM2_NAME = "camera2";
-	private static final String CAM3_NAME = "camera3";
-	UsbCamera _camera0;
-	UsbCamera _camera1;
-	UsbCamera _camera2;
-	UsbCamera _camera3;
-    MjpegServer _rawVideoServer;
-    private CircularQueue<UsbCamera> _camList;
-    
+public class SwitchableCameraServer
+{
+	// ======
+	//  We can use /dev/v4l/by-id/ since they are different types of cameras
+	// ======
+	// Note: Sonix (bottom)
+	private static final String USB1_NAME = "driver camera";
+	//private static final String USB1_DEVICE_PATH = "/dev/v4l/by-id/usb-Sonix_Technology_Co.__Ltd._USB_2.0_Camera_SN0001-video-index0";
+	private static final String USB1_DEVICE_PATH =  "/dev/v4l/by-path/platform-ci_hdrc.0-usb-0:1.1:1.0-video-index0";
+	
+	// Note: LifeCAM (top)
+	private static final String USB2_NAME = "carriage camera";	
+	private static final String USB2_DEVICE_PATH = "/dev/v4l/by-path/platform-ci_hdrc.0-usb-0:1.2:1.0-video-index0";
+	
     private static final int CAMERA_TCP_PORT = 1180;
 	
+    private UsbCamera _camera0;
+	private UsbCamera _camera1;
+	private UsbCamera _currentCamera;
+
+	private MjpegServer _rawVideoServer;
+    
+    private CircularQueue<UsbCamera> _camList;
+    
+    // ==========================
+    // Singleton Pattern
+    // ==========================
     private static SwitchableCameraServer _instance = new SwitchableCameraServer();
-	String _currentCamera;
-	
-	public static SwitchableCameraServer getInstance() {
+
+	public static SwitchableCameraServer getInstance() 
+	{
 		return _instance;
 	}
 
-	private SwitchableCameraServer() {
+	// private constructor
+	private SwitchableCameraServer() 
+	{
 		//C920
 		//640x480 10FPS ~5.4 MB/S OK YELLOW
 		//640x480 20FPS ~14.44 MB/S OK RED
@@ -77,62 +92,64 @@ public class SwitchableCameraServer {
 		// build list of available cameras
 		_camList = new CircularQueue<UsbCamera>();
 		
-		if (Files.exists(Paths.get("/dev/video0"), LinkOption.NOFOLLOW_LINKS)) {
-			System.out.println ("		camera0 exists");
-			_camera0 = new UsbCamera(CAM0_NAME, 0);
+		// =======================
+		// driver camera (1st camera added to _camList will be the default camera) 
+		// =======================
+		if (Files.exists(Paths.get(USB1_DEVICE_PATH), LinkOption.NOFOLLOW_LINKS)) 
+		{
+			System.out.println ("...camera0 exists");
+			_camera0 = new UsbCamera(USB1_NAME, USB1_DEVICE_PATH);
 			_camera0.setVideoMode(VideoMode.PixelFormat.kMJPEG, width, height, frames_per_sec);
 			_camera0.setExposureManual(5);
 			_camera0.setWhiteBalanceManual(50);
 			_camList.add(_camera0);
 		}
-		if (Files.exists(Paths.get("/dev/video1"), LinkOption.NOFOLLOW_LINKS)) {
-			System.out.println ("		camera1 exists");
-			_camera1 = new UsbCamera(CAM1_NAME, 1);
+		
+		// =======================
+		//  carriage camera
+		// ======================= 
+		if (Files.exists(Paths.get(USB2_DEVICE_PATH), LinkOption.NOFOLLOW_LINKS)) 
+		{
+			System.out.println ("...camera1 exists");
+			_camera1 = new UsbCamera(USB2_NAME, USB2_DEVICE_PATH);
 			_camera1.setVideoMode(VideoMode.PixelFormat.kMJPEG, width, height, frames_per_sec);
-			_camera1.setExposureManual(5);
+			_camera1.setExposureManual(60);
 			_camera1.setWhiteBalanceManual(50);
 			_camList.add(_camera1);
-		}
-		if (Files.exists(Paths.get("/dev/video2"), LinkOption.NOFOLLOW_LINKS)) {
-			System.out.println ("		camera2 exists");
-			_camera2 = new UsbCamera(CAM2_NAME, 2);
-			_camera2.setVideoMode(VideoMode.PixelFormat.kMJPEG, width, height, frames_per_sec);
-			_camera2.setExposureManual(5);
-			_camera2.setWhiteBalanceManual(50);
-			_camList.add(_camera2);
-		}
-		if (Files.exists(Paths.get("/dev/video3"), LinkOption.NOFOLLOW_LINKS)) {
-			System.out.println ("		camera3 exists");
-			_camera3 = new UsbCamera(CAM3_NAME, 3);
-			_camera3.setVideoMode(VideoMode.PixelFormat.kMJPEG, width, height, frames_per_sec);
-			_camera3.setExposureManual(5);
-			_camera3.setWhiteBalanceManual(50);
-			_camList.add(_camera3);
 		}
 		
 		/* Configure Camera */
 		/* Note:  Higher resolution & framerate is possible, depending upon processing cpu usage */
-	
 		/* Start raw Video Streaming Server */
-		
-		_rawVideoServer.setSource(_camList.get(0));
-		_currentCamera = _camList.get(0).toString(); 
-
-		SwitchCamera();
+		if(!_camList.isEmpty()) 
+		{
+			_currentCamera = _camList.get(0);
+			_rawVideoServer.setSource(_currentCamera);
+			System.out.println ("current camera ==> " + _currentCamera.getName());
+			
+			_rawVideoServer.setSource(_currentCamera);
+		}
 	}
 	
-	public void SwitchCamera() {
-		UsbCamera nextCamera = null;
-		if(!_camList.isEmpty()) {
-			nextCamera = _camList.getNext();
-			_rawVideoServer.setSource(nextCamera);
-			System.out.println ("	New camera = " + nextCamera.getName());
-		} else  {
+	public void SwitchCamera() 
+	{		
+		if(!_camList.isEmpty()) 
+		{
+			_currentCamera = _camList.getNext();
+			_rawVideoServer.setSource(_currentCamera);
+			System.out.println ("current camera ==> " + _currentCamera.getName());
+			
+			_rawVideoServer.setSource(_currentCamera);
+		} 
+		else  
+		{
 			DriverStation.reportError("No Cameras Available", false);
 		}
-		_rawVideoServer.setSource(nextCamera);
 	}
-	{
+	
+/*
+  Code to config necessary network tables entries for Shuffleboard Camera Viewer 
+ 	{
 	//connect to Network Tables
 	NetworkTableInstance networkTables = NetworkTableInstance.getDefault();
 	if(networkTables == null)
@@ -164,5 +181,6 @@ public class SwitchableCameraServer {
 					"mjpg:http://172.22.11.2:" + Integer.toString(CAMERA_TCP_PORT) + "/stream.mjpg",
 					"mjpg:http://10.40.28.2:" + Integer.toString(CAMERA_TCP_PORT) + "/stream.mjpg"
 	};
-			}
+			} */
+	
 }
