@@ -71,7 +71,7 @@ public class Robot extends IterativeRobot {
 		
 		AdaptedPaths.buildPaths();
 		
-		_switchableCameraServer.SwitchCamera();
+		//_switchableCameraServer.SwitchCamera();
 		
 		_dashboard.printStartupMessage();
 		
@@ -104,7 +104,7 @@ public class Robot extends IterativeRobot {
 		
 		AdaptedPaths.buildPaths();
 		
-		_switchableCameraServer.SwitchCamera();
+		//_switchableCameraServer.SwitchCamera();
 		
 		_chassis.setBrakeMode(false);
 		
