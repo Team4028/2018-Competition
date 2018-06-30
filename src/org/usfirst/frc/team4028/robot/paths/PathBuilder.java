@@ -56,7 +56,6 @@ public class PathBuilder {
     
     public static ArrayList<Waypoint> getStraightPathWaypoints(Translation startPose, double startAngle, double distance) {
     	Translation endPose = startPose.extrapolate(startPose.translateBy(Rotation.fromDegrees(startAngle).toTranslation()), distance);
-    	//System.out.println(endPose.toString());
     	ArrayList<Waypoint> sWaypoints = new ArrayList<Waypoint>();
     	sWaypoints.add(new Waypoint(startPose, 0, 0));
     	sWaypoints.add(new Waypoint(endPose, 0, 140));
