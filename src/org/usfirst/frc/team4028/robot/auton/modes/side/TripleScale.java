@@ -41,13 +41,13 @@ public class TripleScale extends AutonBase {
 	public TripleScale(boolean isStartingLeft) {
 		if (isStartingLeft) {
 			toScale = Paths.getPath(Left.L_SCALE);
-			scaleToSwitch = Paths.getPath(Left.L_SCALE_TO_L_SWITCH);
-			switchToScale = Paths.getPath(Left.L_SWITCH_TO_L_SCALE);
+			scaleToSwitch = Paths.getPath(Left.L_SCALE_TO_L_SWITCH_EXP);//changed to EXP
+			switchToScale = Paths.getPath(Left.L_SWITCH_TO_L_SCALE_EXP);//changed to EXP
 			scaleToSwitchThirdCube = Paths.getPath(Left.L_SCALE_TO_L_SWITCH_THIRD_CUBE);
 			switchToScaleThirdCube = Paths.getPath(Left.L_SWITCH_TO_L_SCALE_THIRD_CUBE);
-			targetTurnAngle = 160;
+			targetTurnAngle = 150;//160;
 			endTargetTurnAngle = 33;
-			secondTurnTargetAngle = 140;
+			secondTurnTargetAngle = 120;//140;
 			endSecondTurnTargetAngle = 35;
 			elevatorWaitTime1 = 1.25;
 			elevatorWaitTime2 = 0.5;
@@ -79,7 +79,7 @@ public class TripleScale extends AutonBase {
 						new WaitAction(elevatorWaitTime1),
 						new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.HIGH_SCALE_HEIGHT),
 						new WaitUntilRemainingDistanceAction(18),
-						new OutfeedCubeAction(CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_50, 0.3)
+						new OutfeedCubeAction(CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_40, 0.3)
 				}))
 		})));
 		// Outfeed cube for 0.2s
@@ -93,7 +93,7 @@ public class TripleScale extends AutonBase {
 									new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.WIDE),
 									new RunMotionProfileAction(scaleToSwitch),
 									new SeriesAction(Arrays.asList(new Action [] {
-											new WaitAction(0.7),
+											new WaitAction(0.8),
 											new InfeedCubeAction()
 									}))
 							}))

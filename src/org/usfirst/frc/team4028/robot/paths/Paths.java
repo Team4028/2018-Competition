@@ -64,7 +64,7 @@ public class Paths {
 		L_SCALE_TO_L_SWITCH,
 		L_SCALE_TO_L_SWITCH_EXP,
 		L_SWITCH_TO_L_SCALE,
-		
+		L_SWITCH_TO_L_SCALE_EXP,
 		R_SCALE_TO_R_SWITCH,
 		R_SWITCH_TO_R_SCALE,
 		
@@ -85,7 +85,7 @@ public class Paths {
 	}
 	
 	private static Path toBackCenterL;
-	private static Path lScaleToLSwitchPathLExperiment;
+	private static Path lScaleToLSwitchPathLExperiment, lSwitchtoLScalePathLExperiment;
 	private static Path lScalePathL, rScalePathL;
 	private static Path lScaleOutsidePathL;
 	private static Path lScaleToLSwitchPathL, lSwitchToLScalePathL;
@@ -266,12 +266,18 @@ public class Paths {
 		leftPaths.put(Left.L_SCALE_OUTSIDE, lScaleOutsidePathL);
 		
 		// Second Cube
-		lScaleToLSwitchPathLExperiment = buildPathFromWaypoints(Arrays.asList(
-				new Waypoint(275,73,0,0),
-				new Waypoint(258,83,16,80),
-				new Waypoint(240,85,0,80)
-				));
+		ArrayList<Waypoint> lScaletoLSwitchExperimentWaypoints = new ArrayList<Waypoint>();
+		lScaletoLSwitchExperimentWaypoints.add(new Waypoint(275,73,0,0));
+		lScaletoLSwitchExperimentWaypoints.add(new Waypoint(258,83,16,80));
+		lScaletoLSwitchExperimentWaypoints.add(new Waypoint(240,85,0,80));
+		lScaleToLSwitchPathLExperiment = buildPathFromWaypoints(lScaletoLSwitchExperimentWaypoints);
+			
 		leftPaths.put(Left.L_SCALE_TO_L_SWITCH_EXP, lScaleToLSwitchPathLExperiment);
+		
+		lSwitchtoLScalePathLExperiment = buildPathFromWaypoints(reversePath(lScaletoLSwitchExperimentWaypoints));
+		leftPaths.put(Left.L_SWITCH_TO_L_SCALE_EXP,lSwitchtoLScalePathLExperiment);
+		
+		
 		ArrayList<Waypoint> lScaleToLSwitchWaypoints = getStraightPathWaypoints(new Translation(277, 72), 160, 39);
         lScaleToLSwitchPathL = buildPathFromWaypoints(lScaleToLSwitchWaypoints);
 		leftPaths.put(Left.L_SCALE_TO_L_SWITCH, lScaleToLSwitchPathL);

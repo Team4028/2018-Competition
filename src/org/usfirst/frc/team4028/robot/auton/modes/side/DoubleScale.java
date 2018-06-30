@@ -34,7 +34,7 @@ public class DoubleScale extends AutonBase{
 				carriageVBUSCube1 = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_40;
 				carriageVBUSCube2 = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_70;
 				scaleToSwitch = Paths.getPath(Left.L_SCALE_TO_L_SWITCH_EXP);//Paths.getPath(Left.L_SCALE_TO_L_SWITCH);
-				switchToScale = Paths.getPath(Left.L_SWITCH_TO_L_SCALE);
+				switchToScale = Paths.getPath(Left.L_SWITCH_TO_L_SCALE_EXP);//Paths.getPath(Left.L_SWITCH_TO_L_SCALE);
 				scaleToSwitchThirdCube = Paths.getPath(Left.L_SCALE_TO_L_SWITCH_THIRD_CUBE);
 				switchToScaleThirdCube = Paths.getPath(Left.L_SWITCH_TO_L_SCALE_THIRD_CUBE);
 				toScaleRemainingDistance = 18;
@@ -123,7 +123,7 @@ public class DoubleScale extends AutonBase{
 									}))
 							}))
 					}))
-		})));/*
+		})));
 		// Drive back to scale and turn while raising elevator to scale height
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 					new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.STORE),
@@ -143,7 +143,7 @@ public class DoubleScale extends AutonBase{
 		// Outfeed cube for 0.2s
 		runAction(new PrintTimeFromStart(_startTime));
 		// Move elevator to floor
-		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
+		/*runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 				new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT),
 				new ActuateFlapJackAction(false),
 				new SeriesAction(Arrays.asList(new Action[] {
@@ -160,7 +160,7 @@ public class DoubleScale extends AutonBase{
 					new RunMotionProfileAction(switchToScaleThirdCube),
 					new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.STORE)
 		})));
-		runAction(new TurnAction(0.0, false));*/
-		runAction(new PrintTimeFromStart(_startTime));
+		runAction(new TurnAction(0.0, false));
+		runAction(new PrintTimeFromStart(_startTime));*/
 	}
 }
