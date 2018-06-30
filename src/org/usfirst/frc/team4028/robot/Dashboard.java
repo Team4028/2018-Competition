@@ -35,6 +35,8 @@ public class Dashboard {
 		DOUBLE_SCALE,
 		SCALE_THEN_SWITCH,
 		DOUBLE_SCALE_THEN_SWITCH,
+		TRIPLE_SCALE,
+		TRIPLE_SCALE_SAME_SIDE,
 		EXPERIMENTAL,
 		TEST_AUTON
 	}
@@ -59,6 +61,8 @@ public class Dashboard {
 		_autonModeChooser.addObject("Double Scale", AUTON_MODE.DOUBLE_SCALE);
 		_autonModeChooser.addObject("Scale then Switch", AUTON_MODE.SCALE_THEN_SWITCH);
 		_autonModeChooser.addObject("Double Scale Then Switch", AUTON_MODE.DOUBLE_SCALE_THEN_SWITCH);
+		_autonModeChooser.addObject("#EasyMoney8SecondTripleScale", AUTON_MODE.TRIPLE_SCALE);
+		_autonModeChooser.addObject("Triple Scale SAME SIDE ONLY", AUTON_MODE.TRIPLE_SCALE_SAME_SIDE);
 		_autonModeChooser.addObject("DO NOT SELECT", AUTON_MODE.TEST_AUTON);
 		SmartDashboard.putData("AUTON MODE: ", _autonModeChooser);
 		
@@ -69,6 +73,7 @@ public class Dashboard {
 	
 	public boolean isGameDataReceived() {
 		String gameData = DriverStation.getInstance().getGameSpecificMessage();
+		//String gameData = "LLL";
 		
 		if (gameData.length() > 0) {
 			_isSwitchLeft = (gameData.charAt(0) == 'L');
@@ -93,7 +98,7 @@ public class Dashboard {
 	
 	/** Returns the autonBase object associated with the auton selected on the dashboard */
 	public AutonBase getSelectedAuton() {
-		_isStartingLeft = true; //(_autonStartingSideChooser.getSelected() == STARTING_SIDE.LEFT);
+		_isStartingLeft = (_autonStartingSideChooser.getSelected() == STARTING_SIDE.LEFT);
 		
 		switch(_autonModeChooser.getSelected()) {
 			case DO_NOTHING:
@@ -109,27 +114,29 @@ public class Dashboard {
 			case SCALE_OUTSIDE:
 				if (_isScaleLeft == _isStartingLeft) {
 					return new ScaleOutside(_isStartingLeft);
+				} else if (_isSwitchLeft == _isStartingLeft) {
+					return new ToSwitchThenBackCenter(_isStartingLeft);
 				} else {
-					return new AutoRun();
+					return new ToBackCenter(_isStartingLeft);
 				}
 			case DOUBLE_SCALE:
 				return new DoubleScale(_isScaleLeft, _isStartingLeft);
 			case SCALE_THEN_SWITCH:
 				if(_isScaleLeft == _isSwitchLeft) {
-					return new ScaleThenSwitchSameSide(_isScaleLeft, _isStartingLeft);
+					return new ScaleThenSwitchSameSide(_isScaleLeft);
 				} else if (!_isScaleLeft && _isSwitchLeft){
 					return new CloseSwitchFarScale();
 				} else {
-					return new FarSwitchCloseScale(_isStartingLeft);
+					return new FarSwitchCloseScale();
 				}
 			case DOUBLE_SCALE_THEN_SWITCH:
 				if (_isStartingLeft) {
 					if (_isScaleLeft && _isSwitchLeft) {
 						return new DoubleScaleAndSwitch(_isScaleLeft);
 					} else if (!_isScaleLeft && !_isSwitchLeft) {
-						return new ScaleThenSwitchSameSide(_isScaleLeft, _isStartingLeft);
+						return new ScaleThenSwitchSameSide(_isScaleLeft);
 					} else if (_isScaleLeft && !_isSwitchLeft){
-						return new FarSwitchCloseScale(_isStartingLeft);
+						return new FarSwitchCloseScale();
 					} else {
 						return new CloseSwitchFarScale();
 					}
@@ -137,10 +144,26 @@ public class Dashboard {
 					if (!_isScaleLeft && !_isSwitchLeft) {
 						return new DoubleScaleAndSwitch(_isScaleLeft);
 					} else if (_isScaleLeft && _isSwitchLeft) {
-						return new ScaleThenSwitchSameSide(_isScaleLeft, _isStartingLeft);
+						return new ScaleThenSwitchSameSide(_isScaleLeft);
 					} else {
-						return new FarSwitchCloseScale(_isStartingLeft);
+						return new FarSwitchCloseScale();
 					}
+				}
+				
+			case TRIPLE_SCALE:
+				if (_isStartingLeft == _isScaleLeft) {
+					return new TripleScale(_isStartingLeft);
+				} else {
+					return new DoubleScale(_isScaleLeft, _isStartingLeft);
+				}
+				
+			case TRIPLE_SCALE_SAME_SIDE:
+				if (_isScaleLeft == _isStartingLeft) {
+					return new TripleScale(_isStartingLeft);
+				} else if (_isSwitchLeft == _isStartingLeft) {
+					return new ToSwitchThenBackCenter(_isStartingLeft);
+				} else {
+					return new ToBackCenter(_isStartingLeft);
 				}
 				
 			case EXPERIMENTAL:

@@ -101,4 +101,8 @@ public class PathFollower {
     public void forceFinish() {
         overrideFinished = true;
     }
+    
+    public double remainingPathLength() {
+    	return remainingPathLength;
+    }
 }

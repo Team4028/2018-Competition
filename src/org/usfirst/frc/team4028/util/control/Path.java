@@ -17,14 +17,18 @@ public class Path {
 	boolean isReversed;
 	public double maxAccel, maxDecel;
 	public double inertiaSteeringGain;
+	private double startingAngle;
 	
 	public void extrapolateLast() {
 		PathSegment last = segments.get(segments.size() - 1);
 		last.extrapolateLookahead(true);
 	}
 	
-	public Path() {
+	public Path(double maxAccel, double maxDecel, double inertiaGain) {
 		segments = new ArrayList<PathSegment>();
+		this.maxAccel = maxAccel;
+		this.maxDecel = maxDecel;
+		inertiaSteeringGain = inertiaGain;
 	}
 	
 	/**
@@ -35,15 +39,6 @@ public class Path {
      */
     public void addSegment(PathSegment segment) {
         segments.add(segment);
-    }
-    
-    public void setAccDec(double maxAccel, double maxDecel) {
-    	this.maxAccel = maxAccel;
-    	this.maxDecel = maxDecel;
-    }
-    
-    public void setInertiaGain(double inertiaGain) {
-    	inertiaSteeringGain = inertiaGain;
     }
 
     /** @return the last MotionState in the path */
@@ -152,6 +147,14 @@ public class Path {
     	return isReversed;
     }
     
+    public void setStartingAngle(double angle) {
+    	startingAngle = angle;
+    }
+    
+    public double getStartingAngle() {
+    	return startingAngle;
+    }
+    
     /**
      * Checks if the robot has finished traveling along the current segment then removes it from the path if it has
      * 
@@ -183,10 +186,8 @@ public class Path {
             maxStartSpeed += Math
                     .sqrt(maxStartSpeed * maxStartSpeed + 2 * maxAccel * segment.getLength());
             startSpeeds[i] = segment.getStartState().vel();
-            // System.out.println(maxStartSpeed + ", " + startSpeeds[i]);
             if (startSpeeds[i] > maxStartSpeed) {
                 startSpeeds[i] = maxStartSpeed;
-                // System.out.println("Segment starting speed is too high!");
             }
             maxStartSpeed = startSpeeds[i];
         }

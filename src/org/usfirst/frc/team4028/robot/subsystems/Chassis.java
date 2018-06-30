@@ -35,7 +35,7 @@ public class Chassis implements Subsystem {
 		return _instance;
 	}
 	
-	private enum ChassisState {
+	public enum ChassisState {
 		PERCENT_VBUS, 
 		AUTO_TURN, 
 		FOLLOW_PATH,
@@ -143,6 +143,10 @@ public class Chassis implements Subsystem {
 	
 	public Loop getLoop() {
 		return _loop;
+	}
+	
+	public ChassisState getState() {
+		return _chassisState;
 	}
 	
 	/* ===== Chassis State: PERCENT VBUS ===== */
@@ -327,7 +331,7 @@ public class Chassis implements Subsystem {
     }
     
     private static double rotationsToInches(double rot) {
-        return rot * (Constants.DRIVE_WHEEL_DIAMETER_INCHES * Math.PI);
+        return rot * (Constants.DRIVE_WHEEL_DIAMETER_IN * Math.PI);
     } 
     
     private static double rpmToInchesPerSecond(double rpm) {
@@ -335,12 +339,20 @@ public class Chassis implements Subsystem {
     }
     
     private static double inchesToNU(double inches) {
-    	return inches * 1540.95;
+    	return inches * CODES_PER_REV / (Constants.DRIVE_WHEEL_DIAMETER_IN * Math.PI);
     }
 	
 	private static double inchesPerSecToNU(double inches_per_second) {
-        return inches_per_second * 148.2;
+        return inches_per_second * CODES_PER_REV / (Constants.DRIVE_WHEEL_DIAMETER_IN * Math.PI * 10);
     }
+	
+	
+	public synchronized double getRemainingPathDistance() {
+		if (_pathFollower != null) {
+			return _pathFollower.remainingPathLength();
+		} 
+		return 0;
+	}
 	
 	public synchronized void setBrakeMode(boolean isBrakeMode) {
 		NeutralMode mode = (isBrakeMode ? NeutralMode.Brake : NeutralMode.Coast);
@@ -374,7 +386,7 @@ public class Chassis implements Subsystem {
         talon.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_10Ms, 0);
         talon.configVelocityMeasurementWindow(32, 0);
         
-        talon.configOpenloopRamp(0.5, 10);
+        talon.configOpenloopRamp(0.4, 10);
         talon.configClosedloopRamp(0.0, 0);
 	}
 	
@@ -409,6 +421,7 @@ public class Chassis implements Subsystem {
 	
 	@Override
 	public void outputToShuffleboard() {
+		SmartDashboard.putBoolean("IsHighGear", isHighGear());
 		SmartDashboard.putNumber("Chassis: Left Velocity", GeneralUtilities.roundDouble(getLeftVelocityInchesPerSec(), 2));
 		SmartDashboard.putNumber("Chassis: Right Velocity", GeneralUtilities.roundDouble(getLeftVelocityInchesPerSec(), 2));
 		
@@ -432,6 +445,7 @@ public class Chassis implements Subsystem {
 		logData.AddData("Pose X", String.valueOf(RobotState.getInstance().getLatestFieldToVehicle().getValue().getTranslation().x()));
 		logData.AddData("Pose Y", String.valueOf(RobotState.getInstance().getLatestFieldToVehicle().getValue().getTranslation().y()));
 		logData.AddData("Pose Angle", String.valueOf(RobotState.getInstance().getLatestFieldToVehicle().getValue().getRotation().getDegrees()));
+		logData.AddData("Remaining Distance", String.valueOf(getRemainingPathDistance()));
 		
 		logData.AddData("Center Target Velocity", String.valueOf(GeneralUtilities.roundDouble(_centerTargetVelocity, 2)));
 	}

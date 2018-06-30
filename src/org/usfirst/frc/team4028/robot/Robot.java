@@ -69,6 +69,10 @@ public class Robot extends IterativeRobot {
 		_enabledLooper.register(_cubeHandler.getLoop());
 		_enabledLooper.register(RobotStateEstimator.getInstance().getLoop());
 		
+		AdaptedPaths.buildPaths();
+		
+		_switchableCameraServer.SwitchCamera();
+		
 		_dashboard.printStartupMessage();
 		
 		// Hold scan times moving average samples
@@ -97,6 +101,10 @@ public class Robot extends IterativeRobot {
 			_dataLogger.close();
 			_dataLogger = null;
 		}
+		
+		AdaptedPaths.buildPaths();
+		
+		_switchableCameraServer.SwitchCamera();
 		
 		_chassis.setBrakeMode(false);
 		
@@ -145,8 +153,6 @@ public class Robot extends IterativeRobot {
 		}
 		
 		_chassis.zeroGyro();
-		
-		AdaptedPaths.locateFlavorTownUSA();
 		
 		_autonExecuter = new AutonExecuter();
 		_autonExecuter.setAutoMode(_dashboard.getSelectedAuton());
@@ -266,7 +272,7 @@ public class Robot extends IterativeRobot {
 			else if (Math.abs(_dos.getDriver_InfeedCube_JoystickCmd()) != 0) {
 				_cubeHandler.acquireCube_InfeedAndCarriage();
 			}			
-			else if ((Math.abs(_dos.getDriver_EjectCube_JoystickCmd()) != 0) || _dos.getOperator_EjectCube_JoystickCmd() != 0) {
+			else if ((Math.abs(_dos.getDriver_EjectCube_JoystickCmd()) != 0) || _dos.getDriver_EjectCube_JoystickCmd() != 0) {
 				_cubeHandler.ejectCube_InfeedAndCarriage();
 			}
 			else {
@@ -279,6 +285,16 @@ public class Robot extends IterativeRobot {
 			else if (_dos.getIsOperator_WideCarriage_BtnPressed()) {
 				_cubeHandler.carriage_MoveSolenoidToWide();
 			}		
+			
+			if(_dos.getOperator_FlapUp_BtnPressed())
+			{
+				_cubeHandler.carriage_FlapUp();
+			}
+			else if (_dos.getOperator_FlapDown_BtnPressed())
+			{
+				_cubeHandler.carriage_FlapDown();
+			}
+
 		} 
 		else if(_dos.IsEngineeringGamepadBAvailable()) {
 			// =============================
@@ -416,13 +432,13 @@ public class Robot extends IterativeRobot {
     		// each subsystem should add a call to a outputToSmartDashboard method
     		// to push its data out to the dashboard
 
-    		//_chassis.outputToShuffleboard(); 
+    		_chassis.outputToShuffleboard(); 
     		_elevator.outputToShuffleboard();
-    		//_infeed.outputToShuffleboard();
-    		//_carriage.outputToShuffleboard();
+    		_infeed.outputToShuffleboard();
+    		_carriage.outputToShuffleboard();
 	    	_cubeHandler.outputToShuffleboard();
-	    	//_climber.outputToShuffleboard();
-	    	//_pressureSensor.outputToShuffleboard();
+	    	_climber.outputToShuffleboard();
+	    	_pressureSensor.outputToShuffleboard();
 	    	
     		// write the overall robot dashboard info
 	    	SmartDashboard.putString("Robot Build", _buildMsg);
@@ -459,6 +475,7 @@ public class Robot extends IterativeRobot {
 	}
 	
 	private String payRespectsToRNGesus() {
-		return "RNGesus, please provide us with a favorable qualification schedule and ideal scoring plate assignment of LLL";
+		return "RNGesus, please provide us with a favorable qualification schedule and ideal scoring plate assignment of LLL if we start from the Left. However, if you would be so kind it would "
+				+ "be appreciated if you could pull some strings (literally) to have it be RRR given that we start from the right. Thanks";
 	}
 }

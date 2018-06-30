@@ -53,6 +53,7 @@ public class Carriage implements Subsystem {
 	
 	private DigitalInput _carriageLimitSwitch;
 	private DoubleSolenoid _squeezeCylinder;
+	private DoubleSolenoid _tiltCylinder;
 	
 	private CARRIAGE_WHEELS_STATE _carriageWheelsState;
 	private CARRIAGE_WHEELS_OUT_VBUS_INDEX _currentCarriageWheelsFeedOutVBusIndex = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_50;
@@ -62,6 +63,11 @@ public class Carriage implements Subsystem {
 	private static final double CARRIAGE_WHEELS_IN_VBUS_COMMAND_BUMP = 0.05;
 	
 	private static final boolean IS_VERBOSE_LOGGING_ENABLED = true;
+	
+	private boolean _isCubePresent = false;
+	private boolean _isFlapInUpPosition = false;
+	private long _consecutiveScansCubeIsPresent = 0;
+	private static final int MIN_CONSECUTIVE_SCANS = 5;
 	
 	//=====================================================================================
 	//Define Singleton Pattern
@@ -136,6 +142,10 @@ public class Carriage implements Subsystem {
 		_squeezeCylinder = new DoubleSolenoid(Constants.PCM_CAN_ADDR, Constants.CARRIAGE_SQUEEZE_PCM_PORT, Constants.CARRIAGE_WIDE_PCM_PORT);
 		_squeezeCylinder.set(Constants.CARRIAGE_WIDE_POS);
 		
+		//Setup Solenoid for Tilt
+		_tiltCylinder = new DoubleSolenoid(Constants.PCM_CAN_ADDR, Constants.CARRIAGE_FLAP_UP_PCM_PORT, Constants.CARRIAGE_FLAP_DOWN_PCM_PORT);
+		this.tiltCarriageDown();
+		
 		_carriageWheelsState = CARRIAGE_WHEELS_STATE.STOPPED;
 	}
 
@@ -155,9 +165,12 @@ public class Carriage implements Subsystem {
 		//Looper and State Machine for Commanding Infeed Axis
 		//=====================================================================================
 		@Override
-		public void onLoop(double timestamp) {
-			synchronized (Carriage.this) {		
-				switch(_carriageWheelsState) {
+		public void onLoop(double timestamp) 
+		{
+			synchronized (Carriage.this) 
+			{		
+				switch(_carriageWheelsState) 
+				{
 					case STOPPED:
 						_carriageLeftMotor.set(ControlMode.PercentOutput, 0, 0);
 						_carriageRightMotor.set(ControlMode.PercentOutput, 0, 0);
@@ -177,6 +190,27 @@ public class Carriage implements Subsystem {
 						_carriageLeftMotor.set(ControlMode.PercentOutput, _currentCarriageWheelsJoystickVBusCmd, 0);
 						_carriageRightMotor.set(ControlMode.PercentOutput, _currentCarriageWheelsJoystickVBusCmd, 0);
 						break;
+				}
+				
+				// debounce limit switch
+				boolean isCubePresentThisScan = _carriageLimitSwitch.get(); // normally closed switch, input is pulled low
+				if(isCubePresentThisScan)
+				{
+					_consecutiveScansCubeIsPresent++;	
+					
+					if(_consecutiveScansCubeIsPresent >= MIN_CONSECUTIVE_SCANS)
+					{
+						_isCubePresent = true;
+					}
+					else
+					{
+						_isCubePresent = false;						
+					}
+				}
+				else
+				{
+					_consecutiveScansCubeIsPresent = 0;
+					_isCubePresent = false;
 				}
 			}
 		}
@@ -367,7 +401,7 @@ public class Carriage implements Subsystem {
 		}
 	}
 	
-	//=== Handle Carriage Solenoid =================================================================
+	//=== Handle Carriage Squeeze Solenoid =================================================================
 	public void moveCarriageToSqueezeWidth() {
 		if(isCarriageInSqueezePosition()) {
 			System.out.println("Carriage Already In Thin Position");
@@ -384,6 +418,22 @@ public class Carriage implements Subsystem {
 		}	
 	}
 	
+	//=== Handle Carriage Tilt Solenoid =================================================================
+	public void tiltCarriageUp() {
+		_tiltCylinder.set(Constants.CARRIAGE_FLAP_UP);
+		_isFlapInUpPosition = true;
+	}
+	
+	public void tiltCarriageDown() {
+		_tiltCylinder.set(Constants.CARRIAGE_FLAP_DOWN);	
+		_isFlapInUpPosition = false;
+	}
+	
+	public boolean IsCarriageTiltedUp()
+	{
+		return _isFlapInUpPosition;
+	}
+	
 	@Override
 	public void zeroSensors() {}
 	
@@ -391,7 +441,8 @@ public class Carriage implements Subsystem {
 	// Property Accessors
 	//=====================================================================================
 	public boolean isCubeInCarriage() {
-		return _carriageLimitSwitch.get(); // normally closed switch, input is pulled low
+		//return _carriageLimitSwitch.get(); // normally closed switch, input is pulled low
+		return _isCubePresent;
 	} 
 	
 	public boolean isCarriageInSqueezePosition() {

@@ -97,6 +97,12 @@ public class CubeHandler implements Subsystem {
 					default:
 						break;
 				}
+				
+				// auto flap down if below max height
+				if(!_elevator.isFlapUpEnabledHeight() && _carriage.IsCarriageTiltedUp())
+				{
+					carriage_FlapDown();
+				}
 			}
 		}
 		
@@ -160,7 +166,8 @@ public class CubeHandler implements Subsystem {
 	
 	public void elevator_ScaleHeight_BumpPositionUp() {
 		if(_requestedPresetPosition == ELEVATOR_PRESET_POSITION.NEUTRAL_SCALE_HEIGHT
-				||_requestedPresetPosition == ELEVATOR_PRESET_POSITION.CLIMB_SCALE_HEIGHT) {
+				||_requestedPresetPosition == ELEVATOR_PRESET_POSITION.CLIMB_SCALE_HEIGHT
+				||_requestedPresetPosition == ELEVATOR_PRESET_POSITION.SWITCH_HEIGHT) {
 			_elevator.elevatorScaleHeightBumpPositionUp();
 		} else {
 			System.out.println("Bump Up Only honored when requested position is Scale ");
@@ -169,7 +176,8 @@ public class CubeHandler implements Subsystem {
 	
 	public void elevator_ScaleHeight_BumpPositionDown() {
 		if(_requestedPresetPosition == ELEVATOR_PRESET_POSITION.NEUTRAL_SCALE_HEIGHT
-				||_requestedPresetPosition == ELEVATOR_PRESET_POSITION.CLIMB_SCALE_HEIGHT) {
+				||_requestedPresetPosition == ELEVATOR_PRESET_POSITION.CLIMB_SCALE_HEIGHT
+				||_requestedPresetPosition == ELEVATOR_PRESET_POSITION.SWITCH_HEIGHT) {
 			_elevator.elevatorScaleHeightBumpPositionDown();
 		} else {
 			System.out.println("Bump Down Only honored when requested position is Scale ");
@@ -184,6 +192,10 @@ public class CubeHandler implements Subsystem {
 		_elevator.setTeleopElevatorAccelerationConstant();
 	}
 	
+	public double elevator_getCurrentPosNU()
+	{
+		return _elevator.getElevatorActualPositionNU();
+	}
 	//=====================================================================================
 	//Methods for Handling Interactions with Multiple Subsystem
 	//=====================================================================================	
@@ -300,6 +312,23 @@ public class CubeHandler implements Subsystem {
 	public double infeedArm_nativeUnitstoDegrees(double NativeUnits)
 	{
 		return _infeed.nativeUnitsToDegrees(NativeUnits);
+	}
+	
+	public void carriage_FlapUp()
+	{
+		if(_elevator.isFlapUpEnabledHeight())
+		{
+			_carriage.tiltCarriageUp();
+		}
+		else
+		{
+			ReportStateChg("Elevator TOO low to flap up");
+		}
+	}
+	
+	public void carriage_FlapDown()
+	{
+		_carriage.tiltCarriageDown();		
 	}
 	
 	//=====================================================================================	
