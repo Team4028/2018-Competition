@@ -16,10 +16,6 @@ public class MotionState {
         this.acc = acc;
     }
 
-    public MotionState(MotionState state) {
-        this(state.t, state.pos, state.vel, state.acc);
-    }
-
     public double t() {
         return t;
     }

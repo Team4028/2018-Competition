@@ -31,10 +31,10 @@ public class DoubleScale extends AutonBase{
 		if (isLeftScale) {
 			if (isStartingLeft) {
 				toScale = Paths.getPath(Left.L_SCALE);
-				carriageVBUSCube1 = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_50;
+				carriageVBUSCube1 = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_40;
 				carriageVBUSCube2 = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_70;
-				scaleToSwitch = Paths.getPath(Left.L_SCALE_TO_L_SWITCH);
-				switchToScale = Paths.getPath(Left.L_SWITCH_TO_L_SCALE);
+				scaleToSwitch = Paths.getPath(Left.L_SCALE_TO_L_SWITCH_EXP);//Paths.getPath(Left.L_SCALE_TO_L_SWITCH);
+				switchToScale = Paths.getPath(Left.L_SWITCH_TO_L_SCALE_EXP);//Paths.getPath(Left.L_SWITCH_TO_L_SCALE);
 				scaleToSwitchThirdCube = Paths.getPath(Left.L_SCALE_TO_L_SWITCH_THIRD_CUBE);
 				switchToScaleThirdCube = Paths.getPath(Left.L_SWITCH_TO_L_SCALE_THIRD_CUBE);
 				toScaleRemainingDistance = 18;
@@ -56,7 +56,7 @@ public class DoubleScale extends AutonBase{
 				isRightTurnToSwitch = false;
 				actuateFlapJack = true;
 			}
-			targetTurnAngle = 160;
+			targetTurnAngle = 150;//was 160
 			endTargetTurnAngle = 30;
 			finalTurnTargetAngle = 144;
 		} else {
@@ -105,7 +105,7 @@ public class DoubleScale extends AutonBase{
 								new MoveElevatorToPosAction(Elevator.ELEVATOR_PRESET_POSITION.HIGH_SCALE_HEIGHT)
 						})),
 						new WaitUntilRemainingDistanceAction(toScaleRemainingDistance),
-						new OutfeedCubeAction(carriageVBUSCube1)
+						new OutfeedCubeAction(carriageVBUSCube1,0.3)
 				}))
 		})));
 		runAction(new PrintTimeFromStart(_startTime));
@@ -118,7 +118,7 @@ public class DoubleScale extends AutonBase{
 									new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.WIDE),
 									new RunMotionProfileAction(scaleToSwitch),
 									new SeriesAction(Arrays.asList(new Action [] {
-											new WaitAction(0.7),
+											new WaitAction(0.8),
 											new InfeedCubeAction()
 									}))
 							}))
@@ -143,7 +143,7 @@ public class DoubleScale extends AutonBase{
 		// Outfeed cube for 0.2s
 		runAction(new PrintTimeFromStart(_startTime));
 		// Move elevator to floor
-		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
+		/*runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 				new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT),
 				new ActuateFlapJackAction(false),
 				new SeriesAction(Arrays.asList(new Action[] {
@@ -161,6 +161,6 @@ public class DoubleScale extends AutonBase{
 					new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.STORE)
 		})));
 		runAction(new TurnAction(0.0, false));
-		runAction(new PrintTimeFromStart(_startTime));
+		runAction(new PrintTimeFromStart(_startTime));*/
 	}
 }
