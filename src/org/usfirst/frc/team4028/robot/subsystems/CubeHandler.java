@@ -170,7 +170,7 @@ public class CubeHandler implements Subsystem {
 				||_requestedPresetPosition == ELEVATOR_PRESET_POSITION.SWITCH_HEIGHT) {
 			_elevator.elevatorScaleHeightBumpPositionUp();
 		} else {
-			System.out.println("Bump Up Only honored when requested position is Scale ");
+			System.out.println("Bump Up Only honored when requested position is Scale,Climb or Switch ");
 		}
 	}
 	
@@ -180,7 +180,7 @@ public class CubeHandler implements Subsystem {
 				||_requestedPresetPosition == ELEVATOR_PRESET_POSITION.SWITCH_HEIGHT) {
 			_elevator.elevatorScaleHeightBumpPositionDown();
 		} else {
-			System.out.println("Bump Down Only honored when requested position is Scale ");
+			System.out.println("Bump Down Only honored when requested position is Scale,Climb or Switch  ");
 		}
 	}
 	
