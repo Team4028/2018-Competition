@@ -113,7 +113,7 @@ public class Infeed  implements Subsystem {
     private static final double INFEED_POSITION_ANGLE = 200; //160;	
     private static final double INFEED_RIGHT_ARM_CLIMB_ANGLE = 219;
 	private static final double WIDE_INFEED_POSITION_ANGLE = 140;
-	private static final double STORE_POSITION_ANGLE = 20;
+	private static final double STORE_POSITION_ANGLE = 30;
 	
 	private static final double SQUEEZE_INFEED_POSITION_TARGET_ANGLE_BUMP = 1.0;
 	
