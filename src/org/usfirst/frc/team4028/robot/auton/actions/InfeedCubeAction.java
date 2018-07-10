@@ -41,7 +41,7 @@ public class InfeedCubeAction implements Action {
 		{
 			case EVERYTHING_HAS_GONE_ACCORDING_TO_PLAN:
 				//System.out.println("Test");
-				_cubeHandler.acquireCube_InfeedAndCarriage();
+				_cubeHandler.acquireCube_InfeedAndCarriage_auton();
 				_cubeHandler.infeedArms_MoveToPresetPosition(INFEED_ARM_TARGET_POSITION.SQUEEZE);
 				_isComplete = true;
 				break;
@@ -49,12 +49,12 @@ public class InfeedCubeAction implements Action {
 			case JAM_CENTER:
 				if(Timer.getFPGATimestamp()-_startTime<1.315)
 				{
-					_cubeHandler.ejectCube_InfeedAndCarriage();
+					_cubeHandler.infeedWheels_SpinAuton();
 					_cubeHandler.infeedArms_MoveToPresetPosition(INFEED_ARM_TARGET_POSITION.SQUEEZE);
 				}
 				else if(Timer.getFPGATimestamp()-_startTime<1.45)
 				{
-					_cubeHandler.infeedArms_MoveToPresetPosition(INFEED_ARM_TARGET_POSITION.WIDE);
+					//_cubeHandler.infeedArms_MoveToPresetPosition(INFEED_ARM_TARGET_POSITION.WIDE);
 					_cubeHandler.acquireCube_InfeedAndCarriage();
 					
 					//_cubeHandler.carriage_FeedOut(CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_60);
@@ -62,17 +62,6 @@ public class InfeedCubeAction implements Action {
 				else
 				{
 					_cubeHandler.infeedArms_MoveToPresetPosition(INFEED_ARM_TARGET_POSITION.SQUEEZE);
-				}
-				if(Timer.getFPGATimestamp()-_startTime<1.65)
-				{
-					_cubeHandler.infeedWheels_SpinAuton();
-					_cubeHandler.infeedArms_MoveToPresetPosition(INFEED_ARM_TARGET_POSITION.SQUEEZE);
-					_isComplete = false;
-				}
-				else
-				{
-					_startTime= Timer.getFPGATimestamp();
-					_isComplete = true;
 				}
 				break;
 				
@@ -92,7 +81,7 @@ public class InfeedCubeAction implements Action {
 			case SHORT:
 				if(Timer.getFPGATimestamp()-_startTime<1.55)
 				{
-					_cubeHandler.infeedArms_MoveToPresetPosition(INFEED_ARM_TARGET_POSITION.WIDE);
+					//_cubeHandler.infeedArms_MoveToPresetPosition(INFEED_ARM_TARGET_POSITION.WIDE);
 					_chassis.arcadeDrive(-1, 0);
 					_isComplete=false;
 				}
@@ -103,20 +92,6 @@ public class InfeedCubeAction implements Action {
 					_isComplete = true;
 				}
 				break;	
-			
-			case THAT_ONE_OTHER_JAM_THAT_I_COULDNT_FIGURE_OUT_BEFORE_AND_HAS_NO_NAME:
-				if(Timer.getFPGATimestamp()- _startTime<1.45)
-				{
-					_cubeHandler.infeedArms_MoveToPresetPosition(INFEED_ARM_TARGET_POSITION.SQUEEZE);
-					_cubeHandler.ejectCube_InfeedAndCarriage();
-					_isComplete = false;
-				}
-				else
-				{
-					_startTime = Timer.getFPGATimestamp();
-					_isComplete = true;
-				}
-				break;
 				
 				
 			case UNDEFINED:
@@ -161,13 +136,13 @@ public class InfeedCubeAction implements Action {
 					_infeedCubeState=INFEED_CUBE_AUTON_STATE.SHORT;		
 				}
 				
-				/*else if(_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getRightInfeedArmPos())>160 && 
+				else if(_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getRightInfeedArmPos())>160 && 
 						_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getRightInfeedArmPos())<200 &&
 						_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getLeftInfeedArmPos())>140 && 
 						_cubeHandler.infeedArm_nativeUnitstoDegrees(_cubeHandler.getLeftInfeedArmPos())<190)
 				{
 					_infeedCubeState = INFEED_CUBE_AUTON_STATE.THAT_ONE_OTHER_JAM_THAT_I_COULDNT_FIGURE_OUT_BEFORE_AND_HAS_NO_NAME;
-				}*/
+				}
 				else 
 				{
 					_infeedCubeState= INFEED_CUBE_AUTON_STATE.EVERYTHING_HAS_GONE_ACCORDING_TO_PLAN;

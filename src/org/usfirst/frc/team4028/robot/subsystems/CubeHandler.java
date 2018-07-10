@@ -209,6 +209,14 @@ public class CubeHandler implements Subsystem {
 		_carriage.feedIn();
 	}
 	
+	public void acquireCube_InfeedAndCarriage_auton()
+	{
+		_infeed.moveArmsToSqueezeInfeedPosition();
+		_infeed.feedIn();
+		
+		_carriage.feedIn(1);
+	}
+	
 	public void ejectCube_InfeedAndCarriage() {
 		 // only run infeed wheels if we are at squeeze position
 		if(_infeed.getInfeedArmsTargetPosition() == INFEED_ARM_TARGET_POSITION.SQUEEZE) {

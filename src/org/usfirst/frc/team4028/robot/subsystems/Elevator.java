@@ -94,7 +94,7 @@ public class Elevator implements Subsystem {
 	public static final double NATIVE_UNITS_PER_INCH_CONVERSION = (28510/78.75);
 	
 	// hardcoded preset positions (in native units, 0 = home position)
-	private static final int HIGH_SCALE_HEIGHT_POSITION = InchesToNativeUnits(80);
+	private static final int HIGH_SCALE_HEIGHT_POSITION = InchesToNativeUnits(72.5);//80
 	private static final int NEUTRAL_SCALE_HEIGHT_POSITION = InchesToNativeUnits(72.5);
 	private static final int LOW_SCALE_HEIGHT_POSITION = InchesToNativeUnits(65);
 	private static final int SWITCH_HEIGHT_POSITION = InchesToNativeUnits(30);

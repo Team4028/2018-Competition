@@ -69,7 +69,7 @@ public class DoubleScale extends AutonBase{
 				scaleToSwitchThirdCube = Paths.getPath(Right.R_SCALE_TO_R_SWITCH_THIRD_CUBE);
 				switchToScaleThirdCube = Paths.getPath(Right.R_SWITCH_TO_R_SCALE_THIRD_CUBE);
 				toScaleRemainingDistance = 12;
-				targetTurnAngle = -160;
+				targetTurnAngle = -130;
 				endTargetTurnAngle = -10.0;
 				finalTurnTargetAngle = -144;
 				elevatorWaitTime1 = 3.2;
@@ -118,7 +118,7 @@ public class DoubleScale extends AutonBase{
 									new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.WIDE),
 									new RunMotionProfileAction(scaleToSwitch),
 									new SeriesAction(Arrays.asList(new Action [] {
-											new WaitAction(0.8),
+											new WaitAction(1.25),
 											new InfeedCubeAction()
 									}))
 							}))
@@ -141,6 +141,8 @@ public class DoubleScale extends AutonBase{
 		}))); 
 		runAction(new OutfeedCubeAction());
 		// Outfeed cube for 0.2s
+		runAction(new DriveSetDistanceAction(-20));
+		runAction(new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT));
 		runAction(new PrintTimeFromStart(_startTime));
 		// Move elevator to floor
 		/*runAction(new SimultaneousAction(Arrays.asList(new Action[] {

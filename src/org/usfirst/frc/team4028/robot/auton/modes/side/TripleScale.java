@@ -33,8 +33,8 @@ public class TripleScale extends AutonBase {
 	
 	double toSwitchDistance, toScaleAgainDistance;
 	double targetTurnAngle, endTargetTurnAngle;
-	double secondTurnTargetAngle, endSecondTurnTargetAngle;
-	double elevatorWaitTime1, elevatorWaitTime2, elevatorWaitTime3;
+	double secondTurnTargetAngle, endSecondTurnTargetAngle, thirdTurnTargetAngle;
+	double elevatorWaitTime1, elevatorWaitTime2, elevatorWaitTime3, thirdcubeInfeedWaitTime;
 	
 	boolean isRightTurnToSwitch;
 	
@@ -43,15 +43,18 @@ public class TripleScale extends AutonBase {
 			toScale = Paths.getPath(Left.L_SCALE);
 			scaleToSwitch = Paths.getPath(Left.L_SCALE_TO_L_SWITCH_EXP);//changed to EXP
 			switchToScale = Paths.getPath(Left.L_SWITCH_TO_L_SCALE_EXP);//changed to EXP
-			scaleToSwitchThirdCube = Paths.getPath(Left.L_SCALE_TO_L_SWITCH_THIRD_CUBE);
-			switchToScaleThirdCube = Paths.getPath(Left.L_SWITCH_TO_L_SCALE_THIRD_CUBE);
+			scaleToSwitchThirdCube = Paths.getPath(Left.L_SCALE_TO_L_SWITCH_THIRD_CUBE_EXP);//changed to EXP
+			switchToScaleThirdCube = Paths.getPath(Left.L_SWITCH_TO_L_SCALE_THIRD_CUBE_EXP);//changed to EXP
 			targetTurnAngle = 150;//160;
 			endTargetTurnAngle = 33;
 			secondTurnTargetAngle = 120;//140;
+			thirdTurnTargetAngle = -70;
 			endSecondTurnTargetAngle = 35;
 			elevatorWaitTime1 = 1.25;
 			elevatorWaitTime2 = 0.5;
-			elevatorWaitTime3 = 0.5;
+			elevatorWaitTime3 = 0.7;
+			thirdcubeInfeedWaitTime = 1.25;
+			
 			isRightTurnToSwitch = true;
 		} else {
 			toScale = Paths.getPath(Right.R_SCALE);
@@ -59,14 +62,16 @@ public class TripleScale extends AutonBase {
 			switchToScale = Paths.getPath(Right.R_SWITCH_TO_R_SCALE);
 			scaleToSwitchThirdCube = Paths.getPath(Right.R_SCALE_TO_R_SWITCH_THIRD_CUBE);
 			switchToScaleThirdCube = Paths.getPath(Right.R_SWITCH_TO_R_SCALE_THIRD_CUBE);
-			targetTurnAngle = -163;
+			targetTurnAngle = -140;
 			endTargetTurnAngle = -33;
-			secondTurnTargetAngle = -140;
-			endSecondTurnTargetAngle = -35;
+			secondTurnTargetAngle = -90;
+			thirdTurnTargetAngle = 70;
+			endSecondTurnTargetAngle = -20;
 			elevatorWaitTime1 = 1.25;
 			elevatorWaitTime2 = 0.5;
 			elevatorWaitTime3 = 0.5;
 			isRightTurnToSwitch = false;
+			thirdcubeInfeedWaitTime = 1.65;
 		}
 	}
 
@@ -77,9 +82,12 @@ public class TripleScale extends AutonBase {
 				new RunMotionProfileAction(toScale),
 				new SeriesAction(Arrays.asList(new Action[] {
 						new WaitAction(elevatorWaitTime1),
-						new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.HIGH_SCALE_HEIGHT),
+						new SimultaneousAction(Arrays.asList(new Action[] {
+								new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.HIGH_SCALE_HEIGHT),
+								new ActuateFlapJackAction(true)	
+						})),
 						new WaitUntilRemainingDistanceAction(18),
-						new OutfeedCubeAction(CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_40, 0.3)
+						new OutfeedCubeAction(CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_60, 0.3)
 				}))
 		})));
 		// Outfeed cube for 0.2s
@@ -88,13 +96,14 @@ public class TripleScale extends AutonBase {
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 					new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT),
 					new SeriesAction(Arrays.asList(new Action[] {
+							new WaitAction(0.2),
 							new TurnAction(targetTurnAngle, isRightTurnToSwitch),
 							new SimultaneousAction(Arrays.asList(new Action[] {
 									new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.WIDE),
 									new RunMotionProfileAction(scaleToSwitch),
 									new SeriesAction(Arrays.asList(new Action [] {
-											new WaitAction(0.8),
-											new InfeedCubeAction()
+										new WaitAction(0.8),
+										new InfeedCubeAction()
 									}))
 							}))
 					}))
@@ -115,7 +124,7 @@ public class TripleScale extends AutonBase {
 													new WaitAction(1.35),
 													new SimultaneousAction(Arrays.asList(new Action[] {
 															new ActuateFlapJackAction(true),
-															new OutfeedCubeAction(CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_50, 0.25)
+															new OutfeedCubeAction(CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_50, 0.5)
 													}))
 											}))
 									})) 
@@ -123,7 +132,7 @@ public class TripleScale extends AutonBase {
 					}))
 		}))); 
 		runAction(new PrintTimeFromStart(_startTime));
-		// Move elevator to floor
+		// Move elevator to floor/*
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 				new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT),
 				new ActuateFlapJackAction(false),
@@ -133,7 +142,7 @@ public class TripleScale extends AutonBase {
 								new RunMotionProfileAction(scaleToSwitchThirdCube),
 								new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.WIDE),
 								new SeriesAction(Arrays.asList(new Action[] {
-										new WaitAction(.75),
+										new WaitAction(thirdcubeInfeedWaitTime),//.75
 										new InfeedCubeAction()
 								}))
 						}))
@@ -142,8 +151,8 @@ public class TripleScale extends AutonBase {
 		runAction(new PrintTimeFromStart(_startTime));
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 					new SeriesAction(Arrays.asList(new Action[] {
-							new RunMotionProfileAction(switchToScaleThirdCube),
-							new TurnAction(endSecondTurnTargetAngle, !isRightTurnToSwitch)
+							new TurnAction(thirdTurnTargetAngle, isRightTurnToSwitch),//endsecond angle 
+							new RunMotionProfileAction(switchToScaleThirdCube)
 					})),
 					new SeriesAction(Arrays.asList(new Action[] {
 							new WaitAction(elevatorWaitTime3),
@@ -154,7 +163,7 @@ public class TripleScale extends AutonBase {
 					})),
 					new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.STORE),
 		})));
-		runAction(new OutfeedCubeAction(CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_70, 0.25));		
+		runAction(new OutfeedCubeAction(CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_100, 0.2));		
 		runAction(new PrintTimeFromStart(_startTime));
 		runAction(new ActuateFlapJackAction(false));
 		runAction(new DriveSetDistanceAction(-20));

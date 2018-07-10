@@ -15,25 +15,29 @@ public class ToSwitchThenBackCenter extends AutonBase{
 	Path toSwitchSide;
 	Path toBackSide;
 	boolean isFirstTurnRight;
-	double firstTurnAngle, secondTurnAngle, finalAngle, driveForwardAction;
+	double firstTurnAngle, secondTurnAngle, finalAngle, driveForwardAction, secondDriveForwardAction, rightBackup;
 	
 	public ToSwitchThenBackCenter(boolean isStartingLeft) {
 		if (isStartingLeft) {
 			toSwitchSide = Paths.getPath(Left.L_SWITCH_SIDE);
 			toBackSide = Paths.getPath(Left.TO_BACK_LEFT);
 			isFirstTurnRight = false;
-			firstTurnAngle = 165;
+			firstTurnAngle = 170;
 			secondTurnAngle = 120;
 			finalAngle = 80;
 			driveForwardAction = 14;
+			secondDriveForwardAction = 15;
+			rightBackup=0;
 		} else {
 			toSwitchSide = Paths.getPath(Right.R_SWITCH_SIDE);
 			toBackSide = Paths.getPath(Right.TO_BACK_RIGHT);
 			isFirstTurnRight = true;
 			firstTurnAngle = -165;
-			secondTurnAngle = -120;
+			secondTurnAngle = -110;
 			finalAngle = -80;
 			driveForwardAction = 14;
+			secondDriveForwardAction = 14;
+			rightBackup=-5;
 		}
 	}
 	
@@ -48,6 +52,7 @@ public class ToSwitchThenBackCenter extends AutonBase{
 		})));
 		runAction(new OutfeedCubeAction());
 		runAction(new PrintTimeFromStart(_startTime));
+		runAction(new DriveSetDistanceAction(rightBackup));
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 				new SeriesAction(Arrays.asList(new Action[] {
 						new TurnAction(0, isFirstTurnRight),
@@ -62,7 +67,7 @@ public class ToSwitchThenBackCenter extends AutonBase{
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 				new DriveSetDistanceAction(16),
 				new SeriesAction(Arrays.asList(new Action[] {
-						new WaitAction(0.5),
+						new WaitAction(0.75),
 						new InfeedCubeAction()
 				}))
 		})));
@@ -83,7 +88,7 @@ public class ToSwitchThenBackCenter extends AutonBase{
 					new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT)
 		})));
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-				new DriveSetDistanceAction(15.0),
+				new DriveSetDistanceAction(secondDriveForwardAction),
 				new SeriesAction(Arrays.asList(new Action[] {
 						new WaitAction(.4),
 						new InfeedCubeAction()

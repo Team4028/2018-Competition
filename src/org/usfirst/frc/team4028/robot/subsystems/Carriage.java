@@ -38,6 +38,7 @@ public class Carriage implements Subsystem {
 		VBUS_10,
 		VBUS_20,
 		VBUS_30,
+		VBUS_35,
 		VBUS_40,
 		VBUS_50,
 		VBUS_60,
@@ -336,7 +337,8 @@ public class Carriage implements Subsystem {
 			case VBUS_40:
 				_currentCarriageWheelsFeedOutVBusIndex = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_50;
 				break;
-	
+				
+			
 			case VBUS_30:
 				_currentCarriageWheelsFeedOutVBusIndex = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_40;
 				break;
@@ -471,7 +473,9 @@ public class Carriage implements Subsystem {
 				
 			case VBUS_40:
 				return .4;
-				
+			
+			case VBUS_35:
+				return .35;
 			case VBUS_30:
 				return .3;
 				
