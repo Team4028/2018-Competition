@@ -103,7 +103,7 @@ public class Elevator implements Subsystem {
 	private static final int HOME_POSITION = 0;
 	private static final int FLAP_DOWN_BELOW_HEIGHT_POSITION_IN_NU = InchesToNativeUnits(54);
 	private static final int CLIMB_SCALE_HEIGHT_POSITION  = InchesToNativeUnits(40.5); //InchesToNativeUnits(60);
-	private static final int CLIMB_CLICK_ON_BAR_HEIGHT_IN_NU = InchesToNativeUnits(63);
+	private static final int CLIMB_CLICK_ON_BAR_HEIGHT_IN_NU = InchesToNativeUnits(60);
 	
 	
 	//Bump Position Up/Down on Elevator Constant
@@ -501,13 +501,17 @@ public class Elevator implements Subsystem {
 	public void elevatorScaleHeightBumpPositionUp() {
 		if(_elevatorAtScaleOffsetNU < MAX_BUMP_UP_AMOUNT) {
 			if(_isClimbBumpValueEnabled) {
-				//_elevatorAtScaleOffsetNU = _elevatorAtScaleOffsetNU + SMALL_BUMP_AMOUNT_CLIMB_IN_NU;
 				if (getElevatorActualPositionNU() < 20000) {
 					_elevatorAtScaleOffsetNU = (CLIMB_CLICK_ON_BAR_HEIGHT_IN_NU - CLIMB_SCALE_HEIGHT_POSITION);
+				} else {
+					//_elevatorAtScaleOffsetNU = _elevatorAtScaleOffsetNU + SMALL_BUMP_AMOUNT_CLIMB_IN_NU;
 				}
 			} else {
 				_elevatorAtScaleOffsetNU = _elevatorAtScaleOffsetNU + LARGE_BUMP_AMOUNT_IN_NU;
 			}
+		}
+		else if(_isClimbBumpValueEnabled) {
+			_elevatorAtScaleOffsetNU = _elevatorAtScaleOffsetNU + SMALL_BUMP_AMOUNT_CLIMB_IN_NU;	
 		} else {
 			System.out.println("Elevator Scale Position Bump Tooooooo Large");
 		}		
