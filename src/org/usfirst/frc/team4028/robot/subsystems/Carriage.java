@@ -499,6 +499,7 @@ public class Carriage implements Subsystem {
 		SmartDashboard.putNumber("Carriage: Wheels Feed Out %VBus", getCurrentCarriageWheelsFeedOutVBusCmd());
 		SmartDashboard.putBoolean("Carriage: Is Cube In Carriage?", isCubeInCarriage());
 		SmartDashboard.putBoolean("Carriage: Is Squeezed", isCarriageInSqueezePosition());
+		SmartDashboard.putBoolean("Carriage: Is Flapped Up", IsCarriageTiltedUp());
 		SmartDashboard.putString("State: Carriage", _carriageWheelsState.toString());
 	}
 
