@@ -31,10 +31,10 @@ public class DoubleScale extends AutonBase{
 		if (isLeftScale) {
 			if (isStartingLeft) {
 				toScale = Paths.getPath(Left.L_SCALE);
-				carriageVBUSCube1 = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_40;
+				carriageVBUSCube1 = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_50;
 				carriageVBUSCube2 = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_70;
-				scaleToSwitch = Paths.getPath(Left.L_SCALE_TO_L_SWITCH_EXP);//Paths.getPath(Left.L_SCALE_TO_L_SWITCH);
-				switchToScale = Paths.getPath(Left.L_SWITCH_TO_L_SCALE_EXP);//Paths.getPath(Left.L_SWITCH_TO_L_SCALE);
+				scaleToSwitch = Paths.getPath(Left.L_SCALE_TO_L_SWITCH);//Paths.getPath(Left.L_SCALE_TO_L_SWITCH);
+				switchToScale = Paths.getPath(Left.L_SWITCH_TO_L_SCALE);//Paths.getPath(Left.L_SWITCH_TO_L_SCALE);
 				scaleToSwitchThirdCube = Paths.getPath(Left.L_SCALE_TO_L_SWITCH_THIRD_CUBE);
 				switchToScaleThirdCube = Paths.getPath(Left.L_SWITCH_TO_L_SCALE_THIRD_CUBE);
 				toScaleRemainingDistance = 18;
@@ -56,7 +56,7 @@ public class DoubleScale extends AutonBase{
 				isRightTurnToSwitch = false;
 				actuateFlapJack = true;
 			}
-			targetTurnAngle = 150;//was 160
+			targetTurnAngle = 160;//was 150
 			endTargetTurnAngle = 30;
 			finalTurnTargetAngle = 144;
 		} else {
@@ -69,7 +69,7 @@ public class DoubleScale extends AutonBase{
 				scaleToSwitchThirdCube = Paths.getPath(Right.R_SCALE_TO_R_SWITCH_THIRD_CUBE);
 				switchToScaleThirdCube = Paths.getPath(Right.R_SWITCH_TO_R_SCALE_THIRD_CUBE);
 				toScaleRemainingDistance = 12;
-				targetTurnAngle = -130;
+				targetTurnAngle = -155; //130
 				endTargetTurnAngle = -10.0;
 				finalTurnTargetAngle = -144;
 				elevatorWaitTime1 = 3.2;
@@ -82,7 +82,7 @@ public class DoubleScale extends AutonBase{
 				carriageVBUSCube2 = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_70;
 				scaleToSwitch = Paths.getPath(Left.R_SCALE_TO_R_SWITCH);
 				switchToScale = Paths.getPath(Left.R_SWITCH_TO_R_SCALE);
-				targetTurnAngle = -160;
+				targetTurnAngle = -160; 
 				endTargetTurnAngle = -25;
 				finalTurnTargetAngle = -135;
 				elevatorWaitTime1 = 1.25;

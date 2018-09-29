@@ -22,14 +22,14 @@ public class ScaleThenSwitchSameSide extends AutonBase {
 		if (isLeftScale) {
 			toScale = Paths.getPath(Left.L_SCALE);
 			scaleToSwitch = Paths.getPath(Left.L_SCALE_TO_L_SWITCH);
-			targetTurnAngle = 163;
+			targetTurnAngle = 160; //163
 			elevatorWaitTime = 1.2;
 			remainingDistance = 18;
 			isTurnRight = true;
 		} else {
 			toScale = Paths.getPath(Left.R_SCALE);
 			scaleToSwitch = Paths.getPath(Left.R_SCALE_TO_R_SWITCH);
-			targetTurnAngle = -160;
+			targetTurnAngle = -155;
 			elevatorWaitTime = 2.8;	
 			remainingDistance = 12;
 			isTurnRight = true; 

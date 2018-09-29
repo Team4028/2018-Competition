@@ -48,7 +48,7 @@ public class FarSwitchCloseScale extends AutonBase {
 		})));
 		// Turn to cube and infeed it
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
-					new TurnAction(-160, isTurnRight),
+					new TurnAction(-155, isTurnRight),
 					new SeriesAction(Arrays.asList(new Action[] {
 							new WaitAction(0.8),
 							new SetInfeedPosAction(INFEED_ARM_TARGET_POSITION.WIDE)
