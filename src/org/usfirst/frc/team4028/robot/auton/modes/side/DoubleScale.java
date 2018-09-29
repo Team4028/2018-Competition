@@ -31,7 +31,7 @@ public class DoubleScale extends AutonBase{
 		if (isLeftScale) {
 			if (isStartingLeft) {
 				toScale = Paths.getPath(Left.L_SCALE);
-				carriageVBUSCube1 = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_40;
+				carriageVBUSCube1 = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_50;
 				carriageVBUSCube2 = CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_70;
 				scaleToSwitch = Paths.getPath(Left.L_SCALE_TO_L_SWITCH_EXP);//Paths.getPath(Left.L_SCALE_TO_L_SWITCH);
 				switchToScale = Paths.getPath(Left.L_SWITCH_TO_L_SCALE_EXP);//Paths.getPath(Left.L_SWITCH_TO_L_SCALE);
@@ -110,7 +110,9 @@ public class DoubleScale extends AutonBase{
 		})));
 		runAction(new PrintTimeFromStart(_startTime));
 		// Lower Elevator to Switch during turn, then drive to 2nd cube while setting infeed wide and continuing to lower elevator
-		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
+		runAction(new DriveSetDistanceAction(-20));
+		runAction(new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT));
+		/*new SimultaneousAction(Arrays.asList(new Action[] {
 					new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT),
 					new SeriesAction(Arrays.asList(new Action[] {
 							new TurnAction(targetTurnAngle, isRightTurnToSwitch),

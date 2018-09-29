@@ -166,6 +166,7 @@ public class Robot extends IterativeRobot {
 		_lastDashboardWriteTimeMSec = new Date().getTime(); // snapshot time to control spamming
 		
 		_dashboard.outputToDashboard();
+		_chassis.setHighGear(true);
 		
 		_autonStartTime = System.currentTimeMillis();
 		

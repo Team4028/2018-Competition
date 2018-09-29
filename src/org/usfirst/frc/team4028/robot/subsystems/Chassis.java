@@ -118,6 +118,7 @@ public class Chassis implements Subsystem {
 						return;
 						
 					case FOLLOW_PATH:
+						setHighGear(true);
 						if (isHighGear()) {
 							setPIDFGains(_leftMaster, HIGH_GEAR_VELOCITY_PIDF_GAINS);
 							setPIDFGains(_rightMaster, HIGH_GEAR_VELOCITY_PIDF_GAINS);
