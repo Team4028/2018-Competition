@@ -7,6 +7,7 @@ import org.usfirst.frc.team4028.robot.auton.actions.*;
 import org.usfirst.frc.team4028.robot.paths.Paths;
 import org.usfirst.frc.team4028.util.control.Path;
 import org.usfirst.frc.team4028.robot.paths.Paths.Center;
+import org.usfirst.frc.team4028.robot.subsystems.Carriage;
 import org.usfirst.frc.team4028.robot.subsystems.Elevator.ELEVATOR_PRESET_POSITION;
 import org.usfirst.frc.team4028.robot.subsystems.Infeed.INFEED_ARM_TARGET_POSITION;
 
@@ -50,7 +51,7 @@ public class DoubleSwitch extends AutonBase {
 		})));
 		runAction(new PrintTimeFromStart(_startTime));
 		// Outfeed cube for 0.2s
-		runAction(new OutfeedCubeAction());
+		runAction(new OutfeedCubeAction(Carriage.CARRIAGE_WHEELS_OUT_VBUS_INDEX.VBUS_35, .2));
 		// Drive to front of pyramid while moving elevator to floor and swinging out infeeds
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 				new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT),	
@@ -91,10 +92,10 @@ public class DoubleSwitch extends AutonBase {
 				new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT),
 				new RunMotionProfileAction(awayFromSwitch)
 		})));
-		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
+		/*runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 				new RunMotionProfileAction(pyramidAgain),
 				new InfeedCubeAction()
-		})));
+		})));*/
 		runAction(new PrintTimeFromStart(_startTime));  
 	}
 }

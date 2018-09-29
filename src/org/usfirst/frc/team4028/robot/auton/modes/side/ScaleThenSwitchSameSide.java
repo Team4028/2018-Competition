@@ -49,6 +49,7 @@ public class ScaleThenSwitchSameSide extends AutonBase {
 				}))
 		})));
 		runAction(new PrintTimeFromStart(_startTime));
+		runAction(new DriveSetDistanceAction(-10));
 		// Lower Elevator to Switch during turn, then drive to 2nd cube while setting infeed wide and continuing to lower elevator
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 					new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT),
@@ -75,7 +76,7 @@ public class ScaleThenSwitchSameSide extends AutonBase {
 		runAction(new PrintTimeFromStart(_startTime));
 		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
 					new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT),
-					new ArcadeDriveAction(-1, 0.2)
+					//new ArcadeDriveAction(-1, 0.2)
 		})));
 	}
 }

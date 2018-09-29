@@ -110,7 +110,9 @@ public class DoubleScale extends AutonBase{
 		})));
 		runAction(new PrintTimeFromStart(_startTime));
 		// Lower Elevator to Switch during turn, then drive to 2nd cube while setting infeed wide and continuing to lower elevator
-		runAction(new SimultaneousAction(Arrays.asList(new Action[] {
+		runAction(new DriveSetDistanceAction(-20));
+		runAction(new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT));
+		/*new SimultaneousAction(Arrays.asList(new Action[] {
 					new MoveElevatorToPosAction(ELEVATOR_PRESET_POSITION.INFEED_HEIGHT),
 					new SeriesAction(Arrays.asList(new Action[] {
 							new TurnAction(targetTurnAngle, isRightTurnToSwitch),
